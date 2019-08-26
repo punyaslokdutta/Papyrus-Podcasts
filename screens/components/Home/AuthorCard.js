@@ -46,20 +46,7 @@ class AuthorCard extends Component {
 		}*/
       return (
         <View style={{justifyContent: 'center',paddingBottom: 20 , paddingTop:2, paddingLeft: width/8} }>
-        <Card key={this.props.index}style={[{width:((width*3) /4) }, {height:((height) / 3 )} ]} >
-        <TouchableOpacity onPress={()=> this.onPressed() }style={[{width:((width*3)/4) }, {height:(height) / 6 },{paddingLeft:width/12} ,{marginBottom:2}, {paddingTop:5}]}>
-        <Image style={{ width: width/3, height:  width/3, borderRadius:width/3, paddingLeft:width/24}} source={this.props.Info.ImageUri}/>
-        </TouchableOpacity>
-
-        <Text style={{fontFamily:'sans-serif-light', color:'black', paddingLeft:5, fontSize:20, fontWeight:'bold', paddingTop:10}}>{this.props.Info.Book}</Text>
-        <Text style={{fontFamily:'sans-serif-light', color:'black', paddingLeft:5, fontSize:15, }}>{this.props.Info.Storyteller}</Text>
-       
-
         
-      
-        
-       
-        </Card>
         </View>
         
       );
