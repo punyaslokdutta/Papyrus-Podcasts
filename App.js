@@ -13,7 +13,6 @@ import AuthLoadingScreen from './screens/AuthLoadingScreen'
 import WelcomeScreen from './screens/WelcomeScreen'
 import SignInScreen from './screens/SignInScreen'
 import SignUpScreen from './screens/SignUpScreen'
-import SignOut from './screens/SignOut'
 import HomeScreen from './screens/HomeScreen'
 import Explore from './screens/Explore'
 import Profile from './screens/Profile'
@@ -218,7 +217,7 @@ const AppDrawerNavigator=createDrawerNavigator(
   }
 
 )
-export default createSwitchNavigator(
+const AppSwitchNavigator = createSwitchNavigator(
   {
     
     AuthLoading : AuthLoadingScreen,
@@ -227,19 +226,10 @@ export default createSwitchNavigator(
   },
 )
 
+const App =createAppContainer(AppSwitchNavigator); // ^3.0.8 react-navigation 
 
 
-
-  class App extends React.Component {
-  render() {
-    return (
-     
-      <AppDrawerNavigator/> 
-      //remember, Navigator is just  a component 
-      
-    );
-  }
-}
+export default App;
 
 
 
