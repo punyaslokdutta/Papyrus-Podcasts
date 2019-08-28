@@ -8,9 +8,9 @@ import CardComponent from './components/Home/CardComponent'
 import {Container, Content, Card, Button} from 'native-base'
 import CardComp from './components/Home/CardComp';
 import PodcastPlayer from './PodcastPlayer'
-import BookCard from './components/Home/BookCard'
+import BookList from './components/Home/BookList'
 import { FlatList } from 'react-native-gesture-handler';
-import AuthorCard from './components/Home/AuthorCard'
+
 
 
 var images=[require('../assets/Westeros.jpg'),
@@ -160,7 +160,7 @@ class HomeScreen extends React.Component {
         </View>
         </TouchableOpacity>
         <View>
-        <Text style={{fontFamily:'sans-serif-light', color:'white', paddingLeft:30, fontSize:24, paddingTop:12}}>PAPYRUS PODCASTS</Text>
+        <Text style={{fontFamily:'sans-serif-light', color:'white', paddingLeft:30, fontSize:15, paddingTop:12}}>Papyrus</Text>
         </View>
 
         </View>
@@ -169,12 +169,7 @@ class HomeScreen extends React.Component {
    
     renderSectionBooks=()=>
     { 
-      return Bookcards.map((Info, index)=> 
-      {
-          return (<BookCard Info={Info} key={index} index={index} navigation={this.props.navigation} onPress={()=> this.onPressed() }/>)
-
-      })
-
+      return (<BookList navigation={this.props.navigation}/>)
     }
 
     renderSectionPodcasts=()=>
@@ -188,15 +183,7 @@ class HomeScreen extends React.Component {
 
       })
     }
-    renderSectionAuthors=()=>
-    {
-      return Bookcards.map((Info, index)=>
-      {
-          return (<AuthorCard Info={Info} key={index} index={index} navigation={this.props.navigation} onPress={()=> this.onPressed() }/>)
-
-      })
-
-    }
+  
 
     
    
@@ -208,19 +195,15 @@ class HomeScreen extends React.Component {
                   {this.renderHeader()} 
         <ScrollView  scrollEventThrottle={16} style={{backgroundColor: '#F5FCFF'}} >
         <View style={{flex:1 , backgroundColor:'white', paddingTop:10}}>
-      <Text style={{fontSize:28, fontWeight:'200', paddingHorizontal: 20,paddingTop:10,paddingBottom:10,   textShadowColor:'black',fontFamily:'sans-serif-light'}}>
+      <Text style={{fontSize:(1.4*1.6), fontWeight:'200', paddingHorizontal: 20,paddingTop:10,paddingBottom:10,   textShadowColor:'black',fontFamily:'sans-serif-light'}}>
           Record Book Podcasts
       </Text>
       </View>
-        <ScrollView horizontal={true}  showsHorizontalScrollIndicator={false} style={{paddingTop:20}}>
+        
        
         <View style={{flexDirection:'row' , flexWrap:'wrap', paddingTop:5}}>
                   {this.renderSectionBooks()}
        </View>
-        </ScrollView>
-        <View>
-        {this.renderDots()}
-        </View>
         <View style={{flex:1 , backgroundColor:'white', paddingTop:10, paddingBottom: 10}}>
       <Text style={{fontSize:28, fontWeight:'200', paddingHorizontal: 20,paddingTop:10,  textShadowColor:'black',fontFamily:'sans-serif-light'}}>
           Discover Podcasts
@@ -229,11 +212,6 @@ class HomeScreen extends React.Component {
         <View style={{flexDirection:'row' , flexWrap:'wrap', paddingTop:5}}  >
           {this.renderSectionPodcasts()}
         </View>
-        <ScrollView horizontal={true}  showsHorizontalScrollIndicator={false} style={{paddingTop:20}}>
-        <View style={{flexDirection:'row' , flexWrap:'wrap', paddingTop:5}}>
-                  {this.renderSectionAuthors()}
-       </View>
-        </ScrollView>
         </ScrollView>
 
         

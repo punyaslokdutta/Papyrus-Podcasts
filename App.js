@@ -13,7 +13,6 @@ import AuthLoadingScreen from './screens/AuthLoadingScreen'
 import WelcomeScreen from './screens/WelcomeScreen'
 import SignInScreen from './screens/SignInScreen'
 import SignUpScreen from './screens/SignUpScreen'
-import SignOut from './screens/SignOut'
 import HomeScreen from './screens/HomeScreen'
 import Explore from './screens/Explore'
 import Profile from './screens/Profile'
@@ -24,6 +23,7 @@ import StartRecordScreen from './screens/StartRecordScreen'
 import PreviewScreen from './screens/PreviewScreen'
 import TagsScreen from './screens/TagsScreen'
 import CategoryScreen from './screens/CategoryScreen'
+import RecordBook from './screens/components/Home/RecordBook'
 //import store from './src/store'
 //import { Provider } from 'react-redux'
 
@@ -57,6 +57,25 @@ const AuthStackNavigator= createStackNavigator(
     }
    }*/
 )
+const HomeStackNavigator=createStackNavigator(
+  {
+    HomeScreen: {screen: HomeScreen},
+    RecordBook: {screen:RecordBook},
+  },
+  {
+    headerMode:'none',
+  }
+)
+HomeStackNavigator.navigationOptions = ({ navigation }) => {
+  /*if(navigation.state.index==0){
+      return {
+          tabBarVisible: false,
+      };
+  }*/
+  return {
+      tabBarVisible: true,
+  }
+}
 
 const RecordStackNavigator= createStackNavigator(
   {
@@ -100,7 +119,7 @@ const AppTabNavigator=createBottomTabNavigator(
 
 
   {
-    Home: {screen:HomeScreen, 
+    Home: {screen:HomeStackNavigator, 
     navigationOptions:{
       tabBarLabel:'Home',
       tabBarIcon:({tintColor})=>(
@@ -191,9 +210,7 @@ const AppStackNavigator= createStackNavigator(
     navigationOptions:{
       header:null
    }},
-   CategoryScreen: {screen :CategoryScreen,
-    navigationOptions:{
-   }}
+   
   
   },
     
@@ -218,7 +235,7 @@ const AppDrawerNavigator=createDrawerNavigator(
   }
 
 )
-export default createSwitchNavigator(
+const AppSwitchNavigator = createSwitchNavigator(
   {
     
     AuthLoading : AuthLoadingScreen,
@@ -227,19 +244,10 @@ export default createSwitchNavigator(
   },
 )
 
+const App =createAppContainer(AppSwitchNavigator); // ^3.0.8 react-navigation 
 
 
-
-  class App extends React.Component {
-  render() {
-    return (
-     
-      <AppDrawerNavigator/> 
-      //remember, Navigator is just  a component 
-      
-    );
-  }
-}
+export default App;
 
 
 
