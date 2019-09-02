@@ -15,7 +15,7 @@ import {
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Octicons from 'react-native-vector-icons/Octicons';
 
-import * as theme from '../theme';
+import * as theme from './theme';
 import RecordBook from './RecordBook'
 
 const { width, height } = Dimensions.get('window');
@@ -27,11 +27,12 @@ const mocks = [
       avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
     },
     saved: true,
-    location: 'Santorini, Greece',
+    location: 'punyaslok_dutta',
     temperature: 34,
-    title: 'Santorini',
+    title: 'The Deception Point ',
     description: 'Santorini is one of the Cyclades islands in the Aegean Sea. It was devastated by a volcanic eruption in the 16th century BC, forever shaping its rugged landscape. The whitewashed, cubiform houses of its 2 principal towns, Fira and Oia, cling to cliffs above an underwater caldera (crater). They overlook the sea, small islands to the west and beaches made up of black, red and white lava pebbles.',
     rating: 4.3,
+    date: "12/07/2019",
     reviews: 3212,
     preview: 'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
     images: [
@@ -48,11 +49,12 @@ const mocks = [
       avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
     },
     saved: false,
-    location: 'Loutraki, Greece',
+    location: 'may_davis',
     temperature: 34,
-    title: 'Loutraki',
+    title: 'Pursuit of Happiness',
     description: 'This attractive small town, 80 kilometers from Athens',
     rating: 4.6,
+    date: "12/07/2019",
     reviews: 3212,
     preview: 'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
     images: [
@@ -73,6 +75,7 @@ const mocks = [
     description: 'Santorini - Description',
     rating: 3.2,
     reviews: 3212,
+    date: "12/07/2019",
     preview: 'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
     images: [
       'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
@@ -92,6 +95,7 @@ const mocks = [
     title: 'Loutraki',
     description: 'This attractive small town, 80 kilometers from Athens',
     rating: 5,
+    date: "12/07/2019",
     reviews: 3212,
     preview: 'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
     images: [
@@ -154,7 +158,7 @@ const styles = StyleSheet.create({
   },
   recommendation: {
     width: (width - (theme.sizes.padding * 2)) / 2,
-    marginHorizontal: 8,
+    marginHorizontal: 0,
     backgroundColor: theme.colors.white,
     overflow: 'hidden',
     borderRadius: theme.sizes.radius,
@@ -222,12 +226,8 @@ const styles = StyleSheet.create({
 class BookList extends Component {
   constructor(props)
     {
-        super(props)
-        {
-            
-          
-        }
-      }
+        super(props);
+    }
 
   scrollX = new Animated.Value(0);
   
@@ -287,7 +287,7 @@ class BookList extends Component {
     )
   }
 
-  renderDestinations = () => {
+  renderBooks = () => {
     return (
       <View style={[ styles.column, styles.destinations ]}>
         <FlatList
@@ -302,14 +302,14 @@ class BookList extends Component {
           data={this.props.destinations}
           keyExtractor={(item, index) => `${item.id}`}
           onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX }} }])}
-          renderItem={({ item }) => this.renderDestination(item)}
+          renderItem={({ item }) => this.renderBook(item)}
         />
         {this.renderDots()}
       </View>
     );
   }
 
-  renderDestination = item => {
+  renderBook = item => {
     //const { navigation } = this.props;
     return (
       <TouchableOpacity activeOpacity={0.8} onPress={() => this.props.navigation.navigate('RecordBook', { article: item })}>
@@ -357,76 +357,8 @@ class BookList extends Component {
     )
   }
 
-  renderRecommended = () => {
-    return (
-      <View style={[styles.flex, styles.column, styles.recommended ]}>
-        <View
-          style={[
-            styles.row,
-            styles.recommendedHeader
-          ]}
-        >
-          <Text style={{ fontSize: theme.sizes.font * 1.4 }}>Recommended</Text>
-          <TouchableOpacity activeOpacity={0.5}>
-            <Text style={{ color: theme.colors.caption }}>More</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={[styles.column, styles.recommendedList]}>
-          <FlatList
-            horizontal
-            pagingEnabled
-            scrollEnabled
-            showsHorizontalScrollIndicator={false}
-            scrollEventThrottle={16}
-            snapToAlignment="center"
-            style={[ styles.shadow, { overflow: 'visible' }]}
-            data={this.props.destinations}
-            keyExtractor={(item, index) => `${item.id}`}
-            renderItem={({ item, index }) => this.renderRecommendation(item, index)}
-          />
-        </View>
-      </View>
-    );
-  }
-
-  renderRecommendation = (item, index) => {
-    const { destinations } = this.props;
-    const isLastItem = index === destinations.length - 1;
-    return (
-      <View style={[
-        styles.flex, styles.column, styles.recommendation, styles.shadow, 
-        index === 0 ? { marginLeft: theme.sizes.margin } : null,
-        isLastItem ? { marginRight: theme.sizes.margin / 2 } : null,
-      ]}>
-        <View style={[styles.flex, styles.recommendationHeader]}>
-          <Image style={[styles.recommendationImage]} source={{ uri: item.preview }} />
-          <View style={[ styles.flex, styles.row, styles.recommendationOptions ]}>
-            <Text style={styles.recommendationTemp}>
-              {item.temperature}℃
-            </Text>
-            <FontAwesome
-              name={item.saved ? 'bookmark' : 'bookmark-o'}
-              color={theme.colors.white}
-              size={theme.sizes.font * 1.25}
-            />
-          </View>
-        </View>
-        <View style={[styles.flex, styles.column, styles.shadow, { justifyContent: 'space-evenly', padding: theme.sizes.padding / 2 }]}>
-          <Text style={{ fontSize: theme.sizes.font * 1.25, fontWeight: '500', paddingBottom: theme.sizes.padding / 4.5, }}>{item.title}</Text>
-          <Text style={{ color: theme.colors.caption }}>{item.location}</Text>
-          <View style={[
-            styles.row,
-            { alignItems: 'center', justifyContent: 'space-between', marginTop: theme.sizes.margin }
-          ]}>
-            {this.renderRatings(item.rating)}
-            <Text style={{ color: theme.colors.active }}>
-              {item.rating}
-            </Text>
-          </View>
-        </View>
-      </View>
-    )
-  }
+  
+  
 
   render() {
     return (
@@ -434,8 +366,7 @@ class BookList extends Component {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: theme.sizes.padding }}
       >
-        {this.renderDestinations()}
-        {this.renderRecommended()}
+        {this.renderBooks()}
       </ScrollView>
     )
   }

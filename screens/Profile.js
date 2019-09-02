@@ -5,33 +5,100 @@ import { StyleSheet, Text, View, Image, TouchableOpacity, Dimensions, ScrollView
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { Container, Header, Left, Right, Content , Button,Card, CardItem, Thumbnail, Body} from 'native-base';
-import CardComponent from './components/Home/CardComponent'
 import PodcastPlayer from './PodcastPlayer'
+import Podcast from './components/Home/Podcast'
 
 
-
-var images=[require('../assets/Westeros.jpg'),
-require('../assets/harrypotter.jpeg'),
-require('../assets/Hotelcalifornia.jpg'),
-require('../assets/hungergames.jpeg'),
-require('../assets/Romance.jpeg'),
-require('../assets/davincicode.jpg'),
-require('../assets/Mystery.jpeg'),
-
-
+const mocks = [
+  {
+    id: 1,
+    user: {
+      name: 'Lelia Chavez',
+      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
+    },
+    saved: true,
+    date: "12/7/2019",
+    location: 'Santorini, Greece',
+    temperature: 34,
+    title: 'Santorini',
+    description: 'Santorini is one of the Cyclades islands in the Aegean Sea. It was devastated by a volcanic eruption in the 16th century BC, forever shaping its rugged landscape. The whitewashed, cubiform houses of its 2 principal towns, Fira and Oia, cling to cliffs above an underwater caldera (crater). They overlook the sea, small islands to the west and beaches made up of black, red and white lava pebbles.',
+    rating: 4.3,
+    reviews: 3212,
+    preview: 'https://www.facebook.com/photo.php?fbid=2032547933441692&set=a.437106322985869&type=3&theater',
+    images: [
+      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
+    ]
+  },
+  {
+    id: 2,
+    user: {
+      name: 'Lelia Chavez',
+      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
+    },
+    saved: false,
+    date: "12/7/2019",
+    location: 'Loutraki, Greece',
+    temperature: 34,
+    title: 'Loutraki',
+    description: 'This attractive small town, 80 kilometers from Athens',
+    rating: 4.6,
+    reviews: 3212,
+    preview: 'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1446903572544-8888a0e60687?auto=format&fit=crop&w=800&q=80',
+    ]
+  },
+  {
+    id: 3,
+    user: {
+      name: 'Lelia Chavez',
+      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
+    },
+    saved: true,
+    date: "12/7/2019",
+    location: 'Santorini, Greece',
+    temperature: 34,
+    title: 'Santorini',
+    description: 'Santorini - Description',
+    rating: 3.2,
+    reviews: 3212,
+    preview: 'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
+    ]
+  },
+  {
+    id: 4,
+    user: {
+      name: 'Lelia Chavez',
+      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
+    },
+    location: 'Loutraki, Greece',
+    saved: true,
+    date: "12/7/2019",
+    temperature: 34,
+    title: 'Loutraki',
+    description: 'This attractive small town, 80 kilometers from Athens',
+    rating: 5,
+    reviews: 3212,
+    preview: 'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
+    images: [
+      'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1446903572544-8888a0e60687?auto=format&fit=crop&w=800&q=80',
+    ]
+  },
 ]
 
-var images2=[require('../assets/Westeros.jpg'),
-require('../assets/Hotelcalifornia.jpg'),
-require('../assets/boggart.jpg'),
-require('../assets/hungergames.jpeg'),
-require('../assets/davincicode.jpg'),
-require('../assets/Romance.jpeg'),
-,
-require('../assets/Mystery.jpeg'),
 
 
-]
+
 var {width, height}=Dimensions.get('window')
 
 
@@ -46,7 +113,8 @@ class Profile extends React.Component {
      super(props)
      {
       this.state={
-        activeIndex:0
+        activeIndex:0,
+        mocks:mocks
       }
     
      }
@@ -70,29 +138,19 @@ class Profile extends React.Component {
     }*/
     renderSectionOne=()=>
     {
-      return images.map((image, index)=>
+      return mocks.map((item, index)=>
       {
         return (
-          <View key={index} >
-          <TouchableOpacity   onPress={()=>this.props.navigation.navigate('PodcastPlayer', {image})}style={[{width:(width) / 3 }, {height:(width) / 3 },{paddingLeft:2},{paddingRight:2} ,{marginBottom:2}]}>
-          <Image style={{flex:1, width: undefined, height:  undefined, borderRadius:15, padding:10}} source={image}/>
-          </TouchableOpacity>
-          
-          </View>
+          <Podcast item={item} index={index} key ={index} navigation={this.props.navigation}/>
         )
       })
     }
     renderSectionTwo=()=>
     {
-      return images2.map((image, index)=>
+      return mocks.map((item, index)=>
       {
         return (
-          
-          <View key={index} style={[{width:(width) / 3 }, {height:(height) / 3 },index%3!==0?{paddingLeft:2}:{paddingLeft:0}, {marginBottom:2}]}>
-        
-          <Image style={{flex:1, width: undefined, height:  undefined, borderRadius:15, padding:10}} source={image}/>
-          
-          </View>
+          <Podcast item={item} index={index} key ={index} navigation={this.props.navigation}/>
         )
       })
     }
@@ -107,7 +165,7 @@ class Profile extends React.Component {
         return (
           <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
          
-          {this.renderSectionTwo()}
+          {this.renderSectionOne()}
           </View>
         )
       }
@@ -117,34 +175,11 @@ class Profile extends React.Component {
           
           <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
          
-          {this.renderSectionOne()}
+          {this.renderSectionTwo()}
           </View>
         )
       }
-      else if(this.state.activeIndex==2)
-      {
-        return (
-          <ScrollView  scrollEventThrottle={16} style={{backgroundColor: '#F5FCFF'}}>
-        
-          <Content>
-            <CardComponent/>
-            <CardComponent/>
-            <CardComponent/>
-            
-            
-          </Content>
-        
-
-        
-
-        
-        
-        
-            
-                
-            </ScrollView>
-        )
-      }
+    
     }
   
    
@@ -201,18 +236,11 @@ class Profile extends React.Component {
           <View style={{paddingTop:30}}>
             <View style={{flexDirection :'row', justifyContent:'space-around', borderTopWidth:1, borderTopColor:'#eae5e5'}}>
             <Button  transparent onPress={()=>this.segmentClicked(0)} active={this.state.activeIndex==0}>
-            <Icon name='newspaper-o' size={20} style={[this.state.activeIndex == 0 ? {color:'black'} : {color:'grey'}]}/>
+            <Icon name='book' size={20} style={[this.state.activeIndex == 0 ? {color:'black'} : {color:'grey'}]}/>
 
             </Button>
             <Button transparent onPress={()=>this.segmentClicked(1)} active={this.state.activeIndex==1}>
-            <Icon name='book' size={20} style={[this.state.activeIndex == 1 ? {color:'black'} : {color:'grey'}]} />
-            </Button>
-
-
-
-            <Button transparent onPress={()=>this.segmentClicked(2)} active={this.state.activeIndex==2}>
-            <Icon name='bookmark-o' size={20} style={[this.state.activeIndex == 2 ? {color:'black'} : {color:'grey'}]}/>
-
+            <Icon name='newspaper-o' size={20} style={[this.state.activeIndex == 1 ? {color:'black'} : {color:'grey'}]} />
             </Button>
 
             </View>

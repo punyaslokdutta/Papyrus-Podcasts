@@ -10,9 +10,9 @@ const colors = {
     base: 16,
     font: 14,
     padding: 36,
-    margin: 36,
+    margin: 24,
     title: 24,
-    radius: 1,
+    radius: 5,
   };
   
   export {

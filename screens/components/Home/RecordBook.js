@@ -4,7 +4,7 @@ import { Text, StyleSheet, View, Animated, Image, Dimensions, ScrollView, Toucha
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-import * as theme from '../theme';
+import * as theme from './theme';
 
 const { width, height } = Dimensions.get('window');
 

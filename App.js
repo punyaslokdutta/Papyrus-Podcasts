@@ -13,28 +13,21 @@ import AuthLoadingScreen from './screens/AuthLoadingScreen'
 import WelcomeScreen from './screens/WelcomeScreen'
 import SignInScreen from './screens/SignInScreen'
 import SignUpScreen from './screens/SignUpScreen'
+import SignOut from './screens/SignOut'
 import HomeScreen from './screens/HomeScreen'
 import Explore from './screens/Explore'
 import Profile from './screens/Profile'
-import Activity from './screens/Activity'
 import PodcastPlayer from './screens/PodcastPlayer'
 import SelectScreen from './screens/SelectScreen'
 import StartRecordScreen from './screens/StartRecordScreen'
 import PreviewScreen from './screens/PreviewScreen'
 import TagsScreen from './screens/TagsScreen'
 import CategoryScreen from './screens/CategoryScreen'
-import RecordBook from './screens/components/Home/RecordBook'
 //import store from './src/store'
 //import { Provider } from 'react-redux'
-
-
-
-
-
-
-
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
+import RecordBook from './screens/components/Home/RecordBook'
 
 
 
@@ -57,25 +50,6 @@ const AuthStackNavigator= createStackNavigator(
     }
    }*/
 )
-const HomeStackNavigator=createStackNavigator(
-  {
-    HomeScreen: {screen: HomeScreen},
-    RecordBook: {screen:RecordBook},
-  },
-  {
-    headerMode:'none',
-  }
-)
-HomeStackNavigator.navigationOptions = ({ navigation }) => {
-  /*if(navigation.state.index==0){
-      return {
-          tabBarVisible: false,
-      };
-  }*/
-  return {
-      tabBarVisible: true,
-  }
-}
 
 const RecordStackNavigator= createStackNavigator(
   {
@@ -106,18 +80,29 @@ RecordStackNavigator.navigationOptions = ({ navigation }) => {
   }
 }
 
-const AppTabNavigator=createBottomTabNavigator(
-  /*{
-    HomeScreen:{
-      screen: HomeScreen
-    },
-    SettingsScreen:
-    {
-      screen:SettingsScreen
-    }
+const HomeStackNavigator= createStackNavigator(
+  {
+    HomeScreen :{screen: HomeScreen},
+    RecordBook :{screen: RecordBook},
+
+  },
+  {
+    headerMode:'none',
+  }
+)
+
+HomeStackNavigator.navigationOptions = ({ navigation }) => {
+  /*if(navigation.state.index==0){
+      return {
+          tabBarVisible: false,
+      };
   }*/
+  return {
+      tabBarVisible: true,
+  }
+}
 
-
+const AppTabNavigator=createBottomTabNavigator(
   {
     Home: {screen:HomeStackNavigator, 
     navigationOptions:{
@@ -142,11 +127,11 @@ const AppTabNavigator=createBottomTabNavigator(
         )
       } 
    },
-    Activity: {screen:Activity,
+    Category: {screen: CategoryScreen,
       navigationOptions:{
-        tabBarLabel:'Activity',
+        tabBarLabel:'Categories',
         tabBarIcon:({tintColor})=>(
-          <Icon name="feed" color={tintColor} size={24}/>
+          <Icon name="cubes" color={tintColor} size={24}/>
         )
       } 
     },
@@ -158,15 +143,12 @@ const AppTabNavigator=createBottomTabNavigator(
         )
       } 
     }, 
-    Category:{
-      screen: CategoryScreen,
-
-    },
+    
 
 
 
   },{initialRouteName:'Home',
-  order:['Home', 'Explore', 'Record', 'Activity', 'Profile'],
+  order:['Home', 'Explore', 'Record', 'Category', 'Profile'],
   headerMode: 'none',
   navigationOptions:
   {
@@ -248,6 +230,7 @@ const App =createAppContainer(AppSwitchNavigator); // ^3.0.8 react-navigation
 
 
 export default App;
+
 
 
 
