@@ -4,7 +4,6 @@ import React, {Component} from 'react';
 import {  Platform,TouchableOpacity,StyleSheet, Text, View, Button} from 'react-native';
 
 
-import { RNVoiceRecorder } from 'react-native-voice-recorder'
 let recordingPath;
 
 class StartRecordScreen extends Component {
@@ -17,28 +16,11 @@ class StartRecordScreen extends Component {
   }
 
 
-  _onRecord() {
-    RNVoiceRecorder.Record({
-      format: 'wav',
-      onDone: (path) => {
-        console.log('record done: ' + path)
-
-        recordingPath = path;
-      },
-      onCancel: () => {
-        console.log('on cancel')
-      }
-    });
-  }
+  
    
     render() {
       return (
-        <Button onPress={() => {
-          this._onRecord()
-  
-         this.setState({ visible: true });
-        }} title={'Record'}>
-        </Button>
+       <View></View>
       );
     }
   }

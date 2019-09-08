@@ -16,8 +16,7 @@
     "react-native-fontawesome": "^5.7.0",
     "react-native-modal": "^7.0.2",
     "react-native-vector-icons": "^6.0.2",
-    "react-native-modalbox": "^1.6.0",
-    "react-native-voice-recorder": "^0.0.2"
+    "react-native-modalbox": "^1.6.0"
   },
   "devDependencies": {
     "@babel/core": "7.5.5",
