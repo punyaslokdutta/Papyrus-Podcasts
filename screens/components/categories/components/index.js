@@ -4,4 +4,4 @@ import Card from "./Card";
 import Text from "./Text";
 
 
-export { Block, Badge,  Card, Text };
+export { Block, Badge,  Card, Text};

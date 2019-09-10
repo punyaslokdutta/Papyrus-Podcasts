@@ -297,7 +297,7 @@ class BookList extends Component {
           showsHorizontalScrollIndicator={false}
           decelerationRate={0}
           scrollEventThrottle={16}
-          snapToAlignment="center"
+          //snapToAlignment="center"
           style={{ overflow:'visible', height: 280 }}
           data={this.props.destinations}
           keyExtractor={(item, index) => `${item.id}`}

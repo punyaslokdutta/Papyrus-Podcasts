@@ -10,7 +10,6 @@ import {createSwitchNavigator,
 //import { createStore, combineReducers, applyMiddleware } from 'redux'
 //import logger from 'redux-logger'
 import AuthLoadingScreen from './screens/AuthLoadingScreen'
-import WelcomeScreen from './screens/WelcomeScreen'
 import SignInScreen from './screens/SignInScreen'
 import SignUpScreen from './screens/SignUpScreen'
 import SignOut from './screens/SignOut'
@@ -39,16 +38,15 @@ import RecordBook from './screens/components/Home/RecordBook'
 const AuthStackNavigator= createStackNavigator(
   {
     
-    Welcome: WelcomeScreen,
     SignIn: SignInScreen,
     SignUp: SignUpScreen
   },
-  /*{
+  {
     headerMode: 'none',
     navigationOptions: {
       headerVisible: false,
     }
-   }*/
+   }
 )
 
 const RecordStackNavigator= createStackNavigator(
