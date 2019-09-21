@@ -22,11 +22,11 @@ import StartRecordScreen from './screens/StartRecordScreen'
 import PreviewScreen from './screens/PreviewScreen'
 import TagsScreen from './screens/TagsScreen'
 import CategoryScreen from './screens/CategoryScreen'
+import RecordBook from './screens/RecordBook'
 //import store from './src/store'
 //import { Provider } from 'react-redux'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import RecordBook from './screens/components/Home/RecordBook'
 
 
 
@@ -51,12 +51,13 @@ const AuthStackNavigator= createStackNavigator(
 
 const RecordStackNavigator= createStackNavigator(
   {
-    Select: {screen:SelectScreen},
+    SelectScreen: {screen:SelectScreen},
     StartRecord: {screen:StartRecordScreen},
     Preview: {screen:PreviewScreen},
     Tags : {screen:TagsScreen} ,
   },
   {
+    //initialRouteName: SelectScreen ,
     headerMode:'none',
   }
     
@@ -81,7 +82,7 @@ RecordStackNavigator.navigationOptions = ({ navigation }) => {
 const HomeStackNavigator= createStackNavigator(
   {
     HomeScreen :{screen: HomeScreen},
-    RecordBook :{screen: RecordBook},
+   // RecordBook :{screen: RecordBook},
 
   },
   {
@@ -190,6 +191,11 @@ const AppStackNavigator= createStackNavigator(
     navigationOptions:{
       header:null
    }},
+   RecordBook: {screen :RecordBook,
+    navigationOptions:{
+      header:null
+   }}
+
    
   
   },

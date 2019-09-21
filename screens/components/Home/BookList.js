@@ -15,8 +15,8 @@ import {
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Octicons from 'react-native-vector-icons/Octicons';
 
-import * as theme from './theme';
-import RecordBook from './RecordBook'
+import * as theme from '../constants/theme';
+import RecordBook from '../../RecordBook'
 
 const { width, height } = Dimensions.get('window');
 const mocks = [
@@ -230,20 +230,6 @@ class BookList extends Component {
     }
 
   scrollX = new Animated.Value(0);
-  
-   static navigationOptions = {
-    header: (
-      <View style={[styles.flex, styles.row, styles.header,]}>
-        <View>
-          <Text style={{ color: theme.colors.caption }}>Search for place</Text>
-          <Text style={{ fontSize: theme.sizes.font * 2 }}>Destination</Text>
-        </View>
-        <View>
-          <Image style={styles.avatar} source={{ uri: 'https://randomuser.me/api/portraits/women/32.jpg'}} />
-        </View>
-      </View>
-    )
-  }
 
   renderDots() {
     const { destinations } = this.props;
@@ -292,12 +278,12 @@ class BookList extends Component {
       <View style={[ styles.column, styles.destinations ]}>
         <FlatList
           horizontal
-          pagingEnabled
+          //pagingEnabled
           scrollEnabled
           showsHorizontalScrollIndicator={false}
-          decelerationRate={0}
-          scrollEventThrottle={16}
-          //snapToAlignment="center"
+          decelerationRate={0.99}
+          scrollEventThrottle={0} 
+          snapToAlignment={"center"}
           style={{ overflow:'visible', height: 280 }}
           data={this.props.destinations}
           keyExtractor={(item, index) => `${item.id}`}
@@ -362,12 +348,10 @@ class BookList extends Component {
 
   render() {
     return (
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: theme.sizes.padding }}
+      <View
       >
         {this.renderBooks()}
-      </ScrollView>
+      </View>
     )
   }
 }

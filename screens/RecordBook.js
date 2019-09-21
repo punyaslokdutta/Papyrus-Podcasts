@@ -1,14 +1,32 @@
 import React, { Component } from 'react'
 import { Text, StyleSheet, View, Animated, Image, Dimensions, ScrollView, TouchableOpacity } from 'react-native'
-
+import {Card, CardItem,  Body} from 'native-base'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import SelectScreen from '../screens/SelectScreen'
+import PodcastPlayer from '../screens/PodcastPlayer'
 
-import * as theme from './theme';
+import * as theme from './components/constants/theme';
 
 const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
+  TouchableOpacityStyle: {
+    position: 'absolute',
+    width: 50,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    right: 30,
+    bottom: 30,
+  },
+ 
+  FloatingButtonStyle: {
+    resizeMode: 'contain',
+    width: 50,
+    height: 50,
+    //backgroundColor:'black'
+  },
   flex: {
     flex: 0,
   },
@@ -87,29 +105,16 @@ const styles = StyleSheet.create({
   description: {
     fontSize: theme.sizes.font * 1.2,
     lineHeight: theme.sizes.font * 2,
-    color: theme.colors.caption
+    color: theme.colors.black,
+    //fonFamily: 'sans-serif-light'
+    
   }
 });
 
 class RecordBook extends Component {
   scrollX = new Animated.Value(0);
 
-  static navigationOptions = ({ navigation }) => {
-    return {
-      header: (
-        <View style={[styles.flex, styles.row, styles.header]}>
-          <TouchableOpacity style={styles.back} onPress={() => navigation.goBack()}>
-            <FontAwesome name="chevron-left" color={theme.colors.white} size={theme.sizes.font * 1} />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <MaterialIcons name="more-horiz" color={theme.colors.white} size={theme.sizes.font * 1.5} />
-          </TouchableOpacity>
-        </View>
-      ),
-      headerTransparent: true,
-    }
-  }
-
+  
   renderDots = () => {
     const { navigation } = this.props;
     const article = navigation.getParam('article');
@@ -157,6 +162,7 @@ class RecordBook extends Component {
     const article = navigation.getParam('article');
 
     return (
+      <ScrollView  scrollEventThrottle={16} >
       <View style={styles.flex}>
         <View style={[styles.flex]}>
           <ScrollView
@@ -164,7 +170,7 @@ class RecordBook extends Component {
             pagingEnabled
             scrollEnabled
             showsHorizontalScrollIndicator={false}
-            decelerationRate={0}
+            decelerationRate={0.998}
             scrollEventThrottle={16}
             snapToAlignment="center"
             onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX } } }])}
@@ -188,25 +194,75 @@ class RecordBook extends Component {
             <Text style={styles.title}>{article.title}</Text>
             <View style={[
               styles.row,
-              { alignItems: 'center', marginVertical: theme.sizes.margin / 2 }
+              { alignItems: 'center', marginVertical: theme.sizes.margin / 2, flexDirection:'row' }
             ]}>
               {this.renderRatings(article.rating)}
               <Text style={{ color: theme.colors.active }}>
                 {article.rating} 
               </Text>
-              <Text style={{ marginLeft: 8, color: theme.colors.caption }}>
-                 ({article.reviews} reviews)
-              </Text>
+              <View style={{paddingLeft:10}}>
+              
+              <FontAwesome name="book" color={theme.colors.black} size={theme.sizes.font * 1}  />
+              </View>
+              
             </View>
+
+            <View  style={{flexDirection:'row'}}>
+            <Card style={{ borderRadius:10,  paddingTop :5,  paddingBottom:5, flexDirection:'row', width:((width)/2) }}>
+            <CardItem style={{flexDirection:'column' }}>
+                <Text>42</Text>
+                <Text style={{fontSize:12}}>Listens</Text>
+
+            </CardItem>
+            <CardItem style={{flexDirection:'column' }}>
+               <Text>45</Text>
+                <Text style={{fontSize:12}}>Podcasts</Text>
+                
+            </CardItem>
+          </Card>
+          <Card style={{ borderRadius:10,  paddingTop :5,paddingLeft:0 , paddingBottom:5, width:((width*4)/15) }}>
+          <CardItem style={{flexDirection:'column' }}><TouchableOpacity>
+            <FontAwesome name="share" color={theme.colors.black} size={theme.sizes.font * 2} />
+          </TouchableOpacity>
+          <Text style={{fontSize:12}}>Challenge</Text></CardItem>
+            </Card>
+            </View>
+            <View>
+            <TouchableOpacity onPress={()=>this.props.navigation.navigate('SelectScreen')}>
+              <Card style={{borderRadius: 5  ,width:((width*4)/5 ) , height:(height)/8 , paddingTop :10}}>
+              <CardItem style={{flexDirection:'column', alignItems:'center'}}>
+            <FontAwesome name="microphone" color={theme.colors.black} size={theme.sizes.font * 2} />
+            <Text>Record your Views</Text>
+            </CardItem>
+            </Card>
+          </TouchableOpacity>
+            </View>
+            <Card style={{borderRadius: 10 ,width:((width*4)/5 ) , height:(height*3)/8 -50 , paddingTop :5}}>
+              <CardItem>
             <TouchableOpacity>
-              <Text style={styles.description}>
-                {article.description.split('').slice(0, 180)}...
+              <Text style={{fontSize:20, paddingBottom:10, fontFamily:'san-serif-light'}}>Description</Text>
+              <Text style={{fontSize:15}}>
+                {article.description.split('').slice(0, 180)}..
                 <Text style={{color: theme.colors.active}}> Read more</Text>
               </Text>
             </TouchableOpacity>
+            </CardItem>
+            </Card>
+            <Card style={{borderRadius: 10 ,width:((width*4)/5 ) , height:(height*3)/8 -50 , paddingTop :5}}>
+              <CardItem>
+            <TouchableOpacity>
+              <Text style={{fontSize:20, paddingBottom:10, fontFamily:'san-serif-light'}}>About the Author(s)</Text>
+              <Text style={{fontSize:15}}>
+                {article.description.split('').slice(0, 180)}..
+                <Text style={{color: theme.colors.active}}> Read more</Text>
+              </Text>
+            </TouchableOpacity>
+            </CardItem>
+            </Card>
           </View>
         </View>
       </View>
+      </ScrollView>
     )
   }
 }

@@ -5,7 +5,7 @@ import { StyleSheet, Text, View, Image, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import Octicons from 'react-native-vector-icons/Octicons';
-import * as theme from './theme'
+import * as theme from '../constants/theme'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import PodcastPlayer from '../../PodcastPlayer'
 

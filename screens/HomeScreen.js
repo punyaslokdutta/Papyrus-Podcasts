@@ -8,7 +8,7 @@ import {Container, Content, Card, Button} from 'native-base'
 import PodcastPlayer from './PodcastPlayer'
 import { FlatList } from 'react-native-gesture-handler';
 import BookList from './components/Home/BookList'
-import * as theme from './components/Home/theme';
+import * as theme from '../screens/components/constants/theme';
 import Podcast from './components/Home/Podcast'
 
 var {width, height}=Dimensions.get('window')
