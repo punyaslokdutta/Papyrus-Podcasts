@@ -7,6 +7,7 @@ import {
 import Modal from 'react-native-modalbox';
 import { Container, Header, Left, Right, Content , Button,Card, CardItem, Thumbnail, Body} from 'native-base';
 import StartRecord from '../../../screens/StartRecordScreen'
+import Toast from 'react-native-simple-toast';
 
 
 
@@ -15,20 +16,29 @@ export default class AddModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            categoryClicked:'Book',
            newBookName: '',
             newAuthorName: '' ,
-            formFilled: 0 
         };
       
     }
 
-    calc=(result)=>{
-        this.setState({formFilled: result});
-        this.props.callback(this.state.formFilled);
-    }
-
     showAddModal = () => {
         this.refs.myModal.open();
+    }
+    SaveButtonClicked =()=>
+    {
+        this.setState(
+            {
+                categoryClicked: this.state.categoryClicked,
+                newAuthorName: this.state.newAuthorName,
+                newBookName:this.state.newBookName,
+
+            }
+        )
+
+        this.props.parentCallback(this.state)
+        console.log(this.state)
     }
 
 
@@ -102,7 +112,7 @@ export default class AddModal extends Component {
                     placeholder="Name of the Author"
                     value={this.state.newAuthorName}                 
                 />
-<View style={{paddingLeft:125, paddingTop:5, }}>
+<View style={{alignItems:'center',  paddingTop:5, }}>
 <Button bordered dark style={{ justifyContent:'center', height:30, width:80, borderRadius:5 }} 
           
           
@@ -120,8 +130,11 @@ export default class AddModal extends Component {
                         };    
                         flatListData.push(newFood);    
                         this.props.parentFlatList.refreshFlatList(newKey); */  
-
-                        this.calc(1)   ;                         
+                        this.SaveButtonClicked()
+                        
+                        //this.props.triggerparentupdate ; 
+                        Toast.show('Book added');
+                       
                         this.refs.myModal.close();  
                         //this.props.navigation.navigate('StartRecord')   
                         

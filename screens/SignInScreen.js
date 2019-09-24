@@ -38,6 +38,7 @@ class SignInScreen extends Component {
   }
     render() {
       return (
+        
         <Formik
       initialValues={{ email: '', password: '' }}
       onSubmit={(values, actions) => {
@@ -51,10 +52,21 @@ class SignInScreen extends Component {
       validationSchema={validationSchema}
     >   
     {formikProps => (
-        <ImageBackground  source ={bgImage} style={styles.backgroundContainer}> 
+      
+
+      <SafeAreaView  style={styles.backgroundContainer} >
+      <View style={{alignItems:'center', paddingBottom:HEIGHT/6}}>
+
+          <TouchableOpacity style={{paddingTop:0 ,activeOpacity:0.2}}>
+         <Icon name="envira" size={60} style={{color:'rgb(218,165,32)', paddingBottom:10, paddingLeft:20}}/>
+         <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'black', justifyContent:'center'}} >PAPYRUS PODCASTS</Text>
+         </TouchableOpacity>
+         </View>
+
+        
         
         <View style={styles.positions}>
-          <TextInput style={styles.Input}   placeholder={'Email'} placeholderTextColor={'rgba(255, 255, 255, 0.5)'} underlineColorAndroid='transparent'
+          <TextInput style={styles.Input}   placeholder={'Email'} placeholderTextColor={'black'} underlineColorAndroid='transparent'
           onChangeText={formikProps.handleChange('email')}
           /> 
           <Text style={{ color: 'rgba(255, 255, 255, 0.5)', paddingLeft:45 ,fontFamily:'sans-serif-light' , fontSize:12 }}>
@@ -74,9 +86,9 @@ class SignInScreen extends Component {
             <ActivityIndicator />
           ) : (
             <View>
-            <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:45, width:WIDTH -55, borderRadius:15, backgroundColor:'rgba(0, 0, 0, 0.7)', borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }}
+            <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:45, width:WIDTH -55, borderRadius:15, backgroundColor:'rgb(218,165,32)', borderColor:'black', borderWidth: 1 }}
         onPress={formikProps.handleSubmit} >
-            <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'rgba(255, 255, 255, 0.5)', justifyContent:'center'}} >Login</Text>
+            <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'black', justifyContent:'center'}} >Login</Text>
                 </TouchableOpacity>
              
               </View>
@@ -85,34 +97,35 @@ class SignInScreen extends Component {
 
             <View>
             <TouchableOpacity style={{paddingTop:10, }}>
-           <Text style={{ fontFamily:'sans-serif-light', color:'rgba(255, 255, 255, 0.5)', fontSize:12 }}>Forgot your Password?</Text>
+           <Text style={{ fontFamily:'sans-serif-light', color:'black', fontSize:12 }}>Forgot your Password?</Text>
          </TouchableOpacity>
             </View>
             <View style={{ paddingTop:10 }}>
           
-           <Text style={{ fontFamily:'sans-serif-light', color:'rgba(255, 255, 255, 0.5)', fontSize:12 }}>OR Login with </Text>
+           <Text style={{ fontFamily:'sans-serif-light', color:'black',  fontSize:12 }}>OR Login with </Text>
          
             </View>
 
             <View style={{flexDirection:'row'}}>
             <TouchableOpacity style={{paddingTop:20,paddingRight:WIDTH/8 }}>
-         <Icon name="facebook-square" size={30} style={{color:'rgba(255, 255, 255, 0.8)'}}/>
+         <Icon name="facebook-square" size={30} style={{color:'black'}}/>
          </TouchableOpacity>
          <TouchableOpacity style={{paddingTop:20}}>
-         <Icon name="google-plus" size={30} style={{color:'rgba(255, 255, 255, 0.8)'}}/>
+         <Icon name="google-plus" size={30} style={{color:'black'}}/>
          </TouchableOpacity>
             </View>
-        <View style={{ paddingTop:HEIGHT/6}}>
+        <View style={{ paddingTop:HEIGHT/12}}>
         <TouchableOpacity	onPress={() => this.props.navigation.navigate('SignUp')}>
-        <Text style={{ fontFamily:'sans-serif-light', color:'rgba(255, 255, 255, 0.5)', fontSize:13 }}>Not a Papyrus member yet? Signup here</Text>
+        <Text style={{ fontFamily:'sans-serif-light', color:'black', fontSize:13 }}>Not a Papyrus member yet? Signup here</Text>
        </TouchableOpacity>
         </View>
         
 
        
       
-         </ImageBackground>)}
+         </SafeAreaView>)}
          </Formik>
+         
          
        
       );
@@ -125,10 +138,9 @@ export default SignInScreen;
 const styles = StyleSheet.create({
   backgroundContainer: {
     flex: 1,
-    width: null,
-    height: null,
     alignItems: 'center',
-    paddingTop:HEIGHT/2.3,
+    paddingTop:HEIGHT/5,
+    backgroundColor:'#FFFFFF',
   },
   logo:{
     width:120,
@@ -147,14 +159,17 @@ const styles = StyleSheet.create({
     marginTop: 10,
     opacity:0.5
   }, 
+  
   Input:{
     width: WIDTH -55, 
     height: 45, 
     borderRadius:20, 
+    borderColor:'black',
+    borderWidth:1,
     fontSize:16, 
     paddingLeft:45, 
-    backgroundColor:'rgba(0, 0, 0, 0.7)',
-    color:'rgba(255, 255, 255, 0.7)', 
+    backgroundColor:'white',
+    //color:'black', 
     marginHorizontal:25, 
     fontFamily:'sans-serif-light'
   },

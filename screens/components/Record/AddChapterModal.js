@@ -7,6 +7,8 @@ import {
 import Modal from 'react-native-modalbox';
 import { Container, Header, Left, Right, Content , Button,Card, CardItem, Thumbnail, Body} from 'native-base';
 import StartRecord from '../../../screens/StartRecordScreen'
+import Toast from 'react-native-simple-toast';
+
 //import console = require('console');
 
 
@@ -15,7 +17,9 @@ var screen = Dimensions.get('window');
 export default class AddChapterModal extends Component {
     constructor(props) {
         super(props);
+        //this.SaveButtonClicked=this.SaveButtonClicked.bind(this)
         this.state = {
+            categoryClicked:'Chapter',
             newChapterName:'',
            newBookName: '',
             newAuthorName: '' ,
@@ -25,6 +29,22 @@ export default class AddChapterModal extends Component {
 
     showAddModal = () => {
         this.refs.myChapterModal.open();
+    }
+
+    SaveButtonClicked =()=>
+    {
+        this.setState(
+            {
+                categoryClicked: this.state.categoryClicked,
+                newAuthorName: this.state.newAuthorName,
+                newBookName:this.state.newBookName,
+                newChapterName:this.state.newChapterName
+
+            }
+        )
+
+        this.props.parentCallback(this.state)
+        console.log(this.state)
     }
 
 
@@ -126,26 +146,19 @@ export default class AddChapterModal extends Component {
                     value={this.state.newAuthorName}                 
                 />
 
-               <View style={{paddingLeft:125, paddingTop:5, }}>
+               <View style={{alignItems:'center',  paddingTop:5, }}>
 <Button bordered dark style={{ justifyContent:'center', height:30, width:80, borderRadius:5 }} 
                     onPress={() => {
                          if (this.state.newBookName.length == 0 || this.state.newAuthorName.length == 0 || this.state.newChapterName.length == 0) {
                             alert("You must enter Chapter, Book & Author's Name");
                             return;
                         }       
-                        //const newKey = this.generateKey(24);
-                        /*const newFood = {
-                            key: newKey,
-                            name: this.state.newFoodName,
-                            imageUrl: "https://upload.wikimedia.org/wikipedia/commons/6/64/Foods_%28cropped%29.jpg",
-                            foodDescription: this.state.newFoodDescription
-                        };    
-                        flatListData.push(newFood);    
-                        this.props.parentFlatList.refreshFlatList(newKey); */  
-                        //console.log("")
-                        this.props.triggerparentupdate ;                      
+                        console.log("Inside Add Chapter modal and successfully added textinputs")
+                        this.SaveButtonClicked()
+                        
+                        //this.props.triggerparentupdate ; 
+                        Toast.show('Chapter added');
                         this.refs.myChapterModal.close();  
-                       this.props.navigation.navigate('StartRecord')   
                         
                                                               
                     }}>
@@ -155,6 +168,9 @@ export default class AddChapterModal extends Component {
 
 
                 </View>
+                
+                 
+             
             
         </Modal>
         

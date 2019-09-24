@@ -5,6 +5,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import SelectScreen from '../screens/SelectScreen'
 import PodcastPlayer from '../screens/PodcastPlayer'
+import AddModal from '../screens/components/Record/AddModal'
 
 import * as theme from './components/constants/theme';
 
@@ -222,7 +223,7 @@ class RecordBook extends Component {
           </Card>
           <Card style={{ borderRadius:10,  paddingTop :5,paddingLeft:0 , paddingBottom:5, width:((width*4)/15) }}>
           <CardItem style={{flexDirection:'column' }}><TouchableOpacity>
-            <FontAwesome name="share" color={theme.colors.black} size={theme.sizes.font * 2} />
+            <FontAwesome name="share" color={'rgb(22, 33, 25)'} size={theme.sizes.font * 2} />
           </TouchableOpacity>
           <Text style={{fontSize:12}}>Challenge</Text></CardItem>
             </Card>

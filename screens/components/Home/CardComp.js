@@ -17,7 +17,7 @@ class CardComp extends Component {
         {
             
             state={
-                key:this.props.Info.index,
+                key:this.props.Info.index,  
             }
         }
     

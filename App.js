@@ -52,8 +52,8 @@ const AuthStackNavigator= createStackNavigator(
 const RecordStackNavigator= createStackNavigator(
   {
     SelectScreen: {screen:SelectScreen},
-    StartRecord: {screen:StartRecordScreen},
-    Preview: {screen:PreviewScreen},
+    //StartRecord: {screen:StartRecordScreen},
+    PreviewScreen: {screen:PreviewScreen},
     Tags : {screen:TagsScreen} ,
   },
   {

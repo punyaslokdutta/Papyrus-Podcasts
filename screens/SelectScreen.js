@@ -4,18 +4,19 @@
 /*React Context permits to hold state at the root of your component hierarchy, and be able to inject this state easily into very deeply nested components, without the hassle to have to pass down props to every intermediate components.
 */ 
 import React, {Component} from 'react';
-import { TouchableOpacity,StyleSheet, Text, View, SafeAreaView} from 'react-native';
+import { TouchableOpacity,StyleSheet, Text, View, SafeAreaView, Dimensions,Alert} from 'react-native';
 import { Container,  Content , Button,Card, CardItem, Thumbnail, Body} from 'native-base';
-import Modal from "react-native-modal";
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import HomeScreen from '../screens/HomeScreen'
 import AddModal from '../screens/components/Record/AddModal'
 import AddChapterModal from '../screens/components/Record/AddChapterModal'
 import StartRecordScreen from '../screens/StartRecordScreen'
+import { TagSelect } from 'react-native-tag-select'
+import PreviewScreen from '../screens/PreviewScreen'
 
 
-
+const { width, height } = Dimensions.get('window');
 
 
 class SelectScreen extends Component {
@@ -23,60 +24,106 @@ class SelectScreen extends Component {
     constructor(props)
     {
         super(props);
-        this.onPressAdd=this.onPressAdd.bind(this)
         this.onPressAdd2=this.onPressAdd2.bind(this)
+        this.onPressAdd=this.onPressAdd.bind(this)
+        //this.renderDetailsSection=this.renderDetailsSection.bind(this)
         this.state={
-          formFilled: 0
-        }
+          categoryClicked: '', 
+          BookName: '',
+          ChapterName: '', 
+          AuthorName: '', 
+          LanguageSelected:'', 
 
-        this.updateFormFilledState=this.updateFormFilledState.bind(this);
+          
+        }
        
+
         
     }
 
-    updateFormFilledState=()=>
-    {
-      console.log("Updateformfilled called in selectscreen ");
-      this.setState({formFilled: 1})
-    }
-    shouldComponentUpdate(nextProps, nextState)
-    {
-      if(nextState.formFilled===1)
-      {
-        return true;
-      }
-      return false;
-    }
-
-    /*getResponse=(formFilled)=>{
-      this.setState({formFilled});
-    } */
-    onPressAdd2=()=>
+    onPressAdd2()
     {
         //console.log(this.ref)
         this.refs.addChapterModal.showAddModal();
        
     }
 
-     onPressAdd=()=>{
-
+     onPressAdd()
+     {
         this.refs.addModal.showAddModal();
 
 
         
      }
 
-     renderSection=()=>
+     setLanguage=(languageArray)=>
      {
-
-      console.log(this.state.formFilled);
-       return(
-       <View>
-      <Text style={{fontFamily:'sans-serif-light', color:'white', fontSize:18, paddingTop:10, paddingLeft:10}}>{this.state.formFilled}</Text>
-      </View>)
-
+       this.setState(
+         {
+           LanguageSelected: languageArray[0]
+         }
+       )
      }
-    
+
+     
+
+     callbackFunction=(data)=>
+     {
+       if(data.categoryClicked==='Chapter')
+       {
+       this.setState(
+         {
+            categoryClicked: data.categoryClicked,
+            BookName:data.newBookName,
+            ChapterName: data.newChapterName,
+            AuthorName: data.newAuthorName
+
+         }  
+       )
+      }
+      else if (data.categoryClicked==='Book'){
+        this.setState(
+          {
+             categoryClicked: data.categoryClicked,
+             BookName:data.newBookName,
+             ChapterName:'',
+             AuthorName: data.newAuthorName
+ 
+          }  
+        )
+
+      }
+        console.log(data)
+       console.log(this.state)
+     }
+
+    /* renderDetailsSection=()=>
+     {
+       
+         return(
+           <View style={{alignItems:'center'}}>
+          
+          <Card style={{ borderRadius:5,  paddingTop :5,  paddingBottom:5, flexDirection:'column', width:((width)/16), height:((height)/16) }}>
+            <CardItem>
+                <Text style={{fontSize:8}}>ChapterName: {this.state.ChapterName}</Text>
+            </CardItem>
+            <CardItem>
+                <Text style={{fontSize:8}}>BookName: {this.state.BookName}</Text>
+            </CardItem>
+            <CardItem>
+                <Text style={{fontSize:8}}>AuthorName: {this.state.AuthorName}</Text>
+            </CardItem>
+            
+          </Card>
+
+           </View>
+         )
+
+       }*/
+
+       
+
+
 
 
 
@@ -85,15 +132,28 @@ class SelectScreen extends Component {
   
    
     render() {
+      const data = [
+        { id: 1, label: 'English' },
+        { id: 2, label: 'Hindi' },
+        { id: 3, label: 'Bengali' },
+        { id: 4, label: 'Telugu' },
+        { id: 5, label: 'Marathi' },
+        { id: 6, label: 'Tamil' },
+        { id: 7, label: 'Mandarin' },
+        { id: 8, label: 'Spanish' },
+        { id: 9, label: 'Assamese' },
+        { id: 10, label: 'Odiya' },
+
+      ];
       
       return (
 
         <SafeAreaView style={{flex:1, backgroundColor:'#101010'}}>
         <View style={styles.AppHeader}>
         <TouchableOpacity onPress={()=>this.props.navigation.goBack(null)}>
-        <View style={{paddingLeft: 15,paddingRight:10 ,paddingVertical:24, flexDirection:'row'} }>
+        <View style={{paddingLeft: width/12 ,paddingVertical:height/20, flexDirection:'row'} }>
           <Icon name="times" size={20} style={{color:'white'}}/>
-          <Text style={{fontFamily:'san-serif-light', color:'white', paddingLeft:130, fontSize:24}}>Select</Text>
+          <Text style={{fontFamily:'san-serif-light', color:'white', paddingLeft:(width*7)/24, fontSize:20}}>Select</Text>
         </View>
        
         
@@ -102,47 +162,117 @@ class SelectScreen extends Component {
         </TouchableOpacity>
 
         </View>
-        <View style={{paddingVertical:80} }>
-          <Text style={{fontFamily:'sans-serif-light', color:'white', paddingLeft:90, fontSize:18}}>Select the category you want</Text>
-          <Text style={{fontFamily:'sans-serif-light', color:'white', paddingLeft:160, fontSize:18}}>to record</Text>
+        <View style={{paddingVertical:height/24, alignItems:'center'} }>
+          <Text style={{fontFamily:'sans-serif-light', color:'white',  fontSize:14}}>Select the category you want</Text>
+          <Text style={{fontFamily:'sans-serif-light', color:'white', fontSize:14}}>to record/upload</Text>
           
         </View>
 
-         <View style={{paddingVertical:60, flexDirection:'row', paddingLeft:80} }>
+         <View style={{paddingVertical:height/20, flexDirection:'row', paddingLeft:width/4} }>
          <View>
-         <TouchableOpacity onPress={this.onPressAdd.bind(this)}  >
-         <Icon name="book" size={70} style={{color:'white'}}/>
+         <TouchableOpacity onPress={this.onPressAdd}  >
+         <Icon name="book" size={50} style={{color:'white'}}/>
          </TouchableOpacity>
-         <Text style={{fontFamily:'sans-serif-light', color:'white', fontSize:18, paddingTop:10, paddingLeft:10}}>Book</Text>
+         <Text style={{fontFamily:'sans-serif-light', color:'white', fontSize:14, paddingTop:5}}>Book</Text>
          </View>
          
         
 
 
-         <View style={{paddingLeft:100}}>
-         <TouchableOpacity onPress={this.onPressAdd2.bind(this)}>
-         <Icon name="newspaper-o" size={70} style={{color:'white'}}/>
+         <View style={{paddingLeft:width/4}}>
+         <TouchableOpacity onPress={this.onPressAdd2}>
+         <Icon name="newspaper-o" size={50} style={{color:'white'}}/>
          </TouchableOpacity>
-         <Text style={{fontFamily:'sans-serif-light', color:'white', fontSize:18, paddingTop:10, paddingLeft:10}}>Chapter</Text>
+         <Text style={{fontFamily:'sans-serif-light', color:'white', fontSize:14, paddingTop:5}}>Chapter</Text>
          
          </View>
 
          
          
         </View>
+        <View style={{paddingVertical:height/24, alignItems:'center'} }>
+          <Text style={{fontFamily:'sans-serif-light', color:'white',  fontSize:14}}>Select the Language you want</Text>
+          <Text style={{fontFamily:'sans-serif-light', color:'white', fontSize:14}}>to record/upload with </Text>
+          
+        </View>
+        <View>
 
 
-        {this.renderSection()}
+          </View>
 
-<AddModal ref={'addModal'} navigation={this.props.navigation}>
+        <View style={{paddingVertical:height/40, paddingLeft:width/11}}>
+        <TagSelect itemStyle={styles.item}
+          itemLabelStyle={styles.label}
+          itemStyleSelected={styles.itemSelected}
+          itemLabelStyleSelected={styles.labelSelected}
+          data={data}
+          max={1}
+
+          ref={(tag) => {
+            this.tag = tag;
+          }}
+          
+          onMaxError={() => {
+            Alert.alert('Multiple Languages Error', 'You can select only one language while recording a Book or Chapter podcast');
+          }}
+
+          onItemPress={()=>
+          {
+            console.log(this.tag.itemsSelected)
+            this.setState(
+              {
+                LanguageSelected:this.tag.itemsSelected[0].label
+              }
+            )
+          }}
+        />
+        
+        </View>
+
+        <View style={{paddingVertical:height/10, flexDirection:'row', paddingLeft:width/6 }}>
+        <View>
+            <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/20, width:(width*7)/24, borderRadius:15, backgroundColor:'rgb(22, 33, 25)', borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }} 
+            onPress={() => {
+                         if (this.state.BookName.length === 0 || this.state.AuthorName.length === 0 || this.state.LanguageSelected.length === 0) {
+                            alert("You must choose Category and Language of your Podcast");
+                            return;
+                        }   
+                        this.props.navigation.navigate('PreviewScreen')
+                         }
+            }>
+            <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Upload</Text>
+                </TouchableOpacity>
+        </View>
+        <View style={{paddingLeft:width/12}}>
+
+                <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/20, width:(width*7)/24, borderRadius:15, backgroundColor:'rgba(0, 0, 0, 0.7)', borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }} 
+                 onPress={() => {
+                         if (this.state.BookName.length === 0 || this.state.AuthorName.length === 0 || this.state.LanguageSelected.length === 0) {
+                            alert("You must choose Category and Language of your Podcast");
+                            return;
+                        }   
+                        this.props.navigation.navigate('PreviewScreen')
+                         }
+            }>
+            <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Record</Text>
+                </TouchableOpacity>
+        </View>
+       
+                
+             
+        </View>
+
+       
+
+
+       
+
+<AddModal ref={'addModal'} navigation={this.props.navigation} parentCallback = {this.callbackFunction} >
 </AddModal>
 
-<AddChapterModal ref={'addChapterModal'} navigation={this.props.navigation} triggerParentUpdate={this.updateFormFilledState.bind(this)} >
+<AddChapterModal ref={'addChapterModal'} navigation={this.props.navigation} parentCallback = {this.callbackFunction} >
     
     </AddChapterModal>
-
-   
-
         </SafeAreaView>
       );
     }
@@ -177,6 +307,21 @@ const styles = StyleSheet.create({
       fontSize:20,
     color: '#ffffff',
     textAlign: 'center'
+    },
+    item: {
+      borderWidth: 1,
+      borderColor: '#333',    
+      backgroundColor: '#FFF',
+    },
+    label: {
+      color: '#333',
+      fontSize:9
+    },
+    itemSelected: {
+      backgroundColor: '#333',
+    },
+    labelSelected: {
+      color: '#FFF',
     },
     AppHeader:
   {
