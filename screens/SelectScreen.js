@@ -26,6 +26,8 @@ class SelectScreen extends Component {
         super(props);
         this.onPressAdd2=this.onPressAdd2.bind(this)
         this.onPressAdd=this.onPressAdd.bind(this)
+        this.setLanguage=this.setLanguage.bind(this)
+        this.unsetLanguage=this.unsetLanguage.bind(this)
         //this.renderDetailsSection=this.renderDetailsSection.bind(this)
         this.state={
           categoryClicked: '', 
@@ -56,11 +58,21 @@ class SelectScreen extends Component {
         
      }
 
-     setLanguage=(languageArray)=>
+     setLanguage(language)
      {
+       console.log(language)
        this.setState(
          {
-           LanguageSelected: languageArray[0]
+           LanguageSelected:language
+         }
+       )
+     }
+     unsetLanguage()
+     {
+      console.log(this.state.LanguageSelected)
+       this.setState(
+         {
+           LanguageSelected:''
          }
        )
      }
@@ -215,16 +227,24 @@ class SelectScreen extends Component {
           onMaxError={() => {
             Alert.alert('Multiple Languages Error', 'You can select only one language while recording a Book or Chapter podcast');
           }}
+          //never use setState in render as it will cause re-rendering and infinite loading
 
-          onItemPress={()=>
-          {
-            console.log(this.tag.itemsSelected)
-            this.setState(
-              {
-                LanguageSelected:this.tag.itemsSelected[0].label
-              }
-            )
-          }}
+          onItemPress={(tag)=>{
+
+             console.log(tag)
+
+             if(this.state.LanguageSelected==='')
+             {
+                 this.setLanguage(tag.label)
+             }
+             else{
+               this.unsetLanguage()
+
+             }
+          }
+
+           
+          }
         />
         
         </View>
@@ -237,7 +257,12 @@ class SelectScreen extends Component {
                             alert("You must choose Category and Language of your Podcast");
                             return;
                         }   
-                        this.props.navigation.navigate('PreviewScreen')
+                        this.props.navigation.navigate('PreviewScreen', {
+          BookName: this.state.BookName,
+          ChapterName:this.state.ChapterName , 
+          AuthorName: this.state.AuthorName, 
+          LanguageSelected:this.state.LanguageSelected, }
+ )
                          }
             }>
             <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Upload</Text>
@@ -251,7 +276,11 @@ class SelectScreen extends Component {
                             alert("You must choose Category and Language of your Podcast");
                             return;
                         }   
-                        this.props.navigation.navigate('PreviewScreen')
+                        this.props.navigation.navigate('PreviewScreen', {
+          BookName: this.state.BookName,
+          ChapterName:this.state.ChapterName , 
+          AuthorName: this.state.AuthorName, 
+          LanguageSelected:this.state.LanguageSelected, })
                          }
             }>
             <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Record</Text>

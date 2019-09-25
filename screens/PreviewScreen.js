@@ -23,7 +23,11 @@ class PreviewScreen extends Component {
   {
     super(props)
     this.state={
-      PodcastImage: null
+      PodcastImage: null, 
+      chapterName: '', 
+      BookName:'', 
+      AuthorName: '', 
+      LanguageSelected:''
     }
   }
 
@@ -52,6 +56,11 @@ class PreviewScreen extends Component {
   }
    
     render() {
+      const { navigation } = this.props;
+      const BookName=navigation.getParam('BookName', null);
+      const chapterName=navigation.getParam('ChapterName', null);
+      const AuthorName=navigation.getParam('AuthorName', null)
+      const LanguageSelected=navigation.getParam('LanguageSelected','English ')
       return (
         <SafeAreaView style={{flex:1, backgroundColor:'#101010'}}>
          <View style={styles.AppHeader}>
@@ -87,12 +96,13 @@ class PreviewScreen extends Component {
       <TextInput
             style={styles.TextInputStyleClass}
             underlineColorAndroid="transparent"
-            placeholder={"A short description of the Book/Chapter"}
+            placeholder={"A short description of the Book/Chapter" + this.state.chapterName}
             placeholderTextColor={"white"}
             numberOfLines={6}
             multiline={true}
           />
       </View> 
+
 
 
       <View style={{ paddingTop:width/3, alignItems:'center'}}>
