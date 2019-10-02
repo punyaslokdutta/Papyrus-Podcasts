@@ -46,10 +46,11 @@ const categories = [
 
 
 const profile = {
-  username: 'react-ui-kit',
+  account:"+917001841303",
+  username: 'khaled_Housseini',
   location: 'Europe',
-  email: 'contact@react-ui-kit.com',
-  avatar: require('../../../../assets/images/avatar.png'),
+  email: 'kyhsseini@gmail.com',
+  avatar: require('../../../../assets/khaled.jpeg'),
   budget: 1000,
   monthly_cap: 5000,
   notifications: true,
