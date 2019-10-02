@@ -72,16 +72,16 @@ class PreviewScreen extends Component {
         </TouchableOpacity>
         </View>  
 
-      <View style={{flexDirection:'row'}}> 
-      <View style={{ paddingLeft: width/8, paddingVertical:height/30, flexDirection:'column'} }>
+      <View style={{ alignItems:'center'}}> 
+      <View style={{  paddingVertical:height/50, flexDirection:'column'} }>
       <View>
-      <Image source={this.state.PodcastImage} style={{width:height/6, height:height/6, borderRadius:60, borderColor: 'white', borderWidth :1}}/>
+      <Image source={this.state.PodcastImage} style={{width:height/6, height:height/6, borderRadius:30, borderColor: 'white', borderWidth :1}}/>
       </View>
 
 
         <View style={{ paddingTop:width/15}}>
 
-                <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/16, width:height/6, borderRadius:15, backgroundColor:'rgb(22, 33, 25)', borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }}
+                <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/16, width:height/6, borderRadius:15, borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }}
                 onPress={this.uploadImage} >
             <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Choose Image</Text>
                 </TouchableOpacity>
@@ -91,13 +91,23 @@ class PreviewScreen extends Component {
       
       </View>
       </View> 
+      <View style={{paddingLeft:width/8, paddingBottom: 10}}>
+      <TextInput
+            style={styles.TextInputStyleClass2}
+            underlineColorAndroid="transparent"
+            placeholder={"Podcast Title" + this.state.chapterName}
+            placeholderTextColor={"black"}
+            numberOfLines={1}
+            multiline={false}
+          />
+      </View> 
 
       <View style={{paddingLeft:width/8}}>
       <TextInput
             style={styles.TextInputStyleClass}
             underlineColorAndroid="transparent"
             placeholder={"A short description of the Book/Chapter" + this.state.chapterName}
-            placeholderTextColor={"white"}
+            placeholderTextColor={"black"}
             numberOfLines={6}
             multiline={true}
           />
@@ -105,9 +115,9 @@ class PreviewScreen extends Component {
 
 
 
-      <View style={{ paddingTop:width/3, alignItems:'center'}}>
+      <View style={{ paddingTop:height/8, alignItems:'center'}}>
 
-                <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/16, width:height/6, borderRadius:15, backgroundColor:'rgb(22, 33, 25)', borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }}
+                <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/16, width:height/6, borderRadius:15, borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }}
                 onPress={this.uploadImage} >
             <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Share</Text>
                 </TouchableOpacity>
@@ -161,16 +171,32 @@ const styles = StyleSheet.create({
       //textAlign: 'center',
       fontFamily:'san-serif-light',
       fontStyle:'italic', 
-      color:'white',
+      color:'black',
       height: height/6,
       borderWidth: 2,
       borderColor: '#9E9E9E',
-      borderRadius: 20 ,
-      backgroundColor : "black",
+      borderRadius: 10 ,
+      backgroundColor : "white",
       height: height/6, 
       width:(width*3)/4, 
       paddingLeft:10,
       paddingRight:10
        
-      }
+      }, 
+      TextInputStyleClass2:{
+ 
+        //textAlign: 'center',
+        fontFamily:'san-serif-light',
+        fontStyle:'italic', 
+        color:'black',
+        borderWidth: 2,
+        borderColor: '#9E9E9E',
+        borderRadius: 10 ,
+        backgroundColor : "white",
+        width:(width*3)/4, 
+        paddingLeft:10,
+        height: height/18, 
+        paddingRight:10, 
+         
+        }
 });

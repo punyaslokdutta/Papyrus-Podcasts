@@ -3,7 +3,7 @@
 import React, {Component} from 'react';
 import {SafeAreaView,
   ActivityIndicator,
-  TouchableOpacity, StyleSheet, Text, View, AsyncStorage, Dimensions, ImageBackground, Button} from 'react-native';
+  TouchableOpacity, StyleSheet, Text, View, AsyncStorage, Dimensions, ImageBackground, Button, Image} from 'react-native';
 import bgImage from '../assets/bgImage.jpg'
 import { TextInput } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -55,11 +55,14 @@ class SignInScreen extends Component {
       
 
       <SafeAreaView  style={styles.backgroundContainer} >
-      <View style={{alignItems:'center', paddingBottom:HEIGHT/6}}>
+      <View style={{alignItems:'center', paddingBottom:HEIGHT/7}}>
 
           <TouchableOpacity style={{paddingTop:0 ,activeOpacity:0.2}}>
-         <Icon name="envira" size={60} style={{color:'rgb(218,165,32)', paddingBottom:10, paddingLeft:20}}/>
-         <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'black', justifyContent:'center'}} >PAPYRUS PODCASTS</Text>
+          
+          <Image source={require('../assets/logo.png')} style={styles.image} />  
+          <View style={{paddingLeft: 13, paddingTop: 10}}>
+         <Text style={{ alignItems: 'center', fontFamily:'cursive', color:'white', justifyContent:'center', fontWeight: '900' }} >PAPYRUS PODCASTS</Text>
+         </View>
          </TouchableOpacity>
          </View>
 
@@ -75,7 +78,7 @@ class SignInScreen extends Component {
 
         </View>
         <View style={styles.positions}>
-        <TextInput style={styles.Input} placeholder={'Password'} placeholderTextColor={'rgba(255, 255, 255, 0.5)'} underlineColorAndroid='transparent'
+        <TextInput style={styles.Input} placeholder={'Password'} placeholderTextColor={'black'} underlineColorAndroid='transparent'
           onChangeText={formikProps.handleChange('password')}
           secureTextEntry/> 
           <Text style={{ color: 'rgba(255, 255, 255, 0.5)', paddingLeft:45 ,fontFamily:'sans-serif-light' , fontSize:12 }}>
@@ -93,30 +96,30 @@ class SignInScreen extends Component {
              
               </View>
           )}
-          
+        
 
             <View>
             <TouchableOpacity style={{paddingTop:10, }}>
-           <Text style={{ fontFamily:'sans-serif-light', color:'black', fontSize:12 }}>Forgot your Password?</Text>
+           <Text style={{ fontFamily:'sans-serif-light', color:'white', fontSize:12 }}>Forgot your Password?</Text>
          </TouchableOpacity>
             </View>
             <View style={{ paddingTop:10 }}>
           
-           <Text style={{ fontFamily:'sans-serif-light', color:'black',  fontSize:12 }}>OR Login with </Text>
+           <Text style={{ fontFamily:'sans-serif-light', color:'white',  fontSize:12 }}>OR Login with </Text>
          
             </View>
 
             <View style={{flexDirection:'row'}}>
             <TouchableOpacity style={{paddingTop:20,paddingRight:WIDTH/8 }}>
-         <Icon name="facebook-square" size={30} style={{color:'black'}}/>
+         <Icon name="facebook-square" size={30} style={{color:'rgba(255, 255, 255, 0.6)'}}/>
          </TouchableOpacity>
          <TouchableOpacity style={{paddingTop:20}}>
-         <Icon name="google-plus" size={30} style={{color:'black'}}/>
+         <Icon name="google-plus" size={30} style={{color:'rgba(255, 255, 255, 0.6)'}}/>
          </TouchableOpacity>
             </View>
         <View style={{ paddingTop:HEIGHT/12}}>
         <TouchableOpacity	onPress={() => this.props.navigation.navigate('SignUp')}>
-        <Text style={{ fontFamily:'sans-serif-light', color:'black', fontSize:13 }}>Not a Papyrus member yet? Signup here</Text>
+        <Text style={{ fontFamily:'sans-serif-light', color:'white', fontSize:13 }}>Not a Papyrus member yet? Signup here</Text>
        </TouchableOpacity>
         </View>
         
@@ -139,8 +142,8 @@ const styles = StyleSheet.create({
   backgroundContainer: {
     flex: 1,
     alignItems: 'center',
-    paddingTop:HEIGHT/5,
-    backgroundColor:'#FFFFFF',
+    paddingTop:HEIGHT/10,
+    backgroundColor:'#101010',
   },
   logo:{
     width:120,
@@ -164,11 +167,11 @@ const styles = StyleSheet.create({
     width: WIDTH -55, 
     height: 45, 
     borderRadius:20, 
-    borderColor:'black',
+    borderColor:'rgba(255, 255, 255, 0.8)',
     borderWidth:1,
     fontSize:16, 
     paddingLeft:45, 
-    backgroundColor:'white',
+    backgroundColor:'rgba(255, 255, 255, 0.9)',
     //color:'black', 
     marginHorizontal:25, 
     fontFamily:'sans-serif-light'
@@ -177,6 +180,14 @@ const styles = StyleSheet.create({
   {
 paddingBottom: 10
   }, 
+  image: {
+    //flex: 1,
+    width: 150,
+    height: 150,
+    resizeMode: 'contain',
+    //paddingLeft: 20
+    
+}
   
 });
 

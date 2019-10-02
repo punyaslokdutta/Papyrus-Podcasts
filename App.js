@@ -1,12 +1,13 @@
 
 
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Image, Dimensions} from 'react-native';
 import {createSwitchNavigator,
   createAppContainer,
-  createDrawerNavigator,
   createBottomTabNavigator,
-  createStackNavigator} from 'react-navigation'
+  createStackNavigator,
+  DrawerItems} from 'react-navigation'
+  import { createDrawerNavigator } from 'react-navigation-drawer';
 //import { createStore, combineReducers, applyMiddleware } from 'redux'
 //import logger from 'redux-logger'
 import AuthLoadingScreen from './screens/AuthLoadingScreen'
@@ -23,18 +24,24 @@ import PreviewScreen from './screens/PreviewScreen'
 import TagsScreen from './screens/TagsScreen'
 import CategoryScreen from './screens/CategoryScreen'
 import RecordBook from './screens/RecordBook'
+import StatisticsScreen from './screens/StatisticsScreen'
 //import store from './src/store'
 //import { Provider } from 'react-redux'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 
+import {Container, Content, Header, Body} from 'native-base'
+import { Card, Badge, Block, Text } from './screens/components/categories/components/';
+import { theme, mocks } from './screens/components/categories/constants';
+import ActivityScreen from './screens/ActivityScreen'
+import SettingsScreen from './screens/SettingsScreen'
 
 
 
 
 //const reducer = combineReducers({ navigation })
 //const store = createStore(reducer, applyMiddleware(logger))
-
+var {width:WIDTH, height:HEIGHT}=Dimensions.get('window')
 const AuthStackNavigator= createStackNavigator(
   {
     
@@ -211,14 +218,74 @@ const AppStackNavigator= createStackNavigator(
 
   
 )
+
+const CustomDrawerContentComponent=(props)=>
+(
+  
+  <Container style={{backgroundColor:'#101010'}}>
+   
+    <Body style={{alignItems:'center', paddingTop: HEIGHT/8}}>
+     <Image style={styles.drawerimage}
+       source={require('./assets/images/plants_3.png')}
+     />
+     <Block flex={false} row center space="between" style={{paddingTop:30, paddingLeft:5}}>
+          <Text style={{color:'white', fontSize:HEIGHT/40 }}>Punyaslok Dutta</Text>
+          
+    </Block>
+    <Block flex={false} row center space="between" style={{ paddingLeft:5}}>
+          <Text style={{color:'white', fontFamily:'san-serif'}}>@punyaslokdutta</Text>
+          
+    </Block>
+
+    <Content style={{ paddingTop: HEIGHT/9}}>
+    
+    <DrawerItems {...props}  activeBackgroundColor='#101010'   style={{backgroundColor: '#ffffff', }} labelStyle={{color: '#ffffff', fontSize: HEIGHT/35}}/>
+    
+    </Content>
+    </Body>
+  </Container>
+)
 const AppDrawerNavigator=createDrawerNavigator(
  {
-    Home: AppStackNavigator,
+    Home: {screen : AppStackNavigator, 
+      navigationOptions: {
+        drawerIcon: () => (<Icon name="home" size={24} style={{ color: 'white' }} />),
+      }},
+    Stats: {screen:StatisticsScreen, 
+      navigationOptions: {
+        drawerIcon: () => (<Icon name="line-chart" size={22} style={{ color: 'white' }} />),
+      }}, 
+      Activity: {screen:ActivityScreen, 
+        navigationOptions: {
+          drawerIcon: () => (<Icon name="bell" size={22} style={{ color: 'white' }} />),
+        }},
+        Settings: {screen:SettingsScreen, 
+          navigationOptions: {
+            drawerIcon: () => (<Icon name="cog" size={22} style={{ color: 'white' }} />),
+          }},
+    
     //SignOut: SignOut
    
 
     
+  }, 
+  {
+    drawerWidth: WIDTH/2,
+    drawerPosition: 'left',
+    drawerType: 'slide', 
+    initialRouteName: 'Home',
+    overlayColor: 1, 
+    drawerOpenRoute:'DrawerOpen', 
+    drawerCloseRoute :'DrawerClose', 
+    drawerToggleRoute:'DrawerToggle', 
+    contentComponent: CustomDrawerContentComponent,
+    contentOptions: {
+      
+    }, 
+    
+
   }
+
 
 )
 const AppSwitchNavigator = createSwitchNavigator(
@@ -265,6 +332,13 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     textAlign: 'center'
     },
+    drawerimage:
+    {
+      height: 100, 
+      width:100, 
+      borderRadius:50, 
+
+    }, 
 });
 
 

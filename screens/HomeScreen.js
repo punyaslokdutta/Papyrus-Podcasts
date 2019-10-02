@@ -243,7 +243,16 @@ const styles = StyleSheet.create({
     marginLeft: 7,
     borderWidth: 1,
     borderColor: '#dddddd',
-}
+  }, 
+    sideMenuIcon:
+  {
+    resizeMode: 'center',
+    width: 28, 
+    height: 28, 
+    marginRight: 10,
+    marginLeft: 20
+    
+  },
 });
 
 var {width, height}=Dimensions.get('window')
@@ -260,6 +269,11 @@ class HomeScreen extends React.Component {
       }
     }
   }
+
+  static navigationOptions=({navigation})=>({
+    title:"Home", 
+    drawerIcon:()=> <Icon name="home" size={24} style={{color:'white'}}/>
+  });
 
 
 
