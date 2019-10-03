@@ -55,6 +55,8 @@ const profile = {
   monthly_cap: 5000,
   notifications: true,
   newsletter: false,
+  website :'www.papyruspodcasts.com', 
+  Bio : "I read books about Mystery, Science Fiction, Biographies"
 };
 
 export {

@@ -7,6 +7,7 @@ import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { Container, Header, Left, Right, Content , Button,Card, CardItem, Thumbnail, Body} from 'native-base';
 import PodcastPlayer from './PodcastPlayer'
 import Podcast from './components/Home/Podcast'
+import editProfile from './components/Profile/editProfile'
 
 
 const mocks = [
@@ -114,11 +115,13 @@ class Profile extends React.Component {
      {
       this.state={
         activeIndex:0,
-        mocks:mocks
+        mocks:mocks, 
+       // navigation: this.props.navigation,
+      }
       }
     
      }
-   }
+   
         
     
     segmentClicked=(index)=>{
@@ -184,6 +187,7 @@ class Profile extends React.Component {
   
    
     render() {
+      const { navigation } = this.props;
       return (
         <Container style={{flex:1 , backgroundColor:'white'}}>
         
@@ -228,7 +232,8 @@ class Profile extends React.Component {
           </View>
 
           <View style={{ paddingLeft:145,flex:1}}>
-          <Button bordered dark style={{flex:1, marginTop:10, justifyContent:'center', height:30, width:100, borderRadius:5}} onPress={()=>this.props.navigation.navigate('PodcastPlayer')}>
+          <Button  style={{flex:1, marginTop:10, justifyContent:'center', height:30, width:100, borderRadius:5, backgroundColor:'white'}} onPress={
+            ()=>this.props.navigation.navigate('editProfile')}>
           <Text>Edit Profile</Text>
           </Button>
 
@@ -254,6 +259,7 @@ class Profile extends React.Component {
       );
     }
   }
+  
 
 export default Profile;
 

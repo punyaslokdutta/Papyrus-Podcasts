@@ -35,6 +35,7 @@ import { Card, Badge, Block, Text } from './screens/components/categories/compon
 import { theme, mocks } from './screens/components/categories/constants';
 import ActivityScreen from './screens/ActivityScreen'
 import SettingsScreen from './screens/SettingsScreen'
+import editProfile  from './screens/components/Profile/editProfile'
 
 
 
@@ -55,6 +56,26 @@ const AuthStackNavigator= createStackNavigator(
     }
    }
 )
+const ProfileStackNavigator=createStackNavigator(
+  {
+    Profile : {screen : Profile}, 
+    editProfile : {screen : editProfile}
+  }, 
+  {
+    //initialRouteName:Profile,
+    headerMode: 'none'
+  }
+)
+ProfileStackNavigator.navigationOptions = ({ navigation }) => {
+  /*if(navigation.state.index==0){
+      return {
+          tabBarVisible: false,
+      };
+  }*/
+  return {
+      tabBarVisible: true,
+  }
+}
 
 const RecordStackNavigator= createStackNavigator(
   {
@@ -141,7 +162,7 @@ const AppTabNavigator=createBottomTabNavigator(
         )
       } 
     },
-    Profile: {screen:Profile,
+    Profile: {screen:ProfileStackNavigator,
       navigationOptions:{
         tabBarLabel:'Profile',
         tabBarIcon:({tintColor})=>(
