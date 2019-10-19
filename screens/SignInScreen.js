@@ -10,6 +10,13 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { Formik } from 'formik';
 import * as yup from 'yup';
+import { AccessToken, LoginManager } from 'react-native-fbsdk';
+import { firebase } from '@react-native-firebase/auth';
+import { GoogleSignin, statusCodes } from '@react-native-community/google-signin';
+
+
+
+
 
 
 const validationSchema = yup.object().shape({
@@ -30,12 +37,179 @@ const validationSchema = yup.object().shape({
 var {width:WIDTH, height:HEIGHT}=Dimensions.get('window')
 
 class SignInScreen extends Component {
+
+  constructor(props)
+  {
+    super(props)
+    this.state = {
+      userInfo: null,
+      gettingLoginStatus: true,
+    };
+  }
+  componentDidMount() {
+    //initial configuration
+    GoogleSignin.configure({
+      //It is mandatory to call this method before attempting to call signIn()
+     // scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+      // Repleace with your webClientId generated from Firebase console
+      webClientId: '66057191427-s1qut9jum2u53i8gchv5u2cdtcoku2q2.apps.googleusercontent.com',
+      offlineAccess: true
+    });
+    //Check if user is already signed in
+    this._isSignedIn();
+  }
+
+
+
+  _isSignedIn = async () => {
+    const isSignedIn = await GoogleSignin.isSignedIn();
+    if (isSignedIn) {
+      alert('User is already signed in');
+      //Get the User details as user is already signed in
+      this._getCurrentUserInfo();
+    } else {
+      //alert("Please Login");
+      console.log('Please Login');
+    }
+    this.setState({ gettingLoginStatus: false });
+  };
+
+  _getCurrentUserInfo = async () => {
+    try {
+      const userInfo = await GoogleSignin.signInSilently();
+      console.log('User Info --> ', userInfo);
+      this.setState({ userInfo: userInfo });
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+        alert('User has not signed in yet');
+        console.log('User has not signed in yet');
+      } else {
+        alert("Something went wrong. Unable to get user's info");
+        console.log("Something went wrong. Unable to get user's info");
+      }
+    }
+  };
+  _signIn = async () => {
+    //Prompts a modal to let the user sign in into your application.
+    try {
+      await GoogleSignin.hasPlayServices({
+        //Check if device has Google Play Services installed.
+        //Always resolves to true on iOS.
+        showPlayServicesUpdateDialog: true,
+      });
+      console.log("Crossed Play services ")
+      GoogleSignin.configure({
+        //It is mandatory to call this method before attempting to call signIn()
+       // scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+        // Repleace with your webClientId generated from Firebase console
+        offlineAccess: true,
+        webClientId: '66057191427-s1qut9jum2u53i8gchv5u2cdtcoku2q2.apps.googleusercontent.com',
+      });
+      console.log(GoogleSignin.webClientId)
+      const userInfo = await GoogleSignin.signIn();
+      console.log('User Info --> ', userInfo);
+      this.setState({ userInfo: userInfo });
+    } catch (error) {
+      console.log('Message', error.message);
+      console.log(error.code)
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.log('User Cancelled the Login Flow');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        console.log('Signing In');
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        console.log('Play Services Not Available or Outdated');
+      } else {
+        console.log(",,,,,,,,,,")
+        //console.log('Some Other Error Happened');
+      }
+    }
+  };
+ 
+  _signOut = async () => {
+    //Remove user session from the device.
+    try {
+      await GoogleSignin.revokeAccess();
+      await GoogleSignin.signOut();
+      this.setState({ userInfo: null }); // Remove the user from your app's state as well
+    } catch (error) {
+      console.error(error);
+      
+    }
+  };
+ 
+  /*onGoogleLoginOrRegister = () => {
+    
+     GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true })
+      // google services are available
+    .catch ((err) =>{
+      console.error('play services are not available');
+    })
+    console.log(GoogleSignin.webClientId)
+    console.log(GoogleSignin.offlineAccess)
+    GoogleSignin.signIn()
+    .then((data) => {
+      // Create a new Firebase credential with the token
+      const credential = firebase.auth.GoogleAuthProvider.credential(data.idToken, data.accessToken);
+      // Login with the credential
+      return firebase.auth().signInWithCredential(credential);
+    })
+    .then((user) => {
+      // If you need to do anything with the user, do it here
+      // The user will be logged in automatically by the
+      // `onAuthStateChanged` listener we set up in App.js earlier
+    })
+    .catch((error) => {
+      const { code, message } = error;
+      // For details of error codes, see the docs
+      // The message contains the default Firebase string
+      // representation of the error
+      console.log(code);
+      console.log(message);
+    });
+  };*/
    
-  signIn=async()=>
+  onFBLoginOrRegister = () => {
+    LoginManager.logInWithPermissions(['public_profile', 'email',])
+      .then((result) => {
+        if (result.isCancelled) {
+          return Promise.reject(new Error('The user cancelled the request'));
+        }
+        // Retrieve the access token
+        return AccessToken.getCurrentAccessToken();
+      })
+      .then((data) => {
+        // Create a new Firebase credential with the token
+        const credential = firebase.auth.FacebookAuthProvider.credential(data.accessToken);
+        // Login with the credential
+        return firebase.auth().signInWithCredential(credential);
+      })
+      .then((user) => {
+        // If you need to do anything with the user, do it here
+        // The user will be logged in automatically by the
+        // `onAuthStateChanged` listener we set up in App.js earlier
+      })
+      .catch((error) => {
+        const { code, message } = error;
+        console.log(code);
+        console.log(message);
+        // For details of error codes, see the docs
+        // The message contains the default Firebase string
+        // representation of the error
+      });
+  }
+  /*signIn=async()=>
   {
     await AsyncStorage.setItem('userToken', 'punyaslok') // This AsyncStorage store the token on the device, so that a user can be signed in when he/she revisits
     this.props.navigation.navigate('App')
   }
+  Add persistent sign in with async storage like functionality 
+  */
+
+
+
+
+
+
     render() {
       return (
         
@@ -110,10 +284,10 @@ class SignInScreen extends Component {
             </View>
 
             <View style={{flexDirection:'row'}}>
-            <TouchableOpacity style={{paddingTop:20,paddingRight:WIDTH/8 }}>
+            <TouchableOpacity style={{paddingTop:20,paddingRight:WIDTH/8 }} onPress={this.onFBLoginOrRegister}>
          <Icon name="facebook-square" size={30} style={{color:'rgba(255, 255, 255, 0.6)'}}/>
          </TouchableOpacity>
-         <TouchableOpacity style={{paddingTop:20}}>
+         <TouchableOpacity style={{paddingTop:20}} onPress={this._signIn}>
          <Icon name="google-plus" size={30} style={{color:'rgba(255, 255, 255, 0.6)'}}/>
          </TouchableOpacity>
             </View>

@@ -1,6 +1,5 @@
-
-
 import React, {Component} from 'react';
+import firestore from '@react-native-firebase/firestore';
 import { StyleSheet, Text, View, SafeAreaView, TextInput, Platform, StatusBar,TouchableOpacity, ScrollView, Image,Dimensions, Animated } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -262,14 +261,20 @@ class HomeScreen extends React.Component {
   {
     super(props)
     {
-
       //this.renderHeader = this.renderHeader.bind(this);
       this.state={
-        mocks : mocks
-      }
+        mocks : [],
+        limit : 9,
+        lastVisible: null,
+        loading: false,
+        refreshing: false,
+      };
     }
+    //const ref = firestore().collection('Books');
   }
 
+  
+ 
   static navigationOptions=({navigation})=>({
     title:"Home", 
     drawerIcon:()=> <Icon name="home" size={24} style={{color:'white'}}/>
@@ -285,6 +290,46 @@ class HomeScreen extends React.Component {
             this.startHeaderHeight= StatusBar.currentHeight
         }
     }
+    
+    componentDidMount = () => {
+      try {
+        // Cloud Firestore: Initial Query
+        this.retrieveData();
+      }
+      catch (error) {
+        console.log(error);
+      }
+    };
+
+    //retrieve data
+    retrieveData = async () => {
+      try {
+        // Set State: Loading
+        this.setState({
+          loading: true,
+        });
+        console.log('Retrieving Data');
+        // Cloud Firestore: Query
+        let initialQuery = await firestore().collection('Books')
+          .where('Book_Name', '==', "Sapiens");
+        
+        // Cloud Firestore: Query Snapshot
+        let documentSnapshots = await initialQuery.get();
+        // Cloud Firestore: Document Data
+        let documentData = documentSnapshots.docs.map(document => document.data());
+        // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
+        let lastVisible = documentData[documentData.length - 1].id;
+        // Set State
+        this.setState({
+          mocks: documentData,
+          lastVisible: lastVisible,
+          loading: false,
+        });
+      }
+      catch (error) {
+        console.log(error);
+      }
+    };
 
     onPressed()
     {
@@ -378,8 +423,3 @@ class HomeScreen extends React.Component {
   }
 
 export default HomeScreen;
-
-
-
-
-

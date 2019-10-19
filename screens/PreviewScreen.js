@@ -1,5 +1,3 @@
-
-
 import React, {Component} from 'react';
 import { TouchableOpacity,StyleSheet, Text, View, Button, SafeAreaView, Dimensions, Image, TextInput, Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'

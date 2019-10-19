@@ -232,8 +232,7 @@ class Profile extends React.Component {
           </View>
 
           <View style={{ paddingLeft:145,flex:1}}>
-          <Button  style={{flex:1, marginTop:10, justifyContent:'center', height:30, width:100, borderRadius:5, backgroundColor:'white'}} onPress={
-            ()=>this.props.navigation.navigate('editProfile')}>
+          <Button  style={{flex:1, marginTop:10, justifyContent:'center', height:30, width:100, borderRadius:5, backgroundColor:'white'}} onPress={()=>this.props.navigation.navigate('editProfile')}>
           <Text>Edit Profile</Text>
           </Button>
 

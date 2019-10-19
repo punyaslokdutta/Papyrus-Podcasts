@@ -70,7 +70,9 @@ var importScripts = (function(){
     var fs=require('fs'), vm=require('vm');
     return function(scriptUrl){
         var scriptCode = fs.readFileSync(scriptUrl, "utf8");
-        vm.runInThisContext(scriptCode, {filename: scriptUrl});
+        // Add a 'debugger;' statement to stop code execution
+        // to wait for the sourcemaps to be processed by the debug adapter
+        vm.runInThisContext('debugger;' + scriptCode, {filename: scriptUrl});
     };
 })();
 // Worker is ran as nodejs process, so console.trace() writes to stderr and it leads to error in native app
