@@ -13,6 +13,7 @@ import * as yup from 'yup';
 import { AccessToken, LoginManager } from 'react-native-fbsdk';
 import { firebase } from '@react-native-firebase/auth';
 import { GoogleSignin, statusCodes } from '@react-native-community/google-signin';
+import firestore from '@react-native-firebase/firestore';
 
 
 
@@ -167,7 +168,48 @@ class SignInScreen extends Component {
       console.log(message);
     });
   };*/
-   
+  addData = async (user) => {
+    const documentRef = await firestore().collection('users').doc(`${user.user.uid}`).set({
+      name: user.user.name,
+      username: "",
+      displayPicture: user.user.photoURL,
+      email: user.user.email,
+      introduction: "",
+      follower_count: 0,
+      following_count: 0,
+      followers_list: [],
+      following_list: [],
+      listened_book_podcasts_count: 0,
+      listened_chapter_podcasts_count: 0,
+      created_book_podcasts_count: 0,
+      created_chapter_podcasts_count: 0,
+      timespent_by_user_listening: 0,
+      timespent_total_by_listeners_listening: 0,
+      languages_comfortable_talking: []
+    });
+    console.log(documentRef);
+     const user1 = await firestore().collection('users').doc(`${user.user.uid}`)
+    console.log(user1)
+    let documentSnapshots = await user1.get();
+    console.log(documentSnapshots);
+    // let documentSnapshots = await initialQuery.get();
+    // console.log(documentSnapshots);
+    const doc1 = await user1.collection('privateUserData').doc("privateData").set({
+                        uid: user.user.uid,
+                        phoneNumber: user.user.phoneNumber,
+                        account_creation_time: 25,
+                        lastSignIn_time: 26,
+                        following_posts: [],
+                        book_recommendations: [],
+                        podcast_recommendations:[],
+                        listen_count_in_previous_day: 0,
+                        podcasts_list_user_liked: 0,
+                        retention_rate_of_listeners: 0,
+                        gnosis_score: 0
+    });
+    console.log(doc1);
+  }
+  
   onFBLoginOrRegister = () => {
     LoginManager.logInWithPermissions(['public_profile', 'email',])
       .then((result) => {
@@ -181,12 +223,30 @@ class SignInScreen extends Component {
         // Create a new Firebase credential with the token
         const credential = firebase.auth.FacebookAuthProvider.credential(data.accessToken);
         // Login with the credential
+
         return firebase.auth().signInWithCredential(credential);
       })
       .then((user) => {
         // If you need to do anything with the user, do it here
         // The user will be logged in automatically by the
         // `onAuthStateChanged` listener we set up in App.js earlier
+        console.log("username: ")
+        console.log(user);
+        console.log(user.user.uid);
+        console.log(user.user.photoURL); 
+        
+        console.log(user.user.phoneNumber);
+        console.log(user.user.displayName);
+        console.log(user.user.email);
+        try{
+        this.addData(user);
+        }
+        catch(error) {
+          console.log(error);
+        }
+
+        console.log("sdfhsdjhs");
+
       })
       .catch((error) => {
         const { code, message } = error;

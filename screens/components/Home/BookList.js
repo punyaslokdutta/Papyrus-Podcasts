@@ -232,14 +232,18 @@ class BookList extends Component {
   scrollX = new Animated.Value(0);
 
   renderDots() {
-    const { destinations }= this.props;
+    console.log(this.props.destinations)
+    const  destinations  = this.props.destinations;
+      console.log("Swayam")
+      console.log(destinations)
+    
     const dotPosition = Animated.divide(this.scrollX, width);
     return (
       <View style={[
         styles.flex, styles.row,
         { justifyContent: 'center', alignItems: 'center', marginTop: 10 }
       ]}>
-        {destinations.map((item, index) => {
+        {   destinations.map((item, index) => {
           const borderWidth = dotPosition.interpolate({
             inputRange: [index -1, index, index + 1],
             outputRange: [0, 2.5, 0],
@@ -247,12 +251,14 @@ class BookList extends Component {
           });
           return (
             <Animated.View
-              key={`step-${item.id}`}
+              key={`step-${item.BookID}`}
               style={[styles.dots, styles.activeDot, { borderWidth: borderWidth } ]}
             />
           )
         })}
+        
       </View>
+      
     )
   }
 
@@ -286,51 +292,53 @@ class BookList extends Component {
           snapToAlignment={"center"}
           style={{ overflow:'visible', height: 280 }}
           data={this.props.destinations}
-          keyExtractor={(item, index) => `${item.id}`}
+          keyExtractor={(item, index) => `${item.BookID}`}
           onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX }} }])}
           renderItem={({ item }) => this.renderBook(item)}
         />
         {this.renderDots()}
-      </View>
+      </View>      
     );
   }
 
   renderBook = item => {
     //const { navigation } = this.props;
+    console.log("dwdeeedee")
+    console.log(item)     
     return (
       <TouchableOpacity activeOpacity={0.8} onPress={() => this.props.navigation.navigate('RecordBook', { article: item })}>
         <ImageBackground
           style={[styles.flex, styles.destination, styles.shadow]}
           imageStyle={{ borderRadius: theme.sizes.radius }}
-          source={{ uri: item.preview }}
+          source={{ uri: item.Book_Pictures_Array['0'] }}
         >
           <View style={[styles.row, { justifyContent: 'space-between' }]}>
             <View style={{ flex: 0 }}>
-              <Image source={{ uri: item.user.avatar }} style={styles.avatar} />
+              <Image source={{ uri: item.Author_DP_Link }} style={styles.avatar} />
             </View>
             <View style={[styles.column, { flex: 2, paddingHorizontal: theme.sizes.padding / 2 }]}>
-              <Text style={{ color: theme.colors.white, fontWeight: 'bold' }}>{item.user.name}</Text>
+              <Text style={{ color: theme.colors.white, fontWeight: 'bold' }}>{item.Author_Name}</Text>
               <Text style={{ color: theme.colors.white }}>
                 <Octicons
                   name="location"
                   size={theme.sizes.font * 0.8}
                   color={theme.colors.white}
                 />
-                <Text> {item.location}</Text>
+                <Text> {item.language}</Text>
               </Text>
             </View>
             <View style={{ flex: 0, justifyContent: 'center', alignItems: 'flex-end', }}>
-              <Text style={styles.rating}>{item.rating}</Text>
+              <Text style={styles.rating}>{item.Book_Rating}</Text>
             </View>
           </View>
         </ImageBackground>
           <View style={[styles.column, styles.destinationInfo, styles.shadow]}>
             <Text style={{ fontSize: theme.sizes.font * 1.25, fontWeight: '500', paddingBottom: 8, }}>
-              {item.title}
+              {item.Book_Name}
             </Text>
             <View style={[ styles.row, { justifyContent: 'space-between', alignItems: 'flex-end', }]}>
               <Text style={{ color: theme.colors.caption }}>
-                {item.description.split('').slice(0, 50)}...
+                {item.About_the_Author.split('').slice(0, 50)}...
               </Text>
               <FontAwesome
                 name="chevron-right"
@@ -356,8 +364,8 @@ class BookList extends Component {
   }
 }
 
-BookList.defaultProps = {
-  destinations: mocks
-};
+// BookList.defaultProps = {
+//   destinations: mocks
+// };
 
 export default BookList;

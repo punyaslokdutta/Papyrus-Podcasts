@@ -282,14 +282,14 @@ class HomeScreen extends React.Component {
 
 
 
-    componentWillMount()
-    {
-        this.startHeaderHeight = 60
-        if(Platform.OS=='Android')
-        {
-            this.startHeaderHeight= StatusBar.currentHeight
-        }
-    }
+    // componentWillMount()
+    // {
+    //     this.startHeaderHeight = 60
+    //     if(Platform.OS=='Android')
+    //     {
+    //         this.startHeaderHeight= StatusBar.currentHeight
+    //     }
+    // }
     
     componentDidMount = () => {
       try {
@@ -311,7 +311,8 @@ class HomeScreen extends React.Component {
         console.log('Retrieving Data');
         // Cloud Firestore: Query
         let initialQuery = await firestore().collection('Books')
-          .where('Book_Name', '==', "Sapiens");
+          
+        
         // Cloud Firestore: Query Snapshot
         let documentSnapshots = await initialQuery.get();
         // Cloud Firestore: Document Data
@@ -358,7 +359,7 @@ class HomeScreen extends React.Component {
    
     renderSectionBooks=()=>
     { 
-      return (<BookList navigation={this.props.navigation}/>)
+      return (<BookList navigation={this.props.navigation} destinations={this.state.mocks} />)
     }
     renderPodcasts=()=>
     {

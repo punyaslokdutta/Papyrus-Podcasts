@@ -123,7 +123,7 @@ class RecordBook extends Component {
 
     return (
       <View style={[ styles.flex, styles.row, styles.dotsContainer ]}>
-        {article.images.map((item, index) => {
+        {article.Book_Pictures_Array.map((item, index) => {
           const opacity = dotPosition.interpolate({
             inputRange: [index - 1, index, index + 1],
             outputRange: [0.5, 1, 0.5],
@@ -177,7 +177,7 @@ class RecordBook extends Component {
             onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX } } }])}
           >
             {
-              article.images.map((img, index) => 
+              article.Book_Pictures_Array.map((img, index) => 
                 <Image
                   key={`${index}-${img}`}
                   source={{ uri: img }}
@@ -191,15 +191,15 @@ class RecordBook extends Component {
         </View>
         <View style={[styles.flex, styles.content]}>
           <View style={[styles.flex, styles.contentHeader]}>
-            <Image style={[styles.avatar, styles.shadow]} source={{ uri: article.user.avatar }} />
-            <Text style={styles.title}>{article.title}</Text>
+            <Image style={[styles.avatar, styles.shadow]} source={{ uri: article.Author_DP_Link }} />
+            <Text style={styles.title}>{article.Book_Name}</Text>
             <View style={[
               styles.row,
               { alignItems: 'center', marginVertical: theme.sizes.margin / 2, flexDirection:'row' }
             ]}>
-              {this.renderRatings(article.rating)}
+              {this.renderRatings(article.Book_Rating)}
               <Text style={{ color: theme.colors.active }}>
-                {article.rating} 
+                {article.Book_Rating} 
               </Text>
               <View style={{paddingLeft:10}}>
               
@@ -243,7 +243,7 @@ class RecordBook extends Component {
             <TouchableOpacity>
               <Text style={{fontSize:20, paddingBottom:10, fontFamily:'san-serif-light'}}>Description</Text>
               <Text style={{fontSize:15}}>
-                {article.description.split('').slice(0, 180)}..
+                {article.About_the_Author.split('').slice(0, 180)}..
                 <Text style={{color: theme.colors.active}}> Read more</Text>
               </Text>
             </TouchableOpacity>
@@ -254,7 +254,7 @@ class RecordBook extends Component {
             <TouchableOpacity>
               <Text style={{fontSize:20, paddingBottom:10, fontFamily:'san-serif-light'}}>About the Author(s)</Text>
               <Text style={{fontSize:15}}>
-                {article.description.split('').slice(0, 180)}..
+                {article.About_the_Author.split('').slice(0, 180)}..
                 <Text style={{color: theme.colors.active}}> Read more</Text>
               </Text>
             </TouchableOpacity>
