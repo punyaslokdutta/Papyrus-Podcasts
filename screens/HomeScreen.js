@@ -312,7 +312,6 @@ class HomeScreen extends React.Component {
         // Cloud Firestore: Query
         let initialQuery = await firestore().collection('Books')
           .where('Book_Name', '==', "Sapiens");
-        
         // Cloud Firestore: Query Snapshot
         let documentSnapshots = await initialQuery.get();
         // Cloud Firestore: Document Data

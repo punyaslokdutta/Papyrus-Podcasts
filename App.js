@@ -36,6 +36,7 @@ import { theme, mocks } from './screens/components/categories/constants';
 import ActivityScreen from './screens/ActivityScreen'
 import SettingsScreen from './screens/SettingsScreen'
 import editProfile  from './screens/components/Profile/editProfile'
+import firebaseApi, {FirebaseProvider} from './screens/config/Firebase'
 
 
 
@@ -314,14 +315,29 @@ const AppSwitchNavigator = createSwitchNavigator(
     
     AuthLoading : AuthLoadingScreen,
     Auth : AuthStackNavigator, // this will be a stack navigator
-    App : AppDrawerNavigator //this is the drawer navigator 
+    App : AppDrawerNavigator  //this is the drawer navigator 
   },
+  {
+    initialRouteName:'AuthLoading'
+  }
 )
 
-const App =createAppContainer(AppSwitchNavigator); // ^3.0.8 react-navigation 
+//const App =createAppContainer(AppSwitchNavigator); // ^3.0.8 react-navigation 
 
+// const router =createAppContainer(AppSwitchNavigator); 
+ const AppContainer =createAppContainer(AppSwitchNavigator);  //top level navigator 
+export default class App extends Component {
+  //..
+  render(){
+    return(
+    <FirebaseProvider value={firebaseApi}>
+    <AppContainer/> 
+    </FirebaseProvider>
+    );
+  }
+}
 
-export default App;
+//export default App;
 
 
 

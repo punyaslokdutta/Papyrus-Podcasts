@@ -232,7 +232,7 @@ class BookList extends Component {
   scrollX = new Animated.Value(0);
 
   renderDots() {
-    const { destinations } = this.props;
+    const { destinations }= this.props;
     const dotPosition = Animated.divide(this.scrollX, width);
     return (
       <View style={[

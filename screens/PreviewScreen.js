@@ -12,6 +12,8 @@ const { width, height } = Dimensions.get('window');
 
 
 
+
+
 const options = {
   title: 'Select Podcast Cover',
   chooseFromLibraryButtonTitle: 'Select from Library'

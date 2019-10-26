@@ -1,199 +1,124 @@
-import React, { Component } from "react";
+import React , {Component} from "react";
+import {useState} from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
   Dimensions,
-  Animated,
-  PanResponder,
-  ScrollView,
   Image,
-  Slider
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View
 } from "react-native";
+import LinearGradient from 'react-native-linear-gradient';
+import { RectButton } from "react-native-gesture-handler";
 import Icon from 'react-native-vector-icons/FontAwesome'
-import FontAwesome, { Icons } from 'react-native-fontawesome';
+import { PanGestureHandler, State } from "react-native-gesture-handler";
 
-
-const SCREEN_HEIGHT = Dimensions.get('window').height
-const SCREEN_WIDTH = Dimensions.get('window').width
-
-class PodcastPlayer extends Component {
-  
-
-  state = {
-    isScrollEnabled: false,
-    
-    
-     
-     
-  
-  }
-
-  componentWillMount() {
-
-    this.scrollOffset = 0
-
-    this.animation = new Animated.ValueXY({ x: 0, y: SCREEN_HEIGHT - 90 })
-
-    this.panResponder = PanResponder.create({
-
-      onMoveShouldSetPanResponder: (evt, gestureState) => {
-
-        if ((this.state.isScrollEnabled && this.scrollOffset <= 0 && gestureState.dy > 0) || !this.state.isScrollEnabled && gestureState.dy < 0) {
-          return true
-        } else {
-          return false
-        }
-      },
-      onPanResponderGrant: (evt, gestureState) => {
-        this.animation.extractOffset()
-      },
-      onPanResponderMove: (evt, gestureState) => {
-
-        this.animation.setValue({ x: 0, y: gestureState.dy })
-      },
-      onPanResponderRelease: (evt, gestureState) => {
-
-        if (gestureState.moveY > SCREEN_HEIGHT - 120) {
-          Animated.spring(this.animation.y, {
-            toValue: 0,
-            tension: 1
-          }).start()
-        }
-        else if (gestureState.moveY < 120) {
-          Animated.spring(this.animation.y, {
-            toValue: 0,
-            tension: 1
-          }).start()
-        }
-        else if (gestureState.dy < 0) {
-          this.setState({ isScrollEnabled: true })
-
-          Animated.spring(this.animation.y, {
-            toValue: -SCREEN_HEIGHT + 120,
-            tension: 1
-          }).start()
-        }
-        else if (gestureState.dy > 0) {
-          this.setState({ isScrollEnabled: false })
-          Animated.spring(this.animation.y, {
-            toValue: SCREEN_HEIGHT - 120,
-            tension: 1
-          }).start()
-        }
-      }
-
-    })
-  }
-
-  render() {
-    
-    const animatedHeight = {
-      transform: this.animation.getTranslateTransform()
-    }
-
-    animatedImageHeight = this.animation.y.interpolate({
-      inputRange: [0, SCREEN_HEIGHT - 90],
-      outputRange: [200, 32],
-      extrapolate: "clamp"
-    })
-    animatedSongTitleOpacity = this.animation.y.interpolate({
-      inputRange: [0, SCREEN_HEIGHT - 500, SCREEN_HEIGHT - 90],
-      outputRange: [0, 0, 1],
-      extrapolate: "clamp"
-    })
-    animatedImageMarginLeft = this.animation.y.interpolate({
-      inputRange: [0, SCREEN_HEIGHT - 90],
-      outputRange: [SCREEN_WIDTH / 2 - 100, 10],
-      extrapolate: "clamp"
-    })
-    animatedHeaderHeight = this.animation.y.interpolate({
-      inputRange: [0, SCREEN_HEIGHT - 90],
-      outputRange: [SCREEN_HEIGHT / 2, 90],
-      extrapolate: "clamp"
-    })
-    animatedSongDetailsOpacity = this.animation.y.interpolate({
-      inputRange: [0, SCREEN_HEIGHT - 500, SCREEN_HEIGHT - 90],
-      outputRange: [1, 0, 0],
-      extrapolate: "clamp"
-    })
-    animatedBackgroundColor = this.animation.y.interpolate({
-      inputRange: [0, SCREEN_HEIGHT - 90],
-      outputRange: ['rgba(0,0,0,0.5)', 'white'],
-      extrapolate: "clamp"
-    })
-    return (
-      <Animated.View style={{ flex: 1, backgroundColor: animatedBackgroundColor }}>
-        <Animated.View
-          {... this.panResponder.panHandlers}
-          style={[animatedHeight, { position: 'absolute', left: 0, right: 0, zIndex: 10, backgroundColor: 'white', height: SCREEN_HEIGHT }]}
-
-        >
-          <ScrollView
-            scrollEnabled={this.state.isScrollEnabled}
-            scrollEventThrottle={16}
-            onScroll={event => {
-              this.scrollOffset = event.nativeEvent.contentOffset.y
-            }}
-          >
-            <Animated.View
-              style={{ height: animatedHeaderHeight, borderTopWidth: 1, borderTopColor: '#ebe5e5', flexDirection: 'row', alignItems: 'center' }}
-            >
-              <View style={{ flex: 4, flexDirection: 'row', alignItems: 'center' }}>
-                <Animated.View style={{ height: animatedImageHeight, width: animatedImageHeight, marginLeft: animatedImageMarginLeft }}>
-                  <Image style={{ flex: 1, width: null, height: null }}
-                    source={require('../assets/Westeros.jpg')} />
-                </Animated.View>
-                <Animated.Text style={{ opacity: animatedSongTitleOpacity, fontSize: 18, paddingLeft: 10 }}>Hotel California(Live)</Animated.Text>
-              </View>
-              <Animated.View style={{ opacity: animatedSongTitleOpacity, flex: 1, flexDirection: 'row', justifyContent: 'space-around' }}>
-              <Icon name="bars" size={32}/>
-              <Icon name="bars" size={32}/>
-              </Animated.View>
-            </Animated.View>
-
-            <Animated.View style={{ height: animatedHeaderHeight, opacity: animatedSongDetailsOpacity }}>
-
-              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end' }}>
-                <Text style={{ fontWeight: 'bold', fontSize: 22 }}>Hotel California (Live)</Text>
-                <Text style={{ fontSize: 18, color: '#fa95ed' }}>Eagles - Hell Freezes Over</Text>
-              </View>
-
-              <View style={{ height: 40, width: SCREEN_WIDTH, alignItems: 'center' }}>
-                <Slider
-                  style={{ width: 300 }}
-                  step={1}
-                  minimumValue={18}
-                  maximumValue={71}
-                  value={18}
-
-                />
-              </View>
-
-              <View style={{ flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around' }}>
-              <Icon name="fast-backward" size={28}/>
-              <Icon name="pause" size={28}/>
-              <Icon name="fast-forward" size={28}/>
-              </View>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingBottom: 20 }}>
-              <Icon name="bars" size={28}/>
-              <Icon name="bars" size={28}/>
-              </View>
-            </Animated.View>
-            <View style={{ height: 1000 }} />
-          </ScrollView>
-        </Animated.View>
-
-      </Animated.View>
-    );
-  }
-}
-export default PodcastPlayer;
-
+const { width } = Dimensions.get("window");
 const styles = StyleSheet.create({
+  root: {
+    flex: 1
+  },
   container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
+    margin: 16
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between"
+  },
+  button: {
+    padding: 16
+  },
+  title: {
+    color: "white",
+    padding: 16
+  },
+  cover: {
+    marginVertical: 16,
+    width: width - 32,
+    height: width - 32
+  },
+  metadata: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center"
+  },
+  song: {
+    fontSize: 32,
+    fontWeight: "bold",
+    color: "white"
+  },
+  artist: {
+    color: "white"
+  },
+  slider: {
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
+    width: width - 32,
+    borderRadius: 2,
+    height: 4,
+    marginVertical: 16
+  },
+  controls: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center"
   }
 });
+
+/*interface PlayerProps {
+  onPress: () => void;
+}*/
+
+//export default ({ onPress }: PlayerProps) => {
+
+class PodcastPlayer extends  Component {
+
+
+  constructor(props)
+  {
+    super(props);
+  }
+
+
+  render(){
+  return (
+    <SafeAreaView style={styles.root}>
+      <LinearGradient
+        colors={["#0b3057", "#051c30"]}
+        style={StyleSheet.absoluteFill}
+      />
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <RectButton style={styles.button} >
+            <Icon name="chevron-down" color="white" size={24} />
+          </RectButton>
+          <Text style={styles.title}>The Bay</Text>
+          <RectButton style={styles.button} >
+            <Icon name="ellipsis-h" color="white" size={24} />
+          </RectButton>
+        </View>
+        <Image source={require("../assets/thebay.jpg")} style={styles.cover} />
+        <View style={styles.metadata}>
+          <View>
+            <Text style={styles.song}>The Bay</Text>
+            <Text style={styles.artist}>Metronomy</Text>
+          </View>
+          <Icon name="heart" size={24} color="#55b661" />
+        </View>
+        <View style={styles.slider} />
+        <View style={styles.controls}>
+          <Icon name="shuffle" color="rgba(255, 255, 255, 0.5)" size={24} />
+          <Icon name="step-backward" color="white" size={32} />
+          <Icon name="play" color="white" size={48} />
+          <Icon name="step-forward" color="white" size={32} />
+          <Icon name="repeat" color="rgba(255, 255, 255, 0.5)" size={24} />
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+  }
+
+
+}
+
+
+export default PodcastPlayer;
