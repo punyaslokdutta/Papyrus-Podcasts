@@ -1,5 +1,5 @@
 import firebaseApi from './firebaseApi'
-import { FirebaseProvider, withFirebaseHOC } from './context'
+import { FirebaseProvider, withFirebaseHOC } from './FirebaseContext'
 
 export default firebaseApi
 

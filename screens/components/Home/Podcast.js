@@ -8,6 +8,7 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import * as theme from '../constants/theme'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import PodcastPlayer from '../../PodcastPlayer'
+import PlayerContext from '../../components/PodcastPlayer/PlayerContext'
 
 var {width, height}=Dimensions.get('window')
 
@@ -144,41 +145,47 @@ class Podcast extends Component {
     }
    
     render() {
-      const item = this.props.item
+      const podcast = this.props.podcast
         return (
-          
+
+          <PlayerContext.Consumer>
+          {
+
+            ({setPodcast})=>(
           <View style={[
             styles.flex, styles.column, styles.recommendation, styles.shadow, 
             {marginLeft: theme.sizes.margin },
            
           ]} key ={this.props.index}>
            <View style={[styles.flex, styles.recommendationHeader]}>
-           <TouchableOpacity onPress={()=>this.openPodcastPlayer()}>
-           <Image style={[styles.recommendationImage]} source={{ uri: item.preview }} />
+           <TouchableOpacity onPress={()=>setPodcast(podcast)}>
+           <Image style={[styles.recommendationImage]} source={{ uri: podcast.preview}} />
 
            </TouchableOpacity>
           <View style={[ styles.flex, styles.row, styles.recommendationOptions ]}>
             <Icon
-              name={item.saved ? 'bookmark' : 'bookmark-o'}
+              name={podcast.saved ? 'bookmark' : 'bookmark-o'}
               color={theme.colors.white}
               size={theme.sizes.font * 1.25}
             />
           </View>
         </View>
             <View style={[styles.flex, styles.column, styles.shadow, { justifyContent: 'space-evenly', padding: theme.sizes.padding / 2 }]}>
-              <Text style={{ fontSize: theme.sizes.font * 1.25, fontWeight: '500', paddingBottom: theme.sizes.padding / 4.5, }}>{item.title}</Text>
-              <Text style={{ color: theme.colors.caption }}>{item.location}</Text>
+              <Text style={{ fontSize: theme.sizes.font * 1.25, fontWeight: '500', paddingBottom: theme.sizes.padding / 4.5, }}>{podcast.title}</Text>
+              <Text style={{ color: theme.colors.caption }}>{podcast.location}</Text>
               <View style={[
                 styles.row,
                 { alignItems: 'center', justifyContent: 'space-between', marginTop: theme.sizes.margin }
               ]}>
                 
                 <Text style={{ color: theme.colors.black }}>
-                  {item.date}
+                  {podcast.date}
                 </Text>
               </View>
             </View>
-          </View>
+          </View>)
+          }
+          </PlayerContext.Consumer>
           );
     }
   }

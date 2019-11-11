@@ -9,6 +9,7 @@ import { FlatList } from 'react-native-gesture-handler';
 import BookList from './components/Home/BookList'
 import * as theme from '../screens/components/constants/theme';
 import Podcast from './components/Home/Podcast'
+import podcasts from './components/PodcastPlayer/podcasts'
 
 var {width, height}=Dimensions.get('window')
 const mocks = [
@@ -359,13 +360,13 @@ class HomeScreen extends React.Component {
    
     renderSectionBooks=()=>
     { 
-      return (<BookList navigation={this.props.navigation} destinations={this.state.mocks} />)
+      return (<View></View>)
     }
     renderPodcasts=()=>
-    {
-       return mocks.map((item, index)=>
+    { 
+       return podcasts.map((podcast, index)=>
       {
-        return(<Podcast item={item} index={index} key ={index} navigation={this.props.navigation}/>)
+        return(<Podcast podcast={podcast} index={index} key ={index} navigation={this.props.navigation}/>)
       }) 
 
     }

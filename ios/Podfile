@@ -31,6 +31,8 @@ target 'Papyrus_60' do
 
   pod 'RNSVG', :path => '../node_modules/react-native-svg'
 
+  pod 'react-native-statusbar', :path => '../node_modules/@react-native-community/status-bar'
+
   target 'Papyrus_60Tests' do
     inherit! :search_paths
     # Pods for testing

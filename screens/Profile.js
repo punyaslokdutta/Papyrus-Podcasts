@@ -8,6 +8,7 @@ import { Container, Header, Left, Right, Content , Button,Card, CardItem, Thumbn
 import PodcastPlayer from './PodcastPlayer'
 import Podcast from './components/Home/Podcast'
 import editProfile from './components/Profile/editProfile'
+import podcasts from './components/PodcastPlayer/podcasts'
 
 
 const mocks = [
@@ -141,19 +142,19 @@ class Profile extends React.Component {
     }*/
     renderSectionOne=()=>
     {
-      return mocks.map((item, index)=>
+      return podcasts.map((podcast, index)=>
       {
         return (
-          <Podcast item={item} index={index} key ={index} navigation={this.props.navigation}/>
+          <Podcast podcast={podcast} index={index} key ={index} navigation={this.props.navigation}/>
         )
       })
     }
     renderSectionTwo=()=>
     {
-      return mocks.map((item, index)=>
+      return podcasts.map((podcast, index)=>
       {
         return (
-          <Podcast item={item} index={index} key ={index} navigation={this.props.navigation}/>
+          <Podcast podcast={podcast} index={index} key ={index} navigation={this.props.navigation}/>
         )
       })
     }

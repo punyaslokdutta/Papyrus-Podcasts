@@ -37,6 +37,7 @@ import ActivityScreen from './screens/ActivityScreen'
 import SettingsScreen from './screens/SettingsScreen'
 import editProfile  from './screens/components/Profile/editProfile'
 import firebaseApi, {FirebaseProvider} from './screens/config/Firebase'
+import PlayerProvider from './screens/components/PodcastPlayer/PlayerProvider';
 
 
 
@@ -330,9 +331,11 @@ export default class App extends Component {
   //..
   render(){
     return(
+    <PlayerProvider>
     <FirebaseProvider value={firebaseApi}>
     <AppContainer/> 
     </FirebaseProvider>
+    </PlayerProvider>
     );
   }
 }
