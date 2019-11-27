@@ -396,7 +396,7 @@ class HomeScreen extends React.Component {
     {
        return this.state.podcasts.map((item, index)=>
       {
-        return(<Podcast podcast={podcast} index={index} key ={index} navigation={this.props.navigation}/>)
+        return(<Podcast item={item} index={index} navigation={this.props.navigation}/>)
       }) 
 
     }
