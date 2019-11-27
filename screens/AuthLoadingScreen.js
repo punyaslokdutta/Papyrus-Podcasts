@@ -248,7 +248,6 @@ class  AuthLoadingScreen extends Component {
 
   
 
-
 export default withFirebaseHOC(AuthLoadingScreen);
 
 const styles = StyleSheet.create({
