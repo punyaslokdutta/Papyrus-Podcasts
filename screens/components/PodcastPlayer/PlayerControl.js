@@ -41,7 +41,7 @@ export default class PlayerControls extends React.Component {
           <PlayerContext.Consumer>
             {
               ({ setPodcast }) => (
-                <TouchableWithoutFeedback onPress={() => setPodcast(null)}>
+                <TouchableWithoutFeedback onPress={() => setPodcast(null, "PlayerControl")}>
                 <Icon name="times-circle" size={24} style={styles.icon}/>
                 </TouchableWithoutFeedback>
               )

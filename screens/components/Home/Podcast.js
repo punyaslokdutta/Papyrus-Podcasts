@@ -124,17 +124,18 @@ const styles = StyleSheet.create({
       },
   });
 
-
+const eventSourcePodcast = "Podcast";
 class Podcast extends Component {
 
     constructor(props)
     {
         super(props)
         {
-         state:{
-           key: this.props.index
-           navigation: this.props.navigation
-         }
+          this.state={
+           key: this.props.index,
+           navigation: this.props.navigation,
+           eventSource: eventSourcePodcast
+         };
         }
     }
     openPodcastPlayer()
@@ -146,6 +147,7 @@ class Podcast extends Component {
    
     render() {
       const podcast = this.props.podcast
+      const eventSource=this.state.eventSource
         return (
 
           <PlayerContext.Consumer>
@@ -158,7 +160,7 @@ class Podcast extends Component {
            
           ]} key ={this.props.index}>
            <View style={[styles.flex, styles.recommendationHeader]}>
-           <TouchableOpacity onPress={()=>setPodcast(podcast)}>
+           <TouchableOpacity onPress={()=>setPodcast(podcast, eventSource)}>
            <Image style={[styles.recommendationImage]} source={{ uri: podcast.preview}} />
 
            </TouchableOpacity>

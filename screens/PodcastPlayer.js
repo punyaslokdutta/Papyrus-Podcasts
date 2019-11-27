@@ -20,7 +20,7 @@ import { PanGestureHandler, State } from 'react-native-gesture-handler';
 const { width, height } = Dimensions.get('window');
 const { statusBarHeight } = StatusBar.currentHeight
 const minHeight = 64;
-const midBound = height - 64 * 3;
+const midBound = height -120;
 const upperBound = midBound + minHeight;
 const {
   Extrapolate,
@@ -128,6 +128,7 @@ export default class PodcastPlayer extends React.Component{
         },
       ],
       { useNativeDriver: true },
+      
     );
     const clockY = new Clock();
     const finalTranslateY = add(add(translationY, offsetY), multiply(0.2, velocityY));

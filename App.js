@@ -58,6 +58,12 @@ const AuthStackNavigator= createStackNavigator(
     }
    }
 )
+
+
+/*const PreferencesStackNavigator =createStackNavigator(
+  {}
+)*/
+
 const ProfileStackNavigator=createStackNavigator(
   {
     Profile : {screen : Profile}, 
@@ -189,8 +195,14 @@ const AppTabNavigator=createBottomTabNavigator(
     inactivetintcolor:'grey',
     backgroundColor:'white',
     borderTopWidth: 0,
-    elevation :5
-  }
+    elevation :5,
+    adaptive: true, 
+    style:
+    {
+      height: 50, 
+    },
+  }, 
+   
 
   }
 )
@@ -260,7 +272,7 @@ const CustomDrawerContentComponent=(props)=>
           
     </Block>
 
-    <Content style={{ paddingTop: HEIGHT/9}}>
+    <Content style={{ paddingTop: HEIGHT/18}}>
     
     <DrawerItems {...props}  activeBackgroundColor='#101010'   style={{backgroundColor: '#ffffff', }} labelStyle={{color: '#ffffff', fontSize: HEIGHT/35}}/>
     
@@ -316,7 +328,8 @@ const AppSwitchNavigator = createSwitchNavigator(
     
     AuthLoading : AuthLoadingScreen,
     Auth : AuthStackNavigator, // this will be a stack navigator
-    App : AppDrawerNavigator  //this is the drawer navigator 
+    App : AppDrawerNavigator ,  //this is the drawer navigator 
+    //Preferences: PreferencesStackNavigator 
   },
   {
     initialRouteName:'AuthLoading'

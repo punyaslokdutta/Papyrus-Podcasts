@@ -4,7 +4,7 @@
 /*React Context permits to hold state at the root of your component hierarchy, and be able to inject this state easily into very deeply nested components, without the hassle to have to pass down props to every intermediate components.
 */ 
 import React, {Component} from 'react';
-import { TouchableOpacity,StyleSheet, Text, View, SafeAreaView, Dimensions,Alert} from 'react-native';
+import { TouchableOpacity,StyleSheet, Text, View, SafeAreaView, Dimensions, TouchableWithoutFeedback} from 'react-native';
 import { Container,  Content , Button,Card, CardItem, Thumbnail, Body} from 'native-base';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -14,12 +14,13 @@ import AddChapterModal from '../screens/components/Record/AddChapterModal'
 import StartRecordScreen from '../screens/StartRecordScreen'
 import { TagSelect } from 'react-native-tag-select'
 import PreviewScreen from '../screens/PreviewScreen'
+import PlayerContext from '../screens/components/PodcastPlayer/PlayerContext'
 
 
 const { width, height } = Dimensions.get('window');
 
-
 class SelectScreen extends Component {
+  static contextType = PlayerContext
 
     constructor(props)
     {
@@ -35,12 +36,32 @@ class SelectScreen extends Component {
           ChapterName: '', 
           AuthorName: '', 
           LanguageSelected:'', 
+          eventSource: 'SelectScreen'
 
           
         }
        
 
         
+    }
+    componentDidMount=()=>
+    {
+     console.log(this.context)
+     const ctx =this.context.setPodcast(null, this.state.eventSource )
+     console.log(this.context)
+
+    }
+
+
+    componentDidUpdate=()=>
+    {
+      if(this.context.podcast!==null && this.context.eventSource!=='Podcast')
+      {
+      console.log(this.context)
+      const ctx =this.context.setPodcast(null, this.state.eventSource)
+      console.log(this.context)
+      }
+
     }
 
     onPressAdd2()
@@ -133,6 +154,9 @@ class SelectScreen extends Component {
 
        }*/
 
+
+       
+
        
 
 
@@ -159,8 +183,11 @@ class SelectScreen extends Component {
       ];
       
       return (
+      
+          
 
         <SafeAreaView style={{flex:1, backgroundColor:'#101010'}}>
+
         <View style={styles.AppHeader}>
         <TouchableOpacity onPress={()=>this.props.navigation.goBack(null)}>
         <View style={{paddingLeft: width/12 ,paddingVertical:height/20, flexDirection:'row'} }>
@@ -302,7 +329,8 @@ class SelectScreen extends Component {
 <AddChapterModal ref={'addChapterModal'} navigation={this.props.navigation} parentCallback = {this.callbackFunction} >
     
     </AddChapterModal>
-        </SafeAreaView>
+        </SafeAreaView> 
+        
       );
     }
   }
