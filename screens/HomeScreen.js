@@ -9,6 +9,8 @@ import { FlatList } from 'react-native-gesture-handler';
 import BookList from './components/Home/BookList'
 import * as theme from '../screens/components/constants/theme';
 import Podcast from './components/Home/Podcast'
+import firebaseApi from './config/Firebase/firebaseApi'
+import {withFirebaseHOC} from '../screens/config/Firebase'
 
 var {width, height}=Dimensions.get('window')
 const mocks = [
@@ -263,7 +265,8 @@ class HomeScreen extends React.Component {
     {
       //this.renderHeader = this.renderHeader.bind(this);
       this.state={
-        mocks : [],
+        books : [],
+        podcasts : [],
         limit : 9,
         lastVisible: null,
         loading: false,
@@ -291,10 +294,11 @@ class HomeScreen extends React.Component {
     //     }
     // }
     
-    componentDidMount = () => {
+    componentDidMount = async () => {
       try {
         // Cloud Firestore: Initial Query
         this.retrieveData();
+       // console.log(this.state)
       }
       catch (error) {
         console.log(error);
@@ -310,21 +314,48 @@ class HomeScreen extends React.Component {
         });
         console.log('Retrieving Data');
         // Cloud Firestore: Query
-        let initialQuery = await firestore().collection('Books')
-          
+        const  userid = this.props.firebase._getUid();
+        let query = await firestore().collection('users').doc(userid).collection('privateUserData').doc('privateData').onSnapshot(
+          (doc)=> {
+          books_data = doc._data.book_recommendations;
+        // ind = 0;
+        // for(x in query._data.book_recommendations){
+        //   let str1 = query._data.book_recommendations[ind];
+        //   //let query1 = await firestore().collection('Books').doc(str1["id"]).get();    
+        //   books_data[ind] = str1;
+        //   ind = ind + 1;
+        // }
+          podcasts_data = doc._data.podcast_recommendations;
         
+       // ind2 = 0;
+        // for(x in query._data.podcast_recommendations){
+        //   let str2 = query._data.podcast_recommendations[ind2];
+        //   //let query3 = await firestore().collectionGroup('Podcasts').where('PodcastID','==',str2).get();    
+        //   podcasts_data[ind2] = str2;
+        //   ind2 = ind2 + 1;
+        // }
+        
+        //let query2 = await firestore().collectionGroup('Podcasts').where('PodcastID','==',"0GF46N2E5d91idp51NQ8");
+        //let q1 = await query2.get();
+        //let initialQuery_books = await firestore().collection('Books').where('Book_Name','==',"Sapiens")
+        //let initialQuery_podcasts = await firestore().collection('Books').doc('7gGB4CjIiGRgB8yYD8N3')
+                                      //.collection('Podcasts')
         // Cloud Firestore: Query Snapshot
-        let documentSnapshots = await initialQuery.get();
+        //let documentSnapshots_books = await initialQuery_books.get();
+        //let documentSnapshots_podcasts = await initialQuery_podcasts.get();
         // Cloud Firestore: Document Data
-        let documentData = documentSnapshots.docs.map(document => document.data());
+        //let documentData_books = documentSnapshots_books.docs.map(document => document.data());
+        //let documentData_podcasts = documentSnapshots_podcasts.docs.map(document => document.data());
         // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
-        let lastVisible = documentData[documentData.length - 1].id;
+        //let lastVisible = documentData_books[documentData_books.length - 1].id;
         // Set State
         this.setState({
-          mocks: documentData,
-          lastVisible: lastVisible,
+          books: books_data,
+          podcasts: podcasts_data,
+         // lastVisible: lastVisible,
           loading: false,
         });
+      })
       }
       catch (error) {
         console.log(error);
@@ -359,11 +390,11 @@ class HomeScreen extends React.Component {
    
     renderSectionBooks=()=>
     { 
-      return (<BookList navigation={this.props.navigation} destinations={this.state.mocks} />)
+      return (<BookList navigation={this.props.navigation} destinations={this.state.books} />)
     }
     renderPodcasts=()=>
     {
-       return mocks.map((item, index)=>
+       return this.state.podcasts.map((item, index)=>
       {
         return(<Podcast item={item} index={index} key ={index} navigation={this.props.navigation}/>)
       }) 
@@ -422,4 +453,4 @@ class HomeScreen extends React.Component {
     }
   }
 
-export default HomeScreen;
+export default withFirebaseHOC(HomeScreen);

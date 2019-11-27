@@ -48,7 +48,10 @@ const AuthStackNavigator= createStackNavigator(
   {
     
     SignIn: SignInScreen,
-    SignUp: SignUpScreen
+    SignUp: SignUpScreen, 
+    //BooksSelected: BooksSelectedScreen, 
+    //ChaptersSelected : ChaptersSelectedScreen, 
+    //AuthorsSelected: AuthorsSelectedScreen
   },
   {
     headerMode: 'none',

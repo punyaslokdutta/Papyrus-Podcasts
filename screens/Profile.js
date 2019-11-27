@@ -1,6 +1,7 @@
 
 
 import React, {Component} from 'react';
+import firestore from '@react-native-firebase/firestore';
 import { StyleSheet, Text, View, Image, TouchableOpacity, Dimensions, ScrollView} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -8,94 +9,10 @@ import { Container, Header, Left, Right, Content , Button,Card, CardItem, Thumbn
 import PodcastPlayer from './PodcastPlayer'
 import Podcast from './components/Home/Podcast'
 import editProfile from './components/Profile/editProfile'
+import firebaseApi from './config/Firebase/firebaseApi'
+import {withFirebaseHOC} from '../screens/config/Firebase'
 
 
-const mocks = [
-  {
-    id: 1,
-    user: {
-      name: 'Lelia Chavez',
-      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-    },
-    saved: true,
-    date: "12/7/2019",
-    location: 'Santorini, Greece',
-    temperature: 34,
-    title: 'Santorini',
-    description: 'Santorini is one of the Cyclades islands in the Aegean Sea. It was devastated by a volcanic eruption in the 16th century BC, forever shaping its rugged landscape. The whitewashed, cubiform houses of its 2 principal towns, Fira and Oia, cling to cliffs above an underwater caldera (crater). They overlook the sea, small islands to the west and beaches made up of black, red and white lava pebbles.',
-    rating: 4.3,
-    reviews: 3212,
-    preview: 'https://www.facebook.com/photo.php?fbid=2032547933441692&set=a.437106322985869&type=3&theater',
-    images: [
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-    ]
-  },
-  {
-    id: 2,
-    user: {
-      name: 'Lelia Chavez',
-      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-    },
-    saved: false,
-    date: "12/7/2019",
-    location: 'Loutraki, Greece',
-    temperature: 34,
-    title: 'Loutraki',
-    description: 'This attractive small town, 80 kilometers from Athens',
-    rating: 4.6,
-    reviews: 3212,
-    preview: 'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
-    images: [
-      'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1446903572544-8888a0e60687?auto=format&fit=crop&w=800&q=80',
-    ]
-  },
-  {
-    id: 3,
-    user: {
-      name: 'Lelia Chavez',
-      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-    },
-    saved: true,
-    date: "12/7/2019",
-    location: 'Santorini, Greece',
-    temperature: 34,
-    title: 'Santorini',
-    description: 'Santorini - Description',
-    rating: 3.2,
-    reviews: 3212,
-    preview: 'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-    images: [
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-    ]
-  },
-  {
-    id: 4,
-    user: {
-      name: 'Lelia Chavez',
-      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-    },
-    location: 'Loutraki, Greece',
-    saved: true,
-    date: "12/7/2019",
-    temperature: 34,
-    title: 'Loutraki',
-    description: 'This attractive small town, 80 kilometers from Athens',
-    rating: 5,
-    reviews: 3212,
-    preview: 'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
-    images: [
-      'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1446903572544-8888a0e60687?auto=format&fit=crop&w=800&q=80',
-    ]
-  },
-]
 
 
 
@@ -113,17 +30,64 @@ class Profile extends React.Component {
    {
      super(props)
      {
+
       this.state={
         activeIndex:0,
-        mocks:mocks, 
-       // navigation: this.props.navigation,
+        bookPodcasts:[], 
+        chapterPodcasts:[]
+        // navigation: this.props.navigation,
       }
       }
     
      }
    
-        
+     componentDidMount = () => {
+      try {
+        // Cloud Firestore: Initial Query
+        this.retrieveData();
+      }
+      catch (error) {
+        console.log(error);
+      }
+    };
     
+
+     //retrieve data
+     retrieveData = async () => {
+      try {
+        // Set State: Loading
+        console.log('Retrieving Data');
+        // Cloud Firestore: Query
+        const  userid = this.props.firebase._getUid();
+        let query3 = await firestore().collectionGroup('Podcasts').where('podcasterID','==',userid);    
+        let query33 = await query3.where('ChapterName','==',"").get();
+
+        let query44 = await query3.where('isChapterPodcast','==',true).get();
+        //console.log(query3._docs[0]._data);
+        // podcasts_data[ind2] = query3._docs[0]._data;
+        // ind2 = ind2 + 1;
+        let documentData_podcasts = query33.docs.map(document => document.data());
+        let documentData_chapterPodcasts = query44.docs.map(document => document.data());
+        // let initialQuery_podcasts = await firestore().collection('Books').doc('7gGB4CjIiGRgB8yYD8N3')
+        //                               .collection('Podcasts')
+        // // Cloud Firestore: Query Snapshot
+        // let documentSnapshots_podcasts = await initialQuery_podcasts.get();
+        // // Cloud Firestore: Document Data
+         //let documentData_podcasts = documentSnapshots_podcasts.docs.map(document => document.data());
+        // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
+       // let lastVisible = documentData_podcasts[documentData_podcasts.length - 1].id;
+        // Set State
+        this.setState({
+          bookPodcasts: documentData_podcasts,
+          chapterPodcasts: documentData_chapterPodcasts
+        });
+      }
+      catch (error) {
+        console.log(error);
+      }
+    };
+
+
     segmentClicked=(index)=>{
       this.setState({
       activeIndex : index
@@ -141,7 +105,7 @@ class Profile extends React.Component {
     }*/
     renderSectionOne=()=>
     {
-      return mocks.map((item, index)=>
+      return this.state.bookPodcasts.map((item, index)=>
       {
         return (
           <Podcast item={item} index={index} key ={index} navigation={this.props.navigation}/>
@@ -150,7 +114,7 @@ class Profile extends React.Component {
     }
     renderSectionTwo=()=>
     {
-      return mocks.map((item, index)=>
+      return this.state.chapterPodcasts.map((item, index)=>
       {
         return (
           <Podcast item={item} index={index} key ={index} navigation={this.props.navigation}/>
@@ -209,7 +173,7 @@ class Profile extends React.Component {
             </View>
             
               <View style={{alignItems:'center', justifyContent:'center', flex:3, paddingTop:60}}>
-                <Image source={require('../assets/khaled.jpeg')} style={{width:100, height:100, borderRadius:50 }}/>
+                <Image source={{ uri: "https://scontent.fdel12-1.fna.fbcdn.net/v/t31.0-8/p960x960/14054441_518163365046457_6005096195143854779_o.jpg?_nc_cat=101&_nc_oc=AQmBj8SY60BCKzMFfvCPGLc1J44zxgFhJqefzYEifezUhkr7pFo29592HYyw6grMQF8&_nc_ht=scontent.fdel12-1.fna&oh=8ff3d0097e442acc84a804041fd0e7ee&oe=5E45429C"}} style={{width:100, height:100, borderRadius:50 }}/>
               </View>
               <View>
               <Text style={{paddingTop:90 , paddingRight:60,  fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
@@ -260,7 +224,7 @@ class Profile extends React.Component {
   }
   
 
-export default Profile;
+export default withFirebaseHOC(Profile);
 
 
 const styles = StyleSheet.create({

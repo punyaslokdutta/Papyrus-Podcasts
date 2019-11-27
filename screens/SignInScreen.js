@@ -13,7 +13,12 @@ import * as yup from 'yup';
 import { AccessToken, LoginManager } from 'react-native-fbsdk';
 import { firebase } from '@react-native-firebase/auth';
 import { GoogleSignin, statusCodes } from '@react-native-community/google-signin';
-import firestore from '@react-native-firebase/firestore';
+import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
+import firebaseApi from './config/Firebase/firebaseApi'
+import {withFirebaseHOC} from '../screens/config/Firebase'
+
+
+
 
 
 
@@ -36,6 +41,52 @@ const validationSchema = yup.object().shape({
 
 
 var {width:WIDTH, height:HEIGHT}=Dimensions.get('window')
+bookRec = [
+  {
+      "Author_DP_Link" : "https://en.wikipedia.org/wiki/Yuval_Noah_Harari#/media/File:Yuval_Noah_Harari_cropped.jpg",
+      "Author_Name" : "Yuval Noah Harari",
+      "About_the_Author" : "Bakwaas",
+      "Book_Picture" : "https://www.booktopia.com.au/http_coversbooktopiacomau/big/9780670078189/0000/the-arsonist.jpg",
+      "Language" : "English",
+      "Book_Rating" : 4.5,
+      "Book_Name" : "Sapiens",
+      "BookID" : "7gGB4CjIiGRgB8yYD8N3"
+    },
+    {
+      "Author_DP_Link" : "https://en.wikipedia.org/wiki/Dan_Brown#/media/File:Dan_Brown_bookjacket_cropped.jpg",
+      "Author_Name" : "Dan Brown",
+      "About_the_Author" : "Bakwaas2",
+      "Book_Picture" : "https://images-na.ssl-images-amazon.com/images/I/712guFgz8uL._AC_UL160_.jpg",
+      "Language" : "English",
+      "Book_Rating" : 4.6,
+      "Book_Name" : "Angels & Demons",
+      "BookID" : "qDmvY1EumpKvwQdjjdQk"
+    } 
+]
+podRec = [
+            {
+               "Podcast_Pictures": ["https://www.sapiens.org/wp-content/uploads/2019/07/SapiensAlbumCoverBanner-1.jpg"],
+               "Podcast_Name": "History of Homo Sapiens",
+               "Language": "English",
+               "Timestamp": "9:00:00 PM",
+               "podcastID": "0GF46N2E5d91idp51NQ8" 
+            },
+            {
+              "Podcast_Pictures": ["http://alessandria.bookrepublic.it/api/books/9788834141076/cover"],
+              "Podcast_Name": "Our reality.",
+              "Language": "English",
+              "Timestamp": "10:00:25 PM",
+              "podcastID": "DEpdGiWLTQK4C0te0nim"
+            },
+            {
+              "Podcast_Pictures": ["https://miro.medium.com/max/1920/1*ycr2IXne71_gyClvXAX1Zw.jpeg"],
+              "Podcast_Name" : "The purpose of demons and angels.",
+              "Language": "English",
+              "Timestamp": "15:00:00",
+              "podcastID": "16UivAKfY1zhm3LON701"
+            }
+
+         ]
 
 class SignInScreen extends Component {
 
@@ -168,49 +219,9 @@ class SignInScreen extends Component {
       console.log(message);
     });
   };*/
-  addData = async (user) => {
-    const documentRef = await firestore().collection('users').doc(`${user.user.uid}`).set({
-      name: user.user.name,
-      username: "",
-      displayPicture: user.user.photoURL,
-      email: user.user.email,
-      introduction: "",
-      follower_count: 0,
-      following_count: 0,
-      followers_list: [],
-      following_list: [],
-      listened_book_podcasts_count: 0,
-      listened_chapter_podcasts_count: 0,
-      created_book_podcasts_count: 0,
-      created_chapter_podcasts_count: 0,
-      timespent_by_user_listening: 0,
-      timespent_total_by_listeners_listening: 0,
-      languages_comfortable_talking: []
-    });
-    console.log(documentRef);
-     const user1 = await firestore().collection('users').doc(`${user.user.uid}`)
-    console.log(user1)
-    let documentSnapshots = await user1.get();
-    console.log(documentSnapshots);
-    // let documentSnapshots = await initialQuery.get();
-    // console.log(documentSnapshots);
-    const doc1 = await user1.collection('privateUserData').doc("privateData").set({
-                        uid: user.user.uid,
-                        phoneNumber: user.user.phoneNumber,
-                        account_creation_time: 25,
-                        lastSignIn_time: 26,
-                        following_posts: [],
-                        book_recommendations: [],
-                        podcast_recommendations:[],
-                        listen_count_in_previous_day: 0,
-                        podcasts_list_user_liked: 0,
-                        retention_rate_of_listeners: 0,
-                        gnosis_score: 0
-    });
-    console.log(doc1);
-  }
   
-  onFBLoginOrRegister = () => {
+  
+  onFBLoginOrRegister = async () => {
     LoginManager.logInWithPermissions(['public_profile', 'email',])
       .then((result) => {
         if (result.isCancelled) {
@@ -226,7 +237,7 @@ class SignInScreen extends Component {
 
         return firebase.auth().signInWithCredential(credential);
       })
-      .then((user) => {
+      .then(async(user) => {
         // If you need to do anything with the user, do it here
         // The user will be logged in automatically by the
         // `onAuthStateChanged` listener we set up in App.js earlier
@@ -238,12 +249,11 @@ class SignInScreen extends Component {
         console.log(user.user.phoneNumber);
         console.log(user.user.displayName);
         console.log(user.user.email);
-        try{
-        this.addData(user);
-        }
-        catch(error) {
-          console.log(error);
-        }
+        
+        
+
+        
+        
 
         console.log("sdfhsdjhs");
 
@@ -369,7 +379,7 @@ class SignInScreen extends Component {
     }
   }
 
-export default SignInScreen;
+export default withFirebaseHOC(SignInScreen);
 
 
 const styles = StyleSheet.create({

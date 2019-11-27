@@ -7,8 +7,7 @@ import FontAwesome, { Icons } from 'react-native-fontawesome';
 import Octicons from 'react-native-vector-icons/Octicons';
 import * as theme from '../constants/theme'
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import PodcastPlayer from '../../PodcastPlayer'
-
+import RecordBook from '../../RecordBook'
 var {width, height}=Dimensions.get('window')
 
 const styles = StyleSheet.create({
@@ -124,7 +123,7 @@ const styles = StyleSheet.create({
   });
 
 
-class Podcast extends Component {
+class ExploreBook extends Component {
 
     constructor(props)
     {
@@ -136,10 +135,10 @@ class Podcast extends Component {
          }
         }
     }
-    openPodcastPlayer()
+    openRecordBooks()
     {
 
-      this.props.navigation.navigate('PodcastPlayer',podcast=this.props.item.podcastID);
+      this.props.navigation.navigate('RecordBook', {book:this.props.item.BookID} );
 
     }
    
@@ -148,17 +147,18 @@ class Podcast extends Component {
       console.log(item)
         return (
           
-          <View style={[
-            styles.flex, styles.column, styles.recommendation, styles.shadow, 
-            {marginLeft: theme.sizes.margin },
+          // <View style={[
+          //   styles.flex, styles.column, styles.recommendation, styles.shadow, 
+          //   {marginLeft: theme.sizes.margin },
            
-          ]} key ={this.props.index}>
-           <View style={[styles.flex, styles.recommendationHeader]}>
-           <TouchableOpacity onPress={()=>this.openPodcastPlayer()}>
-           <Image style={[styles.recommendationImage]} source={{ uri: item.Podcast_Pictures["0"] }} />
+          // ]} key ={this.props.index}>
+           <View style={{height:90, width:140, marginLeft:20, borderwidth:4, borderColor:'#dddddd',overflow:'hidden', paddingRight:10,borderRadius:10}}>
+           <TouchableOpacity onPress={()=>this.openRecordBooks()}>
+           <Image style={{width:130, height:85, resizeMode:'cover',  overflow:'hidden', paddingRight:10}} source={{ uri: item.Book_Pictures_Array["0"] }} />
 
            </TouchableOpacity>
-          <View style={[ styles.flex, styles.row, styles.recommendationOptions ]}>
+           </View>
+          /* <View style={[ styles.flex, styles.row, styles.recommendationOptions ]}>
             <Icon
               name={'bookmark'}
               color={theme.colors.white}
@@ -167,21 +167,21 @@ class Podcast extends Component {
           </View>
         </View>
             <View style={[styles.flex, styles.column, styles.shadow, { justifyContent: 'space-evenly', padding: theme.sizes.padding / 2 }]}>
-              <Text style={{ fontSize: theme.sizes.font * 1.25, fontWeight: '500', paddingBottom: theme.sizes.padding / 4.5, }}>{item.Podcast_Name}</Text>
-              <Text style={{ color: theme.colors.caption }}>{item.Language}</Text>
+              <Text style={{ fontSize: theme.sizes.font * 1.25, fontWeight: '500', paddingBottom: theme.sizes.padding / 4.5, }}>{item.Book_Name}</Text>
+              <Text style={{ color: theme.colors.caption }}>{item.Author_Name}</Text>
               <View style={[
                 styles.row,
                 { alignItems: 'center', justifyContent: 'space-between', marginTop: theme.sizes.margin }
               ]}>
                 
                 <Text style={{ color: theme.colors.black }}>
-                  {item.Timestamp}
+                  {item.Book_Rating}
                 </Text>
               </View>
             </View>
-          </View>
+          </View> */
           );
     }
   }
 
-export default Podcast;
+export default ExploreBook;
