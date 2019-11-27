@@ -8,10 +8,12 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import SelectScreen from '../screens/SelectScreen'
 import PodcastPlayer from '../screens/PodcastPlayer'
 import AddModal from '../screens/components/Record/AddModal'
+//import Animated, { Easing } from 'react-native-reanimated';
 
 import * as theme from './components/constants/theme';
 
 const { width, height } = Dimensions.get('window');
+//const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView)
 
 const styles = StyleSheet.create({
   TouchableOpacityStyle: {
@@ -239,7 +241,6 @@ class RecordBook extends Component {
             showsHorizontalScrollIndicator={false}
             decelerationRate={0.998}
             scrollEventThrottle={16}
-            snapToAlignment="center"
             onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX } } }])}
           >
             {

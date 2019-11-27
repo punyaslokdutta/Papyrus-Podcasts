@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import {
-  Animated,
   Text,
   StyleSheet,
   View,
@@ -10,14 +9,16 @@ import {
   ImageBackground,
   Dimensions,
   Platform,
-  TouchableOpacity
+  TouchableOpacity, 
+  Animated
 } from 'react-native'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Octicons from 'react-native-vector-icons/Octicons';
+//import Animated, { Easing } from 'react-native-reanimated';
 
 import * as theme from '../constants/theme';
 import RecordBook from '../../RecordBook'
-
+//const AnimatedFlatList = Animated.createAnimatedComponent(FlatList)
 const { width, height } = Dimensions.get('window');
 const mocks = [
   {

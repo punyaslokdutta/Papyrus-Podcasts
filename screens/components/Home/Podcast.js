@@ -8,6 +8,7 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import * as theme from '../constants/theme'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import PodcastPlayer from '../../PodcastPlayer'
+import PlayerContext from '../../components/PodcastPlayer/PlayerContext'
 
 var {width, height}=Dimensions.get('window')
 
@@ -147,7 +148,11 @@ class Podcast extends Component {
       const item = this.props.item
       console.log(item)
         return (
-          
+
+          <PlayerContext.Consumer>
+          {
+
+            ({setPodcast})=>(
           <View style={[
             styles.flex, styles.column, styles.recommendation, styles.shadow, 
             {marginLeft: theme.sizes.margin },
@@ -179,7 +184,9 @@ class Podcast extends Component {
                 </Text>
               </View>
             </View>
-          </View>
+          </View>)
+          }
+          </PlayerContext.Consumer>
           );
     }
   }

@@ -9,8 +9,12 @@ import { Container, Header, Left, Right, Content , Button,Card, CardItem, Thumbn
 import PodcastPlayer from './PodcastPlayer'
 import Podcast from './components/Home/Podcast'
 import editProfile from './components/Profile/editProfile'
+<<<<<<< HEAD
 import firebaseApi from './config/Firebase/firebaseApi'
 import {withFirebaseHOC} from '../screens/config/Firebase'
+=======
+import podcasts from './components/PodcastPlayer/podcasts'
+>>>>>>> origin/test
 
 
 
@@ -105,19 +109,27 @@ class Profile extends React.Component {
     }*/
     renderSectionOne=()=>
     {
+<<<<<<< HEAD
       return this.state.bookPodcasts.map((item, index)=>
+=======
+      return podcasts.map((podcast, index)=>
+>>>>>>> origin/test
       {
         return (
-          <Podcast item={item} index={index} key ={index} navigation={this.props.navigation}/>
+          <Podcast podcast={podcast} index={index} key ={index} navigation={this.props.navigation}/>
         )
       })
     }
     renderSectionTwo=()=>
     {
+<<<<<<< HEAD
       return this.state.chapterPodcasts.map((item, index)=>
+=======
+      return podcasts.map((podcast, index)=>
+>>>>>>> origin/test
       {
         return (
-          <Podcast item={item} index={index} key ={index} navigation={this.props.navigation}/>
+          <Podcast podcast={podcast} index={index} key ={index} navigation={this.props.navigation}/>
         )
       })
     }
