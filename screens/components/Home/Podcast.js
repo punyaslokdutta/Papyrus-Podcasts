@@ -148,13 +148,13 @@ class Podcast extends Component {
     render() {
       const item = this.props.item
       console.log(item)
-      const podcast = this.props.podcast
+      //const podcast = this.props.podcast
       const eventSource=this.state.eventSource
         return (
 
           <PlayerContext.Consumer>
           {
-
+            
             ({setPodcast})=>(
           <View style={[
             styles.flex, styles.column, styles.recommendation, styles.shadow, 
@@ -162,7 +162,7 @@ class Podcast extends Component {
            
           ]} key ={this.props.index}>
            <View style={[styles.flex, styles.recommendationHeader]}>
-           <TouchableOpacity onPress={()=>setPodcast(podcast, eventSource)}>
+           <TouchableOpacity onPress={()=>setPodcast(item, eventSource)}>
            <Image style={[styles.recommendationImage]} source={{ uri: item.Podcast_Pictures["0"]}} />
 
            </TouchableOpacity>

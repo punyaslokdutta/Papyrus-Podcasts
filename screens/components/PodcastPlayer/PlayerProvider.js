@@ -86,10 +86,10 @@ export default class PlayerProvider extends React.Component {
   };*/
 
   render() {
-    const { setPodcast, animation } = this;
+    const { /*setPodcast,*/ animation } = this;
     const { children } = this.props ;
     const  {podcast } = this.state;
-    const  {eventSource} =this.state;
+    //const  {eventSource} =this.state;
     const translateY = animation.interpolate({
       inputRange: [0, 1],
       outputRange: [height, 0],

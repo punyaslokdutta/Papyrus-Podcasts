@@ -174,13 +174,13 @@ class  AuthLoadingScreen extends Component {
                   }
                   else{
                        // unsubscribe(); // unsubscribe the firestore onSnapshot listener 
-                       setTimeout( ()=>{
+                      //  setTimeout( ()=>{
      
-                        //Put All Your Code Here, Which You Want To Execute After Some Delay Time.
-                        this.props.navigation.navigate('App')
-                        //Alert.alert("Alert Shows After 5 Seconds of Delay.")
+                      //   //Put All Your Code Here, Which You Want To Execute After Some Delay Time.
+                        this.props.navigation.navigate('App');
+                      //   //Alert.alert("Alert Shows After 5 Seconds of Delay.")
                    
-                      }, 5000);
+                      // }, 5000);
                         
                    
                   }
