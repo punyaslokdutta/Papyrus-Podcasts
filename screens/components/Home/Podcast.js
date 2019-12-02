@@ -43,6 +43,7 @@ const styles = StyleSheet.create({
     },
     recommendation: {
       width: (width - (theme.sizes.padding * 2)) / 2,
+      height: (height)/3,
       marginHorizontal: 0,
       backgroundColor: theme.colors.white,
       overflow: 'hidden',
@@ -154,7 +155,7 @@ class Podcast extends Component {
 
           <PlayerContext.Consumer>
           {
-            
+
             ({setPodcast})=>(
           <View style={[
             styles.flex, styles.column, styles.recommendation, styles.shadow, 

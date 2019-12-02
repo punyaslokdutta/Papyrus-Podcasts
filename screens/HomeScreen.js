@@ -267,7 +267,7 @@ class HomeScreen extends React.Component {
       this.state={
         books : [],
         podcasts : [],
-        limit : 9,
+        limit : 4,
         lastVisible: null,
         loading: false,
         refreshing: false,
