@@ -8,7 +8,6 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Slider from "react-native-slider";
 import Moment from "moment";
-import RecordBook from '../../RecordBook'
 //import videos, { type Video } from './videos';
 
 /*type VideoContentProps = {
@@ -41,6 +40,7 @@ export default class PodcastContent extends React.Component {
    
   render() {
     //const { video } = this.props;
+    //const {podcast} = this.props.playerGlobalContext 
     return (
       
         <ScrollView style={styles.content}>
@@ -51,10 +51,7 @@ export default class PodcastContent extends React.Component {
                     </View>
         <View  style={{paddingLeft:10}}>
         
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('RecordBook', { article: null })}>
-                    <Icon name="info-circle"  size={16} label="10" color="black" />
-                    </TouchableOpacity>
-
+        
         </View>
         </View>
         

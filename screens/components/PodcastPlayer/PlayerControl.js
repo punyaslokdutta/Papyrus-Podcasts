@@ -1,11 +1,13 @@
 
-import * as React from 'react';
+import React, { useState, useContext, useReducer, useEffect} from 'react';
 import {
   View, StyleSheet, Text, Dimensions, TouchableWithoutFeedback,
 } from 'react-native';
 //import { Icon } from 'expo';
 import Icon from 'react-native-vector-icons/FontAwesome'
-import PlayerContext from './PlayerContext';
+import PlayerContext from './PlayerContext'
+//import PlayerContext from './PlayerContext';
+//import withPlayerHOC from './PlayerContext'
 
 const { width } = Dimensions.get('window');
 export const PLACEHOLDER_WIDTH = width / 3;
@@ -14,45 +16,42 @@ export const PLACEHOLDER_WIDTH = width / 3;
   title: string,
   onPress: () => mixed,
 };*/
+//const areEqual = (prevProps, nextProps) => true;
+ const PlayerControls =React.memo((props)=> {
 
-export default class PlayerControls extends React.Component {
+  //const [playerControlState,setplayerControlState ] =useState(props)
+  //copied the props to the state of the component 
+  console.log( props);
+  const context = useContext(PlayerContext)
 
-  constructor(props)
-  {
-    super(props)
-    {
-      onPress:  this.props.onPress;
-      title: this.props.title;
-    }
-  }
+
+  /*useEffect(() => {
+   // setplayerControlState(props);
+  }, []);*/
+
+
+  
 
     /*static propTypes={
         title: React.PropTypes,
         onPress: React.PropTypes,
     }*/
-  render() {
-   const { title, onPress } = this.props;
+  
+   //const { title, onPress } = this.props;
     return (
-      <TouchableWithoutFeedback onPress={onPress}>
+      <TouchableWithoutFeedback onPress={props.onPress}>
         <View style={styles.container}>
           <View style={styles.placeholder} />
-          <Text style={styles.title} numberOfLine={3}>{title}</Text>
+          <Text style={styles.title} numberOfLine={3}>{props.title}</Text>
           <Icon name="play" size={24} style={styles.icon}/>
-          <PlayerContext.Consumer>
-            {
-              ({ setPodcast }) => (
-                <TouchableWithoutFeedback onPress={() => setPodcast(null, "PlayerControl")}>
+                <TouchableWithoutFeedback  onPress={()=>{context.setPodcast(null)}}>
                 <Icon name="times-circle" size={24} style={styles.icon}/>
                 </TouchableWithoutFeedback>
-              )
-            }
-
-          </PlayerContext.Consumer>
         </View>
       </TouchableWithoutFeedback>
     );
-  }
-}
+  
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -77,3 +76,5 @@ const styles = StyleSheet.create({
     
   },
 });
+
+export default PlayerControls

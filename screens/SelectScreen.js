@@ -14,13 +14,13 @@ import AddChapterModal from '../screens/components/Record/AddChapterModal'
 import StartRecordScreen from '../screens/StartRecordScreen'
 import { TagSelect } from 'react-native-tag-select'
 import PreviewScreen from '../screens/PreviewScreen'
-import PlayerContext from '../screens/components/PodcastPlayer/PlayerContext'
+//import PlayerContext from '../screens/components/PodcastPlayer/PlayerContext'
 
 
 const { width, height } = Dimensions.get('window');
 
 class SelectScreen extends Component {
-  static contextType = PlayerContext
+  //static contextType = PlayerContext
 
     constructor(props)
     {
@@ -46,21 +46,21 @@ class SelectScreen extends Component {
     }
     componentDidMount=()=>
     {
-     console.log(this.context)
-     const ctx =this.context.setPodcast(null, this.state.eventSource )
-     console.log(this.context)
+    // console.log(this.context)
+     //const ctx =this.context.setPodcast(null, this.state.eventSource )
+    // console.log(this.context)
 
     }
 
 
     componentDidUpdate=()=>
     {
-      if(this.context.podcast!==null && this.context.eventSource!=='Podcast')
-      {
-      console.log(this.context)
-      const ctx =this.context.setPodcast(null, this.state.eventSource)
-      console.log(this.context)
-      }
+      //if(this.context.podcast!==null && this.context.eventSource!=='Podcast')
+      //{
+      //console.log(this.context)
+      //const ctx =this.context.setPodcast(null, this.state.eventSource)
+      //console.log(this.context)
+      //}
 
     }
 
@@ -128,36 +128,7 @@ class SelectScreen extends Component {
       }
         console.log(data)
        console.log(this.state)
-     }
-
-    /* renderDetailsSection=()=>
-     {
-       
-         return(
-           <View style={{alignItems:'center'}}>
-          
-          <Card style={{ borderRadius:5,  paddingTop :5,  paddingBottom:5, flexDirection:'column', width:((width)/16), height:((height)/16) }}>
-            <CardItem>
-                <Text style={{fontSize:8}}>ChapterName: {this.state.ChapterName}</Text>
-            </CardItem>
-            <CardItem>
-                <Text style={{fontSize:8}}>BookName: {this.state.BookName}</Text>
-            </CardItem>
-            <CardItem>
-                <Text style={{fontSize:8}}>AuthorName: {this.state.AuthorName}</Text>
-            </CardItem>
-            
-          </Card>
-
-           </View>
-         )
-
-       }*/
-
-
-       
-
-       
+    }   
 
 
 

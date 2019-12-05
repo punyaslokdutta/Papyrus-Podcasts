@@ -1,6 +1,6 @@
 
 
-import React, {Component} from 'react';
+import React, {Component, useState, useEffect, useContext} from 'react';
 import { StyleSheet, Text, View, Image, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -8,7 +8,9 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import * as theme from '../constants/theme'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import PodcastPlayer from '../../PodcastPlayer'
-import PlayerContext from '../../components/PodcastPlayer/PlayerContext'
+//import {usePlayerContext} from '../PodcastPlayer/usePlayerContext'
+import PlayerContext from '../PodcastPlayer/PlayerContext'
+
 
 var {width, height}=Dimensions.get('window')
 
@@ -124,72 +126,97 @@ const styles = StyleSheet.create({
       },
   });
 
-const eventSourcePodcast = "Podcast";
-class Podcast extends Component {
 
-    constructor(props)
+
+/*const defaultState = {
+  podcast: null, 
+  eventSource:"Podcast"
+};*/
+
+ //const eventSource="Podcast"
+ //const areEqual = (prevProps, nextProps) => true;
+ const Podcast= React.memo((props)=> {
+  //const [ playerGlobalState,  playerGlobalDispatch] = usePlayerContext();
+
+  //const {eventSource }= playerGlobalState;
+  //const [podcastState, setPodcastState] =useState(props)
+  console.log(props);
+
+ const context = useContext(PlayerContext)
+  //const {setPodcast} =playerGlobalDispatch;
+
+
+  /*useEffect(() => {
+    //setPodcastState(props);
+  }, []);*/
+
+    /*constructor(props)
     {
         super(props)
         {
           this.state={
            key: this.props.index,
+
            navigation: this.props.navigation,
            eventSource: eventSourcePodcast
          };
         }
-    }
-    openPodcastPlayer()
+    }*/
+
+    /*function setGlobalPodcast(podcast, eventSource)
     {
 
-      this.props.navigation.navigate('PodcastPlayer',);
+     setPodcast(podcast, eventSource);
+    }*/
+    
 
-    }
-   
-    render() {
-      const podcast = this.props.podcast
-      const eventSource=this.state.eventSource
+    
+
+
+    
         return (
 
-          <PlayerContext.Consumer>
-          {
+          
 
-            ({setPodcast})=>(
+          
+
+            
           <View style={[
             styles.flex, styles.column, styles.recommendation, styles.shadow, 
             {marginLeft: theme.sizes.margin },
            
-          ]} key ={this.props.index}>
+          ]} key ={props.index}>
+            
            <View style={[styles.flex, styles.recommendationHeader]}>
-           <TouchableOpacity onPress={()=>setPodcast(podcast, eventSource)}>
-           <Image style={[styles.recommendationImage]} source={{ uri: podcast.preview}} />
+           <TouchableOpacity  onPress={()=>{context.setPodcast(props.podcast)}}>
+           <Image style={[styles.recommendationImage]} source={{ uri: props.podcast.preview}} />
 
            </TouchableOpacity>
           <View style={[ styles.flex, styles.row, styles.recommendationOptions ]}>
             <Icon
-              name={podcast.saved ? 'bookmark' : 'bookmark-o'}
+              name={props.podcast.saved ? 'bookmark' : 'bookmark-o'}
               color={theme.colors.white}
               size={theme.sizes.font * 1.25}
             />
           </View>
         </View>
             <View style={[styles.flex, styles.column, styles.shadow, { justifyContent: 'space-evenly', padding: theme.sizes.padding / 2 }]}>
-              <Text style={{ fontSize: theme.sizes.font * 1.25, fontWeight: '500', paddingBottom: theme.sizes.padding / 4.5, }}>{podcast.title}</Text>
-              <Text style={{ color: theme.colors.caption }}>{podcast.location}</Text>
+              <Text style={{ fontSize: theme.sizes.font * 1.25, fontWeight: '500', paddingBottom: theme.sizes.padding / 4.5, }}>{props.podcast.title}</Text>
+              <Text style={{ color: theme.colors.caption }}>{props.podcast.location}</Text>
               <View style={[
                 styles.row,
                 { alignItems: 'center', justifyContent: 'space-between', marginTop: theme.sizes.margin }
               ]}>
                 
                 <Text style={{ color: theme.colors.black }}>
-                  {podcast.date}
+                  {props.podcast.date}
                 </Text>
               </View>
             </View>
-          </View>)
-          }
-          </PlayerContext.Consumer>
+          </View>
+          
           );
-    }
-  }
+    
+  });
 
 export default Podcast;

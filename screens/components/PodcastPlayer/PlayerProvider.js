@@ -1,16 +1,15 @@
 // @flow
-import React, {Component} from 'react';
+import React, {Component, useState, createContext, useReducer} from 'react';
 import {
   View, StyleSheet, Dimensions, StatusBar, Platform,
 } from 'react-native';
 //import { DangerZone } from 'expo';
-
-import PlayerContext from './PlayerContext';
 import PodcastPlayer from '../../PodcastPlayer'; //instead of Video Modal 
 import podcasts from './podcasts';
 import Animated, { Easing } from 'react-native-reanimated';
-
-
+import PlayerContext from './PlayerContext';
+import PlayerReducer from './PlayerReducer'
+import {SET_PODCAST} from './actionTypes'
 const { height } = Dimensions.get('window');
 //const { Animated, Easing } = DangerZone;
 const { Value, timing } = Animated;
@@ -24,78 +23,69 @@ type PlayerProviderState = {
   video: Video | null,
 };*/
 
-export default class PlayerProvider extends React.Component {
-    constructor(props)
-    {
-        super(props)
-        {
-            //animation = new Value(0);
-            this.state = {
-                
-                podcast: null,
-                eventSource: null,
-                setPodcast : (podcast, eventSource ) => {
-                  this.setState({ podcast }, this.togglePodcast, {eventSource});
-                  //console.log(this.state.eventSource)
-              
-                }, 
-                togglePodcast : () => {
-                  const { podcast } = this.state;
-                  const {eventSource} =this.state;
-                  timing(
-                    this.animation,
-                    {
-                      toValue: podcast ? 1 : 0,
-                      duration: 300,
-                      easing: Easing.inOut(Easing.ease),
-                    },
-                  ).start();
-                },
+
+const defaultState = {
+  podcast: {}, 
+  eventSource:null
+};
 
 
+//StateContext is for Global Player State
+//DispatchContext is for functions that can mutate the global state
+//const StateContext = React.createContext();
+//const DispatchContext = React.createContext();
+//HOC
+const PlayerProvider=({children})=>{
+  //const [state, dispatch] = useState({ ...defaultState });
+  //const {podcast} =state
 
-              };
+  const initialState ={
+    podcast: null
+  }
+  const [state, dispatch]= useReducer(PlayerReducer,initialState )
+  const {podcast} =state
+  {console.log("Inside Player Provider ")}
+  {console.log(state)}
+//Global setPodcastFunction which all the components below can use 
 
-        }
-    }
 
-    static propTypes={
-        //children: React.PropTypes.
-    }
-  
+function togglePodcast(podcast)  {
+    //const {podcast} =playerGlobalState;
+    animation = new Value(0);
 
-  animation = new Value(0);
-
-  /*setPodcast = (podcast, eventSource ) => {
-    this.setState({ podcast }, this.togglePodcast, {eventSource});
-    //console.log(this.state.eventSource)
-
-  };
-
-  togglePodcast = () => {
-    const { podcast } = this.state;
-    const {eventSource} =this.state;
     timing(
-      this.animation,
+      animation,
       {
         toValue: podcast ? 1 : 0,
         duration: 300,
         easing: Easing.inOut(Easing.ease),
       },
     ).start();
-  };*/
+  };
 
-  render() {
-    const { setPodcast, animation } = this;
-    const { children } = this.props ;
-    const  {podcast } = this.state;
-    const  {eventSource} =this.state;
+  const setPodcast =(podcast)=>
+  {
+    dispatch(
+      {
+        type: SET_PODCAST, 
+        payload: podcast
+      }
+    )
+    togglePodcast(podcast)
+
+  }
+  animation = new Value(0);
+
+  
+
+  
     const translateY = animation.interpolate({
       inputRange: [0, 1],
       outputRange: [height, 0],
     });
     return (
-      <PlayerContext.Provider value={this.state}>
+      <PlayerContext.Provider value={{podcast:podcast, setPodcast}}>
+      
         <StatusBar barStyle="dark-content" />
         <View style={styles.container}>
           <View style={StyleSheet.absoluteFill}>
@@ -107,22 +97,27 @@ export default class PlayerProvider extends React.Component {
                 style={{ transform: [{ translateY }] }}
               >
                 {
-                  podcast && <PodcastPlayer {...{ podcast }} />
+                  podcast && <PodcastPlayer {...{podcast}} />
                 }
               </Animated.View>
             )
           }
           {
-            !isOS && podcast && <PodcastPlayer {...{ podcast }} />
+            !isOS && podcast && <PodcastPlayer {...{podcast}} />
           }
         </View>
+
+       
       </PlayerContext.Provider>
     );
   }
-}
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
 });
+
+
+export { PlayerProvider};

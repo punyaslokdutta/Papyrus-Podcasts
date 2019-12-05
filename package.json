@@ -14,6 +14,7 @@
     "@react-native-firebase/firestore": "^6.0.1",
     "formik": "^1.5.8",
     "hex-to-rgba": "^1.0.2",
+    "moment": "^2.24.0",
     "native-base": "^2.10.0",
     "react": "^16.8.6",
     "react-moment": "^0.9.6",
@@ -34,8 +35,8 @@
     "react-native-vector-icons": "^6.0.2",
     "react-navigation": "^3.0.8",
     "react-navigation-drawer": "^2.2.2",
-    "yup": "^0.27.0",
-    "moment": "^2.24.0"
+    "redux-devtools-extension": "^2.13.8",
+    "yup": "^0.27.0"
   },
   "devDependencies": {
     "@babel/core": "7.5.5",

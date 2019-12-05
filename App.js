@@ -37,7 +37,7 @@ import ActivityScreen from './screens/ActivityScreen'
 import SettingsScreen from './screens/SettingsScreen'
 import editProfile  from './screens/components/Profile/editProfile'
 import firebaseApi, {FirebaseProvider} from './screens/config/Firebase'
-import PlayerProvider from './screens/components/PodcastPlayer/PlayerProvider';
+import {PlayerProvider} from './screens/components/PodcastPlayer/PlayerProvider';
 
 
 
@@ -49,7 +49,10 @@ const AuthStackNavigator= createStackNavigator(
   {
     
     SignIn: SignInScreen,
-    SignUp: SignUpScreen
+    SignUp: SignUpScreen, 
+    //BooksSelected: BooksSelectedScreen, 
+    //ChaptersSelected : ChaptersSelectedScreen, 
+    //AuthorsSelected: AuthorsSelectedScreen
   },
   {
     headerMode: 'none',

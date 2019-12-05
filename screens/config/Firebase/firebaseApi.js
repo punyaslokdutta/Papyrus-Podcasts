@@ -13,6 +13,7 @@ import {firebase} from '@react-native-firebase/auth';
 //HOC 
 const firebaseApi={
     
+    
      _signupWithEmail: async (email, password) =>{
         try {
           await auth().createUserWithEmailAndPassword(email, password);
