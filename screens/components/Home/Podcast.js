@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
   //const [podcastState, setPodcastState] =useState(props)
   console.log(props);
 
- const context = useContext(PlayerContext)
+ //const context = useContext(PlayerContext)
   //const {setPodcast} =playerGlobalDispatch;
 
 
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
           ]} key ={props.index}>
             
            <View style={[styles.flex, styles.recommendationHeader]}>
-           <TouchableOpacity  onPress={()=>{context.setPodcast(props.podcast)}}>
+           <TouchableOpacity  /*onPress={()=>{context.setPodcast(props.podcast)}}*/>
            <Image style={[styles.recommendationImage]} source={{ uri: props.podcast.preview}} />
 
            </TouchableOpacity>
