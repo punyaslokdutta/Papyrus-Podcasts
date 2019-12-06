@@ -311,19 +311,19 @@ class HomeScreen extends React.Component {
         });
         console.log('Retrieving Data');
         // Cloud Firestore: Query
-        let initialQuery = await firestore().collection('Books')
+        //let initialQuery = await firestore().collection('Books')
           
         
         // Cloud Firestore: Query Snapshot
-        let documentSnapshots = await initialQuery.get();
+        //let documentSnapshots = await initialQuery.get();
         // Cloud Firestore: Document Data
-        let documentData = documentSnapshots.docs.map(document => document.data());
+        //let documentData = documentSnapshots.docs.map(document => document.data());
         // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
-        let lastVisible = documentData[documentData.length - 1].id;
+        //let lastVisible = documentData[documentData.length - 1].id;
         // Set State
         this.setState({
-          mocks: documentData,
-          lastVisible: lastVisible,
+         // mocks: documentData,
+          //lastVisible: lastVisible,
           loading: false,
         });
       }

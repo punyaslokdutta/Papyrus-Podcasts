@@ -46,8 +46,8 @@ export default class PodcastContent extends React.Component {
         <ScrollView style={styles.content}>
         <View style={{flexDirection: "row", alignItems: "center", paddingLeft:80}}>
         <View style={{ alignItems: "center", marginTop: 8}}>
-                        <Text style={[styles.textDark, { fontSize: 16, fontWeight: "500" }]}>Boggart in the Wardrobe</Text>
-                        <Text style={[styles.text, { fontSize: 10, marginTop: 4}]}>Jeremy Blake</Text>
+    <Text style={[styles.textDark, { fontSize: 16, fontWeight: "500" }]}>{this.props.podcast.title}</Text>
+    <Text style={[styles.text, { fontSize: 10, marginTop: 4}]}>{this.props.podcast.username}</Text>
                     </View>
         <View  style={{paddingLeft:10}}>
         
@@ -57,7 +57,7 @@ export default class PodcastContent extends React.Component {
         
 
 <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: 16 }}>
-                    <TouchableOpacity>
+                    <TouchableOpacity >
                     <Icon name="undo"  size={28} label="10" color="black" />
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.playButtonContainer}>

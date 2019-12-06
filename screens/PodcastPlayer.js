@@ -19,8 +19,8 @@ import { PanGestureHandler, State } from 'react-native-gesture-handler';
 //const { State, PanGestureHandler } = GestureHandler;
 const { width, height } = Dimensions.get('window');
 const { statusBarHeight } = StatusBar.currentHeight
-const minHeight = 64;
-const midBound = height -120;
+const minHeight = 55;
+const midBound = height -135;
 const upperBound = midBound + minHeight;
 const {
   Extrapolate,
@@ -109,7 +109,7 @@ export default class PodcastPlayer extends React.Component{
     super(props);
     this.state=
     {
-      title: "Book Podcast", 
+     // title: "Book Podcast", 
         trackLength: 300,
         timeElapsed: "0:00",
         timeRemaining: "5:00",
@@ -234,17 +234,17 @@ export default class PodcastPlayer extends React.Component{
           >
             <Animated.View style={{ backgroundColor: 'white', width: videoContainerWidth }}>
               <Animated.View style={{ ...StyleSheet.absoluteFillObject, opacity: playerControlOpaciy }}>
-                <PlayerControls title={this.state.title} onPress={this.slideUp} />
+                <PlayerControls title={this.props.podcast.title} onPress={this.slideUp} />
               </Animated.View>
               <Animated.Image
-                source={require('../assets/images/harrypotter2.jpeg')}
+                source={this.props.podcast.thumbnail}
                 style={{ width: videoWidth, height: videoHeight }}
               />
               
             </Animated.View>
             <Animated.View style={{ backgroundColor: 'white', width: videoContainerWidth, height: containerHeight }}>
               <Animated.View style={{ opacity }}>
-                <PodcastContent trackLength={this.state.trackLength} />
+                <PodcastContent trackLength={this.state.trackLength} podcast={this.props.podcast} />
               </Animated.View>
             </Animated.View>
           </Animated.View>

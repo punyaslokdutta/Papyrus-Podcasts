@@ -39,7 +39,8 @@ export const PLACEHOLDER_WIDTH = width / 3;
   
    //const { title, onPress } = this.props;
     return (
-      <TouchableWithoutFeedback onPress={props.onPress}>
+      
+      <TouchableWithoutFeedback onPress={props.onPress} style={{borderColor:'black'}}>
         <View style={styles.container}>
           <View style={styles.placeholder} />
           <Text style={styles.title} numberOfLine={3}>{props.title}</Text>
@@ -49,6 +50,7 @@ export const PLACEHOLDER_WIDTH = width / 3;
                 </TouchableWithoutFeedback>
         </View>
       </TouchableWithoutFeedback>
+      
     );
   
 });
