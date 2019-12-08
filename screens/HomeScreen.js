@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import { StyleSheet, Text, View, SafeAreaView, TextInput, Platform, StatusBar,TouchableOpacity, ScrollView, Image,Dimensions, Animated } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, TextInput, Platform, StatusBar,TouchableOpacity, ScrollView, Image,Dimensions, Animated,SectionList,ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import {Container, Content, Card, Button} from 'native-base'
@@ -263,9 +263,9 @@ class HomeScreen extends React.Component {
   {
     super(props)
     {
-      //this.renderHeader = this.renderHeader.bind(this);
       this.state={
         books : [],
+        headerPodcasts : [],
         podcasts : [],
         limit : 4,
         lastVisible: null,
@@ -273,87 +273,41 @@ class HomeScreen extends React.Component {
         refreshing: false,
       };
     }
-    //const ref = firestore().collection('Books');
   }
 
-  
- 
   static navigationOptions=({navigation})=>({
     title:"Home", 
     drawerIcon:()=> <Icon name="home" size={24} style={{color:'white'}}/>
   });
 
-
-
-    // componentWillMount()
-    // {
-    //     this.startHeaderHeight = 60
-    //     if(Platform.OS=='Android')
-    //     {
-    //         this.startHeaderHeight= StatusBar.currentHeight
-    //     }
-    // }
-    
     componentDidMount = async () => {
       try {
-        // Cloud Firestore: Initial Query
         this.retrieveData();
-       // console.log(this.state)
       }
       catch (error) {
         console.log(error);
       }
     };
 
-    //retrieve data
     retrieveData = async () => {
       try {
-        // Set State: Loading
         this.setState({
           loading: true,
         });
         console.log('Retrieving Data');
-        // Cloud Firestore: Query
         const  userid = this.props.firebase._getUid();
         let query = await firestore().collection('users').doc(userid).collection('privateUserData').doc('privateData').onSnapshot(
           (doc)=> {
           books_data = doc._data.book_recommendations;
-        // ind = 0;
-        // for(x in query._data.book_recommendations){
-        //   let str1 = query._data.book_recommendations[ind];
-        //   //let query1 = await firestore().collection('Books').doc(str1["id"]).get();    
-        //   books_data[ind] = str1;
-        //   ind = ind + 1;
-        // }
-          podcasts_data = doc._data.podcast_recommendations;
-        
-       // ind2 = 0;
-        // for(x in query._data.podcast_recommendations){
-        //   let str2 = query._data.podcast_recommendations[ind2];
-        //   //let query3 = await firestore().collectionGroup('Podcasts').where('PodcastID','==',str2).get();    
-        //   podcasts_data[ind2] = str2;
-        //   ind2 = ind2 + 1;
-        // }
-        
-        //let query2 = await firestore().collectionGroup('Podcasts').where('PodcastID','==',"0GF46N2E5d91idp51NQ8");
-        //let q1 = await query2.get();
-        //let initialQuery_books = await firestore().collection('Books').where('Book_Name','==',"Sapiens")
-        //let initialQuery_podcasts = await firestore().collection('Books').doc('7gGB4CjIiGRgB8yYD8N3')
-                                      //.collection('Podcasts')
-        // Cloud Firestore: Query Snapshot
-        //let documentSnapshots_books = await initialQuery_books.get();
-        //let documentSnapshots_podcasts = await initialQuery_podcasts.get();
-        // Cloud Firestore: Document Data
-        //let documentData_books = documentSnapshots_books.docs.map(document => document.data());
-        //let documentData_podcasts = documentSnapshots_podcasts.docs.map(document => document.data());
-        // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
-        //let lastVisible = documentData_books[documentData_books.length - 1].id;
-        // Set State
+          headerPodcasts_data = doc._data.podcast_recommendations.slice(0,20);
+          podcasts_data = doc._data.podcast_recommendations.slice(0,4);
+      
         this.setState({
           books: books_data,
+          headerPodcasts: headerPodcasts_data,
           podcasts: podcasts_data,
-         // lastVisible: lastVisible,
-          loading: false,
+          lastVisible: 0,
+          loading: false
         });
       })
       }
@@ -362,16 +316,42 @@ class HomeScreen extends React.Component {
       }
     };
 
-    onPressed()
-    {
-        console.log(Info)
-        
-        /*this.props.navigation.navigate(
-            'PodcastPlayer',
-            {ImageUri: ImageUri}
-          );*/
-    }
-    renderHeader=()=>
+    retrieveMore = async () => {
+      try
+       {
+       this.setState({
+         refreshing: true,
+          }); 
+          const  userid = this.props.firebase._getUid();
+         
+          var index = this.state.lastVisible;
+          var minIndex = Math.min(index+4,24);
+          try{
+            let query = await firestore().collection('users').doc(userid).collection('privateUserData').doc('privateData').onSnapshot(
+              (doc)=> {
+                podcasts_data = doc._data.podcast_recommendations.slice(index,minIndex);
+                let lastVisible = this.state.lastVisible + 4;
+ 
+       this.setState({
+         podcasts: [...this.state.podcasts, ...podcasts_data],
+         //chapterPodcasts: documentData_chapterPodcasts,
+         lastVisible:lastVisible,
+         refreshing:false
+       });
+              });    
+         }
+         catch(error)
+         {
+           console.log(error);
+         }
+      
+       }
+       catch(error){
+       console.log(error);
+       }
+     }
+
+    renderMainHeader=()=>
     {
       return(
       <View style={styles.AppHeader}>
@@ -392,63 +372,126 @@ class HomeScreen extends React.Component {
     { 
       return (<BookList navigation={this.props.navigation} destinations={this.state.books} />)
     }
-    renderPodcasts=()=>
-    {
-       return this.state.podcasts.map((item, index)=>
-      {
-        return(<Podcast item={item} index={index} navigation={this.props.navigation}/>)
-      }) 
 
+    renderData = ({ section, index }) => {
+      const numColumns  = 2;
+  
+      if (index % numColumns !== 0) return null;
+  
+      const items = [];
+  
+      for (let i = index; i < index + numColumns; i++) {
+        if (i >= section.data.length) {
+          break;
+        }
+        items.push(<Podcast item={section.data[i]} index={index} navigation={this.props.navigation} />);
+      }
+      return (
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between"
+          }}
+        >
+          {items}
+        </View>
+      );
+    };
+    
+    renderHeader=()=>
+    {
+      var podcasts1 = this.state.headerPodcasts.slice(0,4);
+      var podcasts2 = this.state.headerPodcasts.slice(4,8);
+      var podcasts3 = this.state.headerPodcasts.slice(8,12);
+      var podcasts4 = this.state.headerPodcasts.slice(12,16);
+      var podcasts5 = this.state.headerPodcasts.slice(16,20);
+      return(
+        // <View><Text>PODCASTS</Text></View>
+        <View style={{ paddingBottom:50, paddingRight:25, marginTop: Platform.OS == 'ios' ? 20 : 30 }}>
+          
+        <SectionList
+          showsVerticalScrollIndicator={false}
+          ItemSeparatorComponent={this.FlatListItemSeparator}
+          sections={[
+            { title: 'Username Starts with A', data: podcasts1 },
+            { title: 'Username Starts with B', data: podcasts2 },
+            { title: 'Username Starts with C', data: podcasts3 },
+            { title: 'Username Starts with D', data: podcasts4 },
+            { title: 'Username Starts with F', data: podcasts5 },
+          ]}
+          renderSectionHeader={({ section }) => (
+            <ScrollView>
+                <Text style={{fontSize: theme.sizes.font * 1.4, fontWeight: "bold",paddingHorizontal: 30,paddingTop:20,paddingBottom:10,   textShadowColor:'black',fontFamily:'sans-serif-light'}}>Record Book Podcasts
+                </Text>
+            {this.renderSectionBooks()}
+            <Text style={{fontSize: theme.sizes.font * 1.4,fontWeight: "bold", paddingLeft: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black',fontFamily:'sans-serif-light'}}>Discover Podcasts
+            </Text>
+            </ScrollView>
+          )}
+          
+          renderItem={this.renderData}
+          keyExtractor={(item, index) => index}
+        />
+        
+      </View>
+      )
+    }
+    
+    renderDatas=({item,index})=>
+    {
+       return(
+         <View>
+        <Podcast item={item} index={index} navigation={this.props.navigation}/>
+        </View>
+       )
     }
 
-    renderSectionPodcasts=()=>
+    renderFooter = () => {
+      try {
+        // Check If Loading
+        if (this.state.refreshing) {
+          return (
+            <ActivityIndicator />
+          )
+        }
+        else {
+          return null;
+        }
+      }
+      catch (error) {
+        console.log(error);
+      }
+    }
+
+    renderPodcasts=()=>
     {
-      return (
-        <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
-        <View
-          style={[
-            styles.row,
-            styles.recommendedHeader
-          ]}
-        >
-          <Text style={{ fontSize: theme.sizes.font * 1.4 }}>Discover Podcasts</Text>
-        </View>
-        <View style={{flexDirection:'row' , flexWrap:'wrap',}}>{this.renderPodcasts()}</View>
-        </View>
-        
+      return (  
+        <FlatList
+        data={this.state.podcasts}s
+        renderItem={this.renderDatas}
+        numColumns={2}
+        showsVerticalScrollIndicator={false}
+        keyExtractor={item => item.PodcastID}
+        ListHeaderComponent={this.renderHeader}
+         ListFooterComponent={this.renderFooter}
+        onEndReached={this.retrieveMore}
+        onEndReachedThreshold={0.5}
+        refreshing={this.state.refreshing}
+      />   
       )
     }
 
-
-    
-   
     render() {
-      return (
-        
-
+      if(this.state.loading === true)
+        return <ActivityIndicator/>
+      else
+        return (
         <SafeAreaView style={{flex:1, backgroundColor:'#F5FCFF'}}>
-                  {this.renderHeader()} 
-        <ScrollView  scrollEventThrottle={16} style={{backgroundColor: '#F5FCFF'}} >
-        <View style={{flex:1 , backgroundColor:'white', paddingTop:10}}>
-      <Text style={{fontSize: theme.sizes.font * 1.4, fontWeight:"200", paddingHorizontal: 38,paddingTop:10,paddingBottom:10,   textShadowColor:'black',fontFamily:'sans-serif-light'}}>
-          Record Book Podcasts
-      </Text>
-      </View>
-        
-       
-        <View >
-                  {this.renderSectionBooks()}
-       </View>
-       <View style={{flexDirection:'row' , flexWrap:'wrap', paddingTop:5}}>
-                  {this.renderSectionPodcasts()}
-       </View>
-
-
-        
-        </ScrollView>
-
-        
-        </SafeAreaView>
+           {this.renderMainHeader()}
+      <View style = {{paddingBottom:50}}>
+        {this.renderPodcasts()}
+        </View>
+  </SafeAreaView> 
       );
     }
   }
