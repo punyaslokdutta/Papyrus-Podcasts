@@ -1,5 +1,7 @@
-import React, { Component } from 'react'
-import { Text, StyleSheet, View,Image, Dimensions, ScrollView, TouchableOpacity, Animated } from 'react-native'
+import React, { Component } from 'react';
+import firestore from '@react-native-firebase/firestore';
+import ActivityIndicator from 'react-native';
+import { Text, StyleSheet, View, Animated, Image, Dimensions, ScrollView, TouchableOpacity } from 'react-native'
 import {Card, CardItem,  Body} from 'native-base'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -86,6 +88,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 5,
   },
+  indicator: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 80
+  },
   dotsContainer: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -115,17 +123,72 @@ const styles = StyleSheet.create({
 });
 
 class RecordBook extends Component {
+
+  constructor(props)
+  {
+    super(props)
+    {
+      //this.renderHeader = this.renderHeader.bind(this);
+      this.state={
+        loading: true, 
+        article: null
+      };
+    }
+    //const ref = firestore().collection('Books');
+  }
   scrollX = new Animated.Value(0);
 
-  
+ 
+
+  //component did mount
+  componentDidMount = async () => {
+    try {
+      // Cloud Firestore: Initial Query
+      this.retrieveData();
+      this.setState({
+        loading: false
+
+      })
+    }
+    catch (error) {
+      console.log(error);
+    }
+  };
+
+
+  retrieveData = async () => {
+    try {
+      
+      console.log('Retrieving Data');
+      // Cloud Firestore: Query
+      console.log(this.props);
+      //const { navigation } = this.props;
+      const bookid = this.props.navigation.state.params;
+      let book_data = await firestore().collection('Books').where('BookID','==', bookid.book).get();
+      // let data = await book_data.get();
+      console.log(book_data.docs[0])
+     // let data = book_data.map(document => document.data());
+      this.setState({
+        article : book_data.docs[0]._data
+       // loading: false
+      });
+    }
+    catch (error) {
+      console.log(error);
+    }
+  };
+
+
   renderDots = () => {
-    const { navigation } = this.props;
-    const article = navigation.getParam('article');
+   // const { navigation } = this.props;
+    const bookid = this.props.navigation.params;
+
     const dotPosition = Animated.divide(this.scrollX, width);
+
 
     return (
       <View style={[ styles.flex, styles.row, styles.dotsContainer ]}>
-        {article.Book_Pictures_Array.map((item, index) => {
+        {this.state.article.Book_Pictures_Array.map((item, index) => {
           const opacity = dotPosition.interpolate({
             inputRange: [index - 1, index, index + 1],
             outputRange: [0.5, 1, 0.5],
@@ -162,13 +225,16 @@ class RecordBook extends Component {
 
   render() {
     const { navigation } = this.props;
-    const article = navigation.getParam('article');
+    const bookid = this.props.navigation.state.params;
+  
 
-    return (
-      <ScrollView  scrollEventThrottle={16} >
-      <View style={styles.flex}>
-        <View style={[styles.flex]}>
-          <ScrollView
+    if(this.state.article) 
+    { 
+      return (
+        <ScrollView  scrollEventThrottle={16} >
+        <View style={styles.flex}>
+          <View style={[styles.flex]}>
+            <ScrollView
             horizontal
             pagingEnabled
             scrollEnabled
@@ -178,7 +244,7 @@ class RecordBook extends Component {
             onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX } } }])}
           >
             {
-              article.Book_Pictures_Array.map((img, index) => 
+              this.state.article.Book_Pictures_Array.map((img, index) => 
                 <Image
                   key={`${index}-${img}`}
                   source={{ uri: img }}
@@ -192,15 +258,15 @@ class RecordBook extends Component {
         </View>
         <View style={[styles.flex, styles.content]}>
           <View style={[styles.flex, styles.contentHeader]}>
-            <Image style={[styles.avatar, styles.shadow]} source={{ uri: article.Author_DP_Link }} />
-            <Text style={styles.title}>{article.Book_Name}</Text>
+            <Image style={[styles.avatar, styles.shadow]} source={{ uri: this.state.article.Author_DP_Link }} />
+            <Text style={styles.title}>{this.state.article.Book_Name}</Text>
             <View style={[
               styles.row,
               { alignItems: 'center', marginVertical: theme.sizes.margin / 2, flexDirection:'row' }
             ]}>
-              {this.renderRatings(article.Book_Rating)}
+              {this.renderRatings(this.state.article.Book_Rating)}
               <Text style={{ color: theme.colors.active }}>
-                {article.Book_Rating} 
+                {this.state.article.Book_Rating} 
               </Text>
               <View style={{paddingLeft:10}}>
               
@@ -244,7 +310,7 @@ class RecordBook extends Component {
             <TouchableOpacity>
               <Text style={{fontSize:20, paddingBottom:10, fontFamily:'san-serif-light'}}>Description</Text>
               <Text style={{fontSize:15}}>
-                {article.About_the_Author.split('').slice(0, 180)}..
+                {this.state.article.About_the_Author.split('').slice(0, 180)}..
                 <Text style={{color: theme.colors.active}}> Read more</Text>
               </Text>
             </TouchableOpacity>
@@ -255,7 +321,7 @@ class RecordBook extends Component {
             <TouchableOpacity>
               <Text style={{fontSize:20, paddingBottom:10, fontFamily:'san-serif-light'}}>About the Author(s)</Text>
               <Text style={{fontSize:15}}>
-                {article.About_the_Author.split('').slice(0, 180)}..
+                {this.state.article.About_the_Author.split('').slice(0, 180)}..
                 <Text style={{color: theme.colors.active}}> Read more</Text>
               </Text>
             </TouchableOpacity>
@@ -266,6 +332,13 @@ class RecordBook extends Component {
       </View>
       </ScrollView>
     )
+  }
+  else
+  {
+    return (
+    <View></View>
+    );
+  }
   }
 }
 

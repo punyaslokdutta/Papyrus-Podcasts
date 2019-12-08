@@ -307,11 +307,11 @@ class BookList extends Component {
     console.log("dwdeeedee")
     console.log(item)     
     return (
-      <TouchableOpacity activeOpacity={0.8} onPress={() => this.props.navigation.navigate('RecordBook', { article: item })}>
+      <TouchableOpacity activeOpacity={0.8} onPress={() => this.props.navigation.navigate('RecordBook', { book : item.BookID })}>
         <ImageBackground
           style={[styles.flex, styles.destination, styles.shadow]}
           imageStyle={{ borderRadius: theme.sizes.radius }}
-          source={{ uri: item.Book_Pictures_Array['0'] }}
+          source={{ uri: item.Book_Picture }}
         >
           <View style={[styles.row, { justifyContent: 'space-between' }]}>
             <View style={{ flex: 0 }}>
@@ -325,7 +325,7 @@ class BookList extends Component {
                   size={theme.sizes.font * 0.8}
                   color={theme.colors.white}
                 />
-                <Text> {item.language}</Text>
+                <Text> {item.Language}</Text>
               </Text>
             </View>
             <View style={{ flex: 0, justifyContent: 'center', alignItems: 'flex-end', }}>

@@ -7,6 +7,8 @@ import { Dimensions, StyleSheet , Image, StatusBar,SafeAreaView,  TouchableOpaci
 
 import Slider from "react-native-slider";
 import Moment from "moment";
+import { HeaderBackButton } from 'react-navigation';
+import HomeScreen from './HomeScreen'
 
 
 
@@ -91,6 +93,12 @@ function runSpring(clock, value, dest) {
 };
 */
 export default class PodcastPlayer extends React.Component{
+
+  static navigationOptions = ({navigation}) => {
+    return{
+      headerLeft:(<HeaderBackButton onPress={()=>{navigation.navigate('HomeScreen')}}/>)
+   }
+  }
   translationY = new Value(0);
 
   velocityY = new Value(0);
@@ -234,10 +242,10 @@ export default class PodcastPlayer extends React.Component{
           >
             <Animated.View style={{ backgroundColor: 'white', width: videoContainerWidth }}>
               <Animated.View style={{ ...StyleSheet.absoluteFillObject, opacity: playerControlOpaciy }}>
-                <PlayerControls title={this.props.podcast.title} onPress={this.slideUp} />
+                <PlayerControls title={this.props.podcast.Podcast_Name} onPress={this.slideUp} />
               </Animated.View>
               <Animated.Image
-                source={this.props.podcast.thumbnail}
+                source={{uri:this.props.podcast.Podcast_Pictures[0]}}
                 style={{ width: videoWidth, height: videoHeight }}
               />
               

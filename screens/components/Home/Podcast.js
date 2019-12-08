@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
     },
     recommendation: {
       width: (width - (theme.sizes.padding * 2)) / 2,
+      height: (height)/3,
       marginHorizontal: 0,
       backgroundColor: theme.colors.white,
       overflow: 'hidden',
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
 };*/
 
  //const eventSource="Podcast"
- //const areEqual = (prevProps, nextProps) => true;
+ const areEqual = (prevProps, nextProps) => true;
  const Podcast= React.memo((props)=> {
   //const [ playerGlobalState,  playerGlobalDispatch] = usePlayerContext();
 
@@ -168,19 +169,7 @@ const styles = StyleSheet.create({
 
      setPodcast(podcast, eventSource);
     }*/
-    
-
-    
-
-
-    
-        return (
-
-          
-
-          
-
-            
+        return (   
           <View style={[
             styles.flex, styles.column, styles.recommendation, styles.shadow, 
             {marginLeft: theme.sizes.margin },
@@ -189,7 +178,7 @@ const styles = StyleSheet.create({
             
            <View style={[styles.flex, styles.recommendationHeader]}>
            <TouchableOpacity  onPress={()=>{context.setPodcast(props.podcast)}}>
-           <Image style={[styles.recommendationImage]} source={props.podcast.thumbnail} />
+           <Image style={[styles.recommendationImage]} source={{ uri: props.podcast.Podcast_Pictures["0"]}} />
 
            </TouchableOpacity>
           <View style={[ styles.flex, styles.row, styles.recommendationOptions ]}>
@@ -201,15 +190,15 @@ const styles = StyleSheet.create({
           </View>
         </View>
             <View style={[styles.flex, styles.column, styles.shadow, { justifyContent: 'space-evenly', padding: theme.sizes.padding / 2 }]}>
-              <Text style={{ fontSize: theme.sizes.font * 1.25, fontWeight: '500', paddingBottom: theme.sizes.padding / 4.5, }}>{props.podcast.title}</Text>
-              <Text style={{ color: theme.colors.caption }}>{props.podcast.location}</Text>
+              <Text style={{ fontSize: theme.sizes.font * 1.25, fontWeight: '500', paddingBottom: theme.sizes.padding / 4.5, }}>{props.podcast.Podcast_Name}</Text>
+              <Text style={{ color: theme.colors.caption }}>{props.podcast.Language}</Text>
               <View style={[
                 styles.row,
                 { alignItems: 'center', justifyContent: 'space-between', marginTop: theme.sizes.margin }
               ]}>
                 
                 <Text style={{ color: theme.colors.black }}>
-                  {props.podcast.date}
+                  {props.podcast.Timestamp}
                 </Text>
               </View>
             </View>
@@ -217,6 +206,6 @@ const styles = StyleSheet.create({
           
           );
     
-  });
+  }, areEqual);
 
 export default Podcast;

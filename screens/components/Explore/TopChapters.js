@@ -4,12 +4,30 @@ import React, {Component} from 'react';
 import { StyleSheet, Text, View, Image} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 class TopChapters extends Component {
    
+  constructor(props)
+  {
+      super(props)
+      {
+       state:{
+         key: this.props.index
+         navigation: this.props.navigation
+       }
+      }
+  }
+  openPodcastPlayer()
+  {
+
+    this.props.navigation.navigate('PodcastPlayer',podcast=this.props.item.podcastID);
+
+  }
     render() {
+      const item = this.props.item
+      console.log(item)
         /*const shadowOpt = {
 			width:160,
 			height:170,
@@ -23,10 +41,15 @@ class TopChapters extends Component {
 		}*/
       return (
         
-        <View style={{height:210, width:130, marginLeft:20, borderwidth:4, borderColor:'#dddddd',overflow:'hidden', paddingRight:10,borderRadius:10}}>
-                        <Image source={this.props.ImageUri} style={{width:130, height:210, resizeMode:'cover',  overflow:'hidden', paddingRight:10}}/>
-                    </View>
-
+        // <View style={{height:210, width:130, marginLeft:20, borderwidth:4, borderColor:'#dddddd',overflow:'hidden', paddingRight:10,borderRadius:10}}>
+        //                 <Image source={this.props.ImageUri} style={{width:130, height:210, resizeMode:'cover',  overflow:'hidden', paddingRight:10}}/>
+        //             </View>
+       <View style={{height:210, width:130, marginLeft:20, borderwidth:4, borderColor:'#dddddd',overflow:'hidden', paddingRight:10,borderRadius:10}}>
+       <TouchableOpacity onPress={()=>this.openPodcastPlayer()}>
+       <Image style={{width:130, height:210, resizeMode:'cover',  overflow:'hidden', paddingRight:10}} source={{ uri: item.Chapter_Pictures_Array["0"] }} />
+ 
+       </TouchableOpacity>
+       </View>
                  
       );
     }

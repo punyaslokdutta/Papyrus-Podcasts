@@ -12,6 +12,7 @@
     "@react-native-firebase/app": "^6.0.1",
     "@react-native-firebase/auth": "^6.0.1",
     "@react-native-firebase/firestore": "^6.0.1",
+    "faker": "^4.1.0",
     "formik": "^1.5.8",
     "hex-to-rgba": "^1.0.2",
     "moment": "^2.24.0",

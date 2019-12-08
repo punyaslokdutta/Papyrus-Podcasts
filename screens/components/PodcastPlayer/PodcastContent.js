@@ -46,8 +46,8 @@ export default class PodcastContent extends React.Component {
         <ScrollView style={styles.content}>
         <View style={{flexDirection: "row", alignItems: "center", paddingLeft:80}}>
         <View style={{ alignItems: "center", marginTop: 8}}>
-    <Text style={[styles.textDark, { fontSize: 16, fontWeight: "500" }]}>{this.props.podcast.title}</Text>
-    <Text style={[styles.text, { fontSize: 10, marginTop: 4}]}>{this.props.podcast.username}</Text>
+    <Text style={[styles.textDark, { fontSize: 16, fontWeight: "500" }]}>{this.props.podcast.Podcast_Name}</Text>
+    <Text style={[styles.text, { fontSize: 10, marginTop: 4}]}>{this.props.podcast.Language}</Text>
                     </View>
         <View  style={{paddingLeft:10}}>
         

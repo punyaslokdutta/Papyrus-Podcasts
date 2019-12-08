@@ -40,7 +40,9 @@ const PlayerProvider=({children})=>{
   //const {podcast} =state
 
   const initialState ={
-    podcast: null
+    podcast: null, 
+    isPlaying : false, 
+    isBuffering: false
   }
   const [state, dispatch]= useReducer(PlayerReducer,initialState )
   const {podcast} =state
