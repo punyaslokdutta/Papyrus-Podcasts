@@ -4,7 +4,7 @@ import rgba from 'hex-to-rgba';
 //import Icon from 'react-native-vector-icons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 // check this lib for more options
-import { CircularProgress } from 'react-native-circular-progress';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
 
 import { Block, Badge, Card, Text, Progress } from './components/statistics/components';
 import { theme, mocks } from './components/statistics/constants';
@@ -63,14 +63,14 @@ export default class StatisticsScreen  extends Component {
     return (
       <Card shadow style={{ paddingVertical: theme.sizes.base * 2}}>
         <Block center>
-          <CircularProgress
+          <AnimatedCircularProgress
             size={214} // can use  with * .5 => 50%
             fill={85} // percentage
             lineCap="round" // line ending style
             rotation={220}
             arcSweepAngle={280}
             width={theme.sizes.base}
-            tintColor={theme.colors.primary} // gradient is not supported :(
+            tintColor={theme.colors.primary} // gradient is not supported
             backgroundColor={theme.colors.gray3}
             backgroundWidth={theme.sizes.base / 2}
           >
@@ -80,7 +80,7 @@ export default class StatisticsScreen  extends Component {
                 <Text h3 transform="uppercase">good</Text>
               </Block>
             )}
-          </CircularProgress>
+          </AnimatedCircularProgress>
         </Block>
 
         <Block center>

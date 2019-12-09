@@ -8,6 +8,14 @@ global.__debug__={require: require};
 Object.defineProperty(process, "versions", {
     value: undefined
 });
+// TODO: Replace by url.fileURLToPath method when Node 10 LTS become deprecated
+function fileUrlToPath(url) {
+  if (process.platform === 'win32') {
+      return url.toString().replace('file:///', '');
+  } else {
+    return url.toString().replace('file://', '');
+  }
+}
 function getNativeModules() {
     var NativeModules;
     try {
@@ -22,7 +30,7 @@ function getNativeModules() {
             for (var i = 0; i < ids.length; i++) {
               if (modules[ids[i]].verboseName) {
                  var packagePath = new String(modules[ids[i]].verboseName);
-                 if (packagePath.indexOf("react-native/Libraries/BatchedBridge/NativeModules.js") > 0) {
+                 if (packagePath.indexOf('react-native/Libraries/BatchedBridge/NativeModules.js') > 0) {
                    nativeModuleId = parseInt(ids[i], 10);
                    break;
                  }
@@ -69,10 +77,14 @@ if (!self.postMessage) {
 var importScripts = (function(){
     var fs=require('fs'), vm=require('vm');
     return function(scriptUrl){
-        var scriptCode = fs.readFileSync(scriptUrl, "utf8");
-        vm.runInThisContext(scriptCode, {filename: scriptUrl});
+        scriptUrl = fileUrlToPath(scriptUrl);
+        var scriptCode = fs.readFileSync(scriptUrl, 'utf8');
+        // Add a 'debugger;' statement to stop code execution
+        // to wait for the sourcemaps to be processed by the debug adapter
+        vm.runInThisContext('debugger;' + scriptCode, {filename: scriptUrl});
     };
 })();
+
 // Worker is ran as nodejs process, so console.trace() writes to stderr and it leads to error in native app
 // To avoid this console.trace() is overridden to print stacktrace via console.log()
 // Please, see Node JS implementation: https://github.com/nodejs/node/blob/master/lib/internal/console/constructor.js
@@ -92,6 +104,7 @@ console.trace = (function() {
         }
     };
 })();
+
 // As worker is ran in node, it breaks broadcast-channels package approach of identifying if it’s ran in node:
 // https://github.com/pubkey/broadcast-channel/blob/master/src/util.js#L64
 // To avoid it if process.toString() is called if will return empty string instead of [object process].
@@ -105,20 +118,19 @@ Object.prototype.toString = function() {
 };
 
 
+"use strict";
+
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  */
 
 /* global __fbBatchedBridge, self, importScripts, postMessage, onmessage: true */
 
 /* eslint no-unused-vars: 0 */
-'use strict';
-
 onmessage = function () {
   var visibilityState;
 

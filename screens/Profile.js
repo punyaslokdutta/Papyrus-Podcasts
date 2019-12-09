@@ -1,101 +1,18 @@
 
 
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, Dimensions, ScrollView} from 'react-native';
+import firestore from '@react-native-firebase/firestore';
+import { StyleSheet, Text, View, Image, TouchableOpacity,FlatList,  Dimensions,SafeAreaView, ScrollView,ActivityIndicator} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { Container, Header, Left, Right, Content , Button,Card, CardItem, Thumbnail, Body} from 'native-base';
 import PodcastPlayer from './PodcastPlayer'
 import Podcast from './components/Home/Podcast'
 import editProfile from './components/Profile/editProfile'
+import firebaseApi from './config/Firebase/firebaseApi'
+import {withFirebaseHOC} from '../screens/config/Firebase'
 
 
-const mocks = [
-  {
-    id: 1,
-    user: {
-      name: 'Lelia Chavez',
-      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-    },
-    saved: true,
-    date: "12/7/2019",
-    location: 'Santorini, Greece',
-    temperature: 34,
-    title: 'Santorini',
-    description: 'Santorini is one of the Cyclades islands in the Aegean Sea. It was devastated by a volcanic eruption in the 16th century BC, forever shaping its rugged landscape. The whitewashed, cubiform houses of its 2 principal towns, Fira and Oia, cling to cliffs above an underwater caldera (crater). They overlook the sea, small islands to the west and beaches made up of black, red and white lava pebbles.',
-    rating: 4.3,
-    reviews: 3212,
-    preview: 'https://www.facebook.com/photo.php?fbid=2032547933441692&set=a.437106322985869&type=3&theater',
-    images: [
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-    ]
-  },
-  {
-    id: 2,
-    user: {
-      name: 'Lelia Chavez',
-      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-    },
-    saved: false,
-    date: "12/7/2019",
-    location: 'Loutraki, Greece',
-    temperature: 34,
-    title: 'Loutraki',
-    description: 'This attractive small town, 80 kilometers from Athens',
-    rating: 4.6,
-    reviews: 3212,
-    preview: 'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
-    images: [
-      'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1446903572544-8888a0e60687?auto=format&fit=crop&w=800&q=80',
-    ]
-  },
-  {
-    id: 3,
-    user: {
-      name: 'Lelia Chavez',
-      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-    },
-    saved: true,
-    date: "12/7/2019",
-    location: 'Santorini, Greece',
-    temperature: 34,
-    title: 'Santorini',
-    description: 'Santorini - Description',
-    rating: 3.2,
-    reviews: 3212,
-    preview: 'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-    images: [
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-    ]
-  },
-  {
-    id: 4,
-    user: {
-      name: 'Lelia Chavez',
-      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-    },
-    location: 'Loutraki, Greece',
-    saved: true,
-    date: "12/7/2019",
-    temperature: 34,
-    title: 'Loutraki',
-    description: 'This attractive small town, 80 kilometers from Athens',
-    rating: 5,
-    reviews: 3212,
-    preview: 'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
-    images: [
-      'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1446903572544-8888a0e60687?auto=format&fit=crop&w=800&q=80',
-    ]
-  },
-]
 
 
 
@@ -113,17 +30,106 @@ class Profile extends React.Component {
    {
      super(props)
      {
+
       this.state={
         activeIndex:0,
-        mocks:mocks, 
-       // navigation: this.props.navigation,
+        bookPodcasts:[], 
+        chapterPodcasts:[],
+        limit:6,
+        lastVisible:null,
+        refreshing:false,
+        loading:false
+        // navigation: this.props.navigation,
       }
       }
     
      }
    
-        
+     componentDidMount = () => {
+      try {
+        // Cloud Firestore: Initial Query
+        this.retrieveData();
+      }
+      catch (error) {
+        console.log(error);
+      }
+    };
     
+
+     //retrieve data
+     retrieveData = async () => {
+      try {
+        // Set State: Loading
+        this.setState({
+          loading: true,
+        });
+        console.log('Retrieving Data');
+        // Cloud Firestore: Query
+        const  userid = this.props.firebase._getUid();
+        let query3 = await firestore().collectionGroup('Podcasts').where('podcasterID','==',userid);    
+        let documentPodcasts = await query3.where('ChapterName','==',"").orderBy('PodcastID').limit(this.state.limit).get();
+        let documentChapterPodcasts = await query3.where('isChapterPodcast','==',true).limit(this.state.limit).get();
+        let documentData_podcasts = documentPodcasts.docs.map(document => document.data());
+        let documentData_chapterPodcasts = documentChapterPodcasts.docs.map(document => document.data());
+        var lastVisible = 5;
+        if(this.state.activeIndex == 0)
+          lastVisible = documentData_podcasts[documentData_podcasts.length - 1].PodcastID;
+        else
+          lastVisible = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].PodcastID;
+         
+          this.setState({
+          bookPodcasts: documentData_podcasts,
+          chapterPodcasts: documentData_chapterPodcasts,
+          lastVisible:lastVisible,
+          loading:false
+        });
+      }
+      catch (error) {
+        console.log(error);
+      }
+    };
+
+    retrieveMore = async () => {
+     try
+      {
+
+      this.setState({
+        refreshing: true,
+         }); 
+
+         const  userid = this.props.firebase._getUid();
+         let additionalQuery = 9;
+         try{
+           additionalQuery = await firestore().collectionGroup('Podcasts')
+                            .where('podcasterID','==',userid).where('ChapterName','==',"")
+                            .orderBy('PodcastID')
+                            .startAfter(this.state.lastVisible)
+                            .limit(this.state.limit);
+        
+      // Cloud Firestore: Query Snapshot
+         
+        }
+        catch(error)
+        {
+          console.log(error);
+        }
+        let documentSnapshots = await additionalQuery.get();
+      // Cloud Firestore: Document Data
+      let documentData = documentSnapshots.docs.map(document => document.data());
+      // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
+      let lastVisible = documentData[documentData.length - 1].PodcastID;
+
+      this.setState({
+        bookPodcasts: [...this.state.bookPodcasts, ...documentData],
+        //chapterPodcasts: documentData_chapterPodcasts,
+        lastVisible:lastVisible,
+        refreshing:false
+      });
+      }
+      catch(error){
+      console.log(error);
+      }
+    }
     segmentClicked=(index)=>{
       this.setState({
       activeIndex : index
@@ -131,137 +137,144 @@ class Profile extends React.Component {
       
     }
 
-    /*itemPress=()=>
+    renderData=({item,index})=>
     {
-      this.props.navigator.push(
-        {
-          id:'PodcastPlayer'
-        }
-      )
-    }*/
-    renderSectionOne=()=>
-    {
-      return mocks.map((item, index)=>
-      {
-        return (
-          <Podcast item={item} index={index} key ={index} navigation={this.props.navigation}/>
-        )
-      })
-    }
-    renderSectionTwo=()=>
-    {
-      return mocks.map((item, index)=>
-      {
-        return (
-          <Podcast item={item} index={index} key ={index} navigation={this.props.navigation}/>
-        )
-      })
+       return(
+         <View>
+        <Podcast podcast={item} index={index} navigation={this.props.navigation}/>
+        </View>
+       )
     }
 
-
-    renderSection=()=>
+    renderHeader=()=>
     {
-      //console.log('hh');
-      
-      if(this.state.activeIndex==0)
-      {
-        return (
-          <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
-         
-          {this.renderSectionOne()}
-          </View>
-        )
-      }
-      else if(this.state.activeIndex==1)
-      {
-        return (
-          
-          <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
-         
-          {this.renderSectionTwo()}
-          </View>
-        )
-      }
-    
-    }
-  
-   
-    render() {
-      const { navigation } = this.props;
-      return (
-        <Container style={{flex:1 , backgroundColor:'white'}}>
-        
-       
-          
-          
-        
-        <Content>
+      return(
+        <View>
         <View style={{flexDirection:'row' ,justifyContent:'flex-end'}}>
-          <Icon name="user-plus"  size={24} style={{ paddingTop:10, paddingRight: 10}}/>
+        <Icon name="user-plus"  size={24} style={{ paddingTop:10, paddingRight: 10}}/>
+        </View>
+        <View>
+        <View style={{flexDirection:'row'}}>
+        <View>
+          <Text style={{paddingTop:90, paddingLeft:60, fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
+            220
+          </Text>
+         <Text style={{fontFamily:'sans-serif-light', paddingLeft:50}}>Following</Text>
           </View>
-          <View>
-            <View style={{flexDirection:'row'}}>
+         
+            <View style={{alignItems:'center', justifyContent:'center', flex:3, paddingTop:60}}>
+              <Image source={{ uri: "https://scontent.fdel12-1.fna.fbcdn.net/v/t31.0-8/p960x960/14054441_518163365046457_6005096195143854779_o.jpg?_nc_cat=101&_nc_oc=AQmBj8SY60BCKzMFfvCPGLc1J44zxgFhJqefzYEifezUhkr7pFo29592HYyw6grMQF8&_nc_ht=scontent.fdel12-1.fna&oh=8ff3d0097e442acc84a804041fd0e7ee&oe=5E45429C"}} style={{width:100, height:100, borderRadius:50 }}/>
+            </View>
             <View>
-            <Text style={{paddingTop:90, paddingLeft:60, fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
-              220
-            </Text>
-            <Text style={{fontFamily:'sans-serif-light', paddingLeft:50}}>Following</Text>
-            </View>
-            
-              <View style={{alignItems:'center', justifyContent:'center', flex:3, paddingTop:60}}>
-                <Image source={require('../assets/khaled.jpeg')} style={{width:100, height:100, borderRadius:50 }}/>
-              </View>
-              <View>
-              <Text style={{paddingTop:90 , paddingRight:60,  fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
-              100
-            </Text>
-            <Text style={{fontFamily:'sans-serif-light', paddingRight:70}}>Followers</Text>
-            </View>
-
-          </View>
-          </View>
-          <View style={{ paddingHorizontal:105,flex:1,marginTop:20}}>
-          
-          <Text style={{ fontSize:24, fontWeight:"200",  textShadowColor:'black', fontFamily:'sans-serif-light', alignItems:'center', justifyContent:'center'}}>Khaled Housseini</Text>
-          
-
-          </View>
-          
-          <View>
-          <Text style={{ fontSize:14, fontWeight:"100",  textShadowColor:'black', fontFamily:'sans-serif-light', alignItems:'center', justifyContent:'center', padding:20}}>I read books on philosophy, economics, computer science, social sciences, geopolitics.</Text>
+            <Text style={{paddingTop:90 , paddingRight:60,  fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
+            100
+          </Text>
+          <Text style={{fontFamily:'sans-serif-light', paddingRight:70}}>Followers</Text>
           </View>
 
-          <View style={{ paddingLeft:145,flex:1}}>
-          <Button  style={{flex:1, marginTop:10, justifyContent:'center', height:30, width:100, borderRadius:5, backgroundColor:'white'}} onPress={
-            ()=>this.props.navigation.navigate('editProfile')}>
-          <Text>Edit Profile</Text>
+        </View>
+        </View>
+        <View style={{ paddingHorizontal:105,flex:1,marginTop:20}}>
+       
+       <Text style={{ fontSize:24, fontWeight:"200",  textShadowColor:'black', fontFamily:'sans-serif-light', alignItems:'center', justifyContent:'center'}}>Khaled Housseini</Text>
+       
+
+        </View>
+       
+        <View>
+        <Text style={{ fontSize:14, fontWeight:"100",  textShadowColor:'black', fontFamily:'sans-serif-light', alignItems:'center', justifyContent:'center', padding:20}}>I read books on philosophy, economics, computer science, social sciences, geopolitics.</Text>
+        </View>
+
+        <View style={{ paddingLeft:145,flex:1}}>
+        <Button  style={{flex:1, marginTop:10, justifyContent:'center', height:30, width:100, borderRadius:5, backgroundColor:'white'}} onPress={()=>this.props.navigation.navigate('editProfile')}>
+        <Text>Edit Profile</Text>
+        </Button>
+
+        </View>
+        <View style={{paddingTop:30}}>
+          <View style={{flexDirection :'row', justifyContent:'space-around', borderTopWidth:1, borderTopColor:'#eae5e5'}}>
+          <Button  transparent onPress={()=>this.segmentClicked(0)} active={this.state.activeIndex==0}>
+          <Icon name='book' size={20} style={[this.state.activeIndex == 0 ? {color:'black'} : {color:'grey'}]}/>
+
+          </Button>
+          <Button transparent onPress={()=>this.segmentClicked(1)} active={this.state.activeIndex==1}>
+          <Icon name='newspaper-o' size={20} style={[this.state.activeIndex == 1 ? {color:'black'} : {color:'grey'}]} />
           </Button>
 
           </View>
-          <View style={{paddingTop:30}}>
-            <View style={{flexDirection :'row', justifyContent:'space-around', borderTopWidth:1, borderTopColor:'#eae5e5'}}>
-            <Button  transparent onPress={()=>this.segmentClicked(0)} active={this.state.activeIndex==0}>
-            <Icon name='book' size={20} style={[this.state.activeIndex == 0 ? {color:'black'} : {color:'grey'}]}/>
+      </View>
+      </View>
+      )
+    }
 
-            </Button>
-            <Button transparent onPress={()=>this.segmentClicked(1)} active={this.state.activeIndex==1}>
-            <Icon name='newspaper-o' size={20} style={[this.state.activeIndex == 1 ? {color:'black'} : {color:'grey'}]} />
-            </Button>
+    renderFooter = () => {
+      try {
+        if (this.state.refreshing) {
+          return (
+            <ActivityIndicator />
+          )
+        }
+        else {
+          return null;
+        }
+      }
+      catch (error) {
+        console.log(error);
+      }
+    }
 
-            </View>
-           
-            {this.renderSection()}
-            
-          </View>
-        </Content>
+    renderSectionOne=()=>
+    {
+        return (
+          
+          <FlatList
+          data={this.state.bookPodcasts}
+          renderItem={this.renderData}
+          numColumns={2}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={item => item.PodcastID}
+           ListHeaderComponent={this.renderHeader}
+           ListFooterComponent={this.renderFooter}
+          onEndReached={this.retrieveMore}
+          onEndReachedThreshold={0.5}
+          refreshing={this.state.refreshing}
+        />
         
-        </Container>
+        )
+    }
+    renderSectionTwo=()=>
+    {
+      return (
+          
+        <FlatList
+        data={this.state.chapterPodcasts}
+        renderItem={this.renderData}
+        numColumns={2}
+        showsVerticalScrollIndicator={false}
+        keyExtractor={item => item.PodcastID}
+        ListHeaderComponent={this.renderHeader}
+         ListFooterComponent={this.renderFooter}
+        onEndReached={this.retrieveMore}
+        onEndReachedThreshold={0.5}
+        refreshing={this.state.refreshing}
+      />
+      )
+    }
+ 
+    render() {
+      const { navigation } = this.props;
+      return (
+       
+         <View style = {{paddingBottom:50}}>
+         {this.state.activeIndex ? this.renderSectionTwo() : this.renderSectionOne()}
+         </View>
+      
       );
     }
   }
   
 
-export default Profile;
+export default withFirebaseHOC(Profile);
 
 
 const styles = StyleSheet.create({

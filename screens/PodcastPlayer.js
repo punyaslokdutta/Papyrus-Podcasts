@@ -1,199 +1,264 @@
-import React, { Component } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  Animated,
-  PanResponder,
-  ScrollView,
-  Image,
-  Slider
-} from "react-native";
-import Icon from 'react-native-vector-icons/FontAwesome'
-import FontAwesome, { Icons } from 'react-native-fontawesome';
+// @flow
+import * as React from 'react';
+import { Dimensions, StyleSheet , Image, StatusBar,SafeAreaView,  TouchableOpacity , View,Text } from 'react-native';
+//import {
+ // Video, Constants, DangerZone, GestureHandler,
+//} from 'expo';
+
+import Slider from "react-native-slider";
+import Moment from "moment";
+import { HeaderBackButton } from 'react-navigation';
+import HomeScreen from './HomeScreen'
 
 
-const SCREEN_HEIGHT = Dimensions.get('window').height
-const SCREEN_WIDTH = Dimensions.get('window').width
 
-class PodcastPlayer extends Component {
-  
+//import { type Video as VideoModel } from './videos';
+import PodcastContent from '../screens/components/PodcastPlayer/PodcastContent';
+import PlayerControls, { PLACEHOLDER_WIDTH } from './components/PodcastPlayer/PlayerControl';
+import Animated, { Easing } from 'react-native-reanimated';
+import { PanGestureHandler, State } from 'react-native-gesture-handler';
+//const { Animated, Easing } = DangerZone;
+//const { State, PanGestureHandler } = GestureHandler;
+const { width, height } = Dimensions.get('window');
+const { statusBarHeight } = StatusBar.currentHeight
+const minHeight = 55;
+const midBound = height -135;
+const upperBound = midBound + minHeight;
+const {
+  Extrapolate,
+  Value,
+  Clock,
+  cond,
+  eq,
+  set,
+  add,
+  sub,
+  multiply,
+  lessThan,
+  clockRunning,
+  startClock,
+  spring,
+  stopClock,
+  event,
+  interpolate,
+  timing,
+  neq,
+} = Animated;
+//const AnimatedVideo = Animated.createAnimatedComponent(Video);
+const shadow = {
+  alignItems: 'center',
+  shadowColor: 'black',
+  shadowOffset: { width: 0, height: 0 },
+  shadowOpacity: 0.18,
+  shadowRadius: 2,
+};
 
-  state = {
-    isScrollEnabled: false,
-    
-    
-     
-     
-  
+
+function runSpring(clock, value, dest) {
+  const state = {
+    finished: new Value(0),
+    velocity: new Value(0),
+    position: new Value(0),
+
+
+    time: new Value(0),
+  };
+
+  const config = {
+    damping: 20,
+    mass: 1,
+    stiffness: 100,
+    overshootClamping: false,
+    restSpeedThreshold: 1,
+    restDisplacementThreshold: 0.5,
+    toValue: new Value(0),
+  };
+
+  return [
+    cond(clockRunning(clock), 0, [
+      set(state.finished, 0),
+      set(state.velocity, 0),
+      set(state.position, value),
+      set(config.toValue, dest),
+      startClock(clock),
+    ]),
+    spring(clock, state, config),
+    cond(state.finished, stopClock(clock)),
+    state.position,
+  ];
+}
+
+/*type VideoModalProps = {
+  video: VideoModel,
+};
+*/
+export default class PodcastPlayer extends React.Component{
+
+  static navigationOptions = ({navigation}) => {
+    return{
+      headerLeft:(<HeaderBackButton onPress={()=>{navigation.navigate('HomeScreen')}}/>)
+   }
+  }
+  translationY = new Value(0);
+
+  velocityY = new Value(0);
+
+  offsetY = new Value(0);
+
+  offsetY2 = new Value(0);
+
+  gestureState = new Value(State.UNDETERMINED);
+
+  //onGestureEvent: $Call<event>;
+
+  //translateY: Value;
+
+  constructor(props) {
+    super(props);
+    this.state=
+    {
+     // title: "Book Podcast", 
+        trackLength: 300,
+        timeElapsed: "0:00",
+        timeRemaining: "5:00",
+    }
+    const {
+      translationY, velocityY, offsetY, gestureState: state, offsetY2,
+    } = this;
+    this.onGestureEvent = event(
+      [
+        {
+          nativeEvent: {
+            translationY,
+            velocityY,
+            state,
+          },
+        },
+      ],
+      { useNativeDriver: true },
+      
+    );
+    const clockY = new Clock();
+    const finalTranslateY = add(add(translationY, offsetY), multiply(0.2, velocityY));
+    const snapPoint = cond(
+      lessThan(finalTranslateY, sub(offsetY, height / 4)),
+      0,
+      upperBound,
+    );
+    this.translateY = cond(
+      eq(state, State.END),
+      [
+        set(translationY, runSpring(clockY, add(translationY, offsetY), snapPoint)),
+        set(offsetY, translationY),
+        translationY,
+      ],
+      [
+        cond(eq(state, State.BEGAN), [
+          stopClock(clockY),
+          cond(neq(offsetY2, 0), [
+            set(offsetY, 0),
+            set(offsetY2, 0),
+          ]),
+        ]),
+        add(offsetY, translationY),
+      ],
+    );
   }
 
-  componentWillMount() {
+  
 
-    this.scrollOffset = 0
-
-    this.animation = new Animated.ValueXY({ x: 0, y: SCREEN_HEIGHT - 90 })
-
-    this.panResponder = PanResponder.create({
-
-      onMoveShouldSetPanResponder: (evt, gestureState) => {
-
-        if ((this.state.isScrollEnabled && this.scrollOffset <= 0 && gestureState.dy > 0) || !this.state.isScrollEnabled && gestureState.dy < 0) {
-          return true
-        } else {
-          return false
-        }
-      },
-      onPanResponderGrant: (evt, gestureState) => {
-        this.animation.extractOffset()
-      },
-      onPanResponderMove: (evt, gestureState) => {
-
-        this.animation.setValue({ x: 0, y: gestureState.dy })
-      },
-      onPanResponderRelease: (evt, gestureState) => {
-
-        if (gestureState.moveY > SCREEN_HEIGHT - 120) {
-          Animated.spring(this.animation.y, {
-            toValue: 0,
-            tension: 1
-          }).start()
-        }
-        else if (gestureState.moveY < 120) {
-          Animated.spring(this.animation.y, {
-            toValue: 0,
-            tension: 1
-          }).start()
-        }
-        else if (gestureState.dy < 0) {
-          this.setState({ isScrollEnabled: true })
-
-          Animated.spring(this.animation.y, {
-            toValue: -SCREEN_HEIGHT + 120,
-            tension: 1
-          }).start()
-        }
-        else if (gestureState.dy > 0) {
-          this.setState({ isScrollEnabled: false })
-          Animated.spring(this.animation.y, {
-            toValue: SCREEN_HEIGHT - 120,
-            tension: 1
-          }).start()
-        }
-      }
-
-    })
+  componentDidUpdate(prevProps) {
+    if (prevProps !== this.props) {
+      this.slideUp();
+    }
   }
+
+  slideUp = () => timing(this.offsetY2, {
+    toValue: -upperBound,
+    duration: 300,
+    easing: Easing.inOut(Easing.ease),
+  }).start();
 
   render() {
+    const {
+      onGestureEvent, translateY: y, offsetY2,
+    } = this;
+    const translateY = add(y, offsetY2);
+    const { podcast } = this.props;
+    const tY = interpolate(translateY, {
+      inputRange: [0, midBound],
+      outputRange: [0, midBound],
+      extrapolate: Extrapolate.CLAMP,
+    });
+    const opacity = interpolate(translateY, {
+      inputRange: [0, midBound - 100],
+      outputRange: [1, 0],
+      extrapolate: Extrapolate.CLAMP,
+    });
+    const statusBarOpacity = interpolate(translateY, {
+      inputRange: [0, 100],
+      outputRange: [1, 0],
+      extrapolateLeft: Extrapolate.CLAMP,
+    });
+    const videoContainerWidth = interpolate(translateY, {
+      inputRange: [0, midBound],
+      outputRange: [width, width],
+      extrapolate: Extrapolate.CLAMP,
+    });
+    const videoWidth = interpolate(translateY, {
+      inputRange: [0, midBound, upperBound],
+      outputRange: [width, width, PLACEHOLDER_WIDTH],
+      extrapolate: Extrapolate.CLAMP,
+    });
+    const videoHeight = interpolate(translateY, {
+      inputRange: [0, midBound, upperBound],
+      outputRange: [width -64, minHeight * 1.3, minHeight],
+      extrapolate: Extrapolate.CLAMP,
+    });
     
-    const animatedHeight = {
-      transform: this.animation.getTranslateTransform()
-    }
-
-    animatedImageHeight = this.animation.y.interpolate({
-      inputRange: [0, SCREEN_HEIGHT - 90],
-      outputRange: [200, 32],
-      extrapolate: "clamp"
-    })
-    animatedSongTitleOpacity = this.animation.y.interpolate({
-      inputRange: [0, SCREEN_HEIGHT - 500, SCREEN_HEIGHT - 90],
-      outputRange: [0, 0, 1],
-      extrapolate: "clamp"
-    })
-    animatedImageMarginLeft = this.animation.y.interpolate({
-      inputRange: [0, SCREEN_HEIGHT - 90],
-      outputRange: [SCREEN_WIDTH / 2 - 100, 10],
-      extrapolate: "clamp"
-    })
-    animatedHeaderHeight = this.animation.y.interpolate({
-      inputRange: [0, SCREEN_HEIGHT - 90],
-      outputRange: [SCREEN_HEIGHT / 2, 90],
-      extrapolate: "clamp"
-    })
-    animatedSongDetailsOpacity = this.animation.y.interpolate({
-      inputRange: [0, SCREEN_HEIGHT - 500, SCREEN_HEIGHT - 90],
-      outputRange: [1, 0, 0],
-      extrapolate: "clamp"
-    })
-    animatedBackgroundColor = this.animation.y.interpolate({
-      inputRange: [0, SCREEN_HEIGHT - 90],
-      outputRange: ['rgba(0,0,0,0.5)', 'white'],
-      extrapolate: "clamp"
-    })
+    const containerHeight = interpolate(translateY, {
+      inputRange: [0, midBound],
+      outputRange: [height, 0],
+      extrapolate: Extrapolate.CLAMP,
+    });
+    const playerControlOpaciy = interpolate(translateY, {
+      inputRange: [midBound, upperBound],
+      outputRange: [0, 1],
+      extrapolate: Extrapolate.CLAMP,
+    });
     return (
-      <Animated.View style={{ flex: 1, backgroundColor: animatedBackgroundColor }}>
-        <Animated.View
-          {... this.panResponder.panHandlers}
-          style={[animatedHeight, { position: 'absolute', left: 0, right: 0, zIndex: 10, backgroundColor: 'white', height: SCREEN_HEIGHT }]}
-
+    
+        
+        <PanGestureHandler
+          onHandlerStateChange={onGestureEvent}
+          activeOffsetY={[-10, 10]}
+          {...{ onGestureEvent }}
         >
-          <ScrollView
-            scrollEnabled={this.state.isScrollEnabled}
-            scrollEventThrottle={16}
-            onScroll={event => {
-              this.scrollOffset = event.nativeEvent.contentOffset.y
+          <Animated.View
+            style={{
+              transform: [{ translateY: tY }],
+              ...shadow,
             }}
           >
-            <Animated.View
-              style={{ height: animatedHeaderHeight, borderTopWidth: 1, borderTopColor: '#ebe5e5', flexDirection: 'row', alignItems: 'center' }}
-            >
-              <View style={{ flex: 4, flexDirection: 'row', alignItems: 'center' }}>
-                <Animated.View style={{ height: animatedImageHeight, width: animatedImageHeight, marginLeft: animatedImageMarginLeft }}>
-                  <Image style={{ flex: 1, width: null, height: null }}
-                    source={require('../assets/Westeros.jpg')} />
-                </Animated.View>
-                <Animated.Text style={{ opacity: animatedSongTitleOpacity, fontSize: 18, paddingLeft: 10 }}>Hotel California(Live)</Animated.Text>
-              </View>
-              <Animated.View style={{ opacity: animatedSongTitleOpacity, flex: 1, flexDirection: 'row', justifyContent: 'space-around' }}>
-              <Icon name="bars" size={32}/>
-              <Icon name="bars" size={32}/>
+            <Animated.View style={{ backgroundColor: 'white', width: videoContainerWidth }}>
+              <Animated.View style={{ ...StyleSheet.absoluteFillObject, opacity: playerControlOpaciy }}>
+                <PlayerControls title={this.props.podcast.Podcast_Name} onPress={this.slideUp} />
+              </Animated.View>
+              <Animated.Image
+                source={{uri:this.props.podcast.Podcast_Pictures[0]}}
+                style={{ width: videoWidth, height: videoHeight }}
+              />
+              
+            </Animated.View>
+            <Animated.View style={{ backgroundColor: 'white', width: videoContainerWidth, height: containerHeight }}>
+              <Animated.View style={{ opacity }}>
+                <PodcastContent trackLength={this.state.trackLength} podcast={this.props.podcast} />
               </Animated.View>
             </Animated.View>
-
-            <Animated.View style={{ height: animatedHeaderHeight, opacity: animatedSongDetailsOpacity }}>
-
-              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end' }}>
-                <Text style={{ fontWeight: 'bold', fontSize: 22 }}>Hotel California (Live)</Text>
-                <Text style={{ fontSize: 18, color: '#fa95ed' }}>Eagles - Hell Freezes Over</Text>
-              </View>
-
-              <View style={{ height: 40, width: SCREEN_WIDTH, alignItems: 'center' }}>
-                <Slider
-                  style={{ width: 300 }}
-                  step={1}
-                  minimumValue={18}
-                  maximumValue={71}
-                  value={18}
-
-                />
-              </View>
-
-              <View style={{ flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around' }}>
-              <Icon name="fast-backward" size={28}/>
-              <Icon name="pause" size={28}/>
-              <Icon name="fast-forward" size={28}/>
-              </View>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingBottom: 20 }}>
-              <Icon name="bars" size={28}/>
-              <Icon name="bars" size={28}/>
-              </View>
-            </Animated.View>
-            <View style={{ height: 1000 }} />
-          </ScrollView>
-        </Animated.View>
-
-      </Animated.View>
+          </Animated.View>
+        </PanGestureHandler>
+        
+      
     );
   }
 }
-export default PodcastPlayer;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
-});

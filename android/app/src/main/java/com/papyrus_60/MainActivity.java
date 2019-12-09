@@ -4,6 +4,7 @@ import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
+//import com.reactnativecommunity.statusbar.RNCStatusBarPackage;
 
 public class MainActivity extends ReactActivity {
 
@@ -20,7 +21,7 @@ public class MainActivity extends ReactActivity {
  protected ReactActivityDelegate createReactActivityDelegate() {
    return new ReactActivityDelegate(this, getMainComponentName()) {
      @Override
-     protected ReactRootView createRootView() {
+    protected ReactRootView createRootView() {
       return new RNGestureHandlerEnabledRootView(MainActivity.this);
       }
    };

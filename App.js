@@ -36,6 +36,8 @@ import { theme, mocks } from './screens/components/categories/constants';
 import ActivityScreen from './screens/ActivityScreen'
 import SettingsScreen from './screens/SettingsScreen'
 import editProfile  from './screens/components/Profile/editProfile'
+import firebaseApi, {FirebaseProvider} from './screens/config/Firebase'
+import {PlayerProvider} from './screens/components/PodcastPlayer/PlayerProvider';
 
 
 
@@ -47,7 +49,10 @@ const AuthStackNavigator= createStackNavigator(
   {
     
     SignIn: SignInScreen,
-    SignUp: SignUpScreen
+    SignUp: SignUpScreen, 
+    //BooksSelected: BooksSelectedScreen, 
+    //ChaptersSelected : ChaptersSelectedScreen, 
+    //AuthorsSelected: AuthorsSelectedScreen
   },
   {
     headerMode: 'none',
@@ -56,6 +61,12 @@ const AuthStackNavigator= createStackNavigator(
     }
    }
 )
+
+
+/*const PreferencesStackNavigator =createStackNavigator(
+  {}
+)*/
+
 const ProfileStackNavigator=createStackNavigator(
   {
     Profile : {screen : Profile}, 
@@ -187,8 +198,14 @@ const AppTabNavigator=createBottomTabNavigator(
     inactivetintcolor:'grey',
     backgroundColor:'white',
     borderTopWidth: 0,
-    elevation :5
-  }
+    elevation :5,
+    adaptive: true, 
+    style:
+    {
+      height: 50, 
+    },
+  }, 
+   
 
   }
 )
@@ -258,7 +275,7 @@ const CustomDrawerContentComponent=(props)=>
           
     </Block>
 
-    <Content style={{ paddingTop: HEIGHT/9}}>
+    <Content style={{ paddingTop: HEIGHT/18}}>
     
     <DrawerItems {...props}  activeBackgroundColor='#101010'   style={{backgroundColor: '#ffffff', }} labelStyle={{color: '#ffffff', fontSize: HEIGHT/35}}/>
     
@@ -314,14 +331,32 @@ const AppSwitchNavigator = createSwitchNavigator(
     
     AuthLoading : AuthLoadingScreen,
     Auth : AuthStackNavigator, // this will be a stack navigator
-    App : AppDrawerNavigator //this is the drawer navigator 
+    App : AppDrawerNavigator ,  //this is the drawer navigator 
+    //Preferences: PreferencesStackNavigator 
   },
+  {
+    initialRouteName:'AuthLoading'
+  }
 )
 
-const App =createAppContainer(AppSwitchNavigator); // ^3.0.8 react-navigation 
+//const App =createAppContainer(AppSwitchNavigator); // ^3.0.8 react-navigation 
 
+// const router =createAppContainer(AppSwitchNavigator); 
+ const AppContainer =createAppContainer(AppSwitchNavigator);  //top level navigator 
+export default class App extends Component {
+  //..
+  render(){
+    return(
+    <PlayerProvider>
+    <FirebaseProvider value={firebaseApi}>
+    <AppContainer/> 
+    </FirebaseProvider>
+    </PlayerProvider>
+    );
+  }
+}
 
-export default App;
+//export default App;
 
 
 

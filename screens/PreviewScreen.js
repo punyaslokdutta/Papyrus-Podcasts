@@ -1,5 +1,3 @@
-
-
 import React, {Component} from 'react';
 import { TouchableOpacity,StyleSheet, Text, View, Button, SafeAreaView, Dimensions, Image, TextInput, Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -9,6 +7,8 @@ import ImagePicker from 'react-native-image-picker'
 
 
 const { width, height } = Dimensions.get('window');
+
+
 
 
 

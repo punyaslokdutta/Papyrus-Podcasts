@@ -1,7 +1,6 @@
-
-
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, SafeAreaView, TextInput, Platform, StatusBar,TouchableOpacity, ScrollView, Image,Dimensions, Animated } from 'react-native';
+import firestore from '@react-native-firebase/firestore';
+import { StyleSheet, Text, View, SafeAreaView, TextInput, Platform, StatusBar,TouchableOpacity, ScrollView, Image,Dimensions, Animated,SectionList,ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import {Container, Content, Card, Button} from 'native-base'
@@ -10,94 +9,10 @@ import { FlatList } from 'react-native-gesture-handler';
 import BookList from './components/Home/BookList'
 import * as theme from '../screens/components/constants/theme';
 import Podcast from './components/Home/Podcast'
+import firebaseApi from './config/Firebase/firebaseApi'
+import {withFirebaseHOC} from '../screens/config/Firebase'
 
 var {width, height}=Dimensions.get('window')
-const mocks = [
-  {
-    id: 1,
-    user: {
-      name: 'Lelia Chavez',
-      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-    },
-    saved: true,
-    date: "12/7/2019",
-    location: 'Santorini, Greece',
-    temperature: 34,
-    title: 'Santorini',
-    description: 'Santorini is one of the Cyclades islands in the Aegean Sea. It was devastated by a volcanic eruption in the 16th century BC, forever shaping its rugged landscape. The whitewashed, cubiform houses of its 2 principal towns, Fira and Oia, cling to cliffs above an underwater caldera (crater). They overlook the sea, small islands to the west and beaches made up of black, red and white lava pebbles.',
-    rating: 4.3,
-    reviews: 3212,
-    preview: 'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-    images: [
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-    ]
-  },
-  {
-    id: 2,
-    user: {
-      name: 'Lelia Chavez',
-      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-    },
-    saved: false,
-    date: "12/7/2019",
-    location: 'Loutraki, Greece',
-    temperature: 34,
-    title: 'Loutraki',
-    description: 'This attractive small town, 80 kilometers from Athens',
-    rating: 4.6,
-    reviews: 3212,
-    preview: 'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
-    images: [
-      'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1446903572544-8888a0e60687?auto=format&fit=crop&w=800&q=80',
-    ]
-  },
-  {
-    id: 3,
-    user: {
-      name: 'Lelia Chavez',
-      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-    },
-    saved: true,
-    date: "12/7/2019",
-    location: 'Santorini, Greece',
-    temperature: 34,
-    title: 'Santorini',
-    description: 'Santorini - Description',
-    rating: 3.2,
-    reviews: 3212,
-    preview: 'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-    images: [
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-    ]
-  },
-  {
-    id: 4,
-    user: {
-      name: 'Lelia Chavez',
-      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-    },
-    location: 'Loutraki, Greece',
-    saved: true,
-    date: "12/7/2019",
-    temperature: 34,
-    title: 'Loutraki',
-    description: 'This attractive small town, 80 kilometers from Athens',
-    rating: 5,
-    reviews: 3212,
-    preview: 'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
-    images: [
-      'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1446903572544-8888a0e60687?auto=format&fit=crop&w=800&q=80',
-    ]
-  },
-]
 const styles = StyleSheet.create({
   flex: {
     flex: 0,
@@ -262,11 +177,15 @@ class HomeScreen extends React.Component {
   {
     super(props)
     {
-
-      //this.renderHeader = this.renderHeader.bind(this);
       this.state={
-        mocks : mocks
-      }
+        books : [],
+        headerPodcasts : [],
+        podcasts : [],
+        limit : 4,
+        lastVisible: null,
+        loading: false,
+        refreshing: false,
+      };
     }
   }
 
@@ -275,27 +194,78 @@ class HomeScreen extends React.Component {
     drawerIcon:()=> <Icon name="home" size={24} style={{color:'white'}}/>
   });
 
+    componentDidMount = async () => {
+      try {
+        this.retrieveData();
+      }
+      catch (error) {
+        console.log(error);
+      }
+    };
 
+    retrieveData = async () => {
+      try {
+        this.setState({
+          loading: true,
+        });
+        console.log('Retrieving Data');
+        const  userid = this.props.firebase._getUid();
+        let query = await firestore().collection('users').doc(userid).collection('privateUserData').doc('privateData').onSnapshot(
+          (doc)=> {
+          books_data = doc._data.book_recommendations;
+          headerPodcasts_data = doc._data.podcast_recommendations.slice(0,20);
+          podcasts_data = doc._data.podcast_recommendations.slice(0,4);
+      
+        this.setState({
+          books: books_data,
+          headerPodcasts: headerPodcasts_data,
+          podcasts: podcasts_data,
+          lastVisible: 0,
+          loading: false
+        });
+      })
+      }
+      catch (error) {
+        console.log(error);
+      }
+    };
 
-    componentWillMount()
-    {
-        this.startHeaderHeight = 60
-        if(Platform.OS=='Android')
-        {
-            this.startHeaderHeight= StatusBar.currentHeight
-        }
-    }
+    retrieveMore = async () => {
+      try
+       {
+       this.setState({
+         refreshing: true,
+          }); 
+          const  userid = this.props.firebase._getUid();
+         
+          var index = this.state.lastVisible;
+          var minIndex = Math.min(index+4,24);
+          try{
+            let query = await firestore().collection('users').doc(userid).collection('privateUserData').doc('privateData').onSnapshot(
+              (doc)=> {
+                podcasts_data = doc._data.podcast_recommendations.slice(index,minIndex);
+                let lastVisible = this.state.lastVisible + 4;
+ 
+       this.setState({
+         podcasts: [...this.state.podcasts, ...podcasts_data],
+         //chapterPodcasts: documentData_chapterPodcasts,
+         lastVisible:lastVisible,
+         refreshing:false
+       });
+              });    
+         }
+         catch(error)
+         {
+           console.log(error);
+         }
+      
+       }
+       catch(error){
+       console.log(error);
+       }
+     }
 
-    onPressed()
-    {
-        console.log(Info)
-        
-        /*this.props.navigation.navigate(
-            'PodcastPlayer',
-            {ImageUri: ImageUri}
-          );*/
-    }
-    renderHeader=()=>
+    renderMainHeader=()=>
     {
       return(
       <View style={styles.AppHeader}>
@@ -314,72 +284,130 @@ class HomeScreen extends React.Component {
    
     renderSectionBooks=()=>
     { 
-      return (<BookList navigation={this.props.navigation}/>)
+      return (<BookList navigation={this.props.navigation} destinations={this.state.books} />)
     }
+
+    renderData = ({ section, index }) => {
+      const numColumns  = 2;
+  
+      if (index % numColumns !== 0) return null;
+  
+      const items = [];
+  
+      for (let i = index; i < index + numColumns; i++) {
+        if (i >= section.data.length) {
+          break;
+        }
+        items.push(<Podcast podcast={section.data[i]} index={index} navigation={this.props.navigation} />);
+      }
+      return (
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between"
+          }}
+        >
+          {items}
+        </View>
+      );
+    };
+    
+    renderHeader=()=>
+    {
+      var podcasts1 = this.state.headerPodcasts.slice(0,4);
+      var podcasts2 = this.state.headerPodcasts.slice(4,8);
+      var podcasts3 = this.state.headerPodcasts.slice(8,12);
+      var podcasts4 = this.state.headerPodcasts.slice(12,16);
+      var podcasts5 = this.state.headerPodcasts.slice(16,20);
+      return(
+        // <View><Text>PODCASTS</Text></View>
+        <View style={{ paddingBottom:50, paddingRight:25, marginTop: Platform.OS == 'ios' ? 20 : 30 }}>
+          
+        <SectionList
+          showsVerticalScrollIndicator={false}
+          ItemSeparatorComponent={this.FlatListItemSeparator}
+          sections={[
+            { title: 'Username Starts with A', data: podcasts1 },
+            { title: 'Username Starts with B', data: podcasts2 },
+            { title: 'Username Starts with C', data: podcasts3 },
+            { title: 'Username Starts with D', data: podcasts4 },
+            { title: 'Username Starts with F', data: podcasts5 },
+          ]}
+          renderSectionHeader={({ section }) => (
+            <ScrollView>
+                <Text style={{fontSize: theme.sizes.font * 1.4, fontWeight: "bold",paddingHorizontal: 30,paddingTop:20,paddingBottom:10,   textShadowColor:'black',fontFamily:'sans-serif-light'}}>Record Book Podcasts
+                </Text>
+            {this.renderSectionBooks()}
+            <Text style={{fontSize: theme.sizes.font * 1.4,fontWeight: "bold", paddingLeft: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black',fontFamily:'sans-serif-light'}}>Discover Podcasts
+            </Text>
+            </ScrollView>
+          )}
+          
+          renderItem={this.renderData}
+          keyExtractor={(item, index) => index}
+        />
+        
+      </View>
+      )
+    }
+    
+    renderDatas=({item,index})=>
+    {
+       return(
+         <View>
+        <Podcast podcast={item} index={index} navigation={this.props.navigation}/>
+        </View>
+       )
+    }
+
+    renderFooter = () => {
+      try {
+        // Check If Loading
+        if (this.state.refreshing) {
+          return (
+            <ActivityIndicator />
+          )
+        }
+        else {
+          return null;
+        }
+      }
+      catch (error) {
+        console.log(error);
+      }
+    }
+
     renderPodcasts=()=>
     {
-       return mocks.map((item, index)=>
-      {
-        return(<Podcast item={item} index={index} key ={index} navigation={this.props.navigation}/>)
-      }) 
-
-    }
-
-    renderSectionPodcasts=()=>
-    {
-      return (
-        <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
-        <View
-          style={[
-            styles.row,
-            styles.recommendedHeader
-          ]}
-        >
-          <Text style={{ fontSize: theme.sizes.font * 1.4 }}>Discover Podcasts</Text>
-        </View>
-        <View style={{flexDirection:'row' , flexWrap:'wrap',}}>{this.renderPodcasts()}</View>
-        </View>
-        
+      return (  
+        <FlatList
+        data={this.state.podcasts}s
+        renderItem={this.renderDatas}
+        numColumns={2}
+        showsVerticalScrollIndicator={false}
+        keyExtractor={item => item.PodcastID}
+        ListHeaderComponent={this.renderHeader}
+         ListFooterComponent={this.renderFooter}
+        onEndReached={this.retrieveMore}
+        onEndReachedThreshold={0.5}
+        refreshing={this.state.refreshing}
+      />   
       )
     }
 
-
-    
-   
     render() {
-      return (
-        
-
+      if(this.state.loading === true)
+        return <ActivityIndicator/>
+      else
+        return (
         <SafeAreaView style={{flex:1, backgroundColor:'#F5FCFF'}}>
-                  {this.renderHeader()} 
-        <ScrollView  scrollEventThrottle={16} style={{backgroundColor: '#F5FCFF'}} >
-        <View style={{flex:1 , backgroundColor:'white', paddingTop:10}}>
-      <Text style={{fontSize: theme.sizes.font * 1.4, fontWeight:"200", paddingHorizontal: 38,paddingTop:10,paddingBottom:10,   textShadowColor:'black',fontFamily:'sans-serif-light'}}>
-          Record Book Podcasts
-      </Text>
-      </View>
-        
-       
-        <View >
-                  {this.renderSectionBooks()}
-       </View>
-       <View style={{flexDirection:'row' , flexWrap:'wrap', paddingTop:5}}>
-                  {this.renderSectionPodcasts()}
-       </View>
-
-
-        
-        </ScrollView>
-
-        
-        </SafeAreaView>
+           {this.renderMainHeader()}
+      <View style = {{paddingBottom:50}}>
+        {this.renderPodcasts()}
+        </View>
+  </SafeAreaView> 
       );
     }
   }
 
-export default HomeScreen;
-
-
-
-
-
+export default withFirebaseHOC(HomeScreen);
