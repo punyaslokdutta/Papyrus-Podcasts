@@ -68,22 +68,9 @@ class Profile extends React.Component {
         const  userid = this.props.firebase._getUid();
         let query3 = await firestore().collectionGroup('Podcasts').where('podcasterID','==',userid);    
         let documentPodcasts = await query3.where('ChapterName','==',"").orderBy('PodcastID').limit(this.state.limit).get();
-
         let documentChapterPodcasts = await query3.where('isChapterPodcast','==',true).limit(this.state.limit).get();
-        //console.log(query3._docs[0]._data);
-        // podcasts_data[ind2] = query3._docs[0]._data;
-        // ind2 = ind2 + 1;
         let documentData_podcasts = documentPodcasts.docs.map(document => document.data());
         let documentData_chapterPodcasts = documentChapterPodcasts.docs.map(document => document.data());
-        // let initialQuery_podcasts = await firestore().collection('Books').doc('7gGB4CjIiGRgB8yYD8N3')
-        //                               .collection('Podcasts')
-        // // Cloud Firestore: Query Snapshot
-        // let documentSnapshots_podcasts = await initialQuery_podcasts.get();
-        // // Cloud Firestore: Document Data
-         //let documentData_podcasts = documentSnapshots_pDocumodcasts.docs.map(document => document.data());
-        // Cloud Firestore: Last Visible Document (ent ID To Start From For Proceeding Queries)
-       // let lastVisible = documentData_podcasts[documentData_podcasts.length - 1].id;
-        // Set State
         var lastVisible = 5;
         if(this.state.activeIndex == 0)
           lastVisible = documentData_podcasts[documentData_podcasts.length - 1].PodcastID;
@@ -111,8 +98,6 @@ class Profile extends React.Component {
          }); 
 
          const  userid = this.props.firebase._getUid();
-        // let additionalQuery = 'ccx';
-         //if(this.state.activeIndex == 0)
          let additionalQuery = 9;
          try{
            additionalQuery = await firestore().collectionGroup('Podcasts')
@@ -152,14 +137,6 @@ class Profile extends React.Component {
       
     }
 
-    /*itemPress=()=>
-    {
-      this.props.navigator.push(
-        {
-          id:'PodcastPlayer'
-        }
-      )
-    }*/
     renderData=({item,index})=>
     {
        return(
@@ -168,6 +145,7 @@ class Profile extends React.Component {
         </View>
        )
     }
+
     renderHeader=()=>
     {
       return(
@@ -224,36 +202,41 @@ class Profile extends React.Component {
           </Button>
 
           </View>
-        
-            
-
-         
       </View>
       </View>
       )
-
     }
+
+    renderFooter = () => {
+      try {
+        if (this.state.refreshing) {
+          return (
+            <ActivityIndicator />
+          )
+        }
+        else {
+          return null;
+        }
+      }
+      catch (error) {
+        console.log(error);
+      }
+    }
+
     renderSectionOne=()=>
     {
         return (
           
           <FlatList
-          // Data
           data={this.state.bookPodcasts}
-          // Render Items
           renderItem={this.renderData}
           numColumns={2}
-          // Item Key
+          showsVerticalScrollIndicator={false}
           keyExtractor={item => item.PodcastID}
-          // Header (Title)
            ListHeaderComponent={this.renderHeader}
-          // Footer (Activity Indicator)
            ListFooterComponent={this.renderFooter}
-          // On End Reached (Takes a function)
           onEndReached={this.retrieveMore}
-          // How Close To The End Of List Until Next Data Request Is Made
           onEndReachedThreshold={0.5}
-          // Refreshing (Set To True When End Reached)
           refreshing={this.state.refreshing}
         />
         
@@ -264,87 +247,28 @@ class Profile extends React.Component {
       return (
           
         <FlatList
-        // Data
         data={this.state.chapterPodcasts}
-        // Render Items
         renderItem={this.renderData}
         numColumns={2}
-        // Item Key
+        showsVerticalScrollIndicator={false}
         keyExtractor={item => item.PodcastID}
-        // Header (Title)
         ListHeaderComponent={this.renderHeader}
-        // Footer (Activity Indicator)
          ListFooterComponent={this.renderFooter}
-        // On End Reached (Takes a function)
         onEndReached={this.retrieveMore}
-        // How Close To The End Of List Until Next Data Request Is Made
         onEndReachedThreshold={0.5}
-        // Refreshing (Set To True When End Reached)
         refreshing={this.state.refreshing}
       />
-      
       )
     }
-
-
-    renderSection=()=>
-    {
-      //console.log('hh');
-      
-      if(this.state.activeIndex==0)
-      {
-        return (
-          <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
-         
-          {this.renderSectionOne()}
-          </View>
-        )
-      }
-      else if(this.state.activeIndex==1)
-      {
-        return (
-          
-           <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
-         
-          {this.renderSectionTwo()}
-           </View>
-        )
-      }
-    
-    }
-  
-   // Render Footer
-  renderFooter = () => {
-    try {
-      // Check If Loading
-      if (this.state.loading) {
-        return (
-          <ActivityIndicator />
-        )
-      }
-      else {
-        return null;
-      }
-    }
-    catch (error) {
-      console.log(error);
-    }
-  };
+ 
     render() {
       const { navigation } = this.props;
       return (
-          // <SafeAreaView style={styles.container}>
        
-      //  </SafeAreaView>
-       <Container style={{flex:1 , backgroundColor:'white'}}>
-        
-          
-        
+         <View style = {{paddingBottom:50}}>
          {this.state.activeIndex ? this.renderSectionTwo() : this.renderSectionOne()}
-        
-        
-        </Container>
-        
+         </View>
+      
       );
     }
   }

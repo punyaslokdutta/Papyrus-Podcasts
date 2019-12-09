@@ -288,8 +288,9 @@ class BookList extends Component {
           //pagingEnabled
           scrollEnabled
           showsHorizontalScrollIndicator={false}
-          decelerationRate={0.99}
-          scrollEventThrottle={0} 
+          decelerationRate={0}
+          scrollEventThrottle={50}
+          snapToInterval={width - 50} 
           snapToAlignment={"center"}
           style={{ overflow:'visible', height: 280 }}
           data={this.props.destinations}
