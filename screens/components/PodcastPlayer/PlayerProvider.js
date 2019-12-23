@@ -70,7 +70,7 @@ function togglePodcast(podcast)  {
     dispatch(
       {
         type: SET_PODCAST, 
-        payload: podcast
+        payload: podcast     
       }
     )
     togglePodcast(podcast)
@@ -105,6 +105,7 @@ function togglePodcast(podcast)  {
             )
           }
           {
+            
             !isOS && podcast && <PodcastPlayer {...{podcast}} />
           }
         </View>

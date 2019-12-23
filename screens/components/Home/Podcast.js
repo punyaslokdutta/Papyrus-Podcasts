@@ -1,5 +1,4 @@
 
-
 import React, {Component, useState, useEffect, useContext} from 'react';
 import { StyleSheet, Text, View, Image, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -8,7 +7,6 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import * as theme from '../constants/theme'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import PodcastPlayer from '../../PodcastPlayer'
-//import {usePlayerContext} from '../PodcastPlayer/usePlayerContext'
 import PlayerContext from '../PodcastPlayer/PlayerContext'
 
 
@@ -127,58 +125,22 @@ const styles = StyleSheet.create({
       },
   });
 
-
-
-/*const defaultState = {
-  podcast: null, 
-  eventSource:"Podcast"
-};*/
-
- //const eventSource="Podcast"
  const areEqual = (prevProps, nextProps) => true;
  const Podcast= React.memo((props)=> {
-  //const [ playerGlobalState,  playerGlobalDispatch] = usePlayerContext();
-
-  //const {eventSource }= playerGlobalState;
-  //const [podcastState, setPodcastState] =useState(props)
   console.log(props);
 
    const context = useContext(PlayerContext)
-   //const {setPodcast} =playerGlobalDispatch;
-
-
   /*useEffect(() => {
     //setPodcastState(props);
   }, []);*/
-
-    /*constructor(props)
-    {
-        super(props)
-        {
-          this.state={
-           key: this.props.index,
-
-           navigation: this.props.navigation,
-           eventSource: eventSourcePodcast
-         };
-        }
-    }*/
-
-    /*function setGlobalPodcast(podcast, eventSource)
-    {
-
-     setPodcast(podcast, eventSource);
-    }*/
         return (   
           <View style={[
             styles.flex, styles.column, styles.recommendation, styles.shadow, 
             {marginLeft: theme.sizes.margin },
-           
           ]} key ={props.index}>
-            
            <View style={[styles.flex, styles.recommendationHeader]}>
            <TouchableOpacity  onPress={()=>{context.setPodcast(props.podcast)}}>
-           <Image style={[styles.recommendationImage]} source={{ uri: props.podcast.Podcast_Pictures["0"]}} />
+           <Image style={[styles.recommendationImage]} source={ {uri: props.podcast.Podcast_Pictures["0"]}} />
 
            </TouchableOpacity>
           <View style={[ styles.flex, styles.row, styles.recommendationOptions ]}>

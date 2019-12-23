@@ -105,7 +105,7 @@ export default CategoryScreen;
 const styles = StyleSheet.create({
   header: {
     paddingHorizontal: theme.sizes.base * 2,
-    paddingTop: theme.sizes.base * 2.5,
+    paddingTop: theme.sizes.base * 2,
     paddingBottom :theme.sizes.base * 0.5,
   },
   avatar: {

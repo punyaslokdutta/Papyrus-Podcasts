@@ -3,6 +3,9 @@ rootProject.name = 'Papyrus_60'
 //project(':@react-native-community_status-bar').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-community/status-bar/android')
 include ':react-native-svg'
 project(':react-native-svg').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-svg/android')
-apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
+apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); 
+applyNativeModulesSettingsGradle(settings)
+//include ':react-native-google-signin'
+//project(':react-native-google-signin').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-community/google-signin/android')
 include ':app'
 

@@ -182,7 +182,8 @@ class HomeScreen extends React.Component {
         headerPodcasts : [],
         podcasts : [],
         limit : 4,
-        lastVisible: null,
+        lastVisible: 0,
+        lastVisibleID:null,
         loading: false,
         refreshing: false,
       };
@@ -215,13 +216,18 @@ class HomeScreen extends React.Component {
           books_data = doc._data.book_recommendations;
           headerPodcasts_data = doc._data.podcast_recommendations.slice(0,20);
           podcasts_data = doc._data.podcast_recommendations.slice(0,4);
+          let lastVisibleID = podcasts_data[podcasts_data.length-1].podcastID;
       
         this.setState({
           books: books_data,
           headerPodcasts: headerPodcasts_data,
           podcasts: podcasts_data,
-          lastVisible: 0,
-          loading: false
+          lastVisible: 4,
+          lastVisibleID:lastVisibleID,
+          loading: false  , 
+          onEndReachedCalledDuringMomentum : true
+
+
         });
       })
       }
@@ -229,6 +235,15 @@ class HomeScreen extends React.Component {
         console.log(error);
       }
     };
+
+    onEndReached = ({ distanceFromEnd }) => {
+
+      if(!this.onEndReachedCalledDuringMomentum){
+        this.retrieveMore();
+          this.onEndReachedCalledDuringMomentum = true;
+      }
+      
+    }
 
     retrieveMore = async () => {
       try
@@ -240,18 +255,40 @@ class HomeScreen extends React.Component {
          
           var index = this.state.lastVisible;
           var minIndex = Math.min(index+4,24);
+         
           try{
+
             let query = await firestore().collection('users').doc(userid).collection('privateUserData').doc('privateData').onSnapshot(
               (doc)=> {
+
                 podcasts_data = doc._data.podcast_recommendations.slice(index,minIndex);
-                let lastVisible = this.state.lastVisible + 4;
- 
-       this.setState({
-         podcasts: [...this.state.podcasts, ...podcasts_data],
-         //chapterPodcasts: documentData_chapterPodcasts,
-         lastVisible:lastVisible,
-         refreshing:false
-       });
+                if(podcasts_data.length != 0)
+                {
+                  let lastVisibleID = podcasts_data[podcasts_data.length-1].podcastID;
+
+                if(this.state.lastVisibleID===lastVisibleID){
+                  this.setState({
+                          refreshing:false
+                      });
+              }
+              else
+              {
+                this.setState({
+                  podcasts: [...this.state.podcasts, ...podcasts_data],
+                    //chapterPodcasts: documentData_chapterPodcasts,
+                    lastVisibleID:lastVisibleID,
+                    lastVisible:minIndex,
+                    refreshing:false
+                  });
+        
+              }
+                }
+                else
+                {
+                  this.setState({
+                    refreshing:false
+                });
+                }
               });    
          }
          catch(error)
@@ -388,9 +425,10 @@ class HomeScreen extends React.Component {
         keyExtractor={item => item.PodcastID}
         ListHeaderComponent={this.renderHeader}
          ListFooterComponent={this.renderFooter}
-        onEndReached={this.retrieveMore}
+        onEndReached={this.onEndReached}
         onEndReachedThreshold={0.5}
         refreshing={this.state.refreshing}
+        onMomentumScrollBegin={() => { this.onEndReachedCalledDuringMomentum = false; }}
       />   
       )
     }
