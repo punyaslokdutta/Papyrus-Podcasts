@@ -18,13 +18,6 @@ import firebaseApi from './config/Firebase/firebaseApi'
 import {withFirebaseHOC} from '../screens/config/Firebase'
 
 
-
-
-
-
-
-
-
 const validationSchema = yup.object().shape({
   email: yup
     .string()

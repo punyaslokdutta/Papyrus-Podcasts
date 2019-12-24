@@ -1,26 +1,15 @@
 
 
 import React, {Component} from 'react';
-import firestore from '@react-native-firebase/firestore';
 import { StyleSheet, Text, View, Image, TouchableOpacity,FlatList,  Dimensions,SafeAreaView, ScrollView,ActivityIndicator} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import { Container, Header, Left, Right, Content , Button,Card, CardItem, Thumbnail, Body} from 'native-base';
-import PodcastPlayer from './PodcastPlayer'
-import Podcast from './components/Home/Podcast'
+import {Button} from 'native-base';
 import editProfile from './components/Profile/editProfile'
-import firebaseApi from './config/Firebase/firebaseApi'
-import {withFirebaseHOC} from '../screens/config/Firebase'
-
-
-
-
-
+import ProfileBookPodcast from './components/Profile/ProfileBookPodcast'
+import ProfileChapterPodcast from './components/Profile/ProfileChapterPodcast'
 
 var {width, height}=Dimensions.get('window')
-
-
-
 class Profile extends React.Component {
     
     static navigationOptions={
@@ -33,11 +22,6 @@ class Profile extends React.Component {
 
       this.state={
         activeIndex:0,
-        bookPodcasts:[], 
-        chapterPodcasts:[],
-        limit:6,
-        lastVisible:null,
-        refreshing:false,
         loading:false
         // navigation: this.props.navigation,
       }
@@ -45,91 +29,7 @@ class Profile extends React.Component {
     
      }
    
-     componentDidMount = () => {
-      try {
-        // Cloud Firestore: Initial Query
-        this.retrieveData();
-      }
-      catch (error) {
-        console.log(error);
-      }
-    };
-    
-
-     //retrieve data
-     retrieveData = async () => {
-      try {
-        // Set State: Loading
-        this.setState({
-          loading: true,
-        });
-        console.log('Retrieving Data');
-        // Cloud Firestore: Query
-        const  userid = this.props.firebase._getUid();
-        let query3 = await firestore().collectionGroup('Podcasts').where('podcasterID','==',userid);    
-        let documentPodcasts = await query3.where('ChapterName','==',"").orderBy('PodcastID').limit(this.state.limit).get();
-        let documentChapterPodcasts = await query3.where('isChapterPodcast','==',true).limit(this.state.limit).get();
-        let documentData_podcasts = documentPodcasts.docs.map(document => document.data());
-        let documentData_chapterPodcasts = documentChapterPodcasts.docs.map(document => document.data());
-        var lastVisible = 5;
-        if(this.state.activeIndex == 0)
-          lastVisible = documentData_podcasts[documentData_podcasts.length - 1].PodcastID;
-        else
-          lastVisible = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].PodcastID;
-         
-          this.setState({
-          bookPodcasts: documentData_podcasts,
-          chapterPodcasts: documentData_chapterPodcasts,
-          lastVisible:lastVisible,
-          loading:false
-        });
-      }
-      catch (error) {
-        console.log(error);
-      }
-    };
-
-    retrieveMore = async () => {
-     try
-      {
-
-      this.setState({
-        refreshing: true,
-         }); 
-
-         const  userid = this.props.firebase._getUid();
-         let additionalQuery = 9;
-         try{
-           additionalQuery = await firestore().collectionGroup('Podcasts')
-                            .where('podcasterID','==',userid).where('ChapterName','==',"")
-                            .orderBy('PodcastID')
-                            .startAfter(this.state.lastVisible)
-                            .limit(this.state.limit);
-        
-      // Cloud Firestore: Query Snapshot
-         
-        }
-        catch(error)
-        {
-          console.log(error);
-        }
-        let documentSnapshots = await additionalQuery.get();
-      // Cloud Firestore: Document Data
-      let documentData = documentSnapshots.docs.map(document => document.data());
-      // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
-      let lastVisible = documentData[documentData.length - 1].PodcastID;
-
-      this.setState({
-        bookPodcasts: [...this.state.bookPodcasts, ...documentData],
-        //chapterPodcasts: documentData_chapterPodcasts,
-        lastVisible:lastVisible,
-        refreshing:false
-      });
-      }
-      catch(error){
-      console.log(error);
-      }
-    }
+     
     segmentClicked=(index)=>{
       this.setState({
       activeIndex : index
@@ -137,19 +37,50 @@ class Profile extends React.Component {
       
     }
 
-    renderData=({item,index})=>
-    {
-       return(
-         <View>
-        <Podcast podcast={item} index={index} navigation={this.props.navigation}/>
-        </View>
-       )
-    }
-
-    renderHeader=()=>
-    {
-      return(
-        <View>
+    // renderSectionOne=()=>
+    // {
+    //     return (
+          
+    //       <FlatList
+    //       data={this.state.bookPodcasts}
+    //       renderItem={this.renderData}
+    //       numColumns={2}
+    //       showsVerticalScrollIndicator={false}
+    //       keyExtractor={item => item.PodcastID}
+    //        ListHeaderComponent={this.renderHeader}
+    //        ListFooterComponent={this.renderFooter}
+    //       onEndReached={this.retrieveMoreBookPodcasts}
+    //       onEndReachedThreshold={0.5}
+    //       refreshing={this.state.refreshing}
+    //     />
+        
+    //     )
+    // }
+    // renderSectionTwo=()=>
+    // {
+    //   return (
+          
+    //     <FlatList
+    //     data={this.state.chapterPodcasts}
+    //     renderItem={this.renderData}
+    //     numColumns={2}
+    //     showsVerticalScrollIndicator={false}
+    //     keyExtractor={item => item.PodcastID}
+    //     ListHeaderComponent={this.renderHeader}
+    //      ListFooterComponent={this.renderFooter}
+    //     onEndReached={this.retrieveMoreChapterPodcasts}
+    //     onEndReachedThreshold={0.5}
+    //     refreshing={this.state.refreshing}
+    //   />
+    //   )
+    // }
+ 
+    render() {
+      const { navigation } = this.props;
+      return (
+         
+         <View style = {{paddingBottom:10}}>
+           {/* <View>
         <View style={{flexDirection:'row' ,justifyContent:'flex-end'}}>
         <Icon name="user-plus"  size={24} style={{ paddingTop:10, paddingRight: 10}}/>
         </View>
@@ -203,70 +134,9 @@ class Profile extends React.Component {
 
           </View>
       </View>
-      </View>
-      )
-    }
-
-    renderFooter = () => {
-      try {
-        if (this.state.refreshing) {
-          return (
-            <ActivityIndicator />
-          )
-        }
-        else {
-          return null;
-        }
-      }
-      catch (error) {
-        console.log(error);
-      }
-    }
-
-    renderSectionOne=()=>
-    {
-        return (
-          
-          <FlatList
-          data={this.state.bookPodcasts}
-          renderItem={this.renderData}
-          numColumns={2}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={item => item.PodcastID}
-           ListHeaderComponent={this.renderHeader}
-           ListFooterComponent={this.renderFooter}
-          onEndReached={this.retrieveMore}
-          onEndReachedThreshold={0.5}
-          refreshing={this.state.refreshing}
-        />
-        
-        )
-    }
-    renderSectionTwo=()=>
-    {
-      return (
-          
-        <FlatList
-        data={this.state.chapterPodcasts}
-        renderItem={this.renderData}
-        numColumns={2}
-        showsVerticalScrollIndicator={false}
-        keyExtractor={item => item.PodcastID}
-        ListHeaderComponent={this.renderHeader}
-         ListFooterComponent={this.renderFooter}
-        onEndReached={this.retrieveMore}
-        onEndReachedThreshold={0.5}
-        refreshing={this.state.refreshing}
-      />
-      )
-    }
- 
-    render() {
-      const { navigation } = this.props;
-      return (
-       
-         <View style = {{paddingBottom:50}}>
-         {this.state.activeIndex ? this.renderSectionTwo() : this.renderSectionOne()}
+      </View> */}
+         {/* {this.state.activeIndex ? this.renderSectionTwo() : this.renderSectionOne()} */}
+         {this.state.activeIndex ? <ProfileChapterPodcast/> : <ProfileBookPodcast/>}
          </View>
       
       );
@@ -274,7 +144,7 @@ class Profile extends React.Component {
   }
   
 
-export default withFirebaseHOC(Profile);
+export default Profile;
 
 
 const styles = StyleSheet.create({

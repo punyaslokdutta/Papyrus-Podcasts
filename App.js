@@ -69,7 +69,8 @@ const AuthStackNavigator= createStackNavigator(
 
 const ProfileStackNavigator=createStackNavigator(
   {
-    Profile : {screen : Profile}, 
+    Profile : {screen : Profile},
+     
     editProfile : {screen : editProfile}
   }, 
   {
