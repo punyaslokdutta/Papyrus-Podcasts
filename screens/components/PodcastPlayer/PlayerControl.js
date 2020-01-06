@@ -5,26 +5,20 @@ import {
 } from 'react-native';
 //import { Icon } from 'expo';
 import Icon from 'react-native-vector-icons/FontAwesome'
-//import PlayerContext from './PlayerContext'
-//import PlayerContext from './PlayerContext';
-//import withPlayerHOC from './PlayerContext'
-import setGlobalPodcastContext from './setGlobalPodcastContext'
+import {useDispatch} from "react-redux"
+
+
 
 
 const { width } = Dimensions.get('window');
 export const PLACEHOLDER_WIDTH = width / 3;
 
-/*type PlayerControlsProps = {
-  title: string,
-  onPress: () => mixed,
-};*/
-//const areEqual = (prevProps, nextProps) => true;
+const areEqual = (prevProps, nextProps) => true;
  const PlayerControls =React.memo((props)=> {
 
   //const [playerControlState,setplayerControlState ] =useState(props)
   //copied the props to the state of the component 
   console.log( props);
-  const {setGlobalFromPodcast} = useContext(setGlobalPodcastContext)
 
 
   /*useEffect(() => {
@@ -33,11 +27,8 @@ export const PLACEHOLDER_WIDTH = width / 3;
 
 
   
-
-    /*static propTypes={
-        title: React.PropTypes,
-        onPress: React.PropTypes,
-    }*/
+const dispatch=useDispatch();
+  
   
    //const { title, onPress } = this.props;
     return (
@@ -47,7 +38,7 @@ export const PLACEHOLDER_WIDTH = width / 3;
           <View style={styles.placeholder} />
           <Text style={styles.title} numberOfLine={3}>{props.title}</Text>
           <Icon name="play" size={24} style={styles.icon}/>
-                <TouchableWithoutFeedback  onPress={()=>{setGlobalFromPodcast(null)}}>
+                <TouchableWithoutFeedback  onPress={(()=>dispatch({type:"SET_PODCAST", payload: null}))}>
                 <Icon name="times-circle" size={24} style={styles.icon}/>
                 </TouchableWithoutFeedback>
         </View>

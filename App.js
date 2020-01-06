@@ -37,9 +37,12 @@ import {PlayerProvider} from './screens/components/PodcastPlayer/PlayerProvider'
 import ProfileBookPodcast from './screens/components/Profile/ProfileBookPodcast'
 import ProfileChapterPodcast from './screens/components/Profile/ProfileChapterPodcast'
 import Profile_StatsScreen from './screens/components/Profile/Profile_StatsScreen'
+import {createStore } from 'redux'
+import {Provider} from 'react-redux'
+import rootReducer from './reducers/rootReducer';
 
 
-
+const store =createStore(rootReducer)
 
 
 //const reducer = combineReducers({ navigation })
@@ -449,11 +452,13 @@ export default class App extends Component {
   //..
   render(){
     return(
+    <Provider store ={store}>
     <PlayerProvider>
     <FirebaseProvider value={firebaseApi}> 
     <AppContainer/> 
     </FirebaseProvider>
     </PlayerProvider>
+    </Provider>
     );
   }
 }

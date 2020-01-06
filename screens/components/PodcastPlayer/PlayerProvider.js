@@ -1,5 +1,5 @@
 // @flow
-import React, {Component, useState, createContext, useReducer, useCallback} from 'react';
+import React, {Component, useState, createContext, useReducer, useCallback, useEffect} from 'react';
 import {
   View, StyleSheet, Dimensions, StatusBar, Platform,
 } from 'react-native';
@@ -17,52 +17,24 @@ import TrackPlayer, {
   usePlaybackState,
   useTrackPlayerEvents
 } from "react-native-track-player";
+import {useSelector} from "react-redux"
 const { height } = Dimensions.get('window');
 //const { Animated, Easing } = DangerZone;
 const { Value, timing } = Animated;
 const isOS = Platform.OS === 'ios';
 
-/*type PlayerProviderProps = {
-  children: React.Node,
-};
 
-type PlayerProviderState = {
-  video: Video | null,
-};*/
-
-
-const defaultState = {
-  podcast: {}, 
-  eventSource:null
-};
-
-
-//StateContext is for Global Player State
-//DispatchContext is for functions that can mutate the global state
-//const StateContext = React.createContext();
-//const DispatchContext = React.createContext();
-//HOC
 const PlayerProvider=({children})=>{
-  //const [state, dispatch] = useState({ ...defaultState });
-  //const {podcast} =state
+
+
+
+  const podcast=useSelector(state=>state.podcast)
+  
   
 
-  const initialState ={
-    podcast: null, 
-    constantAlways:null,
-    isPlaying : false, 
-    isBuffering: false
-  }
-
-  const playbackState = usePlaybackState();
-  const [state, dispatch]= useReducer(PlayerReducer,initialState )
-  const {podcast} =state
-  {console.log("Inside Player Provider ")}
-  {console.log(state)}
-//Global setPodcastFunction which all the components below can use 
-
-
-function togglePodcast(podcast)  {
+  animation = new Value(0);
+useEffect(
+  (podcast) => {
     //const {podcast} =playerGlobalState;
     animation = new Value(0);
 
@@ -74,35 +46,27 @@ function togglePodcast(podcast)  {
         easing: Easing.inOut(Easing.ease),
       },
     ).start();
-  };
+  }, [podcast]
+)
 
-  const setPodcast =(podcast)=>
-  {
-    dispatch(
-      {
-        type: SET_PODCAST, 
-        payload: podcast     
-      }
-    )
-    togglePodcast(podcast)
+          
 
-  }
-  animation = new Value(0);
+ 
 
-  const setGlobalFromPodcast=useCallback(
-    (podcast)=>
-    {
-      dispatch(
-        {
-          type: SET_GLOBAL_FROM_PODCAST, 
-          payload: podcast     
-        }
-      )
-      togglePodcast(podcast)
+  // const setGlobalFromPodcast=useCallback(
+  //   (podcast)=>
+  //   {
+  //     dispatch(
+  //       {
+  //         type: SET_GLOBAL_FROM_PODCAST, 
+  //         payload: podcast     
+  //       }
+  //     )
+  //     togglePodcast(podcast)
   
-    }, [], 
+  //   }, [], 
   
-  )
+  // )
 
 
 
@@ -115,7 +79,6 @@ function togglePodcast(podcast)  {
       outputRange: [height, 0],
     });
     return (
-      <setGlobalPodcastContext.Provider value={{setGlobalFromPodcast}}>  
       <PlayerContext.Provider value={podcast}>
           
       
@@ -144,7 +107,6 @@ function togglePodcast(podcast)  {
 
        
       </PlayerContext.Provider>
-      </setGlobalPodcastContext.Provider>  
     );
   }
 
