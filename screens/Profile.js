@@ -1,14 +1,37 @@
 
 
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity,FlatList,  Dimensions,SafeAreaView, ScrollView,ActivityIndicator} from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, Dimensions, ScrollView} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import {Button} from 'native-base';
-import editProfile from './components/Profile/editProfile'
-import ProfileBookPodcast from './components/Profile/ProfileBookPodcast'
-import ProfileChapterPodcast from './components/Profile/ProfileChapterPodcast'
+import { Container, Header, Left, Right, Content , Button,Card, CardItem, Thumbnail, Body} from 'native-base';
+import CardComponent from './components/Home/CardComponent'
+import PodcastPlayer from './PodcastPlayer'
 
+
+
+var images=[require('../assets/Westeros.jpg'),
+require('../assets/harrypotter.jpeg'),
+require('../assets/Hotelcalifornia.jpg'),
+require('../assets/hungergames.jpeg'),
+require('../assets/Romance.jpeg'),
+require('../assets/davincicode.jpg'),
+require('../assets/Mystery.jpeg'),
+
+
+]
+
+var images2=[require('../assets/Westeros.jpg'),
+require('../assets/Hotelcalifornia.jpg'),
+require('../assets/boggart.jpg'),
+require('../assets/hungergames.jpeg'),
+require('../assets/davincicode.jpg'),
+require('../assets/Romance.jpeg'),
+,
+require('../assets/Mystery.jpeg'),
+
+
+]
 var {width, height}=Dimensions.get('window')
 class Profile extends React.Component {
     
@@ -19,17 +42,14 @@ class Profile extends React.Component {
    {
      super(props)
      {
-
       this.state={
-        activeIndex:0,
-        loading:false
-        // navigation: this.props.navigation,
-      }
+        activeIndex:0
       }
     
      }
-   
-     
+   }
+        
+    
     segmentClicked=(index)=>{
       this.setState({
       activeIndex : index
@@ -37,112 +57,172 @@ class Profile extends React.Component {
       
     }
 
-    // renderSectionOne=()=>
-    // {
-    //     return (
+    /*itemPress=()=>
+    {
+      this.props.navigator.push(
+        {
+          id:'PodcastPlayer'
+        }
+      )
+    }*/
+    renderSectionOne=()=>
+    {
+      return images.map((image, index)=>
+      {
+        return (
+          <View key={index} >
+          <TouchableOpacity   onPress={()=>this.props.navigation.navigate('PodcastPlayer', {image})}style={[{width:(width) / 3 }, {height:(width) / 3 },{paddingLeft:2},{paddingRight:2} ,{marginBottom:2}]}>
+          <Image style={{flex:1, width: undefined, height:  undefined, borderRadius:15, padding:10}} source={image}/>
+          </TouchableOpacity>
           
-    //       <FlatList
-    //       data={this.state.bookPodcasts}
-    //       renderItem={this.renderData}
-    //       numColumns={2}
-    //       showsVerticalScrollIndicator={false}
-    //       keyExtractor={item => item.PodcastID}
-    //        ListHeaderComponent={this.renderHeader}
-    //        ListFooterComponent={this.renderFooter}
-    //       onEndReached={this.retrieveMoreBookPodcasts}
-    //       onEndReachedThreshold={0.5}
-    //       refreshing={this.state.refreshing}
-    //     />
+          </View>
+        )
+      })
+    }
+    renderSectionTwo=()=>
+    {
+      return images2.map((image, index)=>
+      {
+        return (
+          
+          <View key={index} style={[{width:(width) / 3 }, {height:(height) / 3 },index%3!==0?{paddingLeft:2}:{paddingLeft:0}, {marginBottom:2}]}>
         
-    //     )
-    // }
-    // renderSectionTwo=()=>
-    // {
-    //   return (
+          <Image style={{flex:1, width: undefined, height:  undefined, borderRadius:15, padding:10}} source={image}/>
           
-    //     <FlatList
-    //     data={this.state.chapterPodcasts}
-    //     renderItem={this.renderData}
-    //     numColumns={2}
-    //     showsVerticalScrollIndicator={false}
-    //     keyExtractor={item => item.PodcastID}
-    //     ListHeaderComponent={this.renderHeader}
-    //      ListFooterComponent={this.renderFooter}
-    //     onEndReached={this.retrieveMoreChapterPodcasts}
-    //     onEndReachedThreshold={0.5}
-    //     refreshing={this.state.refreshing}
-    //   />
-    //   )
-    // }
- 
-    render() {
-      const { navigation } = this.props;
-      return (
-         
-         <View style = {{paddingBottom:10}}>
-           {/* <View>
-        <View style={{flexDirection:'row' ,justifyContent:'flex-end'}}>
-        <Icon name="user-plus"  size={24} style={{ paddingTop:10, paddingRight: 10}}/>
-        </View>
-        <View>
-        <View style={{flexDirection:'row'}}>
-        <View>
-          <Text style={{paddingTop:90, paddingLeft:60, fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
-            220
-          </Text>
-         <Text style={{fontFamily:'sans-serif-light', paddingLeft:50}}>Following</Text>
           </View>
-         
-            <View style={{alignItems:'center', justifyContent:'center', flex:3, paddingTop:60}}>
-              <Image source={{ uri: "https://scontent.fdel12-1.fna.fbcdn.net/v/t31.0-8/p960x960/14054441_518163365046457_6005096195143854779_o.jpg?_nc_cat=101&_nc_oc=AQmBj8SY60BCKzMFfvCPGLc1J44zxgFhJqefzYEifezUhkr7pFo29592HYyw6grMQF8&_nc_ht=scontent.fdel12-1.fna&oh=8ff3d0097e442acc84a804041fd0e7ee&oe=5E45429C"}} style={{width:100, height:100, borderRadius:50 }}/>
-            </View>
-            <View>
-            <Text style={{paddingTop:90 , paddingRight:60,  fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
-            100
-          </Text>
-          <Text style={{fontFamily:'sans-serif-light', paddingRight:70}}>Followers</Text>
-          </View>
+        )
+      })
+    }
 
-        </View>
-        </View>
-        <View style={{ paddingHorizontal:105,flex:1,marginTop:20}}>
-       
-       <Text style={{ fontSize:24, fontWeight:"200",  textShadowColor:'black', fontFamily:'sans-serif-light', alignItems:'center', justifyContent:'center'}}>Khaled Housseini</Text>
-       
 
-        </View>
-       
-        <View>
-        <Text style={{ fontSize:14, fontWeight:"100",  textShadowColor:'black', fontFamily:'sans-serif-light', alignItems:'center', justifyContent:'center', padding:20}}>I read books on philosophy, economics, computer science, social sciences, geopolitics.</Text>
-        </View>
-
-        <View style={{ paddingLeft:145,flex:1}}>
-        <Button  style={{flex:1, marginTop:10, justifyContent:'center', height:30, width:100, borderRadius:5, backgroundColor:'white'}} onPress={()=>this.props.navigation.navigate('editProfile')}>
-        <Text>Edit Profile</Text>
-        </Button>
-
-        </View>
-        <View style={{paddingTop:30}}>
-          <View style={{flexDirection :'row', justifyContent:'space-around', borderTopWidth:1, borderTopColor:'#eae5e5'}}>
-          <Button  transparent onPress={()=>this.segmentClicked(0)} active={this.state.activeIndex==0}>
-          <Icon name='book' size={20} style={[this.state.activeIndex == 0 ? {color:'black'} : {color:'grey'}]}/>
-
-          </Button>
-          <Button transparent onPress={()=>this.segmentClicked(1)} active={this.state.activeIndex==1}>
-          <Icon name='newspaper-o' size={20} style={[this.state.activeIndex == 1 ? {color:'black'} : {color:'grey'}]} />
-          </Button>
-
-          </View>
-      </View>
-      </View> */}
-         {/* {this.state.activeIndex ? this.renderSectionTwo() : this.renderSectionOne()} */}
-         {this.state.activeIndex ? <ProfileChapterPodcast/> : <ProfileBookPodcast/>}
-         </View>
+    renderSection=()=>
+    {
+      //console.log('hh');
       
+      if(this.state.activeIndex==0)
+      {
+        return (
+          <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
+         
+          {this.renderSectionTwo()}
+          </View>
+        )
+      }
+      else if(this.state.activeIndex==1)
+      {
+        return (
+          
+          <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
+         
+          {this.renderSectionOne()}
+          </View>
+        )
+      }
+      else if(this.state.activeIndex==2)
+      {
+        return (
+          <ScrollView  scrollEventThrottle={16} style={{backgroundColor: '#F5FCFF'}}>
+        
+          <Content>
+            <CardComponent/>
+            <CardComponent/>
+            <CardComponent/>
+            
+            
+          </Content>
+        
+
+        
+
+        
+        
+        
+            
+                
+            </ScrollView>
+        )
+      }
+    }
+  
+   
+    render() {
+      return (
+        <Container style={{flex:1 , backgroundColor:'white'}}>
+        
+       
+          
+          
+        
+        <Content>
+        <View style={{flexDirection:'row' ,justifyContent:'flex-end'}}>
+          <Icon name="user-plus"  size={24} style={{ paddingTop:10, paddingRight: 10}}/>
+          </View>
+          <View>
+            <View style={{flexDirection:'row'}}>
+            <View>
+            <Text style={{paddingTop:90, paddingLeft:60, fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
+              220
+            </Text>
+            <Text style={{fontFamily:'sans-serif-light', paddingLeft:50}}>Following</Text>
+            </View>
+            
+              <View style={{alignItems:'center', justifyContent:'center', flex:3, paddingTop:60}}>
+                <Image source={require('../assets/khaled.jpeg')} style={{width:100, height:100, borderRadius:50 }}/>
+              </View>
+              <View>
+              <Text style={{paddingTop:90 , paddingRight:60,  fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
+              100
+            </Text>
+            <Text style={{fontFamily:'sans-serif-light', paddingRight:70}}>Followers</Text>
+            </View>
+
+          </View>
+          </View>
+          <View style={{ paddingHorizontal:105,flex:1,marginTop:20}}>
+          
+          <Text style={{ fontSize:24, fontWeight:"200",  textShadowColor:'black', fontFamily:'sans-serif-light', alignItems:'center', justifyContent:'center'}}>Khaled Housseini</Text>
+          
+
+          </View>
+          
+          <View>
+          <Text style={{ fontSize:14, fontWeight:"100",  textShadowColor:'black', fontFamily:'sans-serif-light', alignItems:'center', justifyContent:'center', padding:20}}>I read books on philosophy, economics, computer science, social sciences, geopolitics.</Text>
+          </View>
+
+          <View style={{ paddingLeft:145,flex:1}}>
+          <Button bordered dark style={{flex:1, marginTop:10, justifyContent:'center', height:30, width:100, borderRadius:5}} onPress={()=>this.props.navigation.navigate('PodcastPlayer')}>
+          <Text>Edit Profile</Text>
+          </Button>
+
+          </View>
+          <View style={{paddingTop:30}}>
+            <View style={{flexDirection :'row', justifyContent:'space-around', borderTopWidth:1, borderTopColor:'#eae5e5'}}>
+            <Button  transparent onPress={()=>this.segmentClicked(0)} active={this.state.activeIndex==0}>
+            <Icon name='newspaper-o' size={20} style={[this.state.activeIndex == 0 ? {color:'black'} : {color:'grey'}]}/>
+
+            </Button>
+            <Button transparent onPress={()=>this.segmentClicked(1)} active={this.state.activeIndex==1}>
+            <Icon name='book' size={20} style={[this.state.activeIndex == 1 ? {color:'black'} : {color:'grey'}]} />
+            </Button>
+
+
+
+            <Button transparent onPress={()=>this.segmentClicked(2)} active={this.state.activeIndex==2}>
+            <Icon name='bookmark-o' size={20} style={[this.state.activeIndex == 2 ? {color:'black'} : {color:'grey'}]}/>
+
+            </Button>
+
+            </View>
+           
+            {this.renderSection()}
+            
+          </View>
+        </Content>
+        
+        </Container>
       );
     }
   }
-  
 
 export default Profile;
 

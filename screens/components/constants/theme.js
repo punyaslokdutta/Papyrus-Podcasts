@@ -4,6 +4,9 @@ const colors = {
     gray: '#DCE0E9',
     caption: '#BCCCD4',
     active: '#007BFA',
+    green: '#00ff00',
+    gray_green: '#75816b',
+    dark_green: '#013220'
   };
   
   const sizes = {

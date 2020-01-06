@@ -14,7 +14,7 @@ import Story from './components/Explore/Story'
 import CategoryScreen from './CategoryScreen'
 import Podcast from './components/Home/Podcast'
 import ExploreBook from './components/Explore/ExploreBook'
-
+import searchIcon from '../assets/searchIcon.png';
 class Explore extends React.Component {
 
   constructor(props)
@@ -216,11 +216,12 @@ class Explore extends React.Component {
         </View>
         </TouchableOpacity>
         <View style={{flex:1, paddingVertical:10}}>
-        <View style={{height:this.startHeaderHeight, backgroundColor: 'white', paddingRight: 13, paddingVertical:10}}>
+        <View style={{flexDirection:'row',height:this.startHeaderHeight, backgroundColor: 'white', paddingRight: 13, paddingVertical:10}}>
         
-            <TextInput  underlineColorAndroid="transparent" placeholder="Search Books, Chapters, Authors" placeholderTextColor="black"  style={{ flex:1, fontWeight:'700',borderRadius:8, backgroundColor:'#dddd',
+            <TextInput underlineColorAndroid="transparent" placeholder="Search Books, Chapters, Authors" placeholderTextColor="black"  style={{ flex:1, fontWeight:'700',borderRadius:8, backgroundColor:'#dddd',
             elevation:1, paddingHorizontal: 10/*marginTop: Platform.OS=='android'?30:null*/}}
             />
+             <Icon style={{paddingLeft:5, paddingTop:5}} name="search" size={26}/>
         
         </View>
         </View> 
@@ -228,14 +229,14 @@ class Explore extends React.Component {
         <ScrollView  scrollEventThrottle={16}>
         <View style={{height:120}}>
         <View style={{flex:1}}>
-        <Text style={{fontSize:12, fontWeight:'200', paddingHorizontal: 20, textShadowColor:'black',fontFamily:'sans-serif-light'}}>
+        <Text style={{fontSize:20, fontWeight:'200', paddingHorizontal: 20, textShadowColor:'black',fontFamily:'sans-serif-light'}}>
                         Top StoryTellers
                     </Text>
         </View>
-        <View style={{flex:3}}>
+        <View style={{flex:3,paddingTop:10}}>
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-       
-        <Story ImageUri={require('../assets/khaled.jpeg')} username={'khaled_230'}/>
+        
+        <Story ImageUri={require('../assets/indian.jpeg')} username={'rajiv_230'}/>
         <Story ImageUri={require('../assets/dan.jpeg')} username={'Dan_Mos'}/>
         <Story ImageUri={require('../assets/dan2.jpeg')} username={'Cylie_storm'}/>
         <Story ImageUri={require('../assets/dan3.jpeg')} username={'brook_davis'}/>
@@ -248,7 +249,7 @@ class Explore extends React.Component {
         </View>
             
             <View style={{flex:1 , backgroundColor:'white', paddingTop:10}}>
-                    <Text style={{fontSize:24, fontWeight:'200', paddingHorizontal: 20, textShadowColor:'black',fontFamily:'sans-serif-light'}}>
+                    <Text style={{fontSize:20, fontWeight:'normal', paddingHorizontal: 20, textShadowColor:'black',fontFamily:'sans-serif-light'}}>
                         Trending Podcasts
                     </Text>
             </View>   
@@ -265,11 +266,11 @@ class Explore extends React.Component {
                     <TrendingPodcast ImageUri={require('../assets/Westeros.jpg')}/> */}
                 </ScrollView>
                 <View style={{flex:1 , backgroundColor:'white', paddingTop:10}}>
-                <Text style={{fontSize:24, fontWeight:'200', paddingHorizontal: 20, textShadowColor:'black', fontFamily:'sans-serif-light'}}>
-                        Browse Books
+                <Text style={{fontSize:20, fontWeight:'normal', paddingHorizontal: 20, textShadowColor:'black', fontFamily:'sans-serif-light'}}>
+                        Short Stories
                     </Text>
             </View> 
-            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{paddingTop:20}}>
+            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{paddingTop:10}}>
             {this.renderSectionBooks()}
                    
                 </ScrollView>
@@ -280,10 +281,10 @@ class Explore extends React.Component {
                 </TouchableOpacity> */}
 
                 <View style={{flex:1 , backgroundColor:'white', paddingTop:10}}>
-                <Text style={{fontSize:24, fontWeight:'200', paddingHorizontal: 20,  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
-                        Top Chapters
+                <Text style={{fontSize:20, fontWeight:'normal', paddingHorizontal: 20,  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
+                        Classic Novels
                     </Text>
-                    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{paddingTop:20}}>
+                    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{paddingTop:10}}>
                     {this.renderSectionChapters()}                 
                     {/* <TopChapters ImageUri={require('../assets/boggart.jpg')}/>
                     <TopChapters ImageUri={require('../assets/hungergames.jpeg')}/> */}

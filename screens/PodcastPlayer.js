@@ -1,6 +1,6 @@
 // @flow
 import * as React from 'react';
-import { Dimensions, StyleSheet , Image, StatusBar,SafeAreaView,  TouchableOpacity , View,Text } from 'react-native';
+import { Dimensions, StyleSheet , Image, StatusBar,SafeAreaView,  TouchableOpacity , View,Text, ScrollView } from 'react-native';
 //import {
  // Video, Constants, DangerZone, GestureHandler,
 //} from 'expo';
@@ -21,8 +21,8 @@ import { PanGestureHandler, State } from 'react-native-gesture-handler';
 //const { State, PanGestureHandler } = GestureHandler;
 const { width, height } = Dimensions.get('window');
 const { statusBarHeight } = StatusBar.currentHeight
-const minHeight = 55;
-const midBound = height -135;
+const minHeight = height/12;
+const midBound = (height*10)/11 - height/45;
 const upperBound = midBound + minHeight;
 const {
   Extrapolate,
@@ -52,6 +52,21 @@ const shadow = {
   shadowOpacity: 0.18,
   shadowRadius: 2,
 };
+
+
+
+
+const audioBookPlaylist = [
+  {
+    title: 'Hamlet - Act I',
+    author: 'William Shakespeare',
+    source: 'Librivox',
+    uri:
+      'https://ia800204.us.archive.org/11/items/hamlet_0911_librivox/hamlet_act1_shakespeare.mp3',
+    imageSource:
+      'http://www.archive.org/download/LibrivoxCdCoverArt8/hamlet_1104.jpg'
+  },
+]
 
 
 function runSpring(clock, value, dest) {
@@ -207,12 +222,12 @@ export default class PodcastPlayer extends React.Component{
     });
     const videoWidth = interpolate(translateY, {
       inputRange: [0, midBound, upperBound],
-      outputRange: [width, width, PLACEHOLDER_WIDTH],
+      outputRange: [width, width  , PLACEHOLDER_WIDTH],
       extrapolate: Extrapolate.CLAMP,
     });
     const videoHeight = interpolate(translateY, {
       inputRange: [0, midBound, upperBound],
-      outputRange: [width -64, minHeight * 1.3, minHeight],
+      outputRange: [height*15/24, minHeight * 1.3, minHeight],
       extrapolate: Extrapolate.CLAMP,
     });
     
@@ -228,18 +243,18 @@ export default class PodcastPlayer extends React.Component{
     });
     return (
     
-        
+      <Animated.View
+      style={{
+        transform: [{ translateY: tY }],
+        ...shadow,
+      }}
+    >
         <PanGestureHandler
           onHandlerStateChange={onGestureEvent}
           activeOffsetY={[-10, 10]}
           {...{ onGestureEvent }}
         >
-          <Animated.View
-            style={{
-              transform: [{ translateY: tY }],
-              ...shadow,
-            }}
-          >
+          
             <Animated.View style={{ backgroundColor: 'white', width: videoContainerWidth }}>
               <Animated.View style={{ ...StyleSheet.absoluteFillObject, opacity: playerControlOpaciy }}>
                 <PlayerControls title={this.props.podcast.Podcast_Name} onPress={this.slideUp} />
@@ -248,15 +263,22 @@ export default class PodcastPlayer extends React.Component{
                 source={{uri:this.props.podcast.Podcast_Pictures[0]}}
                 style={{ width: videoWidth, height: videoHeight }}
               />
+               </Animated.View>
+               </PanGestureHandler>
+               <ScrollView  scrollEventThrottle={16} >
               
-            </Animated.View>
+            
             <Animated.View style={{ backgroundColor: 'white', width: videoContainerWidth, height: containerHeight }}>
               <Animated.View style={{ opacity }}>
                 <PodcastContent trackLength={this.state.trackLength} podcast={this.props.podcast} />
               </Animated.View>
             </Animated.View>
-          </Animated.View>
-        </PanGestureHandler>
+            </ScrollView> 
+
+
+            </Animated.View>
+         
+       
         
       
     );

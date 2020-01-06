@@ -1,5 +1,3 @@
-
-
 import React, {Component} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import { StyleSheet, Text, View, Image, TouchableOpacity,FlatList,  Dimensions,SafeAreaView, ScrollView,ActivityIndicator} from 'react-native';
@@ -25,7 +23,8 @@ class ProfileChapterPodcast extends React.Component {
         limit:6,
         lastVisibleChapterPodcast:null,
         refreshing:false,
-        loading:false
+        loading:false, 
+        onEndReachedCalledDuringMomentum : true,
         // navigation: this.props.navigation,
       }
       }
@@ -49,28 +48,38 @@ class ProfileChapterPodcast extends React.Component {
         // Set State: Loading
         this.setState({
           loading: true,
+          //refreshing:true
         });
         console.log('Retrieving Data');
         // Cloud Firestore: Query
         const  userid = this.props.firebase._getUid();
         let query3 = await firestore().collectionGroup('Podcasts').where('podcasterID','==',userid);    
         //let documentPodcasts = await query3.where('ChapterName','==',"").orderBy('PodcastID').limit(this.state.limit).get();
-        let documentChapterPodcasts = await query3.where('isChapterPodcast','==',true).limit(this.state.limit).get();
+        let documentChapterPodcasts = 90;
+        try{
+         documentChapterPodcasts = await query3.where('isChapterPodcast','==',true).limit(this.state.limit).get();
         //let documentData_podcasts = documentPodcasts.docs.map(document => document.data());
+        }
+        catch(error)
+        {
+          console.log(error);
+        }
         let documentData_chapterPodcasts = documentChapterPodcasts.docs.map(document => document.data());
         //var lastVisibleBook = this.state.lastVisibleBookPodcast;
+  
         var lastVisibleChapter = this.state.lastVisibleChapterPodcast;
 
         //lastVisibleBook = documentData_podcasts[documentData_podcasts.length - 1].PodcastID;        
         lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].PodcastID;
-         
-        this.setState({
-        //bookPodcasts: documentData_podcasts,
-        chapterPodcasts: documentData_chapterPodcasts,
-        //lastVisibleBookPodcast:lastVisibleBook,
-        lastVisibleChapterPodcast: lastVisibleChapter,
-        loading:false
-        });
+        
+          this.setState({
+            //bookPodcasts: documentData_podcasts,
+            chapterPodcasts: documentData_chapterPodcasts,
+            //lastVisibleBookPodcast:lastVisibleBook,
+            lastVisibleChapterPodcast: lastVisibleChapter,
+            loading:false,
+            //refreshing:false
+            });
       }
       catch (error) {
         console.log(error);
@@ -82,7 +91,7 @@ class ProfileChapterPodcast extends React.Component {
        {
  
        this.setState({
-         refreshing: true,
+         refreshing: true
           }); 
  
           const  userid = this.props.firebase._getUid();
@@ -102,17 +111,46 @@ class ProfileChapterPodcast extends React.Component {
          {
            console.log(error);
          }
-         let documentSnapshots = await additionalQuery.get();
+         let documentSnapshots = 98;
+         try{
+          documentSnapshots = await additionalQuery.get();
+         }
+         catch(error)
+         {
+           console.log(error);
+         }
+         
        // Cloud Firestore: Document Data
        let documentData = documentSnapshots.docs.map(document => document.data());
-       // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
-       let lastVisibleChapter = documentData[documentData.length - 1].PodcastID;
- 
        this.setState({
-         chapterPodcasts: [...this.state.chapterPodcasts, ...documentData],
-         lastVisibleChapterPodcast : lastVisibleChapter,
-         refreshing:false
-       });
+        refreshing:false
+    });
+       // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
+       if(documentData.length != 0)
+       {
+            let lastVisibleChapter = documentData[documentData.length - 1].PodcastID;
+          if(this.state.lastVisibleChapter === lastVisibleChapter)
+          {
+              this.setState({
+                  refreshing:false
+              });
+          }
+          else
+          {
+            this.setState({
+              chapterPodcasts: [...this.state.chapterPodcasts, ...documentData],
+              lastVisibleChapterPodcast : lastVisibleChapter,
+              refreshing:false
+            });
+          }
+       
+       }
+       else
+       {
+          this.setState({
+            refreshing:false
+            });
+       }
        }
        catch(error){
        console.log(error);
@@ -191,8 +229,9 @@ class ProfileChapterPodcast extends React.Component {
 
     renderFooter = () => {
       try {
-        if (this.state.refreshing) {
+        if (this.state.refreshing === true && this.state.chapterPodcasts.length > 6) {
           return (
+            //null
             <ActivityIndicator />
           )
         }
@@ -205,12 +244,26 @@ class ProfileChapterPodcast extends React.Component {
       }
     }
 
+
+    
+
+    onEndReached = ({ distanceFromEnd }) => {
+      if(this.state.chapterPodcasts.length>5)
+      {
+      if(!this.onEndReachedCalledDuringMomentum){
+          this.retrieveMoreChapterPodcasts()
+          this.onEndReachedCalledDuringMomentum = true;
+      }
+  }
+}
+
  
     render() {
       const { navigation } = this.props;
       return (
        
-         <View style = {{paddingBottom:50}}>
+         <View style = {{paddingBottom:20}}>
+             <View>
          {/* {this.state.activeIndex ? this.renderSectionTwo() : this.renderSectionOne()} */}
          <FlatList  nestedScrollEnabled={true}
         data={this.state.chapterPodcasts}
@@ -220,10 +273,12 @@ class ProfileChapterPodcast extends React.Component {
         keyExtractor={item => item.PodcastID}
         //ListHeaderComponent={this.renderHeader}
          ListFooterComponent={this.renderFooter}
-        onEndReached={this.retrieveMoreChapterPodcasts}
+        onEndReached={this.onEndReached}
         onEndReachedThreshold={0.5}
         refreshing={this.state.refreshing}
+        onMomentumScrollBegin={() => { this.onEndReachedCalledDuringMomentum = false; }}
       />
+         </View>
          </View>
       
       );
