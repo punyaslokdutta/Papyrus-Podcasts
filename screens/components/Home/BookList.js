@@ -358,7 +358,7 @@ class BookList extends Component {
 
   render() {
     return (
-      <View
+      <View key ={this.props.index}
       >
         {this.renderBooks()}
       </View>

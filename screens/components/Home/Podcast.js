@@ -2,12 +2,14 @@
 import React, {Component, useState, useEffect, useContext} from 'react';
 import { StyleSheet, Text, View, Image, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
-import FontAwesome, { Icons } from 'react-native-fontawesome';
-import Octicons from 'react-native-vector-icons/Octicons';
+//import FontAwesome, { Icons } from 'react-native-fontawesome';
+//import Octicons from 'react-native-vector-icons/Octicons';
 import * as theme from '../constants/theme'
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import PodcastPlayer from '../../PodcastPlayer'
-import PlayerContext from '../PodcastPlayer/PlayerContext'
+//import PodcastPlayer from '../../PodcastPlayer'
+//import PlayerContext from '../PodcastPlayer/PlayerContext'
+import setGlobalPodcastContext from '../PodcastPlayer/setGlobalPodcastContext'
+import InnerPodcast from './InnerPodcast'
 
 
 var {width, height}=Dimensions.get('window')
@@ -125,46 +127,41 @@ const styles = StyleSheet.create({
       },
   });
 
- const areEqual = (prevProps, nextProps) => true;
+
+
+
+ /* useContext doesn't let you subscribe to a part of the context value (or some memoized selector) without fully re-rendering.*/
+ //const areEqual = (prevProps, nextProps) => true;
+ const areEqual = (prevProps, nextProps) => true
  const Podcast= React.memo((props)=> {
+  console.log("Inside Podcast")
   console.log(props);
 
-   const context = useContext(PlayerContext)
+   const {setGlobalFromPodcast}= useContext(setGlobalPodcastContext)
   /*useEffect(() => {
     //setPodcastState(props);
   }, []);*/
-        return (   
+        return ( 
           <View style={[
             styles.flex, styles.column, styles.recommendation, styles.shadow, 
             {marginLeft: theme.sizes.margin },
           ]} key ={props.index}>
-           <View style={[styles.flex, styles.recommendationHeader]}>
-           <TouchableOpacity  onPress={()=>{context.setPodcast(props.podcast)}}>
-           <Image style={[styles.recommendationImage]} source={ {uri: props.podcast.Podcast_Pictures["0"]}} />
+          <View style={[styles.flex, styles.recommendationHeader]}>
+          <TouchableOpacity  onPress={()=>{setGlobalFromPodcast(props.podcast)}}>
+          <Image style={[styles.recommendationImage]} source={ {uri: props.podcast.Podcast_Pictures["0"]}} />
 
-           </TouchableOpacity>
-          <View style={[ styles.flex, styles.row, styles.recommendationOptions ]}>
-            <Icon
-              name={props.podcast.saved ? 'bookmark' : 'bookmark-o'}
-              color={theme.colors.white}
-              size={theme.sizes.font * 1.25}
-            />
+          </TouchableOpacity>
+         <View style={[ styles.flex, styles.row, styles.recommendationOptions ]}>
+           <Icon
+             name={props.podcast.saved ? 'bookmark' : 'bookmark-o'}
+             color={theme.colors.white}
+             size={theme.sizes.font * 1.25}
+           />
+         </View>
+       </View>
+          <InnerPodcast index={props.index} podcast={props.podcast}/>  
           </View>
-        </View>
-            <View style={[styles.flex, styles.column, styles.shadow, { justifyContent: 'space-evenly', padding: theme.sizes.padding / 2 }]}>
-              <Text style={{ fontSize: theme.sizes.font * 1.25, fontWeight: '500', paddingBottom: theme.sizes.padding / 4.5, }}>{props.podcast.Podcast_Name}</Text>
-              <Text style={{ color: theme.colors.caption }}>{props.podcast.Language}</Text>
-              <View style={[
-                styles.row,
-                { alignItems: 'center', justifyContent: 'space-between', marginTop: theme.sizes.margin }
-              ]}>
-                
-                <Text style={{ color: theme.colors.black }}>
-                  {props.podcast.Timestamp}
-                </Text>
-              </View>
-            </View>
-          </View>
+          
           
           );
     

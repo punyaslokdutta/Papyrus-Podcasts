@@ -254,7 +254,7 @@ class HomeScreen extends React.Component {
           const  userid = this.props.firebase._getUid();
          
           var index = this.state.lastVisible;
-          var minIndex = Math.min(index+4,24);
+          var minIndex = Math.min(index+4,80);
          
           try{
 
@@ -274,7 +274,7 @@ class HomeScreen extends React.Component {
               else
               {
                 this.setState({
-                  podcasts: [...this.state.podcasts, ...podcasts_data],
+                    podcasts: [...this.state.podcasts, ...podcasts_data],
                     //chapterPodcasts: documentData_chapterPodcasts,
                     lastVisibleID:lastVisibleID,
                     lastVisible:minIndex,
@@ -321,7 +321,8 @@ class HomeScreen extends React.Component {
    
     renderSectionBooks=()=>
     { 
-      return (<BookList navigation={this.props.navigation} destinations={this.state.books} />)
+      return (<BookList navigation={this.props.navigation} destinations={this.state.books}/>
+       )
     }
 
     renderData = ({ section, index }) => {
@@ -335,7 +336,7 @@ class HomeScreen extends React.Component {
         if (i >= section.data.length) {
           break;
         }
-        items.push(<Podcast podcast={section.data[i]} index={index} navigation={this.props.navigation} />);
+        items.push(<Podcast podcast={section.data[i]} key={index} index={index} navigation={this.props.navigation}  />);
       }
       return (
         <View
@@ -364,7 +365,7 @@ class HomeScreen extends React.Component {
           showsVerticalScrollIndicator={false}
           ItemSeparatorComponent={this.FlatListItemSeparator}
           sections={[
-            { title: 'Username Starts with A', data: podcasts1 },
+            { title: 'Username Starts with A', data: podcasts1},
             { title: 'Username Starts with B', data: podcasts2 },
             { title: 'Username Starts with C', data: podcasts3 },
             { title: 'Username Starts with D', data: podcasts4 },
@@ -418,13 +419,13 @@ class HomeScreen extends React.Component {
     {
       return (  
         <FlatList
-        data={this.state.podcasts}s
+        data={this.state.podcasts}
         renderItem={this.renderDatas}
         numColumns={2}
         showsVerticalScrollIndicator={false}
-        keyExtractor={item => item.PodcastID}
-        ListHeaderComponent={this.renderHeader}
-         ListFooterComponent={this.renderFooter}
+        keyExtractor={item => item.indexFirestore}
+        //ListHeaderComponent={this.renderHeader}
+        ListFooterComponent={this.renderFooter}
         onEndReached={this.onEndReached}
         onEndReachedThreshold={0.5}
         refreshing={this.state.refreshing}
