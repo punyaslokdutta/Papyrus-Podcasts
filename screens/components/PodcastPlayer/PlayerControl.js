@@ -5,9 +5,11 @@ import {
 } from 'react-native';
 //import { Icon } from 'expo';
 import Icon from 'react-native-vector-icons/FontAwesome'
-import PlayerContext from './PlayerContext'
+//import PlayerContext from './PlayerContext'
 //import PlayerContext from './PlayerContext';
 //import withPlayerHOC from './PlayerContext'
+import setGlobalPodcastContext from './setGlobalPodcastContext'
+
 
 const { width } = Dimensions.get('window');
 export const PLACEHOLDER_WIDTH = width / 3;
@@ -22,7 +24,7 @@ export const PLACEHOLDER_WIDTH = width / 3;
   //const [playerControlState,setplayerControlState ] =useState(props)
   //copied the props to the state of the component 
   console.log( props);
-  const context = useContext(PlayerContext)
+  const {setGlobalFromPodcast} = useContext(setGlobalPodcastContext)
 
 
   /*useEffect(() => {
@@ -45,7 +47,7 @@ export const PLACEHOLDER_WIDTH = width / 3;
           <View style={styles.placeholder} />
           <Text style={styles.title} numberOfLine={3}>{props.title}</Text>
           <Icon name="play" size={24} style={styles.icon}/>
-                <TouchableWithoutFeedback  onPress={()=>{context.setPodcast(null)}}>
+                <TouchableWithoutFeedback  onPress={()=>{setGlobalFromPodcast(null)}}>
                 <Icon name="times-circle" size={24} style={styles.icon}/>
                 </TouchableWithoutFeedback>
         </View>

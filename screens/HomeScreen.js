@@ -263,7 +263,20 @@ class HomeScreen extends React.Component {
     retrieveMore = async () => {
       
       try
+<<<<<<< HEAD
       {
+=======
+       {
+       this.setState({
+         refreshing: true,
+          }); 
+          const  userid = this.props.firebase._getUid();
+         
+          var index = this.state.lastVisible;
+          var minIndex = Math.min(index+4,80);
+         
+          try{
+>>>>>>> 9d9fa2163ea6c1294fe05d16ad5a3f608be515d2
 
         {console.log("retrieveMoreBookPodcasts starts()")}
 
@@ -271,12 +284,29 @@ class HomeScreen extends React.Component {
         refreshing: true
          }); 
 
+<<<<<<< HEAD
          const  userid = this.props.firebase._getUid();
          let additionalQuery = 9;
          try{
           additionalQuery = await firestore().collection('users').doc(userid).collection('privateUserData')
           .doc('privateData').collection('podcastRecommendations')
           .orderBy('podcastID').startAfter(this.state.lastVisibleID).limit(this.state.limit);
+=======
+                if(this.state.lastVisibleID===lastVisibleID){
+                  this.setState({
+                          refreshing:false
+                      });
+              }
+              else
+              {
+                this.setState({
+                    podcasts: [...this.state.podcasts, ...podcasts_data],
+                    //chapterPodcasts: documentData_chapterPodcasts,
+                    lastVisibleID:lastVisibleID,
+                    lastVisible:minIndex,
+                    refreshing:false
+                  });
+>>>>>>> 9d9fa2163ea6c1294fe05d16ad5a3f608be515d2
         
       // Cloud Firestore: Query Snapshot
       {console.log("retrieveMorePodcasts afterQuery()")}
@@ -381,7 +411,8 @@ class HomeScreen extends React.Component {
    
     renderSectionBooks=()=>
     { 
-      return (<BookList navigation={this.props.navigation} destinations={this.state.books} />)
+      return (<BookList navigation={this.props.navigation} destinations={this.state.books}/>
+       )
     }
 
     renderData = ({ section, index }) => {
@@ -395,7 +426,7 @@ class HomeScreen extends React.Component {
         if (i >= section.data.length) {
           break;
         }
-        items.push(<Podcast podcast={section.data[i]} index={index} navigation={this.props.navigation} />);
+        items.push(<Podcast podcast={section.data[i]} key={index} index={index} navigation={this.props.navigation}  />);
       }
       return (
         <View
@@ -424,7 +455,7 @@ class HomeScreen extends React.Component {
           showsVerticalScrollIndicator={false}
           ItemSeparatorComponent={this.FlatListItemSeparator}
           sections={[
-            { title: 'Username Starts with A', data: podcasts1 },
+            { title: 'Username Starts with A', data: podcasts1},
             { title: 'Username Starts with B', data: podcasts2 },
             { title: 'Username Starts with C', data: podcasts3 },
             { title: 'Username Starts with D', data: podcasts4 },
@@ -482,9 +513,15 @@ class HomeScreen extends React.Component {
         renderItem={this.renderDatas}
         numColumns={2}
         showsVerticalScrollIndicator={false}
+<<<<<<< HEAD
         keyExtractor={item => item.podcastID}
         ListHeaderComponent={this.renderHeader}
          ListFooterComponent={this.renderFooter}
+=======
+        keyExtractor={item => item.indexFirestore}
+        //ListHeaderComponent={this.renderHeader}
+        ListFooterComponent={this.renderFooter}
+>>>>>>> 9d9fa2163ea6c1294fe05d16ad5a3f608be515d2
         onEndReached={this.onEndReached}
         onEndReachedThreshold={0.01}
         refreshing={this.state.refreshing}

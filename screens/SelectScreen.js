@@ -223,7 +223,7 @@ class SelectScreen extends Component {
           }}
           
           onMaxError={() => {
-            Alert.alert('Multiple Languages Error', 'You can select only one language while recording a Book or Chapter podcast');
+            alert('Multiple Languages Error', 'You can select only one language while recording a Book or Chapter podcast');
           }}
           //never use setState in render as it will cause re-rendering and infinite loading
 

@@ -1,4 +1,6 @@
 import {SET_PODCAST} from './actionTypes';
+import {SET_GLOBAL_FROM_PODCAST} from './actionTypes'
+
 
 
 
@@ -17,8 +19,11 @@ export default PlayerReducer=(state, action )=>
     switch(action.type){
         case SET_PODCAST:
             return {...state, podcast:action.payload}
-        default:
-            return state;
+        case SET_GLOBAL_FROM_PODCAST:
+            return {...state, podcast:action.payload}
+        default: {
+                throw new Error(`Unhandled action type: ${action.type}`)
+              }
             
     }
 }
