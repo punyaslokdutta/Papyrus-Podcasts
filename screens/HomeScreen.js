@@ -181,8 +181,9 @@ class HomeScreen extends React.Component {
         books : [],
         headerPodcasts : [],
         podcasts : [],
+        //allPodcasts : [],
         limit : 4,
-        lastVisible: 0,
+        initialLimit : 20,
         lastVisibleID:null,
         loading: false,
         refreshing: false,
@@ -211,25 +212,39 @@ class HomeScreen extends React.Component {
         });
         console.log('Retrieving Data');
         const  userid = this.props.firebase._getUid();
-        let query = await firestore().collection('users').doc(userid).collection('privateUserData').doc('privateData').onSnapshot(
-          (doc)=> {
-          books_data = doc._data.book_recommendations;
-          headerPodcasts_data = doc._data.podcast_recommendations.slice(0,20);
-          podcasts_data = doc._data.podcast_recommendations.slice(0,4);
-          let lastVisibleID = podcasts_data[podcasts_data.length-1].podcastID;
-      
-        this.setState({
-          books: books_data,
-          headerPodcasts: headerPodcasts_data,
-          podcasts: podcasts_data,
-          lastVisible: 4,
-          lastVisibleID:lastVisibleID,
-          loading: false  , 
-          onEndReachedCalledDuringMomentum : true
 
+        //For books in section list
+        let bookDocuments = await firestore().collection('users').doc(userid).collection('privateUserData')
+        .doc('privateData').collection('bookRecommendations').get()
+        let bookPodcasts = bookDocuments.docs.map(document => document.data());
 
-        });
-      })
+        //For podcasts in section list
+        let headerpodcasts = await firestore().collection('users').doc(userid).collection('privateUserData')
+                         .doc('privateData').collection('podcastRecommendations')
+                         .orderBy('podcastID').limit(this.state.initialLimit).get()
+        
+        let documentData_podcasts = headerpodcasts.docs.map(document => document.data());
+        var lastVisiblePodcast = this.state.lastVisibleID;
+        lastVisiblePodcast = documentData_podcasts[documentData_podcasts.length - 1].podcastID; 
+
+       
+        //For Flatlist podcasts
+        let mainpodcasts = await firestore().collection('users').doc(userid).collection('privateUserData')
+        .doc('privateData').collection('podcastRecommendations')
+        .orderBy('podcastID').startAfter(lastVisiblePodcast).limit(this.state.limit).get()
+
+        let podcastsData = mainpodcasts.docs.map(document => document.data());
+        lastVisiblePodcast = podcastsData[podcastsData.length - 1].podcastID; 
+
+      this.setState({
+            books: bookPodcasts,
+            headerPodcasts: documentData_podcasts,
+            podcasts: podcastsData,
+            lastVisibleID:lastVisiblePodcast,
+            loading: false, 
+            onEndReachedCalledDuringMomentum : true
+          });
+
       }
       catch (error) {
         console.log(error);
@@ -246,60 +261,105 @@ class HomeScreen extends React.Component {
     }
 
     retrieveMore = async () => {
-      try
-       {
-       this.setState({
-         refreshing: true,
-          }); 
-          const  userid = this.props.firebase._getUid();
-         
-          var index = this.state.lastVisible;
-          var minIndex = Math.min(index+4,24);
-         
-          try{
-
-            let query = await firestore().collection('users').doc(userid).collection('privateUserData').doc('privateData').onSnapshot(
-              (doc)=> {
-
-                podcasts_data = doc._data.podcast_recommendations.slice(index,minIndex);
-                if(podcasts_data.length != 0)
-                {
-                  let lastVisibleID = podcasts_data[podcasts_data.length-1].podcastID;
-
-                if(this.state.lastVisibleID===lastVisibleID){
-                  this.setState({
-                          refreshing:false
-                      });
-              }
-              else
-              {
-                this.setState({
-                  podcasts: [...this.state.podcasts, ...podcasts_data],
-                    //chapterPodcasts: documentData_chapterPodcasts,
-                    lastVisibleID:lastVisibleID,
-                    lastVisible:minIndex,
-                    refreshing:false
-                  });
-        
-              }
-                }
-                else
-                {
-                  this.setState({
-                    refreshing:false
-                });
-                }
-              });    
-         }
-         catch(error)
-         {
-           console.log(error);
-         }
       
-       }
-       catch(error){
-       console.log(error);
-       }
+      try
+      {
+
+        {console.log("retrieveMoreBookPodcasts starts()")}
+
+      this.setState({
+        refreshing: true
+         }); 
+
+         const  userid = this.props.firebase._getUid();
+         let additionalQuery = 9;
+         try{
+          additionalQuery = await firestore().collection('users').doc(userid).collection('privateUserData')
+          .doc('privateData').collection('podcastRecommendations')
+          .orderBy('podcastID').startAfter(this.state.lastVisibleID).limit(this.state.limit);
+        
+      // Cloud Firestore: Query Snapshot
+      {console.log("retrieveMorePodcasts afterQuery()")}
+         
+        }
+        catch(error)
+        {
+          console.log(error);
+        }
+        let documentSnapshots=9;
+        try{
+         documentSnapshots = await additionalQuery.get();
+        }
+        catch(error)
+        {
+            console.log(error);
+        }
+        
+      // Cloud Firestore: Document Data
+      let documentData = documentSnapshots.docs.map(document => document.data());
+      // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
+      if(documentData.length != 0)
+      {
+      let lastVisibleBook = documentData[documentData.length - 1].podcastID;
+       
+      if(this.state.lastVisibleID===lastVisibleBook){
+          this.setState({
+                  refreshing:false
+              });
+      }
+      else
+      {
+        this.setState({
+            refreshing:false,
+             // books: books_data,
+           podcasts: [...this.state.podcasts, ...documentData],
+           lastVisibleID:lastVisibleBook,
+           refreshing: false, 
+           onEndReachedCalledDuringMomentum : true
+          });
+
+      }
+    }
+      else
+      {
+        this.setState({
+          refreshing:false
+      });
+      }
+      }
+      catch(error){
+      console.log(error);
+      }
+      //     var index = this.state.lastVisible;
+      //     var minIndex = Math.min(index+4,this.state.allPodcasts.length);
+      
+      //     let podcasts_data = this.state.allPodcasts.slice(index,minIndex);
+      //     if(podcasts_data.length != 0)
+      //     {
+      //       let lastVisibleID = podcasts_data[podcasts_data.length-1].podcastID;
+
+      //       if(this.state.lastVisibleID===lastVisibleID){
+      //         this.setState({
+      //                 refreshing:false
+      //             });
+      //           }
+      //       else
+      //       {
+      //         this.setState({
+      //         podcasts: [...this.state.podcasts, ...podcasts_data],
+      //         //chapterPodcasts: documentData_chapterPodcasts,
+      //         lastVisibleID:lastVisibleID,
+      //         lastVisible:minIndex,
+      //         refreshing:false
+      //       });
+      //       }
+      //    }
+      //     else
+      //     {
+      //       this.setState({
+      //         refreshing:false
+      //     });
+      //     }
      }
 
     renderMainHeader=()=>
@@ -372,10 +432,10 @@ class HomeScreen extends React.Component {
           ]}
           renderSectionHeader={({ section }) => (
             <ScrollView>
-                <Text style={{fontSize: theme.sizes.font * 1.4, fontWeight: "bold",paddingHorizontal: 30,paddingTop:20,paddingBottom:10,   textShadowColor:'black',fontFamily:'sans-serif-light'}}>Record Book Podcasts
+                <Text style={{fontSize: theme.sizes.font * 1.4, fontWeight: "bold",paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black',fontFamily:'sans-serif-light'}}>Record Book Podcasts
                 </Text>
             {this.renderSectionBooks()}
-            <Text style={{fontSize: theme.sizes.font * 1.4,fontWeight: "bold", paddingLeft: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black',fontFamily:'sans-serif-light'}}>Discover Podcasts
+            <Text style={{fontSize: theme.sizes.font * 1.4,fontWeight: "bold", paddingLeft: 30,   textShadowColor:'black',fontFamily:'sans-serif-light'}}>Discover Podcasts
             </Text>
             </ScrollView>
           )}
@@ -418,15 +478,15 @@ class HomeScreen extends React.Component {
     {
       return (  
         <FlatList
-        data={this.state.podcasts}s
+        data={this.state.podcasts}
         renderItem={this.renderDatas}
         numColumns={2}
         showsVerticalScrollIndicator={false}
-        keyExtractor={item => item.PodcastID}
+        keyExtractor={item => item.podcastID}
         ListHeaderComponent={this.renderHeader}
          ListFooterComponent={this.renderFooter}
         onEndReached={this.onEndReached}
-        onEndReachedThreshold={0.5}
+        onEndReachedThreshold={0.01}
         refreshing={this.state.refreshing}
         onMomentumScrollBegin={() => { this.onEndReachedCalledDuringMomentum = false; }}
       />   

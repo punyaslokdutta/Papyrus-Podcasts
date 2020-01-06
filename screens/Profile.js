@@ -33,9 +33,6 @@ require('../assets/Mystery.jpeg'),
 
 ]
 var {width, height}=Dimensions.get('window')
-
-
-
 class Profile extends React.Component {
     
     static navigationOptions={

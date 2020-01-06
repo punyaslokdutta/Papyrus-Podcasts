@@ -21,8 +21,8 @@ import { PanGestureHandler, State } from 'react-native-gesture-handler';
 //const { State, PanGestureHandler } = GestureHandler;
 const { width, height } = Dimensions.get('window');
 const { statusBarHeight } = StatusBar.currentHeight
-const minHeight = 55;
-const midBound = height -135;
+const minHeight = height/12;
+const midBound = (height*10)/11 - height/45;
 const upperBound = midBound + minHeight;
 const {
   Extrapolate,
@@ -227,7 +227,7 @@ export default class PodcastPlayer extends React.Component{
     });
     const videoHeight = interpolate(translateY, {
       inputRange: [0, midBound, upperBound],
-      outputRange: [width -64, minHeight * 1.3, minHeight],
+      outputRange: [height*15/24, minHeight * 1.3, minHeight],
       extrapolate: Extrapolate.CLAMP,
     });
     

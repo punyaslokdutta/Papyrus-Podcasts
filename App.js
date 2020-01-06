@@ -130,20 +130,15 @@ const CustomProfileHeader = props => {
   {console.log(props)}
   return (
 
-
-
-   
-    
-    
-    
-      <View style={{paddingBottom:10, paddingTop: 30, paddingLeft:30, flexDirection:'row'}}>
-        <View style={{flexDirection:'column', paddingLeft:20}}>
-          <Text h3 >Punyaslok Dutta</Text>
-          <Text h1 bold> Collections</Text>
+      <View style={{alignItems:'center',justifyContent:'center',paddingTop: 30, flexDirection:'column'}}>
+        <View style={{flexDirection:'column'}}>
+          <Text h3 >Ella Alderson's</Text>
+          <View style = {{alignItems:'center'}}>
+          <Text h2 bold>Collections</Text>
           </View>
-  
+          </View>
           
-          <TouchableOpacity style={{marginRight: 30 }} onPress={() => props.navigation.navigate('Profile_StatsScreen')}>
+          <TouchableOpacity style={{alignItems:'center'}} onPress={() => props.navigation.navigate('Profile_StatsScreen')}>
           <Image
               source={require('./assets/images/avatar.png')}
               style={styles.avatar}
@@ -302,7 +297,8 @@ const AppTabNavigator=createBottomTabNavigator(
     adaptive: true, 
     style:
     {
-      height: 50, 
+      paddingBottom: SCREEN_HEIGHT/45,
+      height: SCREEN_HEIGHT/11, 
     },
   }, 
    
@@ -367,11 +363,11 @@ const CustomDrawerContentComponent=(props)=>
        source={require('./assets/images/plants_3.png')}
      />
      <Block flex={false} row center space="between" style={{paddingTop:30, paddingLeft:5}}>
-          <Text style={{color:'white', fontSize:SCREEN_HEIGHT/40 }}>Punyaslok Dutta</Text>
+          <Text style={{color:'white', fontSize:SCREEN_HEIGHT/40 }}>Ella Alderson</Text>
           
     </Block>
     <Block flex={false} row center space="between" style={{ paddingLeft:5}}>
-          <Text style={{color:'white', fontFamily:'san-serif'}}>@punyaslokdutta</Text>
+          <Text style={{color:'white', fontFamily:'san-serif'}}>@ellaalderson</Text>
           
     </Block>
 
@@ -389,7 +385,7 @@ const AppDrawerNavigator=createDrawerNavigator(
       navigationOptions: {
         drawerIcon: () => (<Icon name="home" size={24} style={{ color: 'white' }} />),
       }},
-    Stats: {screen:StatisticsScreen, 
+    "My Drafts": {screen:StatisticsScreen, 
       navigationOptions: {
         drawerIcon: () => (<Icon name="line-chart" size={22} style={{ color: 'white' }} />),
       }}, 

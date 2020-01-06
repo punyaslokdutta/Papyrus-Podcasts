@@ -83,11 +83,11 @@ const styles = StyleSheet.create({
       shadowColor: theme.colors.black,
       shadowOffset: {
         width: 0,
-        height: 6,
+        height: 5,
       },
-      shadowOpacity: 0.05,
+      shadowOpacity: 1,
       shadowRadius: 10,
-      elevation: 5,
+      elevation: 3,
     },
     dots: {
       width: 10,
@@ -152,9 +152,9 @@ class ExploreBook extends Component {
           //   {marginLeft: theme.sizes.margin },
            
           // ]} key ={this.props.index}>
-           <View style={{height:90, width:140, marginLeft:20, borderwidth:4, borderColor:'#dddddd',overflow:'hidden', paddingRight:10,borderRadius:10}}>
+           <View style={[styles.shadow,{height:height/7, width:(width*5)/12 + 10, marginLeft:20, borderwidth:4, borderColor:'#dddddd',overflow:'hidden', paddingRight:10,borderRadius:5}]}>
            <TouchableOpacity onPress={()=>this.openRecordBooks()}>
-           <Image style={{width:130, height:85, resizeMode:'cover',  overflow:'hidden', paddingRight:10}} source={{ uri: item.Book_Pictures_Array["0"] }} />
+           <Image style={[{width:(width*5)/12, height:height/7, resizeMode:'cover',borderRadius:5,overflow:'hidden', paddingRight:10}]} source={{ uri: item.Book_Pictures_Array["0"] }} />
 
            </TouchableOpacity>
            </View>

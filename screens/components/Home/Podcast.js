@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     },
     recommendation: {
       width: (width - (theme.sizes.padding * 2)) / 2,
-      height: (height)/3,
+      height: (height)*3/8,
       marginHorizontal: 0,
       backgroundColor: theme.colors.white,
       overflow: 'hidden',
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     },
     recommendationImage: {
       width: (width - (theme.sizes.padding * 2)) / 2,
-      height: (width - (theme.sizes.padding * 2)) / 2,
+      height: (width - (theme.sizes.padding * 3)) / 2,
     },
     avatar: {
       width: theme.sizes.padding,
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
       fontWeight: 'bold'
     },
     shadow: {
-      shadowColor: theme.colors.black,
+      shadowColor: theme.colors.gray_green,
       shadowOffset: {
         width: 0,
         height: 6,
@@ -127,42 +127,60 @@ const styles = StyleSheet.create({
 
  const areEqual = (prevProps, nextProps) => true;
  const Podcast= React.memo((props)=> {
-  console.log(props);
-
+  
+  console.log("IN PODCAST ");
+    console.log(props.podcast);
    const context = useContext(PlayerContext)
   /*useEffect(() => {
     //setPodcastState(props);
   }, []);*/
+  setPlayerContext=()=>
+  {
+    context.setPodcast(props.podcast)
+  }
+ 
         return (   
           <View style={[
             styles.flex, styles.column, styles.recommendation, styles.shadow, 
             {marginLeft: theme.sizes.margin },
           ]} key ={props.index}>
            <View style={[styles.flex, styles.recommendationHeader]}>
-           <TouchableOpacity  onPress={()=>{context.setPodcast(props.podcast)}}>
+           <TouchableOpacity  onPress={this.setPlayerContext}>
            <Image style={[styles.recommendationImage]} source={ {uri: props.podcast.Podcast_Pictures["0"]}} />
 
            </TouchableOpacity>
-          <View style={[ styles.flex, styles.row, styles.recommendationOptions ]}>
+          
+        </View>
+            <View style={[styles.flex, styles.column, styles.shadow, { padding: theme.sizes.padding / 4 }]}>
+              <View style={{height:(height)/16}}>
+              <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.podcast.Podcast_Name.slice(0,25)}
+                {(props.podcast.Podcast_Name.length > 25) ? ".." : ""}</Text> 
+              </View>
+              <View style ={{height:(height)/20}}>
+              <Text style={{ color: theme.colors.gray_green }}>{props.podcast.podcasterName}</Text>
+              </View>
+          
+              <View style={[
+                styles.row,
+                { alignItems: 'center', justifyContent: 'space-between'}
+              ]}>
+                
+                <Text style={{  fontSize: theme.sizes.font * 0.9, fontStyle: 'italic',color: theme.colors.gray_green }}>
+                  {props.podcast.Timestamp}
+                </Text>
+                <View style={{alignItems: 'flex-end',paddingRight:5}}>
             <Icon
               name={props.podcast.saved ? 'bookmark' : 'bookmark-o'}
-              color={theme.colors.white}
+              color={theme.colors.black}
               size={theme.sizes.font * 1.25}
             />
           </View>
-        </View>
-            <View style={[styles.flex, styles.column, styles.shadow, { justifyContent: 'space-evenly', padding: theme.sizes.padding / 2 }]}>
-              <Text style={{ fontSize: theme.sizes.font * 1.25, fontWeight: '500', paddingBottom: theme.sizes.padding / 4.5, }}>{props.podcast.Podcast_Name}</Text>
-              <Text style={{ color: theme.colors.caption }}>{props.podcast.Language}</Text>
-              <View style={[
-                styles.row,
-                { alignItems: 'center', justifyContent: 'space-between', marginTop: theme.sizes.margin }
-              ]}>
-                
-                <Text style={{ color: theme.colors.black }}>
-                  {props.podcast.Timestamp}
-                </Text>
               </View>
+              <View>
+              <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
+                  {props.podcast.Duration}
+                </Text>
+                </View>
             </View>
           </View>
           
