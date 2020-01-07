@@ -4,6 +4,7 @@ import React, {Component} from 'react';
 import { StyleSheet, Text, View, Image} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
+import * as theme from '../constants/theme'
 
 
 class Story extends Component {
@@ -22,7 +23,7 @@ class Story extends Component {
 		}*/
       return (
         
-        <View style={{marginLeft: 15}}>
+        <View style={[styles.shadow,{marginLeft: 15}]}>
         <Image source={this.props.ImageUri}  style={styles.storie} />
         <Text style={styles.username}>{this.props.username}</Text>
         </View>
@@ -54,12 +55,25 @@ const styles = StyleSheet.create({
   storie: {
     height: 60,
     width: 60,
-    borderRadius: 60,
+    borderRadius: 30,
     marginLeft: 7,
     borderWidth: 1,
     borderColor: '#dddddd',
 },
 username: {
     alignSelf: 'center',
+    fontWeight: '200',
+    fontFamily: 'sans-serif-light'
 },
+shadow: {
+  shadowColor: theme.colors.black,
+  shadowOffset: {
+    width: 0,
+    height: 50,
+    radius: 69
+  },
+  shadowOpacity: 5,
+  shadowRadius: 20,
+  elevation: 30,
+}
 });

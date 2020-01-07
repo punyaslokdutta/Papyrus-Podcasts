@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   },
   destination: {
     width: width - (theme.sizes.padding * 2),
-    height: width * 0.6,
+    height: height/3,
     marginHorizontal: theme.sizes.margin,
     paddingHorizontal: theme.sizes.padding,
     paddingVertical: theme.sizes.padding * 0.66,
@@ -190,21 +190,21 @@ const styles = StyleSheet.create({
   avatar: {
     width: theme.sizes.padding,
     height: theme.sizes.padding,
-    borderRadius: theme.sizes.padding / 2,
+    borderRadius: ((theme.sizes.padding) * 2) / 1,
   },
   rating: {
-    fontSize: theme.sizes.font * 2,
+    fontSize: theme.sizes.font * 1.5,
     color: theme.colors.white,
     fontWeight: 'bold'
   },
   shadow: {
-    shadowColor: theme.colors.black,
+    shadowColor: theme.colors.dark_green,
     shadowOffset: {
       width: 0,
-      height: 6,
+      height: 0,
     },
     shadowOpacity: 0.05,
-    shadowRadius: 10,
+    shadowRadius: 5,
     elevation: 5,
   },
   dots: {
@@ -310,26 +310,19 @@ class BookList extends Component {
     return (
       <TouchableOpacity activeOpacity={0.8} onPress={() => this.props.navigation.navigate('RecordBook', { book : item.BookID })}>
         <ImageBackground
-          style={[styles.flex, styles.destination, styles.shadow]}
+          style={[styles.flex, styles.destination,styles.shadow]}
           imageStyle={{ borderRadius: theme.sizes.radius }}
-          source={{ uri: item.Book_Picture }}
+          source={{ uri: item.Book_Pictures_Array['0'] }}
         >
           <View style={[styles.row, { justifyContent: 'space-between' }]}>
-            <View style={{ flex: 0 }}>
+          <View style={[styles.column, { flex: 1, paddingHorizontal: theme.sizes.padding / 10 }]}>
+              <Text style={{ color: theme.colors.white, fontWeight: 'bold' }}>{item.Author_Name}</Text>
+            </View>
+            <View style={{ flex: 1 }}>
               <Image source={{ uri: item.Author_DP_Link }} style={styles.avatar} />
             </View>
-            <View style={[styles.column, { flex: 2, paddingHorizontal: theme.sizes.padding / 2 }]}>
-              <Text style={{ color: theme.colors.white, fontWeight: 'bold' }}>{item.Author_Name}</Text>
-              <Text style={{ color: theme.colors.white }}>
-                <Octicons
-                  name="location"
-                  size={theme.sizes.font * 0.8}
-                  color={theme.colors.white}
-                />
-                <Text> {item.Language}</Text>
-              </Text>
-            </View>
-            <View style={{ flex: 0, justifyContent: 'center', alignItems: 'flex-end', }}>
+            
+            <View style={{ flex: 2, justifyContent: 'center', alignItems: 'flex-end', }}>
               <Text style={styles.rating}>{item.Book_Rating}</Text>
             </View>
           </View>
@@ -340,7 +333,7 @@ class BookList extends Component {
             </Text>
             <View style={[ styles.row, { justifyContent: 'space-between', alignItems: 'flex-end', }]}>
               <Text style={{ color: theme.colors.caption }}>
-                {item.About_the_Author.split('').slice(0, 50)}...
+                {item.bookDescription.split('').slice(0, 50)}...
               </Text>
               <FontAwesome
                 name="chevron-right"

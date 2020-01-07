@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { Image, ScrollView, StyleSheet, TouchableOpacity, View,Dimensions } from 'react-native'
 import rgba from 'hex-to-rgba';
 import {Button} from 'native-base';
 //import Icon from 'react-native-vector-icons';
@@ -10,6 +10,8 @@ import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { Block, Badge, Card, Text } from '../categories/components';
 import { theme, mocks } from '../categories/constants';
 import Icon from 'react-native-vector-icons/FontAwesome'
+
+var {width, height}=Dimensions.get('window')
 
  class Profile_StatsScreen  extends React.Component {
 
@@ -32,18 +34,18 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 
   renderMonthly() {
     return (
-      <Card shadow style={{ paddingVertical: theme.sizes.padding }}>
+      <Card shadow style={{ paddingVertical: theme.sizes.padding * 0.25 }}>
         <Block>
           <Block center>
             <Text h1 primary spacing={1.7}>116</Text>
             <Text spacing={0.7}>Total Listening Time (mins)</Text>
           </Block>
 
-          <Block color="gray3" style={styles.hLine} />
-
+          {/* <Block color="gray3" style={styles.hLine} /> */}
+          <Text>{"\n"}</Text>
           <Block row>
             <Block center>
-              <Text size={20} spacing={0.6} primary style={{ marginBottom: 6 }}>12</Text>
+              <Text size={20} spacing={0.6} primary style={{ marginBottom: 3 }}>12</Text>
               <Text body spacing={0.7}>Number of </Text>
               <Text body spacing={0.7}>Book Podcasts</Text>
             </Block>
@@ -51,7 +53,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
             <Block flex={false} color="gray3" style={styles.vLine} />
 
             <Block center>
-              <Text size={20} spacing={0.6} primary style={{ marginBottom: 6 }}>30</Text>
+              <Text size={20} spacing={0.6} primary style={{ marginBottom: 3 }}>30</Text>
               <Text body spacing={0.7}>Number of </Text>
               <Text body spacing={0.7}>Chapter Podcasts</Text>
             </Block>
@@ -63,13 +65,56 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 
   renderRewards() {
     return (
-      <Card shadow style={{ paddingVertical: theme.sizes.base * 2}}>
-        <Block center>
+      <Card shadow style={{ paddingBottom: theme.sizes.base*1 ,paddingVertical: theme.sizes.base * 1}}>       
+        {/* <Block color="gray3" style={styles.hLine} /> */}
+        {/* <Text>{"\n"}</Text> */}
+        <Card shadow style={{ paddingVertical: theme.sizes.base * 1}}>
+        <Block row>
+          <Block center flex={0.8}>
+            <Text size={20} spacing={1} primary>12</Text>
+            <Text spacing={0.7}>Books</Text>
+          </Block>
+          
+          <Block center flex={0.8}>
+            <Text size={20} spacing={1} primary>33</Text>
+            <Text spacing={0.7}>Chapters</Text>
+          </Block>
+
+          <Block center flex={0.8}>
+            <Text size={20} spacing={0.5} primary>332</Text>
+            <View style={{alignItems:'center', flexDirection:'column'}}>
+            <Text>Minutes</Text>
+            
+            </View>
+          </Block>
+        </Block>
+
+        <Block color="gray3" style={styles.hLine} />
+
+        <Block style={{ marginBottom: theme.sizes.base * 0.1}}>
+          {/* <Block row center style={{ paddingLeft: 6 }}>
+  <Text body spacing={0.7}>Retention rate of listeners -> {"\t"}</Text>
+            <Text size={20} primary spacing={0.7}>7.4</Text>
+          </Block> */}
+         <Block center>
+            <Text size={20} spacing={0.5} primary>7.4</Text>
+            <View style={{alignItems:'center', flexDirection:'column'}}>
+            <Text>Retention rate of listeners (%)</Text>
+            
+            </View>
+          </Block>
+        </Block>
+    </Card>
+
+        {/* <Block color="gray3" style={styles.hLine} /> */}
+         
+        <Card shadow style={{ paddingVertical: theme.sizes.base * 1}}>
+        <Block center style={{paddingBottom:20}}>
           <AnimatedCircularProgress
             size={214} // can use  with * .5 => 50%
-            fill={85} // percentage
+            fill={95} // percentage
             lineCap="round" // line ending style
-            rotation={220}
+            rotation={120}
             arcSweepAngle={280}
             width={theme.sizes.base}
             tintColor={theme.colors.primary} // gradient is not supported
@@ -86,62 +131,29 @@ import Icon from 'react-native-vector-icons/FontAwesome'
         </Block>
 
         <Block center>
-          <Text title spacing={1} style={{marginVertical: 8}}>
+          <Text title spacing={1} style={{fontWeight:'italic', marginVertical: 8}}>
             Gnosis Score
           </Text>
         </Block>
         <Block >
-          <Text  spacing={1} style={{marginVertical: 8}}>
-            *Gnosis Score is calculated monthly based on Listens_Count, Likes , Nature of comments in your podcasts, time spent on the App.
-            
-
+          <Text style={{fontWeight:'italic', marginVertical: 8}}>
+            * Gnosis Score is calculated monthly based on the 4 factors given below -
+        </Text>
+        <Text spacing={1}>
+             1. Count of your podcast listeners. {"\n"}
+             2. Count of likes on your podcasts. {"\n"}
+             3. Nature of comments on your podcasts.{"\n"}
+             4. Total time spent on the App by listeners listening to your podcasts.
           </Text>
-          <Text  spacing={1} style={{marginVertical: 8}}>
-            *We won't make "Gnosis Score" public and only serves as a self improvement tool.
+          <Text style={{marginVertical: 8}}>
+            * We won't make "Gnosis Score" public and only serves as a self improvement tool.
             
 
           </Text>
 
          
         </Block>
-
-
-        <Block color="gray3" style={styles.hLine} />
-
-        <Block row>
-          <Block center flex={0.8}>
-            <Text size={20} spacing={1} primary>12</Text>
-            <Text spacing={0.7}>Book </Text>
-          </Block>
-          
-          <Block center flex={2}>
-            <Text size={20} spacing={1} primary>33</Text>
-            <Text spacing={0.7}>Chapters</Text>
-          </Block>
-
-          <Block center flex={0.8}>
-            <Text size={20} spacing={0.5} primary>332</Text>
-            <Text spacing={0.5}>Time(mins)</Text>
-          </Block>
-        </Block>
-
-        <Block color="gray3" style={styles.hLine} />
-
-       
-        
-       
-
-        <Block style={{ marginBottom: theme.sizes.base }}>
-          <Block row space="between" style={{ paddingLeft: 6 }}>
-            <Text body spacing={0.7}>Retention Rate of Listeners</Text>
-            <Text caption spacing={0.7}>7.4</Text>
-          </Block>
-         
-        </Block>
-
-        <Block color="gray3" style={styles.hLine} />
-
-        
+        </Card>
       </Card>
     )
   }
@@ -189,27 +201,27 @@ import Icon from 'react-native-vector-icons/FontAwesome'
         <View>
         <View style={{flexDirection:'row'}}>
         <View>
-          <Text style={{paddingTop:90, paddingLeft:60, fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
+          <Text style={{paddingTop:height/20, paddingHorizontal:width/10, fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
             220
           </Text>
-         <Text style={{fontFamily:'sans-serif-light', paddingLeft:50}}>Following</Text>
+         <Text style={{fontFamily:'sans-serif-light', paddingHorizontal:width/13}}>Following</Text>
           </View>
-         
-            <View style={{alignItems:'center', justifyContent:'center', flex:3, paddingTop:60}}>
-              <Image source={{ uri: "https://scontent.fdel12-1.fna.fbcdn.net/v/t31.0-8/p960x960/14054441_518163365046457_6005096195143854779_o.jpg?_nc_cat=101&_nc_oc=AQmBj8SY60BCKzMFfvCPGLc1J44zxgFhJqefzYEifezUhkr7pFo29592HYyw6grMQF8&_nc_ht=scontent.fdel12-1.fna&oh=8ff3d0097e442acc84a804041fd0e7ee&oe=5E45429C"}} style={{width:100, height:100, borderRadius:50 }}/>
+    
+            <View style={{alignItems:'center', justifyContent:'center', flex:3, paddingTop:height/50}}>
+              <Image source={require('../../../assets/images/avatar.png')}  style={{width:100, height:100, borderRadius:50 }}/>
             </View>
             <View>
-            <Text style={{paddingTop:90 , paddingRight:60,  fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
+            <Text style={{paddingTop:height/20 , paddingHorizontal:width/10,  fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
             100
           </Text>
-          <Text style={{fontFamily:'sans-serif-light', paddingRight:70}}>Followers</Text>
+          <Text style={{fontFamily:'sans-serif-light', paddingHorizontal:width/13}}>Followers</Text>
           </View>
 
         </View>
         </View>
-        <View style={{ paddingHorizontal:105,flex:1,marginTop:20}}>
+        <View style={{ alignItems:'center',flex:1,marginTop:20}}>
        
-       <Text style={{ fontSize:24, fontWeight:"200",  textShadowColor:'black', fontFamily:'sans-serif-light', alignItems:'center', justifyContent:'center'}}>Khaled Housseini</Text>
+       <Text style={{ fontSize:24, fontWeight:"200",  textShadowColor:'black', fontFamily:'sans-serif-light', alignItems:'center', justifyContent:'center'}}>Ella Alderson</Text>
        
 
         </View>
@@ -218,8 +230,8 @@ import Icon from 'react-native-vector-icons/FontAwesome'
         <Text style={{ fontSize:14, fontWeight:"100",  textShadowColor:'black', fontFamily:'sans-serif-light', alignItems:'center', justifyContent:'center', padding:20}}>I read books on philosophy, economics, computer science, social sciences, geopolitics.</Text>
         </View>
 
-        <View style={{ paddingLeft:145,flex:1}}>
-        <Button  style={{flex:1, marginTop:10, justifyContent:'center', height:30, width:100, borderRadius:5, backgroundColor:'white'}} onPress={()=>this.props.navigation.navigate('editProfile')}>
+        <View style={{alignItems:'center',flex:1}}>
+        <Button  style={{flex:1, justifyContent:'center', height:height/25, width:width/3, borderRadius:5, backgroundColor:theme.colors.primary}} onPress={()=>this.props.navigation.navigate('editProfile')}>
         <Text>Edit Profile</Text>
         </Button>
 
@@ -230,15 +242,18 @@ import Icon from 'react-native-vector-icons/FontAwesome'
           <Image
             resizeMode="contain"
             source={require('../../../assets/icons/Back.png')}
-            style={{ width: 20, height: 24, marginRight: theme.sizes.base  }}
+            style={{ width: width/25, height: height/30, marginRight: theme.sizes.base * 0.5  }}
           />
         </TouchableOpacity>
           <Text h3 bold>Listening Statistics</Text>
         </Block>
         {this.renderMonthly()}
-        <Block flex={false} row center space="between" style={styles.header}>
-          <Text h3 bold>Your Podcast Statistics</Text>
-        </Block>
+        {/* <Block flex={false} row center space="between" style={styles.header}> */}
+         <View style={{alignItems:'center'}}>
+
+    <Text h3 bold>{"\n"}Your Podcast Statistics</Text>
+        </View>
+        {/* </Block> */}
         {this.renderRewards()}
         
       </ScrollView>
@@ -252,8 +267,10 @@ export default Profile_StatsScreen;
 const styles = StyleSheet.create({
     header: {
         paddingHorizontal: theme.sizes.base * 2,
-        paddingTop: theme.sizes.base * 2.5,
+        paddingTop: theme.sizes.base * 2.0,
         paddingBottom :theme.sizes.base * 1,
+        alignItems : 'center',
+        justifyContent : 'center'
       },
   rewards: {
     padding: theme.sizes.padding,
@@ -261,7 +278,7 @@ const styles = StyleSheet.create({
   },
   // horizontal line
   hLine: {
-    marginVertical: theme.sizes.base * 1.5,
+    marginVertical: theme.sizes.base * 1,
     height: 1,
   },
   // vertical line

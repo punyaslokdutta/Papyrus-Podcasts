@@ -69,8 +69,8 @@ toggleBookmark=()=>
     <Text style={[styles.textDark, { fontSize: 16, fontWeight: "500" }]}>{this.props.podcast.Podcast_Name}</Text>
     
                     </View>
-                    <View style={{ alignItems: "center", marginTop: 4}}>
-                    <Text style={[styles.text, { fontSize: 10, marginTop: 4}]}>{this.props.podcast.Language}</Text>
+                    <View style={{ alignItems: "center", marginTop: 2}}>
+                    <Text style={[styles.text, { fontSize: 15, marginTop: 2}]}>{this.props.podcast.podcasterName}</Text>
                     </View>
 
         <View  style={{paddingLeft:10}}>
