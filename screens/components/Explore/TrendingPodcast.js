@@ -53,18 +53,16 @@ class TrendingPodcast extends Component {
       // <View style={{height:130, width:210, marginLeft:20, borderwidth:4, borderColor:'#dddddd',overflow:'hidden', paddingRight:10,borderRadius:10}}>
       //                 <Image source={this.props.ImageUri} style={{width:210, height:130, resizeMode:'cover',  overflow:'hidden', paddingRight:10}}/>
       //             </View>
-      <PlayerContext.Consumer>
-      {
+      
 
-        ({setPodcast})=>(   
+           
       <View style={[styles.shadow,{height:height/5, width:width/2, marginLeft:20, borderwidth:5, borderColor:'#dddddd',overflow:'hidden', paddingRight:10,borderRadius:5}]}>
-      <TouchableOpacity onPress={()=>setPodcast(item, eventSource)}>
+      <TouchableOpacity> 
       <Image style={[{width:width/2 - 10, height:height/5,borderRadius:5, resizeMode:'cover',  overflow:'hidden'}]} source={{ uri: item.Podcast_Pictures["0"] }} />
 
       </TouchableOpacity>
-      </View>)
-      }
-      </PlayerContext.Consumer>
+      </View>
+      
 
     );
 

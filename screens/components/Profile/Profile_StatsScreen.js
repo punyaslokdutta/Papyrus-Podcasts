@@ -197,7 +197,7 @@ var {width, height}=Dimensions.get('window')
     return (
       <ScrollView style={styles.rewards} showsVerticalScrollIndicator={false}>
         <View>
-        
+  
         <View>
         <View style={{flexDirection:'row'}}>
         <View>
@@ -238,13 +238,7 @@ var {width, height}=Dimensions.get('window')
         </View>
         </View>
        <Block flex={false} row center style={styles.header}>
-       <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
-          <Image
-            resizeMode="contain"
-            source={require('../../../assets/icons/Back.png')}
-            style={{ width: width/25, height: height/30, marginRight: theme.sizes.base * 0.5  }}
-          />
-        </TouchableOpacity>
+       
           <Text h3 bold>Listening Statistics</Text>
         </Block>
         {this.renderMonthly()}

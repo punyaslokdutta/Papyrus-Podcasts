@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import { StyleSheet, Text, View, SafeAreaView, TextInput, Platform, StatusBar,TouchableOpacity, ScrollView, Image,Dimensions, Animated,SectionList,ActivityIndicator } from 'react-native';
+import { StyleSheet, View,SafeAreaView, TextInput, Platform, StatusBar,TouchableOpacity, ScrollView, Image,Dimensions, Animated,SectionList,ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import {Container, Content, Card, Button} from 'native-base'
@@ -10,6 +10,7 @@ import BookList from './components/Home/BookList'
 import * as theme from '../screens/components/constants/theme';
 import Podcast from './components/Home/Podcast'
 import firebaseApi from './config/Firebase/firebaseApi'
+import {Text} from './components/categories/components';
 import {withFirebaseHOC} from '../screens/config/Firebase'
 
 var {width, height}=Dimensions.get('window')
@@ -263,20 +264,7 @@ class HomeScreen extends React.Component {
     retrieveMore = async () => {
       
       try
-<<<<<<< HEAD
       {
-=======
-       {
-       this.setState({
-         refreshing: true,
-          }); 
-          const  userid = this.props.firebase._getUid();
-         
-          var index = this.state.lastVisible;
-          var minIndex = Math.min(index+4,80);
-         
-          try{
->>>>>>> 9d9fa2163ea6c1294fe05d16ad5a3f608be515d2
 
         {console.log("retrieveMoreBookPodcasts starts()")}
 
@@ -284,29 +272,12 @@ class HomeScreen extends React.Component {
         refreshing: true
          }); 
 
-<<<<<<< HEAD
          const  userid = this.props.firebase._getUid();
          let additionalQuery = 9;
          try{
           additionalQuery = await firestore().collection('users').doc(userid).collection('privateUserData')
           .doc('privateData').collection('podcastRecommendations')
           .orderBy('podcastID').startAfter(this.state.lastVisibleID).limit(this.state.limit);
-=======
-                if(this.state.lastVisibleID===lastVisibleID){
-                  this.setState({
-                          refreshing:false
-                      });
-              }
-              else
-              {
-                this.setState({
-                    podcasts: [...this.state.podcasts, ...podcasts_data],
-                    //chapterPodcasts: documentData_chapterPodcasts,
-                    lastVisibleID:lastVisibleID,
-                    lastVisible:minIndex,
-                    refreshing:false
-                  });
->>>>>>> 9d9fa2163ea6c1294fe05d16ad5a3f608be515d2
         
       // Cloud Firestore: Query Snapshot
       {console.log("retrieveMorePodcasts afterQuery()")}
@@ -426,8 +397,9 @@ class HomeScreen extends React.Component {
         if (i >= section.data.length) {
           break;
         }
-        items.push(<Podcast podcast={section.data[i]} key={index} index={index} navigation={this.props.navigation}  />);
-      }
+        items.push(<Podcast podcast={section.data[i]} key={section.data[i].podcastID} navigation={this.props.navigation}  />);
+      }//In the above line, key was equal to "index" for each pair of consecutive podcasts in one row
+        //which caused key dupication -- PROBLEM SOLVED
       return (
         <View
           style={{
@@ -461,18 +433,19 @@ class HomeScreen extends React.Component {
             { title: 'Username Starts with D', data: podcasts4 },
             { title: 'Username Starts with F', data: podcasts5 },
           ]}
+          keyExtractor={item => item.podcastID}
           renderSectionHeader={({ section }) => (
             <ScrollView>
-                <Text style={{fontSize: theme.sizes.font * 1.4, fontWeight: "bold",paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black',fontFamily:'sans-serif-light'}}>Record Book Podcasts
+                <Text h3 bold style={{paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Book Podcasts
                 </Text>
             {this.renderSectionBooks()}
-            <Text style={{fontSize: theme.sizes.font * 1.4,fontWeight: "bold", paddingLeft: 30,   textShadowColor:'black',fontFamily:'sans-serif-light'}}>Discover Podcasts
+            <Text h3 bold style={{paddingLeft: 30,   textShadowColor:'black'}}>Discover Podcasts
             </Text>
             </ScrollView>
           )}
           
           renderItem={this.renderData}
-          keyExtractor={(item, index) => index}
+          
         />
         
       </View>
@@ -513,15 +486,9 @@ class HomeScreen extends React.Component {
         renderItem={this.renderDatas}
         numColumns={2}
         showsVerticalScrollIndicator={false}
-<<<<<<< HEAD
         keyExtractor={item => item.podcastID}
         ListHeaderComponent={this.renderHeader}
          ListFooterComponent={this.renderFooter}
-=======
-        keyExtractor={item => item.indexFirestore}
-        //ListHeaderComponent={this.renderHeader}
-        ListFooterComponent={this.renderFooter}
->>>>>>> 9d9fa2163ea6c1294fe05d16ad5a3f608be515d2
         onEndReached={this.onEndReached}
         onEndReachedThreshold={0.01}
         refreshing={this.state.refreshing}

@@ -249,7 +249,7 @@ class SelectScreen extends Component {
 
         <View style={{paddingVertical:height/10, flexDirection:'row', paddingLeft:width/6 }}>
         <View>
-            <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/20, width:(width*7)/24, borderRadius:15, backgroundColor:'rgb(22, 33, 25)', borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }} 
+            <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/20, width:(width*7)/24, borderRadius:15, borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }} 
             onPress={() => {
                          if (this.state.BookName.length === 0 || this.state.AuthorName.length === 0 || this.state.LanguageSelected.length === 0) {
                             alert("You must choose Category and Language of your Podcast");

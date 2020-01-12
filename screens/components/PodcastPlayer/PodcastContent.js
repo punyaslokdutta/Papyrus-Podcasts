@@ -1,7 +1,7 @@
 // @flow
 import * as React from 'react';
 import {
-  View, StyleSheet, Text, Image, ScrollView,TouchableOpacity, 
+  View, StyleSheet, Text, Image, ScrollView,TouchableOpacity,Dimensions 
 } from 'react-native';
 
 import {Button} from 'native-base'
@@ -14,7 +14,7 @@ import Moment from "moment";
 /*type VideoContentProps = {
   video: Video,
 };*/
-
+const { width, height } = Dimensions.get('window');
 export default class PodcastContent extends React.Component {
   constructor(props)
   {
@@ -70,7 +70,8 @@ toggleBookmark=()=>
     
                     </View>
                     <View style={{ alignItems: "center", marginTop: 2}}>
-                    <Text style={[styles.text, { fontSize: 15, marginTop: 2}]}>{this.props.podcast.podcasterName}</Text>
+  <Text style={[styles.text, { fontSize: 15, marginTop: 2}]}>{height}</Text>
+        
                     </View>
 
         <View  style={{paddingLeft:10}}>
@@ -135,7 +136,8 @@ toggleBookmark=()=>
 const styles = StyleSheet.create({
   content: {
     padding: 16,
-    backgroundColor:'black'
+    backgroundColor:'black',
+    height:height*15/24
   },
   title: {
     fontSize: 16,
@@ -151,7 +153,7 @@ const styles = StyleSheet.create({
   icons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingTop:40
+    paddingTop:height/30
   },
   upNext: {
     borderTopWidth: 1,

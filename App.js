@@ -37,7 +37,9 @@ import {PlayerProvider} from './screens/components/PodcastPlayer/PlayerProvider'
 import ProfileBookPodcast from './screens/components/Profile/ProfileBookPodcast'
 import ProfileChapterPodcast from './screens/components/Profile/ProfileChapterPodcast'
 import Profile_StatsScreen from './screens/components/Profile/Profile_StatsScreen'
-
+import CategoryPodcast from './screens/components/categories/CategoryPodcast'
+import CategoryBook from './screens/components/categories/CategoryBook'
+import CategoryTabNavigator from './screens/navigation/CategoryTabNavigator'
 
 
 
@@ -68,10 +70,14 @@ const AuthStackNavigator= createStackNavigator(
    }
 )
 
+/////////////
+/////////////
 
+  
 /*const PreferencesStackNavigator =createStackNavigator(
   {}
 )*/
+
 const ProfileTabNavigator =createMaterialTopTabNavigator(
 {
    ProfileBookPodcast:{ screen: ProfileBookPodcast,navigationOptions:{
@@ -145,20 +151,30 @@ const CustomProfileHeader = props => {
             />
             </TouchableOpacity>
           </View>
-       
-      
-    
-  
-      
   );
 };
 
+const CategoryStackNavigator=createStackNavigator(
+  {
+    CategoryScreen : {screen : CategoryScreen},
+    CategoryTabNavigator : {screen : CategoryTabNavigator,navigationOptions:{
+      //header:null
+    }} 
+  }, 
+  {
+    //headerMode:'none',
+    //initialRouteName:Profile,  
+}
+)
+
 const ProfileStackNavigator=createStackNavigator(
   {
-    ProfileTabNavigator : {screen : ProfileTabNavigator}, 
-    editProfile : {screen : editProfile}, 
+     ProfileTabNavigator : {screen : ProfileTabNavigator}, 
+    editProfile : {screen : editProfile,navigationOptions: {
+       header: null,
+   }}, 
     Profile_StatsScreen:{screen: Profile_StatsScreen, navigationOptions: {
-      header: null,
+     // header: null,
   }}
   }, 
   {
@@ -260,7 +276,7 @@ const AppTabNavigator=createBottomTabNavigator(
         )
       } 
    },
-    Category: {screen: CategoryScreen,
+    Category: {screen: CategoryStackNavigator,
       navigationOptions:{
         tabBarLabel:'Categories',
         tabBarIcon:({tintColor})=>(
@@ -297,7 +313,7 @@ const AppTabNavigator=createBottomTabNavigator(
     adaptive: true, 
     style:
     {
-      paddingBottom: SCREEN_HEIGHT/45,
+      paddingBottom: SCREEN_HEIGHT/100,
       height: SCREEN_HEIGHT/11, 
     },
   }, 
@@ -360,7 +376,7 @@ const CustomDrawerContentComponent=(props)=>
    
     <Body style={{alignItems:'center', paddingTop: SCREEN_HEIGHT/8}}>
      <Image style={styles.drawerimage}
-       source={require('./assets/images/plants_3.png')}
+       source={require('./assets/images/avatar.png')}
      />
      <Block flex={false} row center space="between" style={{paddingTop:30, paddingLeft:5}}>
           <Text style={{color:'white', fontSize:SCREEN_HEIGHT/40 }}>Ella Alderson</Text>

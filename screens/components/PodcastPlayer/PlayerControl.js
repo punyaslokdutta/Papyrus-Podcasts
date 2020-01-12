@@ -11,7 +11,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import setGlobalPodcastContext from './setGlobalPodcastContext'
 
 
-const { width } = Dimensions.get('window');
+const { width,height } = Dimensions.get('window');
 export const PLACEHOLDER_WIDTH = width / 3;
 
 /*type PlayerControlsProps = {
@@ -47,8 +47,8 @@ export const PLACEHOLDER_WIDTH = width / 3;
           <View style={styles.placeholder} />
           <Text style={styles.title} numberOfLine={3}>{props.title}</Text>
           <Icon name="play" size={24} style={styles.icon}/>
-                <TouchableWithoutFeedback  onPress={()=>{setGlobalFromPodcast(null)}}>
-                <Icon name="times-circle" size={24} style={styles.icon}/>
+                 <TouchableWithoutFeedback  onPress={()=>{setGlobalFromPodcast(null)}}>
+                 <Icon name="times-circle" size={24} style={styles.icon}/> 
                 </TouchableWithoutFeedback>
         </View>
       </TouchableWithoutFeedback>
