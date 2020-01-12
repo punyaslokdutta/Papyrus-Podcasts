@@ -262,10 +262,8 @@ class HomeScreen extends React.Component {
     }
 
     retrieveMore = async () => {
-      
-      try
+     try
       {
-
         {console.log("retrieveMoreBookPodcasts starts()")}
 
       this.setState({
@@ -281,6 +279,7 @@ class HomeScreen extends React.Component {
         
       // Cloud Firestore: Query Snapshot
       {console.log("retrieveMorePodcasts afterQuery()")}
+                
          
         }
         catch(error)
@@ -397,9 +396,8 @@ class HomeScreen extends React.Component {
         if (i >= section.data.length) {
           break;
         }
-        items.push(<Podcast podcast={section.data[i]} key={section.data[i].podcastID} navigation={this.props.navigation}  />);
-      }//In the above line, key was equal to "index" for each pair of consecutive podcasts in one row
-        //which caused key dupication -- PROBLEM SOLVED
+        items.push(<Podcast podcast={section.data[i]} key={section.data[i].podcastID}  navigation={this.props.navigation}  />);
+      }
       return (
         <View
           style={{
@@ -511,5 +509,6 @@ class HomeScreen extends React.Component {
       );
     }
   }
+
 
 export default withFirebaseHOC(HomeScreen);

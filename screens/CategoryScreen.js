@@ -94,7 +94,7 @@ class CategoryScreen extends Component {
     const { categories } = this.state;
     const tabs = ['Books', 'Podcasts'];
     
-
+    
     return (
       <Block>
         <Block flex={false} row center space="between" style={styles.header}>
@@ -107,21 +107,20 @@ class CategoryScreen extends Component {
 
         <ScrollView
           showsVerticalScrollIndicator={false}
-          style={{ paddingVertical: theme.sizes.base * 2}}
-        >
+          style={{ paddingVertical: theme.sizes.base * 2}}>
           <Block flex={false} row space="between" style={styles.categories}>
             {categories.map(category => (
               <TouchableOpacity key={category.categoryName} onPress={() => 
                                 this.props.navigation.navigate('CategoryTabNavigator', {category : category.categoryName })}>
-                {/* <Card center middle shadow style={styles.category}> */}
-                  {/* <Badge margin={[0, 0, 15]} size={100} color="rgba(41,216,143,0.20)"> */}
-                   <View>
+                <Card center middle shadow style={styles.category}> 
+                  <Badge margin={[0, 0, 15]} size={100} color="rgba(41,216,143,0.20)">
+                   
                     <Image source={{uri:category.categoryImage}} />
-                    </View>
-                  {/* </Badge> */}
+                    
+                   </Badge>
                   <Text medium height={20}>{category.categoryName}</Text>
                   <Text gray caption>{category.numBooks} Books </Text>
-                {/* </Card> */}
+                </Card>
               </TouchableOpacity>
             ))}
           </Block>

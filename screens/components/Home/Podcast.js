@@ -2,14 +2,10 @@
 import React, {Component, useState, useEffect, useContext} from 'react';
 import { StyleSheet, Text, View, Image, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
-//import FontAwesome, { Icons } from 'react-native-fontawesome';
-//import Octicons from 'react-native-vector-icons/Octicons';
 import * as theme from '../constants/theme'
 import { TouchableOpacity } from 'react-native-gesture-handler';
-//import PodcastPlayer from '../../PodcastPlayer'
-//import PlayerContext from '../PodcastPlayer/PlayerContext'
-import setGlobalPodcastContext from '../PodcastPlayer/setGlobalPodcastContext'
 import InnerPodcast from './InnerPodcast'
+import {useDispatch} from "react-redux"
 
 
 var {width, height}=Dimensions.get('window')
@@ -137,15 +133,18 @@ const styles = StyleSheet.create({
   console.log("Inside Podcast")
   console.log(props);
 
-   const {setGlobalFromPodcast}= useContext(setGlobalPodcastContext)
-  
+  const dispatch=useDispatch();
+
+  /*useEffect(() => {
+    //setPodcastState(props);
+  }, []);*/
         return ( 
           <View style={[
             styles.flex, styles.column, styles.recommendation, styles.shadow, 
             {marginLeft: theme.sizes.margin },
           ]} key ={props.index}>
            <View style={[styles.flex, styles.recommendationHeader]}>
-           <TouchableOpacity  onPress={()=>{setGlobalFromPodcast(props.podcast)}}>
+           <TouchableOpacity  onPress={(()=>dispatch({type:"SET_PODCAST", payload: props.podcast}))}>
            <Image style={[styles.recommendationImage]} source={ {uri: props.podcast.Podcast_Pictures["0"]}} />
 
            </TouchableOpacity>

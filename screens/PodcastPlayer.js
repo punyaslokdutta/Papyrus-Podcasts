@@ -272,7 +272,7 @@ export default class PodcastPlayer extends React.Component{
             
             <Animated.View style={{ backgroundColor: 'white', width: videoContainerWidth, height: containerHeight }}>
               <Animated.View style={{ opacity }}>
-                <PodcastContent trackLength={this.state.trackLength} podcast={this.props.podcast} />
+                <PodcastContent /*trackLength={this.state.trackLength}*/ podcast={this.props.podcast} />
               </Animated.View>
             </Animated.View>
             </ScrollView> 

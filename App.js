@@ -40,8 +40,12 @@ import Profile_StatsScreen from './screens/components/Profile/Profile_StatsScree
 import CategoryPodcast from './screens/components/categories/CategoryPodcast'
 import CategoryBook from './screens/components/categories/CategoryBook'
 import CategoryTabNavigator from './screens/navigation/CategoryTabNavigator'
+import {createStore } from 'redux'
+import {Provider} from 'react-redux'
+import rootReducer from './reducers/rootReducer';
 
 
+const store =createStore(rootReducer)
 
 
 //const reducer = combineReducers({ navigation })
@@ -461,11 +465,13 @@ export default class App extends Component {
   //..
   render(){
     return(
+    <Provider store ={store}>
     <PlayerProvider>
     <FirebaseProvider value={firebaseApi}> 
     <AppContainer/> 
     </FirebaseProvider>
     </PlayerProvider>
+    </Provider>
     );
   }
 }
