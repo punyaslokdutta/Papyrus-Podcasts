@@ -130,21 +130,6 @@ const styles = StyleSheet.create({
  //const areEqual = (prevProps, nextProps) => true;
  const areEqual = (prevProps, nextProps) => true
  const Podcast= React.memo((props)=> {
-<<<<<<< HEAD
-  
-  console.log("IN PODCAST ");
-    console.log(props.podcast);
-   const context = useContext(PlayerContext)
-  /*useEffect(() => {
-    //setPodcastState(props);
-  }, []);*/
-  setPlayerContext=()=>
-  {
-    context.setPodcast(props.podcast)
-  }
- 
-        return (   
-=======
   console.log("Inside Podcast")
   console.log(props);
 
@@ -154,14 +139,12 @@ const styles = StyleSheet.create({
     //setPodcastState(props);
   }, []);*/
         return ( 
->>>>>>> 9d9fa2163ea6c1294fe05d16ad5a3f608be515d2
           <View style={[
             styles.flex, styles.column, styles.recommendation, styles.shadow, 
             {marginLeft: theme.sizes.margin },
           ]} key ={props.index}>
-<<<<<<< HEAD
            <View style={[styles.flex, styles.recommendationHeader]}>
-           <TouchableOpacity  onPress={this.setPlayerContext}>
+           <TouchableOpacity  onPress={(()=>dispatch({type:"SET_PODCAST", payload: props.podcast}))}>
            <Image style={[styles.recommendationImage]} source={ {uri: props.podcast.Podcast_Pictures["0"]}} />
 
            </TouchableOpacity>
@@ -198,22 +181,6 @@ const styles = StyleSheet.create({
                 </Text>
                 </View>
             </View>
-=======
-          <View style={[styles.flex, styles.recommendationHeader]}>
-          <TouchableOpacity  onPress={(()=>dispatch({type:"SET_PODCAST", payload: props.podcast}))}>
-          <Image style={[styles.recommendationImage]} source={ {uri: props.podcast.Podcast_Pictures["0"]}} />
-
-          </TouchableOpacity>
-         <View style={[ styles.flex, styles.row, styles.recommendationOptions ]}>
-           <Icon
-             name={props.podcast.saved ? 'bookmark' : 'bookmark-o'}
-             color={theme.colors.white}
-             size={theme.sizes.font * 1.25}
-           />
-         </View>
-       </View>
-          <InnerPodcast index={props.index} podcast={props.podcast}/>  
->>>>>>> 9d9fa2163ea6c1294fe05d16ad5a3f608be515d2
           </View>
           
           

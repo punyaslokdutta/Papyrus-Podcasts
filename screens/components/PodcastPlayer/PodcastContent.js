@@ -9,14 +9,35 @@ import {Button} from 'native-base'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Slider from "react-native-slider";
 import Moment from "moment";
+import {useSelector, useDispatch} from "react-redux"
+import Video from 'react-native-video';
 //import videos, { type Video } from './videos';
 
-/*type VideoContentProps = {
+
+/*type VideoContentProps = 
   video: Video,
 };*/
 
-export default class PodcastContent extends React.Component {
-  constructor(props)
+ const PodcastContent=(props)=> {
+
+
+  const rate=useSelector(state=>state.rate);
+  const isBuffering=useSelector(state=>state.isBuffering);
+  const paused=useSelector(state=>state.paused);
+  const volume=useSelector(state=>state.volume)
+  const duration=useSelector(state=>state.duration)
+  const dispatch=useDispatch();
+  
+
+
+
+  
+
+
+  
+
+
+  /*constructor(props)
   {
     super(props) 
     {
@@ -28,18 +49,18 @@ export default class PodcastContent extends React.Component {
         isBookmarked: false,
     };
   }
-}
+}*/
 
   
 
   
 
-  changeTime = seconds => {
-    this.setState({ timeElapsed: Moment.utc(seconds * 1000).format("m:ss") });
-    this.setState({ timeRemaining: Moment.utc((this.state.trackLength - seconds) * 1000).format("m:ss") });
-};
+//   changeTime = seconds => {
+//     this.setState({ timeElapsed: Moment.utc(seconds * 1000).format("m:ss") });
+//     this.setState({ timeRemaining: Moment.utc((this.state.trackLength - seconds) * 1000).format("m:ss") });
+// };
 
-toggleLike=()=>
+/*toggleLike=()=>
 {
   this.setState(
     {
@@ -54,11 +75,10 @@ toggleBookmark=()=>
       isBookmarked: !this.state.isBookmarked
     }
   )
-}
+}*/
 
 
    
-  render() {
     //const { video } = this.props;
     //const {podcast} = this.props.playerGlobalContext 
     return (
@@ -66,11 +86,11 @@ toggleBookmark=()=>
         <ScrollView style={styles.content}>
         <View style={{ alignItems: "center"}}>
         <View style={{ alignItems: "center", marginTop: 8}}>
-    <Text style={[styles.textDark, { fontSize: 16, fontWeight: "500" }]}>{this.props.podcast.Podcast_Name}</Text>
+    <Text style={[styles.textDark, { fontSize: 16, fontWeight: "500" }]}>{props.podcast.Podcast_Name}</Text>
     
                     </View>
                     <View style={{ alignItems: "center", marginTop: 2}}>
-                    <Text style={[styles.text, { fontSize: 15, marginTop: 2}]}>{this.props.podcast.podcasterName}</Text>
+                    <Text style={[styles.text, { fontSize: 15, marginTop: 2}]}>{props.podcast.podcasterName}</Text>
                     </View>
 
         <View  style={{paddingLeft:10}}>
@@ -84,46 +104,44 @@ toggleBookmark=()=>
                     <TouchableOpacity  onPress={() => alert('')}>
                     <Icon name="undo"  size={28} label="10" color="white" />
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.playButtonContainer}  onPress={() => alert('')}>
-
-                    <Icon name="play"  size={32} label="10" color="black"  style={[styles.playButton, { marginLeft: 8 }]}/>
-                    </TouchableOpacity>
+                    {!paused && <TouchableOpacity style={styles.playButtonContainer}  onPress={(()=>dispatch({type:"SET_PAUSED"}))}>
+                   <Icon name="pause"  size={32} label="10" color="black"  style={[styles.playButton, { marginLeft: 8 }]}/>
+                   </TouchableOpacity>}
+                   {paused && <TouchableOpacity style={styles.playButtonContainer}  onPress={(()=>dispatch({type:"SET_PAUSED"}))}>
+                   <Icon name="play"  size={32} label="10" color="black"  style={[styles.playButton, { marginLeft: 8 }]}/>
+                   </TouchableOpacity> }
+  
                     <TouchableOpacity  onPress={() => alert('')}>
                     <Icon name="repeat"  size={28} label="10" color="white" />
                     </TouchableOpacity>
                 </View>
+
+
+            <View>
+            <Video
+            ref={ref=> { video = ref }}
+            /* For ExoPlayer */
+            // source={{ uri: '' }} 
+            source={require('../../../assets/images/testvideo.mp4')}
+            style={styles.fullScreen}
+            //audioOnly={true}
+            rate={rate}
+            paused={paused}
+            volume={volume }
+           // muted={this.state.muted}
+            resizeMode={'contain'}
+            //onLoad={()=>dispatch({type:"SET_DURATION", payload: duration})}
+            //onProgress={this.onProgress}
+            //onEnd={this.onEnd}
+           // onAudioBecomingNoisy={this.onAudioBecomingNoisy}
+            //onAudioFocusChanged={this.onAudioFocusChanged}
+            //repeat={false}
+          />
+            </View>
+            
          
 
-          <View style={{ margin: 16 }}>
-                    <Slider
-                        minimumValue={0}
-                        maximumValue={this.state.trackLength}
-                        trackStyle={styles.track}
-                        thumbStyle={styles.thumb}
-                        minimumTrackTintColor="white"
-                        onValueChange={seconds => this.changeTime(seconds)}
-                    ></Slider>
-                    <View style={{ marginTop: -12, flexDirection: "row", justifyContent: "space-between" }}>
-                        <Text style={{color:'white'}}>{this.state.timeElapsed}</Text>
-                        <Text style={{color:'white'}}>{this.state.timeRemaining}</Text>
-                    </View>
-                
-
-                <View style={styles.icons}>
-                 <Button  transparent onPress={()=>this.toggleLike()} >
-                <Icon name="heart" size={20} style={[this.state.isLiked == 0 ? {color:'white'} : {color:'rgb(218,165,32)'}]}/>
-                </Button>
-                <Button  transparent>
-                <Icon name="comments-o" size={20} style={{color:'white'}}/>
-                </Button>
-                <Button  transparent onPress={()=>this.toggleBookmark()}>
-                <Icon name="bookmark-o" size={20} style={[this.state.isBookmarked == 0 ? {color:'white'} : {color:'rgb(218,165,32)'}]}/>
-                </Button>
-                <Button  transparent>
-                <Icon name="share" size={20} style={{color:'white'}}/>
-                </Button>
-</View>
-</View>
+          
 
 
         </ScrollView>
@@ -131,7 +149,7 @@ toggleBookmark=()=>
     );
   }
 
-  }
+  
 const styles = StyleSheet.create({
   content: {
     padding: 16,
@@ -213,3 +231,5 @@ text: {
   color: "#8E97A6"
 }
 });
+
+export default PodcastContent;
