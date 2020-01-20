@@ -48,6 +48,10 @@ function onEnd() {
   dispatch({type:"TOGGLE_PLAY_PAUSED"})
   video.current.seek(0);
 }
+function onBuffering()
+{
+  dispatch({type:"BUFFERING_PODCAST"})
+}
 
 function handlePlayPause() {
   // If playing, pause and show controls immediately.
@@ -102,8 +106,15 @@ function handlePlayPause() {
             audioOnly={true}
             rate={rate}
             paused={paused}
-            playInBackground={false}
+            playInBackground={true}
             volume={volume }
+            onBuffer={onBuffering}
+            bufferConfig={{
+              minBufferMs: 10000,
+              maxBufferMs: 30000,
+              bufferForPlaybackMs: 2500,
+              bufferForPlaybackAfterRebufferMs: 5000
+            }}
            // muted={this.state.muted}
             //resizeMode={'contain'}
             onLoad={onLoadEnd}

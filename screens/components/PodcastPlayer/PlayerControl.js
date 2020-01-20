@@ -1,11 +1,11 @@
 
 import React, { useState, useContext, useReducer, useEffect} from 'react';
 import {
-  View, StyleSheet, Text, Dimensions, TouchableWithoutFeedback,
+  View, StyleSheet, Text, Dimensions, TouchableWithoutFeedback,TouchableOpacity
 } from 'react-native';
 //import { Icon } from 'expo';
 import Icon from 'react-native-vector-icons/FontAwesome'
-import {useDispatch} from "react-redux"
+import {useDispatch, useSelector} from "react-redux"
 
 
 
@@ -28,6 +28,7 @@ const areEqual = (prevProps, nextProps) => true;
 
   
 const dispatch=useDispatch();
+const paused=useSelector(state=>state.paused);
   
   
    //const { title, onPress } = this.props;
@@ -37,8 +38,12 @@ const dispatch=useDispatch();
         <View style={styles.container}>
           <View style={styles.placeholder} />
           <Text style={styles.title} numberOfLine={3}>{props.title}</Text>
-          <Icon name="play" size={24} style={styles.icon}/>
-                <TouchableWithoutFeedback  onPress={(()=>dispatch({type:"SET_PODCAST", payload: null}))}>
+          {paused && <TouchableOpacity  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
+            <Icon name="play" size={24} style={styles.icon}/></TouchableOpacity>}
+          {!paused && <TouchableOpacity  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
+            <Icon name="pause" size={24} style={styles.icon}/></TouchableOpacity>}
+                <TouchableWithoutFeedback  onPress={(()=>{dispatch({type:"TOGGLE_PLAY_PAUSED"})
+                  dispatch({type:"SET_PODCAST", payload: null})})}>
                 <Icon name="times-circle" size={24} style={styles.icon}/>
                 </TouchableWithoutFeedback>
         </View>

@@ -17,10 +17,10 @@ export const withPlayerHOC = Component => props => (
 import React, { createContext } from 'react'
 
 const PlayerContext = React.createContext({
-  podcast :null, 
-  setPodcast:(podcast)=>{}, 
-  isPlaying : false, 
-  isBuffering: false
+  //podcast :null, 
+  //setPodcast:(podcast)=>{}, 
+  //isPlaying : false, 
+  //isBuffering: false
 });
 
 export default PlayerContext

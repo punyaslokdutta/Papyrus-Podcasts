@@ -87,21 +87,17 @@ useEffect(
           <View style={StyleSheet.absoluteFill}>
             {children}
           </View>
-          {
-            isOS && (
-              <Animated.View
-                style={{ transform: [{ translateY }] }}
-              >
-                {
-                  podcast && <PodcastPlayer {...{podcast}} />
-                }
-              </Animated.View>
-            )
-          }
+          
           {
             
-            !isOS && podcast && <PodcastPlayer {...{podcast}} />
-          }
+            !isOS && (
+             
+               
+                  podcast && <PodcastPlayer {...{podcast}} />
+                
+              
+            )
+          } 
         </View>
            
 
