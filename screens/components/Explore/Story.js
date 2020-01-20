@@ -1,38 +1,47 @@
-
-
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, Image} from 'react-native';
+import { StyleSheet, Text, View, Image,Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import * as theme from '../constants/theme'
+import ProfileTabNavigator from '../../navigation/ProfileTabNavigator'
+import ExploreTabNavigator from '../../navigation/ExploreTabNavigator'
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import Explore from '../../Explore'
+import { withFirebaseHOC } from '../../config/Firebase';
 
 
-class Story extends Component {
+var {width, height}=Dimensions.get('window')
+const areEqual = (prevProps, nextProps) => true
+
+  const Story = React.memo((props)=> {
+  
+    console.log("Inside Storyyyyyyyyyyyyyyyyyyyyy################################################yyyyyyyyyyyy")
+    //console.log(props.item);
+    const  userid = props.firebase._getUid();
+      const item = props.item
+      var text2 = "Follow"
+      if(item.isUserFollower !== undefined && item.isUserFollower[userid] === true)
+      {
+        text2 = "Following"
+        console.log(item.isUserFollower[userid])
+      }
+      
+      
    
-    render() {
-        /*const shadowOpt = {
-			width:160,
-			height:170,
-			color:"#000",
-			border:2,
-			radius:3,
-			opacity:0.2,
-			x:0,
-			y:3,
-			style:{marginVertical:5}
-		}*/
       return (
-        
+
+        <TouchableOpacity onPress={() => props.navigation.navigate('ExploreTabNavigator', {userData:props.item,followsOrNot:text2})}>
         <View style={[styles.shadow,{marginLeft: 15}]}>
-        <Image source={this.props.ImageUri}  style={styles.storie} />
-        <Text style={styles.username}>{this.props.username}</Text>
+        <Image source={{ uri: props.item.displayPicture }} style={styles.storie} />
+        <Text style={styles.username}>{props.item.name}</Text>
         </View>
+        </TouchableOpacity>
                  
       );
-    }
-  }
+    }, areEqual);
+  
 
-export default Story;
+export default withFirebaseHOC(Story);
 
 
 const styles = StyleSheet.create({

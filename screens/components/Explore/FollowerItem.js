@@ -1,10 +1,12 @@
 
+
+
+
 import React, {Component, useState, useEffect, useContext} from 'react';
 import { StyleSheet, Text, View, Image, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import * as theme from '../constants/theme'
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import InnerPodcast from './InnerPodcast'
 import {useDispatch} from "react-redux"
 
 
@@ -129,64 +131,33 @@ const styles = StyleSheet.create({
  /* useContext doesn't let you subscribe to a part of the context value (or some memoized selector) without fully re-rendering.*/
  //const areEqual = (prevProps, nextProps) => true;
  const areEqual = (prevProps, nextProps) => true
- const Podcast= React.memo((props)=> {
-  console.log("Inside Podcast")
+
+ const FollowerItem = React.memo((props)=> {
+  console.log("Inside Follower Item")
   console.log(props);
 
-  const dispatch=useDispatch();
+  //const dispatch=useDispatch();
+    const userid = props.item.id;
+  const item = props.item
+  var text2 = "Follow"
+  if(item.isUserFollower !== undefined && item.isUserFollower[userid] === true)
+  {
+    text2 = "Following"
+    console.log(item.isUserFollower[userid])
+  }
+  
 
-  /*useEffect(() => {
-    //setPodcastState(props);
-  }, []);*/
-        return ( 
-          <View style={[
-            styles.flex, styles.column, styles.recommendation, styles.shadow, 
-            {marginLeft: theme.sizes.margin },
-          ]} key ={props.index}>
-           <View style={[styles.flex, styles.recommendationHeader]}>
-           <TouchableOpacity  onPress={(()=>dispatch({type:"SET_PODCAST", payload: props.podcast}))}>
-           <Image style={[styles.recommendationImage]} source={ {uri: props.podcast.Podcast_Pictures["0"]}} />
-
-           </TouchableOpacity>
-          
+        return (
+          //<TouchableOpacity  onPress={(()=>dispatch({type:"SET_PODCAST", payload: props.item}))}>
+    <TouchableOpacity onPress={() => props.navigation.navigate('ExploreTabNavigator', {userData:props.item,userID:props.item.id,followsOrNot:text2})}>
+        <View style={{flexDirection:'row', marginLeft: 15}}>
+        <Image source={{ uri: props.item.displayPicture }} style={{width:width/4,height:height/8}}/>
+        <Text style={styles.username}>{props.item.name}</Text>
         </View>
-            <View style={[styles.flex, styles.column, styles.shadow, { padding: theme.sizes.padding / 4 }]}>
-              <View style={{height:(height)/16}}>
-              <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.podcast.Podcast_Name.slice(0,25)}
-                {(props.podcast.Podcast_Name.length > 25) ? ".." : ""}</Text> 
-              </View>
-              <View style ={{height:(height)/20}}>
-              <Text style={{ color: theme.colors.gray_green }}>{props.podcast.podcasterName}</Text>
-              </View>
-          
-              <View style={[
-                styles.row,
-                { alignItems: 'center', justifyContent: 'space-between'}
-              ]}>
-                
-                <Text style={{  fontSize: theme.sizes.font * 0.9,color: theme.colors.gray_green }}>
-                  {props.podcast.Timestamp}
-                </Text>
-                <View style={{alignItems: 'flex-end',paddingRight:5}}>
-            <Icon
-              name={props.podcast.saved ? 'bookmark' : 'bookmark-o'}
-              color={theme.colors.black}
-              size={theme.sizes.font * 1.25}
-            />
-          </View>
-              </View>
-              <View>
-              <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
-                  {props.podcast.Duration}
-                </Text>
-                </View>
-            </View>
-          </View>
-          
-          
-          );
-        
-    
+        {/* </TouchableOpacity> */}
+      </TouchableOpacity>
+        );
+      
   }, areEqual);
 
-export default Podcast;
+export default FollowerItem;

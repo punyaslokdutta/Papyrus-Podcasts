@@ -2,10 +2,9 @@
 import React, {Component, useState, useEffect, useContext} from 'react';
 import { StyleSheet, Text, View, Image, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
-import * as theme from '../constants/theme'
+import * as theme from '../../constants/theme'
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import InnerPodcast from './InnerPodcast'
-import {useDispatch} from "react-redux"
+import RecordBook from '../../../RecordBook' 
 
 
 var {width, height}=Dimensions.get('window')
@@ -123,70 +122,58 @@ const styles = StyleSheet.create({
       },
   });
 
-
-
-
  /* useContext doesn't let you subscribe to a part of the context value (or some memoized selector) without fully re-rendering.*/
  //const areEqual = (prevProps, nextProps) => true;
  const areEqual = (prevProps, nextProps) => true
- const Podcast= React.memo((props)=> {
-  console.log("Inside Podcast")
+ const CategoryBookItem = React.memo((props)=> {
+  console.log("Inside Category Book")
   console.log(props);
-
-  const dispatch=useDispatch();
-
-  /*useEffect(() => {
-    //setPodcastState(props);
-  }, []);*/
-        return ( 
-          <View style={[
-            styles.flex, styles.column, styles.recommendation, styles.shadow, 
-            {marginLeft: theme.sizes.margin },
-          ]} key ={props.index}>
-           <View style={[styles.flex, styles.recommendationHeader]}>
-           <TouchableOpacity  onPress={(()=>dispatch({type:"SET_PODCAST", payload: props.podcast}))}>
-           <Image style={[styles.recommendationImage]} source={ {uri: props.podcast.Podcast_Pictures["0"]}} />
-
-           </TouchableOpacity>
-          
-        </View>
-            <View style={[styles.flex, styles.column, styles.shadow, { padding: theme.sizes.padding / 4 }]}>
-              <View style={{height:(height)/16}}>
-              <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.podcast.Podcast_Name.slice(0,25)}
-                {(props.podcast.Podcast_Name.length > 25) ? ".." : ""}</Text> 
-              </View>
-              <View style ={{height:(height)/20}}>
-              <Text style={{ color: theme.colors.gray_green }}>{props.podcast.podcasterName}</Text>
-              </View>
+   
+        return (
+          <TouchableOpacity onPress={() => 
+            props.navigation.navigate('RecordBook', {book : props.book.BookID })}>
+             <View style={{flex:1,flexDirection:"row",paddingLeft:width/64,width:width,height:height/6}}>
+               
+               <View style={[styles.flex, styles.column, styles.shadow, { width:(width)/2,padding: theme.sizes.padding / 4 }]}>
+                 <View style={{height:(height)/16}}>
+                  <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.book.Book_Name.slice(0,40)}
+                       {(props.book.Book_Name.length > 40) ? ".." : ""}</Text> 
+                 </View>
+               <View style ={{height:(height)/20}}>
+                  <Text style={{ color: theme.colors.gray_green }}>{props.book.Author_Name}</Text>
+               </View>
           
               <View style={[
-                styles.row,
-                { alignItems: 'center', justifyContent: 'space-between'}
+              styles.row,
+              { alignItems: 'center', justifyContent: 'space-between'}
               ]}>
                 
                 <Text style={{  fontSize: theme.sizes.font * 0.9,color: theme.colors.gray_green }}>
-                  {props.podcast.Timestamp}
+                  Published in {props.book.publishingYear}
                 </Text>
                 <View style={{alignItems: 'flex-end',paddingRight:5}}>
-            <Icon
-              name={props.podcast.saved ? 'bookmark' : 'bookmark-o'}
-              color={theme.colors.black}
-              size={theme.sizes.font * 1.25}
-            />
-          </View>
+                  <Icon
+                    name={props.book.saved ? 'bookmark' : 'bookmark-o'}
+                    color={theme.colors.black}
+                    size={theme.sizes.font * 1.25}
+                  />
+                </View>
               </View>
               <View>
               <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
-                  {props.podcast.Duration}
+                  {props.book.Book_Rating}
                 </Text>
                 </View>
             </View>
-          </View>
-          
-          
-          );
+
+            <View style={{flexDirection: 'row', justifyContent: 'flex-end',paddingTop:height/48,paddingLeft:width/8}}>
+              <Image style={{width:width/4,height:height/8}} source={ {uri: props.book.Book_Pictures_Array["0"]}} />
+            </View>
         
-    
+          </View>
+      </TouchableOpacity>
+        );
+      
   }, areEqual);
 
-export default Podcast;
+export default CategoryBookItem;

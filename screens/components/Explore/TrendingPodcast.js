@@ -5,33 +5,38 @@ import { StyleSheet, Text, View, Image,Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import PodcastPlayer from '../../PodcastPlayer'
-import PlayerContext from '../../components/PodcastPlayer/PlayerContext'
 import * as theme from '../constants/theme'
+import {useDispatch} from "react-redux"
+
+
 var {width, height}=Dimensions.get('window')
 
 
-const eventSourceTrendingPodcast = "TrendingPodcast";
-class TrendingPodcast extends Component {
+
+// const areEqual = (prevProps, nextProps) => true
+//  const Podcast= React.memo((props)=> {
+//   console.log("Inside Podcast")
+//   console.log(props);
+
+// const eventSourceTrendingPodcast = "TrendingPodcast";
+const areEqual = (prevProps, nextProps) => true
+
+const TrendingPodcast= React.memo((props)=> {
   
-  constructor(props)
-  {
-      super(props)
-      {
-       this.state={
-         key: this.props.index,
-         navigation: this.props.navigation,
-         eventSource: eventSourceTrendingPodcast
-       }
-      }
-  }
-  openPodcastPlayer()
-  {
+  const dispatch=useDispatch();
 
-    this.props.navigation.navigate('PodcastPlayer',podcast=this.props.item.podcastID);
-
-  }
-  render() {
+  // constructor(props)
+  // {
+  //     super(props)
+  //     {
+  //      this.state={
+  //        key: this.props.index,
+  //        navigation: this.props.navigation,
+  //        eventSource: eventSourceTrendingPodcast
+  //      }
+  //     }
+  // }
+  
       /*const shadowOpt = {
     width:160,
     height:170,
@@ -44,34 +49,22 @@ class TrendingPodcast extends Component {
     style:{marginVertical:5}
   }*/
   //{{ uri: "https://scontent.fdel12-1.fna.fbcdn.net/v/t31.0-8/p960x960/14054441_518163365046457_6005096195143854779_o.jpg?_nc_cat=101&_nc_oc=AQmBj8SY60BCKzMFfvCPGLc1J44zxgFhJqefzYEifezUhkr7pFo29592HYyw6grMQF8&_nc_ht=scontent.fdel12-1.fna&oh=8ff3d0097e442acc84a804041fd0e7ee&oe=5E45429C"}} style={{width:100, height:100, borderRadius:50 }}
-  const item = this.props.item;
-  const eventSource=this.state.eventSource;
+  const item = props.item;
   console.log(item)
   
     return (
       
       // <View style={{height:130, width:210, marginLeft:20, borderwidth:4, borderColor:'#dddddd',overflow:'hidden', paddingRight:10,borderRadius:10}}>
       //                 <Image source={this.props.ImageUri} style={{width:210, height:130, resizeMode:'cover',  overflow:'hidden', paddingRight:10}}/>
-      //             </View>
-      <PlayerContext.Consumer>
-      {
-
-        ({setPodcast})=>(   
+      //             </View>    
       <View style={[styles.shadow,{height:height/5, width:width/2, marginLeft:20, borderwidth:5, borderColor:'#dddddd',overflow:'hidden', paddingRight:10,borderRadius:5}]}>
-      <TouchableOpacity onPress={()=>setPodcast(item, eventSource)}>
+      <TouchableOpacity onPress={(()=>dispatch({type:"SET_PODCAST", payload: props.item}))}> 
       <Image style={[{width:width/2 - 10, height:height/5,borderRadius:5, resizeMode:'cover',  overflow:'hidden'}]} source={{ uri: item.Podcast_Pictures["0"] }} />
 
       </TouchableOpacity>
-      </View>)
-      }
-      </PlayerContext.Consumer>
-
-    );
-
-  
-    
-    }
-  }
+      </View>
+     );
+  }, areEqual);
 
 export default TrendingPodcast;
 

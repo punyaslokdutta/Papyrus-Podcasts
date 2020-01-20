@@ -10,7 +10,7 @@ import Video from 'react-native-video';
 import ProgressBar from './ProgressBar'
 //import videos, { type Video } from './videos';
 
-
+const { width,height } = Dimensions.get('window');
 /*type VideoContentProps = 
   video: Video,
 };*/
@@ -146,7 +146,8 @@ function handlePlayPause() {
 const styles = StyleSheet.create({
   content: {
     padding: 16,
-    backgroundColor:'black'
+    backgroundColor:'black',
+    height:height*15/24
   },
   title: {
     fontSize: 16,
@@ -162,7 +163,7 @@ const styles = StyleSheet.create({
   icons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingTop:40
+    paddingTop:height/30
   },
   upNext: {
     borderTopWidth: 1,

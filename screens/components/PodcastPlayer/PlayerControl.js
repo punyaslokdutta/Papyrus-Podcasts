@@ -10,7 +10,7 @@ import {useDispatch, useSelector} from "react-redux"
 
 
 
-const { width } = Dimensions.get('window');
+const { width,height } = Dimensions.get('window');
 export const PLACEHOLDER_WIDTH = width / 3;
 
 const areEqual = (prevProps, nextProps) => true;

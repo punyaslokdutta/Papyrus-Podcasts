@@ -5,10 +5,10 @@ import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollVi
 import {createSwitchNavigator,
   createAppContainer,
   } from 'react-navigation'
-  import { createBottomTabNavigator } from 'react-navigation-tabs';
+  import { createBottomTabNavigator, createMaterialTopTabNavigator } from 'react-navigation-tabs';
   import { createStackNavigator } from 'react-navigation-stack';
   import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
-  import {createMaterialTopTabNavigator} from 'react-navigation-tabs'
+  
 //import { createStore, combineReducers, applyMiddleware } from 'redux'
 //import logger from 'redux-logger'
 import AuthLoadingScreen from './screens/AuthLoadingScreen'
@@ -17,6 +17,7 @@ import SignUpScreen from './screens/SignUpScreen'
 import SignOut from './screens/SignOut'
 import HomeScreen from './screens/HomeScreen'
 import Explore from './screens/Explore'
+import SearchScreen from './screens/components/Explore/SearchScreen'
 import PodcastPlayer from './screens/PodcastPlayer'
 import SelectScreen from './screens/SelectScreen'
 import StartRecordScreen from './screens/StartRecordScreen'
@@ -34,12 +35,17 @@ import SettingsScreen from './screens/SettingsScreen'
 import editProfile  from './screens/components/Profile/editProfile'
 import firebaseApi, {FirebaseProvider} from './screens/config/Firebase'
 import {PlayerProvider} from './screens/components/PodcastPlayer/PlayerProvider';
-import ProfileBookPodcast from './screens/components/Profile/ProfileBookPodcast'
-import ProfileChapterPodcast from './screens/components/Profile/ProfileChapterPodcast'
 import Profile_StatsScreen from './screens/components/Profile/Profile_StatsScreen'
+import CategoryTabNavigator from './screens/navigation/CategoryTabNavigator'
+import ProfileTabNavigator from './screens/navigation/ProfileTabNavigator'
+import ExploreTabNavigator from './screens/navigation/ExploreTabNavigator'
+import UserStatsScreen from './screens/components/Explore/UserStatsScreen'
 import {createStore } from 'redux'
 import {Provider} from 'react-redux'
 import rootReducer from './reducers/rootReducer';
+import UserFollowingScreen from './screens/components/Explore/UserFollowingScreen';
+import UserFollowerScreen from './screens/components/Explore/UserFollowerScreen';
+
 
 
 const store =createStore(rootReducer)
@@ -71,97 +77,78 @@ const AuthStackNavigator= createStackNavigator(
    }
 )
 
+/////////////
+/////////////
 
+  
 /*const PreferencesStackNavigator =createStackNavigator(
   {}
 )*/
-const ProfileTabNavigator =createMaterialTopTabNavigator(
-{
-   ProfileBookPodcast:{ screen: ProfileBookPodcast,navigationOptions:{
-    tabBarLabel:'Books',
-    tabBarIcon:({tintColor})=>(
-      <Icon name="book" color={tintColor} size={20}/>
-    )
-  }}, 
-   ProfileChapterPodcast: {screen:ProfileChapterPodcast, navigationOptions:{
-    tabBarLabel:'Chapters',
-    tabBarIcon:({tintColor})=>(
-      <Icon name="newspaper-o" color={tintColor} size={20}/>
-    )
-  }}, 
 
-},
-{tabBarOptions:{
-  showIcon: true,
-  showLabel: true,
-  activeTintColor:'black',
-  inactiveTintColor:'grey',
-  borderTopWidth: 0,
-  elevation :5,
-  adaptive: true, 
-  style:
+
+
+
+
+
+
+
+const CategoryStackNavigator=createStackNavigator(
   {
-    height: 60, 
-    backgroundColor: 'white',
-    
-  },
-  indicatorStyle: {
-    borderBottomColor: 'black',
-    borderBottomWidth: 2,
-  },
-  labelStyle: {
-    fontSize: 10,
-  }
-}, 
-   navigationOptions:
-   {
-     tabBarVisible: true,
-     //headerVisible: true,
-       header: props => <CustomProfileHeader {...props} />, 
-     
-   }
-  }
+    CategoryScreen : {screen : CategoryScreen,navigationOptions:{
+      header:null
+    }},
+    CategoryTabNavigator : {screen : CategoryTabNavigator,navigationOptions:{
+      //header:null
+    }} 
+  }, 
+  {
+    //headerMode:'none',
+    //initialRouteName:Profile,  
+}
+)
 
+////////////////
+
+
+const ExploreStackNavigator=createStackNavigator(
+  {
+     Explore : {screen : Explore,navigationOptions:{
+       header:null
+     }}, 
+    SearchScreen : {screen : SearchScreen,navigationOptions: {
+       header: null,
+   }},
+     ExploreTabNavigator : {screen : ExploreTabNavigator,navigationOptions:{
+
+     }},
+      UserStatsScreen : {screen : UserStatsScreen,navigationOptions:{
+
+      }},
+      UserFollowingScreen : {screen : UserFollowingScreen,navigationOptions:{
+
+      }},
+      UserFollowerScreen : {screen : UserFollowerScreen,navigationOptions:{
+
+      }}
+
+  }, 
+  {
+    //headerMode:'none',
+    //initialRouteName:Profile,
+   
+   
+}
 )
 
 
-
-
-
-const CustomProfileHeader = props => {
-  {console.log("Inside Custom profile header ")}
-  {console.log(props)}
-  return (
-
-      <View style={{alignItems:'center',justifyContent:'center',paddingTop: 30, flexDirection:'column'}}>
-        <View style={{flexDirection:'column'}}>
-          <Text h3 >Ella Alderson's</Text>
-          <View style = {{alignItems:'center'}}>
-          <Text h2 bold>Collections</Text>
-          </View>
-          </View>
-          
-          <TouchableOpacity style={{alignItems:'center'}} onPress={() => props.navigation.navigate('Profile_StatsScreen')}>
-          <Image
-              source={require('./assets/images/avatar.png')}
-              style={styles.avatar}
-            />
-            </TouchableOpacity>
-          </View>
-       
-      
-    
-  
-      
-  );
-};
-
 const ProfileStackNavigator=createStackNavigator(
   {
-    ProfileTabNavigator : {screen : ProfileTabNavigator}, 
-    editProfile : {screen : editProfile}, 
+     ProfileTabNavigator : {screen : ProfileTabNavigator}, 
+    editProfile : {screen : editProfile,navigationOptions: {
+       header: null,
+   }}, 
     Profile_StatsScreen:{screen: Profile_StatsScreen, navigationOptions: {
-      header: null,
+     // header: null,
   }}
   }, 
   {
@@ -247,7 +234,7 @@ const AppTabNavigator=createBottomTabNavigator(
         <Icon name="home" color={tintColor}  size={24}/>
       )
     }},
-    Explore: {screen:Explore,
+    Explore: {screen:ExploreStackNavigator,
       navigationOptions:{
         tabBarLabel:'Explore',
         tabBarIcon:({tintColor})=>(
@@ -263,7 +250,7 @@ const AppTabNavigator=createBottomTabNavigator(
         )
       } 
    },
-    Category: {screen: CategoryScreen,
+    Category: {screen: CategoryStackNavigator,
       navigationOptions:{
         tabBarLabel:'Categories',
         tabBarIcon:({tintColor})=>(
@@ -300,7 +287,7 @@ const AppTabNavigator=createBottomTabNavigator(
     adaptive: true, 
     style:
     {
-      paddingBottom: SCREEN_HEIGHT/45,
+      paddingBottom: SCREEN_HEIGHT/100,
       height: SCREEN_HEIGHT/11, 
     },
   }, 
@@ -363,7 +350,7 @@ const CustomDrawerContentComponent=(props)=>
    
     <Body style={{alignItems:'center', paddingTop: SCREEN_HEIGHT/8}}>
      <Image style={styles.drawerimage}
-       source={require('./assets/images/plants_3.png')}
+       source={require('./assets/images/avatar.png')}
      />
      <Block flex={false} row center space="between" style={{paddingTop:30, paddingLeft:5}}>
           <Text style={{color:'white', fontSize:SCREEN_HEIGHT/40 }}>Ella Alderson</Text>
