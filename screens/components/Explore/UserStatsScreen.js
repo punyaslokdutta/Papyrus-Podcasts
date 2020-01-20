@@ -6,87 +6,39 @@ import {Button} from 'native-base';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 // check this lib for more options
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
-import {withFirebaseHOC} from '../../config/Firebase'
+import UserFollowingScreen from './UserFollowingScreen'
 import { Block, Badge, Card, Text } from '../categories/components';
 import { theme, mocks } from '../categories/constants';
 import Icon from 'react-native-vector-icons/FontAwesome'
-import firestore from '@react-native-firebase/firestore';
 
 var {width, height}=Dimensions.get('window')
 
- class Profile_StatsScreen  extends React.Component {
+ class UserStatsScreen  extends React.Component {
 
     constructor(props)
     {
         super(props);
         this.state={
-            totalListenCount: 10, 
-            book_podcast_listen_count:20 , 
-            chapter_podcast_listen_count: 200, 
-            Gnosis_Score :4.5 ,
-            Books_recorded_count: 23, 
-            Chapter_Recorder_count: 34, 
-            Time: 23, 
-
-
+            totalListenCount: this.props.navigation.state.params.item.listened_book_podcasts_count + this.props.navigation.state.params.item.listened_chapter_podcasts_count, 
+            bookPodcastListenCount: this.props.navigation.state.params.item.listened_book_podcasts_count, 
+            chapterPodcastListenCount: this.props.navigation.state.params.item.listened_chapter_podcasts_count, 
+            totalListeningTime: this.props.navigation.state.params.item.timespent_by_user_listening, 
+            imageURL: this.props.navigation.state.params.item.displayPicture,
+            name: this.props.navigation.state.params.item.name,
+            introduction: this.props.navigation.state.params.item.introduction, 
+            followersCount: this.props.navigation.state.params.item.follower_count,
+            followingCount: this.props.navigation.state.params.item.following_count
         }
+        console.log("In USER STATS SCREENNNNNNNNNNNNNN")
     }
   
-  ////////
-  componentDidMount = async () => {
-    try {
-      this.retrieveData();
-    }
-    catch (error) {
-      console.log(error);
-    }
-  };
 
-  retrieveData = async () => {
-    try {
-      this.setState({
-        loading: true,
-      });
-      console.log('Retrieving Data in Profile Stats Screen');
-      const  userid = this.props.firebase._getUid();
-      var wholestring = "isUserFollowing." + userid;
-      console.log(wholestring);
-
-
-      let followingQuery = await firestore().collection('users').where(wholestring,'==',true).get();
-      let followingData = followingQuery.docs.map(document=>document.data());
-      console.log("These are the users our main user follows");
-      console.log(followingData[0]);
-      console.log(followingData[1]);
-      console.log(followingData[2]); 
-      //For books in section list
-      //let userFollowerDocuments = await firestore().collection('users').where
-      //let bookPodcasts = bookDocuments.docs.map(document => document.data());
-
-      //For podcasts in section list
-      
-
-    this.setState({
-        //  books: bookPodcasts,
-          //headerPodcasts: documentData_podcasts,
-          //podcasts: podcastsData,
-          //lastVisibleID:lastVisiblePodcast,
-          loading: false, 
-          onEndReachedCalledDuringMomentum : true
-        });
-
-    }
-    catch (error) {
-      console.log(error);
-    }
-  };
-  //////
   renderMonthly() {
     return (
       <Card shadow style={{ paddingVertical: theme.sizes.padding * 0.25 }}>
         <Block>
           <Block center>
-            <Text h1 primary spacing={1.7}>116</Text>
+    <Text h1 primary spacing={1.7}>{this.state.totalListeningTime}</Text>
             <Text spacing={0.7}>Total Listening Time (mins)</Text>
           </Block>
 
@@ -94,7 +46,7 @@ var {width, height}=Dimensions.get('window')
           <Text>{"\n"}</Text>
           <Block row>
             <Block center>
-              <Text size={20} spacing={0.6} primary style={{ marginBottom: 3 }}>12</Text>
+    <Text size={20} spacing={0.6} primary style={{ marginBottom: 3 }}>{this.state.bookPodcastListenCount}</Text>
               <Text body spacing={0.7}>Number of </Text>
               <Text body spacing={0.7}>Book Podcasts</Text>
             </Block>
@@ -102,7 +54,7 @@ var {width, height}=Dimensions.get('window')
             <Block flex={false} color="gray3" style={styles.vLine} />
 
             <Block center>
-              <Text size={20} spacing={0.6} primary style={{ marginBottom: 3 }}>30</Text>
+              <Text size={20} spacing={0.6} primary style={{ marginBottom: 3 }}>{this.state.chapterPodcastListenCount}</Text>
               <Text body spacing={0.7}>Number of </Text>
               <Text body spacing={0.7}>Chapter Podcasts</Text>
             </Block>
@@ -251,61 +203,48 @@ var {width, height}=Dimensions.get('window')
         <View style={{flexDirection:'row'}}>
         <View>
           <Text style={{paddingTop:height/20, paddingHorizontal:width/10, fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
-            220
+          {this.state.followingCount}
           </Text>
-         <Text style={{fontFamily:'sans-serif-light', paddingHorizontal:width/13}}>Following</Text>
+          <TouchableOpacity onPress={()=>this.props.navigation.navigate('UserFollowingScreen', { item : this.props.navigation.state.params.item })}><Text style={{fontFamily:'sans-serif-light', paddingHorizontal:width/13}}>Following</Text>
+          </TouchableOpacity>
           </View>
     
             <View style={{alignItems:'center', justifyContent:'center', flex:3, paddingTop:height/50}}>
-              <Image source={require('../../../assets/images/avatar.png')}  style={{width:100, height:100, borderRadius:50 }}/>
+              <Image source={{uri:this.state.imageURL}}  style={{width:100, height:100, borderRadius:50 }}/>
             </View>
             <View>
             <Text style={{paddingTop:height/20 , paddingHorizontal:width/10,  fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
-            100
-          </Text>
-          <Text style={{fontFamily:'sans-serif-light', paddingHorizontal:width/13}}>Followers</Text>
+            {this.state.followersCount}
+          </Text>                                             
+          <TouchableOpacity onPress={()=>this.props.navigation.navigate('UserFollowerScreen', { item : this.props.navigation.state.params.item })}><Text style={{fontFamily:'sans-serif-light', paddingHorizontal:width/13}}>Followers</Text></TouchableOpacity>
           </View>
 
         </View>
         </View>
         <View style={{ alignItems:'center',flex:1,marginTop:20}}>
        
-       <Text style={{ fontSize:24, fontWeight:"200",  textShadowColor:'black', fontFamily:'sans-serif-light', alignItems:'center', justifyContent:'center'}}>Ella Alderson</Text>
+    <Text style={{ fontSize:24, fontWeight:"200",  textShadowColor:'black', fontFamily:'sans-serif-light', alignItems:'center', justifyContent:'center'}}>{this.state.name}</Text>
        
 
         </View>
        
         <View>
-        <Text style={{ fontSize:14, fontWeight:"100",  textShadowColor:'black', fontFamily:'sans-serif-light', alignItems:'center', justifyContent:'center', padding:20}}>I read books on philosophy, economics, computer science, social sciences, geopolitics.</Text>
+    <Text style={{ fontSize:14, fontWeight:"100",  textShadowColor:'black', fontFamily:'sans-serif-light', alignItems:'center', justifyContent:'center', padding:20}}>{this.state.introduction}</Text>
         </View>
 
-        <View style={{alignItems:'center',flex:1}}>
-        <Button  style={{flex:1, justifyContent:'center', height:height/25, width:width/3, borderRadius:5, backgroundColor:theme.colors.primary}} onPress={()=>this.props.navigation.navigate('editProfile')}>
-        <Text>Edit Profile</Text>
-        </Button>
-
-        </View>
         </View>
        <Block flex={false} row center style={styles.header}>
        
           <Text h3 bold>Listening Statistics</Text>
         </Block>
         {this.renderMonthly()}
-        {/* <Block flex={false} row center space="between" style={styles.header}> */}
-         <View style={{alignItems:'center'}}>
-
-    <Text h3 bold>{"\n"}Your Podcast Statistics</Text>
-        </View>
-        {/* </Block> */}
-        {this.renderRewards()}
-        
       </ScrollView>
     )
   }
 }
 
 
-export default withFirebaseHOC(Profile_StatsScreen);
+export default UserStatsScreen;
 
 const styles = StyleSheet.create({
     header: {

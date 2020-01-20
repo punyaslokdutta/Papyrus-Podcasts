@@ -1,8 +1,11 @@
 
+
+
+
 import React, {Component, useState, useEffect, useContext} from 'react';
 import { StyleSheet, Text, View, Image, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
-import * as theme from '../../constants/theme'
+import * as theme from '../constants/theme'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import {useDispatch} from "react-redux"
 
@@ -129,56 +132,28 @@ const styles = StyleSheet.create({
  //const areEqual = (prevProps, nextProps) => true;
  const areEqual = (prevProps, nextProps) => true
 
- const CategoryPodcastItem = React.memo((props)=> {
-  console.log("Inside Category Podcast")
+ const FollowingItem = React.memo((props)=> {
+  console.log("Inside Following Item")
   console.log(props);
 
-  const dispatch=useDispatch();
-
+  //const dispatch=useDispatch();
+    const userid = props.item.id;
+  const item = props.item
+  
+  const  text2 = "Following"
+    //console.log(item.isUserFollowing[userid])
+  
         return (
-          <TouchableOpacity  onPress={(()=>dispatch({type:"SET_PODCAST", payload: props.podcast}))}>
-             <View style={{flex:1,flexDirection:"row",paddingLeft:width/64,width:width,height:height/6}}>
-               
-               <View style={[styles.flex, styles.column, styles.shadow, { width:(width)/2,padding: theme.sizes.padding / 4 }]}>
-                 <View style={{height:(height)/16}}>
-                  <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.podcast.Podcast_Name.slice(0,40)}
-                       {(props.podcast.Podcast_Name.length > 40) ? ".." : ""}</Text> 
-                 </View>
-               <View style ={{height:(height)/20}}>
-                  <Text style={{ color: theme.colors.gray_green }}>{props.podcast.podcasterName}</Text>
-               </View>
-          
-              <View style={[
-              styles.row,
-              { alignItems: 'center', justifyContent: 'space-between'}
-              ]}>
-                
-                <Text style={{  fontSize: theme.sizes.font * 0.9,color: theme.colors.gray_green }}>
-                  {props.podcast.Timestamp}
-                </Text>
-                <View style={{alignItems: 'flex-end',paddingRight:5}}>
-                  <Icon
-                    name={props.podcast.saved ? 'bookmark' : 'bookmark-o'}
-                    color={theme.colors.black}
-                    size={theme.sizes.font * 1.25}
-                  />
-                </View>
-              </View>
-              <View>
-              <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
-                  {props.podcast.Duration}
-                </Text>
-                </View>
-            </View>
-
-            <View style={{flexDirection: 'row', justifyContent: 'flex-end',paddingTop:height/48,paddingLeft:width/8}}>
-              <Image style={{width:width/4,height:height/8}} source={ {uri: props.podcast.Podcast_Pictures["0"]}} />
-            </View>
-        
-          </View>
+          //<TouchableOpacity  onPress={(()=>dispatch({type:"SET_PODCAST", payload: props.item}))}>
+    <TouchableOpacity onPress={() => props.navigation.navigate('ExploreTabNavigator', {userData:props.item,userID:props.item.id,followsOrNot:text2})}>
+        <View style={[styles.shadow,{marginLeft: 15}]}>
+        <Image source={{ uri: props.item.displayPicture }} style={{width:width/4,height:height/8}}/>
+        <Text style={styles.username}>{props.item.name}</Text>
+        </View>
+        {/* </TouchableOpacity> */}
       </TouchableOpacity>
         );
       
   }, areEqual);
 
-export default CategoryPodcastItem;
+export default FollowingItem;

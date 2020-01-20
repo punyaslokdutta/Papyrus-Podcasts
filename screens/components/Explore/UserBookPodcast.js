@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import { StyleSheet, Text, View, Image, TouchableOpacity,FlatList,  Dimensions,SafeAreaView, ScrollView,ActivityIndicator} from 'react-native';
+import Podcast from '../Home/Podcast'
 import {withFirebaseHOC} from '../../config/Firebase'
-import CategoryPodcastItem from './components/CategoryPodcastItem'
 
 var {width, height}=Dimensions.get('window')
 
-class CategoryPodcast extends React.Component {
+class UserBookPodcast extends React.Component {
     
     static navigationOptions={
         header:null
@@ -17,12 +17,15 @@ class CategoryPodcast extends React.Component {
      {
 
       this.state={
-        podcasts:[], 
-        limit:5,
-        lastVisiblePodcast:null,
+        bookPodcasts:[], 
+        //chapterPodcasts:[],
+        limit:6,
+        lastVisibleBookPodcast:null,
+        //lastVisibleChapterPodcast:null,
         refreshing:false,
         loading:false,
-        onEndReachedCalledDuringMomentum : true
+        onEndReachedCalledDuringMomentum : true,
+        // navigation: this.props.navigation,
       }
       }
     
@@ -46,21 +49,29 @@ class CategoryPodcast extends React.Component {
         this.setState({
           loading: true,
         });
-
-        console.log('Retrieving Data');
+        console.log('Retrieving Data IN  UUUSSEEERRRRRRRRR BOOk PODCAST  ...........PPPPPPPPPPPPPPPPP');
+        console.log(this.props.navigation.state.params);
         // Cloud Firestore: Query
-        const genre = this.props.navigation.state.params;
-        let query3 = await firestore().collectionGroup('Podcasts').where('Genres','array-contains',genre.category);    
-        let documentPodcasts = await query3.orderBy('PodcastID').limit(this.state.limit).get();
-        let documentDataPodcasts = documentPodcasts.docs.map(document => document.data());
+        const  userid = this.props.navigation.state.params.userData.id;
+        
+       // {props.navigation.state.routes[1].params.userID}
+        //const userid = this.props.use;
+        let query3 = await firestore().collectionGroup('Podcasts').where('podcasterID','==',userid);    
+        let documentPodcasts = await query3.where('ChapterName','==',"").orderBy('PodcastID').limit(this.state.limit).get();
+       // let documentChapterPodcasts = await query3.where('isChapterPodcast','==',true).limit(this.state.limit).get();
+        let documentData_podcasts = documentPodcasts.docs.map(document => document.data());
+        //let documentData_chapterPodcasts = documentChapterPodcasts.docs.map(document => document.data());
+        var lastVisibleBook = this.state.lastVisibleBookPodcast;
+        //var lastVisibleChapter = this.state.lastVisibleChapterPodcast;
 
-        var lastVisible = this.state.lastVisiblePodcast;
-        lastVisible = documentDataPodcasts[documentDataPodcasts.length - 1].PodcastID;        
+        lastVisibleBook = documentData_podcasts[documentData_podcasts.length - 1].PodcastID;        
         //lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].PodcastID;
          
         this.setState({
-        podcasts: documentDataPodcasts,
-        lastVisiblePodcast:lastVisible,
+        bookPodcasts: documentData_podcasts,
+       // chapterPodcasts: documentData_chapterPodcasts,
+        lastVisibleBookPodcast:lastVisibleBook,
+        //lastVisibleChapterPodcast: lastVisibleChapter,
         loading:false
         });
       }
@@ -69,7 +80,7 @@ class CategoryPodcast extends React.Component {
       }
     };
 
-    retrieveMoreCategoryPodcasts = async () => {
+    retrieveMoreBookPodcasts = async () => {
      try
       {
 
@@ -79,12 +90,14 @@ class CategoryPodcast extends React.Component {
         refreshing: true
          }); 
 
-         const genre = this.props.navigation.state.params;
+         //const  userid = this.props.firebase._getUid();
+         const  userid = this.props.navigation.state.params.userData.id;
          let additionalQuery = 9;
          try{
-           additionalQuery = await firestore().collectionGroup('Podcasts').where('Genres','array-contains',genre.category)
+           additionalQuery = await firestore().collectionGroup('Podcasts')
+                            .where('podcasterID','==',userid).where('ChapterName','==',"")
                             .orderBy('PodcastID')
-                            .startAfter(this.state.lastVisiblePodcast)
+                            .startAfter(this.state.lastVisibleBookPodcast)
                             .limit(this.state.limit);
         
       // Cloud Firestore: Query Snapshot
@@ -109,9 +122,9 @@ class CategoryPodcast extends React.Component {
       // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
       if(documentData.length != 0)
       {
-      let lastVisible = documentData[documentData.length - 1].PodcastID;
+      let lastVisibleBook = documentData[documentData.length - 1].PodcastID;
        
-      if(this.state.lastVisiblePodcast===lastVisible){
+      if(this.state.lastVisibleBookPodcast===lastVisibleBook){
           this.setState({
                   refreshing:false
               });
@@ -119,9 +132,9 @@ class CategoryPodcast extends React.Component {
       else
       {
         this.setState({
-            podcasts: [...this.state.podcasts, ...documentData],
+            bookPodcasts: [...this.state.bookPodcasts, ...documentData],
             //chapterPodcasts: documentData_chapterPodcasts,
-            lastVisiblePodcast : lastVisible,
+            lastVisibleBookPodcast : lastVisibleBook,
             refreshing:false
           });
 
@@ -143,7 +156,7 @@ class CategoryPodcast extends React.Component {
     {
        return(
          <View>
-        <CategoryPodcastItem podcast={item} index={index} navigation={this.props.navigation}/>
+        <Podcast podcast={item} index={index} navigation={this.props.navigation}/>
         </View>
        )
     }
@@ -167,30 +180,31 @@ class CategoryPodcast extends React.Component {
     }
 
     onEndReached = ({ distanceFromEnd }) => {
-      //if(this.state.podcasts.length>5)
+      if(this.state.bookPodcasts.length>5)
       if(!this.onEndReachedCalledDuringMomentum){
-          this.retrieveMoreCategoryPodcasts()
+          this.retrieveMoreBookPodcasts()
           this.onEndReachedCalledDuringMomentum = true;
       }
       
   }
-  separator = () => <View style={[styles.separator,{paddingTop:height/96}]} />;
+
    
+    
+ 
     render() {
       const { navigation } = this.props;
       return (
        
          <View style = {{paddingBottom:20}}>
              <View>
-                 
-         <FlatList nestedScrollEnabled={true}
-        data={this.state.podcasts}
+         {/* {this.state.activeIndex ? this.renderSectionTwo() : this.renderSectionOne()} */}
+         <FlatList   nestedScrollEnabled={true}
+        data={this.state.bookPodcasts}
         renderItem={this.renderData}
-        //numColumns={2}
+        numColumns={2}
         showsVerticalScrollIndicator={false}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.PodcastID}
        // ListHeaderComponent={this.renderHeader}
-       ItemSeparatorComponent={this.separator}
          ListFooterComponent={this.renderFooter}
         onEndReached={this.onEndReached}
         onEndReachedThreshold={0.5}
@@ -205,7 +219,7 @@ class CategoryPodcast extends React.Component {
   }
   
 
-export default withFirebaseHOC(CategoryPodcast);
+export default withFirebaseHOC(UserBookPodcast);
 
 
 const styles = StyleSheet.create({
@@ -230,8 +244,4 @@ const styles = StyleSheet.create({
  flexDirection:'row',
  backgroundColor: 'white'
   },
-  separator: {
-    borderBottomColor: '#d1d0d4',
-    borderBottomWidth: 1
-  }
 });

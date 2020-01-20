@@ -6,29 +6,19 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import * as theme from '../constants/theme'
+import {useDispatch} from "react-redux"
+
 var {width, height}=Dimensions.get('window')
+const areEqual = (prevProps, nextProps) => true
 
+//const eventSourceTrendingPodcast = "TrendingPodcast";
+const TopChapters = React.memo((props)=> {
+  
+  console.log("Inside TopChapters")
+  console.log(props);
+  const dispatch=useDispatch();
 
-class TopChapters extends Component {
-   
-  constructor(props)
-  {
-      super(props)
-      {
-       state:{
-         key: this.props.index
-         navigation: this.props.navigation
-       }
-      }
-  }
-  openPodcastPlayer()
-  {
-
-    this.props.navigation.navigate('PodcastPlayer',podcast=this.props.item.podcastID);
-
-  }
-    render() {
-      const item = this.props.item
+      const item = props.item
       console.log(item)
         /*const shadowOpt = {
 			width:160,
@@ -47,15 +37,15 @@ class TopChapters extends Component {
         //                 <Image source={this.props.ImageUri} style={{width:130, height:210, resizeMode:'cover',  overflow:'hidden', paddingRight:10}}/>
         //             </View>
        <View style={[styles.shadow,{height:height/4, width:width/3, marginLeft:20, borderwidth:5, borderColor:'#dddddd',overflow:'hidden', paddingRight:10,borderRadius:5}]}>
-       <TouchableOpacity onPress={()=>this.openPodcastPlayer()}>
-       <Image style={{width:width/3 - 10, height:height/4, resizeMode:'cover',  overflow:'hidden',borderRadius:5, paddingRight:10}} source={{ uri: item.Chapter_Pictures_Array["0"] }} />
+       <TouchableOpacity onPress={(()=>dispatch({type:"SET_PODCAST", payload: props.item}))}>
+       <Image style={{width:width/3 - 10, height:height/4, resizeMode:'cover',  overflow:'hidden',borderRadius:5, paddingRight:10}} source={{ uri: item.Podcast_Pictures["0"] }} />
  
        </TouchableOpacity>
        </View>
                  
       );
-    }
-  }
+    },areEqual);
+  
 
 export default TopChapters;
 

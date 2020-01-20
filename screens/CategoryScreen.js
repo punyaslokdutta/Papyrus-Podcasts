@@ -113,13 +113,16 @@ class CategoryScreen extends Component {
               <TouchableOpacity key={category.categoryName} onPress={() => 
                                 this.props.navigation.navigate('CategoryTabNavigator', {category : category.categoryName })}>
                 <Card center middle shadow style={styles.category}> 
-                  <Badge margin={[0, 0, 15]} size={100} color="rgba(41,216,143,0.20)">
+                  <Badge margin={[0, 0, 15]} size={80} color="rgba(41,216,143,0.20)">
                    
-                    <Image source={{uri:category.categoryImage}} />
+                    <Image style={{height:50,width:50,borderRadius:72}} source={{uri:category.categoryImage}} />
                     
                    </Badge>
+                   <View style={{alignItems:'center',justifyContent:'center'}}>
                   <Text medium height={20}>{category.categoryName}</Text>
+                  <Text gray caption>{category.numPodcasts} Podcasts </Text>
                   <Text gray caption>{category.numBooks} Books </Text>
+                  </View>
                 </Card>
               </TouchableOpacity>
             ))}

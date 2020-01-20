@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import { StyleSheet, Text, View, Image, TouchableOpacity,FlatList,  Dimensions,SafeAreaView, ScrollView,ActivityIndicator} from 'react-native';
+import Podcast from '../Home/Podcast'
 import {withFirebaseHOC} from '../../config/Firebase'
-import CategoryPodcastItem from './components/CategoryPodcastItem'
-
+import FollowerItem from './FollowerItem';
 var {width, height}=Dimensions.get('window')
 
-class CategoryPodcast extends React.Component {
+class UserFollowerScreen extends React.Component {
     
     static navigationOptions={
         header:null
@@ -17,12 +17,15 @@ class CategoryPodcast extends React.Component {
      {
 
       this.state={
-        podcasts:[], 
-        limit:5,
-        lastVisiblePodcast:null,
+        Followers:[], 
+        //chapterPodcasts:[],
+        limit:6,
+        lastVisibleFollower:null,
+        //lastVisibleChapterPodcast:null,
         refreshing:false,
         loading:false,
-        onEndReachedCalledDuringMomentum : true
+        onEndReachedCalledDuringMomentum : true,
+        // navigation: this.props.navigation,
       }
       }
     
@@ -46,21 +49,25 @@ class CategoryPodcast extends React.Component {
         this.setState({
           loading: true,
         });
-
-        console.log('Retrieving Data');
+        console.log('IN USER Follower SCREEN');
         // Cloud Firestore: Query
-        const genre = this.props.navigation.state.params;
-        let query3 = await firestore().collectionGroup('Podcasts').where('Genres','array-contains',genre.category);    
-        let documentPodcasts = await query3.orderBy('PodcastID').limit(this.state.limit).get();
-        let documentDataPodcasts = documentPodcasts.docs.map(document => document.data());
+        const userid = this.props.navigation.state.params.item.id;// props.firebase._getUid();
+        var wholestring = "isUserFollowing." + userid;
+        console.log(wholestring);
 
-        var lastVisible = this.state.lastVisiblePodcast;
-        lastVisible = documentDataPodcasts[documentDataPodcasts.length - 1].PodcastID;        
+  
+        let FollowerQuery =  await firestore().collection('users').where('following_list','array-contains',userid).orderBy('id')
+                                                .limit(this.state.limit).get();
+        let FollowerData = FollowerQuery.docs.map(document=>document.data());
+        var lastVisibleFollower = this.state.lastVisibleFollower;
+        //var lastVisibleChapter = this.state.lastVisibleChapterPodcast;
+
+        lastVisibleFollower = FollowerData[FollowerData.length - 1].id;        
         //lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].PodcastID;
          
         this.setState({
-        podcasts: documentDataPodcasts,
-        lastVisiblePodcast:lastVisible,
+            Followers: FollowerData,
+       lastVisibleFollower:lastVisibleFollower,
         loading:false
         });
       }
@@ -69,7 +76,7 @@ class CategoryPodcast extends React.Component {
       }
     };
 
-    retrieveMoreCategoryPodcasts = async () => {
+    retrieveMoreFollowers = async () => {
      try
       {
 
@@ -79,16 +86,21 @@ class CategoryPodcast extends React.Component {
         refreshing: true
          }); 
 
-         const genre = this.props.navigation.state.params;
+         const  userid = this.props.navigation.state.params.item.id;
+         var wholestring = "isUserFollowing." + userid;
+         console.log(wholestring);
+  
+        //  let FollowerQuery = await firestore().collection('users').where(wholestring,'==',true).get();
+        //  let FollowerData = FollowerQuery.docs.map(document=>document.data());
+         
          let additionalQuery = 9;
          try{
-           additionalQuery = await firestore().collectionGroup('Podcasts').where('Genres','array-contains',genre.category)
-                            .orderBy('PodcastID')
-                            .startAfter(this.state.lastVisiblePodcast)
+           additionalQuery = await firestore().collection('users').where('following_list','array-contains',userid).orderBy('id')
+                            .startAfter(this.state.lastVisibleFollower)
                             .limit(this.state.limit);
         
       // Cloud Firestore: Query Snapshot
-      {console.log("retrieveMoreBookPodcasts afterQuery()")}
+      {console.log("retrieveMoreUserFollowers afterQuery()")}
          
         }
         catch(error)
@@ -109,9 +121,9 @@ class CategoryPodcast extends React.Component {
       // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
       if(documentData.length != 0)
       {
-      let lastVisible = documentData[documentData.length - 1].PodcastID;
+      let lastVisibleFollower = documentData[documentData.length - 1].id;
        
-      if(this.state.lastVisiblePodcast===lastVisible){
+      if(this.state.lastVisibleBookPodcast===lastVisibleBook){
           this.setState({
                   refreshing:false
               });
@@ -119,9 +131,9 @@ class CategoryPodcast extends React.Component {
       else
       {
         this.setState({
-            podcasts: [...this.state.podcasts, ...documentData],
+            Followers: [...this.state.Followers, ...documentData],
             //chapterPodcasts: documentData_chapterPodcasts,
-            lastVisiblePodcast : lastVisible,
+            lastVisibleFollower : lastVisibleFollower,
             refreshing:false
           });
 
@@ -143,7 +155,7 @@ class CategoryPodcast extends React.Component {
     {
        return(
          <View>
-        <CategoryPodcastItem podcast={item} index={index} navigation={this.props.navigation}/>
+        <FollowerItem item={item} index={index} navigation={this.props.navigation}/>
         </View>
        )
     }
@@ -167,45 +179,47 @@ class CategoryPodcast extends React.Component {
     }
 
     onEndReached = ({ distanceFromEnd }) => {
-      //if(this.state.podcasts.length>5)
+      if(this.state.Followers.length>5)
       if(!this.onEndReachedCalledDuringMomentum){
-          this.retrieveMoreCategoryPodcasts()
+          this.retrieveMoreBookPodcasts()
           this.onEndReachedCalledDuringMomentum = true;
       }
       
   }
+
   separator = () => <View style={[styles.separator,{paddingTop:height/96}]} />;
-   
-    render() {
-      const { navigation } = this.props;
-      return (
-       
-         <View style = {{paddingBottom:20}}>
-             <View>
-                 
-         <FlatList nestedScrollEnabled={true}
-        data={this.state.podcasts}
-        renderItem={this.renderData}
-        //numColumns={2}
-        showsVerticalScrollIndicator={false}
-        keyExtractor={item => item.id}
-       // ListHeaderComponent={this.renderHeader}
-       ItemSeparatorComponent={this.separator}
-         ListFooterComponent={this.renderFooter}
-        onEndReached={this.onEndReached}
-        onEndReachedThreshold={0.5}
-        refreshing={this.state.refreshing}
-        onMomentumScrollBegin={() => { this.onEndReachedCalledDuringMomentum = false; }}
-      />
-      </View>
-         </View>
-      
-      );
-    }
+    
+ 
+  render() {
+    const { navigation } = this.props;
+    return (
+     
+       <View style = {{paddingBottom:20}}>
+           <View>
+               
+       <FlatList nestedScrollEnabled={true}
+      data={this.state.Followers}
+      renderItem={this.renderData}
+      //numColumns={2}
+      showsVerticalScrollIndicator={false}
+      keyExtractor={item => item.id}
+     // ListHeaderComponent={this.renderHeader}
+     ItemSeparatorComponent={this.separator}
+       ListFooterComponent={this.renderFooter}
+      onEndReached={this.onEndReached}
+      onEndReachedThreshold={0.5}
+      refreshing={this.state.refreshing}
+      onMomentumScrollBegin={() => { this.onEndReachedCalledDuringMomentum = false; }}
+    />
+    </View>
+       </View>
+    
+    );
+  }
   }
   
 
-export default withFirebaseHOC(CategoryPodcast);
+export default withFirebaseHOC(UserFollowerScreen);
 
 
 const styles = StyleSheet.create({
@@ -230,8 +244,4 @@ const styles = StyleSheet.create({
  flexDirection:'row',
  backgroundColor: 'white'
   },
-  separator: {
-    borderBottomColor: '#d1d0d4',
-    borderBottomWidth: 1
-  }
 });
