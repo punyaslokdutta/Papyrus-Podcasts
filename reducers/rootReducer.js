@@ -21,10 +21,11 @@ function rootReducer(state = INITIAL_STATE, action)  {
       case "SET_VOLUME":
           return {...state, volume:action.payload}
       case "SET_RATE":
-          return {...state,rate: action.payload}
+        console.log("SET_RATE"+" " +action.payload)
+          return {...state,rate:((action.payload)>2.0? 1.0 :(action.payload) )}
       case "SET_CURRENT_TIME":
           console.log("SET_CURRENT_TIME_ACTION"+" " +action.payload)
-          return {...state, currentTime:action.payload}
+          return {...state, currentTime:(action.payload)}
       case "SET_DURATION":
         console.log("SET_DURATION_ACTION"+ " " + action.payload)
         return {...state, duration:action.payload}

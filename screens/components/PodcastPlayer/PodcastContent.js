@@ -1,7 +1,7 @@
 // @flow
 import * as React from 'react';
 import {
-  View, StyleSheet, Text, Image, ScrollView,TouchableOpacity, TouchableWithoutFeedback
+  View, StyleSheet, Text, Image, ScrollView,TouchableOpacity, TouchableWithoutFeedback,Dimensions, 
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Moment from "moment";
@@ -30,7 +30,7 @@ const { width,height } = Dimensions.get('window');
     dispatch({type:"SET_CURRENT_TIME", payload: currentTime + 15})
   }
   function skipBackward() {
-    video.current.seek(state.currentTime - 15);
+    video.current.seek(currentTime - 15);
     dispatch({type:"SET_CURRENT_TIME", payload: currentTime -15})
     
   }
@@ -95,6 +95,11 @@ function handlePlayPause() {
                     </TouchableOpacity>
                 </View>
 
+            <View style={{alignItems:'center', paddingTop:8}}>
+    <TouchableOpacity style={styles.rateButton} onPress={(()=>dispatch({type:"SET_RATE",payload: rate+0.25}))}><Text style={{color:'white', fontSize:12, alignItems: 'center'}}>x{rate}</Text></TouchableOpacity>
+              
+            </View>
+
 
             <View>
             <Video
@@ -137,6 +142,21 @@ function handlePlayPause() {
               />
           
          </View>
+         <View style={styles.icons}>
+         <TouchableOpacity>
+                <Icon name="heart" size={20} style={{color:'white'} }/>
+                </TouchableOpacity>
+                <TouchableOpacity >
+                <Icon name="info-circle" size={24} style={{color:'white'}}/>
+                </TouchableOpacity>
+                <TouchableOpacity >
+                <Icon name="bookmark-o" size={20} style={{color:'white'}}/>
+                </TouchableOpacity>
+                <TouchableOpacity>
+                <Icon name="share" size={20} style={{color:'white'}}/>
+                </TouchableOpacity>
+              </View>
+
         </ScrollView>
       
     );
@@ -174,6 +194,18 @@ const styles = StyleSheet.create({
   upNextTitle: {
     fontWeight: 'bold',
     color: 'gray',
+  },
+  rateButton:{
+    //alignItems:'center' ,
+    //paddingTop: 8, 
+    alignItems: 'center',
+    justifyContent:'center', 
+    height:height/30, 
+    width:(width*7)/70, 
+    borderRadius:3, 
+    borderColor:'rgba(255, 255, 255, 0.5)', 
+    borderWidth: 1
+
   },
   thumbnail: {
     flexDirection: 'row',
