@@ -21,16 +21,16 @@ const { width,height } = Dimensions.get('window');
  const PodcastContent=(props)=> {
 
 
-  const rate=useSelector(state=>state.rate);
-  const isBuffering=useSelector(state=>state.isBuffering);
-  const paused=useSelector(state=>state.paused);
-  const volume=useSelector(state=>state.volume)
-  const duration=useSelector(state=>state.duration)
+  const rate=useSelector(state=>state.rootReducer.rate);
+  const isBuffering=useSelector(state=>state.rootReducer.isBuffering);
+  const paused=useSelector(state=>state.rootReducer.paused);
+  const volume=useSelector(state=>state.rootReducer.volume)
+  const duration=useSelector(state=>state.rootReducer.duration)
   const dispatch=useDispatch();
   
 
 
-
+const video = React.createRef();
   
 
 
@@ -119,7 +119,7 @@ toggleBookmark=()=>
 
             <View>
             <Video
-            ref={ref=> { video = ref }}
+            ref={video}
             /* For ExoPlayer */
             source={{ uri: 'https://storage.googleapis.com/papyrusbookimages/audio/bensound-summer.mp3' }} 
             //source={require('../../../assets/images/testvideo.mp4')}

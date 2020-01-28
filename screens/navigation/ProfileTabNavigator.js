@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView} from 'react-native';
 import { Block, Text } from '../components/categories/components'
 import { theme } from '../components/categories/constants';
+import CustomProfileHeader from './CustomProfileHeader';
 
 var {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
 const IS_IPHONE_X = SCREEN_HEIGHT === 812 || SCREEN_HEIGHT=== 896;
@@ -63,28 +64,7 @@ const ProfileTabNavigator =createMaterialTopTabNavigator(
     
     )
 
-    const CustomProfileHeader = props => {
-        {console.log("Inside Custom profile header ")}
-        {console.log(props)}
-        return (
-      
-            <View style={{alignItems:'center',justifyContent:'center',paddingTop: 30, flexDirection:'column'}}>
-              <View style={{flexDirection:'column'}}>
-                <Text h3 >Ella Alderson's</Text>
-                <View style = {{alignItems:'center'}}>
-                <Text h2 bold>Collections</Text>
-                </View>
-                </View>
-                
-                <TouchableOpacity style={{alignItems:'center'}} onPress={() => props.navigation.navigate('Profile_StatsScreen')}>
-                <Image
-                    source={require('../../assets/images/avatar.png')}
-                    style={styles.avatar}
-                  />
-                  </TouchableOpacity>
-                </View>
-        );
-      };
+    
       
     
     export default ProfileTabNavigator;

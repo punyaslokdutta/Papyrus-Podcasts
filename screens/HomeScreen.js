@@ -214,6 +214,13 @@ class HomeScreen extends React.Component {
         console.log('Retrieving Data');
         const  userid = this.props.firebase._getUid();
 
+        // let userDoc = await firestore().collection('users').doc(userid).get();
+        // useDispatch({type:"CHANGE_NAME", payload: userDoc.data.name});
+        // useDispatch({type:"CHANGE_USER_NAME", payload: userDoc.data.username});
+        // useDispatch({type:"CHANGE_DISPLAY_PICTURE", payload: userDoc.data.displayPicture});
+
+       // dispatch({type:"SET_PODCAST", payload: props.podcast})
+
         //For books in section list
         let bookDocuments = await firestore().collection('users').doc(userid).collection('privateUserData')
         .doc('privateData').collection('bookRecommendations').get()
