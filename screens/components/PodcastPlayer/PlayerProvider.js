@@ -27,12 +27,8 @@ import store from '../../../reducers/store';
 
 const PlayerProvider=({children})=>{
 
-
-
   const podcast=useSelector(state=>state.rootReducer.podcast)
-  //console.log(store.getState());
-  const wholeState = useSelector(state=>state)
-  console.log("\nnnnaaaaammmmmmmmmmmmmeeeee\n",wholeState,"\n\n");
+  
 
   animation = new Value(0);
 useEffect(

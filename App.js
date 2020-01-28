@@ -50,6 +50,7 @@ import {Provider} from 'react-redux'
 import rootReducer from './reducers/rootReducer';
 import UserFollowingScreen from './screens/components/Explore/UserFollowingScreen';
 import UserFollowerScreen from './screens/components/Explore/UserFollowerScreen';
+import InfoScreen from './InfoScreen'
 
 
 
@@ -301,6 +302,9 @@ const AppTabNavigator=createBottomTabNavigator(
   }
 )
 
+
+
+
 const AppStackNavigator= createStackNavigator(
   {
     AppTabNavigator:
@@ -330,8 +334,15 @@ const AppStackNavigator= createStackNavigator(
    RecordBook: {screen :RecordBook,
     navigationOptions:{
       header:null
-   }}
+   }},
 
+// InfoScreen:{
+//   screen:InfoScreen,
+//   navigationOptions:{
+//     header:null
+//  }
+
+// }
    
   
   },

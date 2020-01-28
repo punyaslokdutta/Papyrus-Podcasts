@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@react-native-community/google-signin": "^3.0.2",
+    "@react-native-community/slider": "^2.0.8",
     "@react-native-firebase/app": "^6.0.1",
     "@react-native-firebase/auth": "^6.0.1",
     "@react-native-firebase/firestore": "^6.0.1",

@@ -1,16 +1,13 @@
 // @flow
 import * as React from 'react';
 import {
-  View, StyleSheet, Text, Image, ScrollView,TouchableOpacity,Dimensions 
+  View, StyleSheet, Text, Image, ScrollView,TouchableOpacity, TouchableWithoutFeedback,Dimensions, 
 } from 'react-native';
-
-import {Button} from 'native-base'
-//import Icon from './Icon';
 import Icon from 'react-native-vector-icons/FontAwesome'
-import Slider from "react-native-slider";
 import Moment from "moment";
 import {useSelector, useDispatch} from "react-redux"
 import Video from 'react-native-video';
+import ProgressBar from './ProgressBar'
 //import videos, { type Video } from './videos';
 
 const { width,height } = Dimensions.get('window');
@@ -19,74 +16,62 @@ const { width,height } = Dimensions.get('window');
 };*/
 
  const PodcastContent=(props)=> {
+  const video = React.createRef();
 
 
   const rate=useSelector(state=>state.rootReducer.rate);
-  const isBuffering=useSelector(state=>state.rootReducer.isBuffering);
+  const currentTime=useSelector(state=>state.rootReducer.currentTime)
+  //const isBuffering=useSelector(state=>state.rootReducer.isBuffering);
   const paused=useSelector(state=>state.rootReducer.paused);
   const volume=useSelector(state=>state.rootReducer.volume)
-  const duration=useSelector(state=>state.rootReducer.duration)
+  //const duration=useSelector(state=>state.rootReducer.duration)
   const dispatch=useDispatch();
   
+  //const video = React.createRef();
 
-
-const video = React.createRef();
-  
-
-
-  
-
-
-  /*constructor(props)
-  {
-    super(props) 
-    {
-      this.state ={
-        trackLength: 300,
-        timeElapsed: "0:00",
-        timeRemaining: "5:00", 
-        isLiked: false,
-        isBookmarked: false,
-    };
+  function skipForward() {
+    video.current.seek(currentTime + 15);
+    dispatch({type:"SET_CURRENT_TIME", payload: currentTime + 15})
   }
-}*/
+  function skipBackward() {
+    video.current.seek(currentTime - 15);
+    dispatch({type:"SET_CURRENT_TIME", payload: currentTime -15})
+    
+  }
 
-  
+  function onLoadEnd(data) {
+    dispatch({type:"SET_DURATION", payload: props.podcast.Duration})
+    dispatch({type:"RESET_TO_INITIAL"})
+  }
 
-  
-
-//   changeTime = seconds => {
-//     this.setState({ timeElapsed: Moment.utc(seconds * 1000).format("m:ss") });
-//     this.setState({ timeRemaining: Moment.utc((this.state.trackLength - seconds) * 1000).format("m:ss") });
-// };
-
-/*toggleLike=()=>
-{
-  this.setState(
-    {
-      isLiked: !this.state.isLiked
-    }
-  )
+ function onSeek(data) {
+  video.current.seek(data.seekTime);
+  dispatch({type:"SET_CURRENT_TIME", payload: data.seekTime})
 }
-toggleBookmark=()=>
+function onEnd() {
+  dispatch({type:"TOGGLE_PLAY_PAUSED"})
+  video.current.seek(0);
+}
+function onBuffering()
 {
-  this.setState(
-    {
-      isBookmarked: !this.state.isBookmarked
-    }
-  )
-}*/
+  dispatch({type:"BUFFERING_PODCAST"})
+}
+
+function handlePlayPause() {
+  // If playing, pause and show controls immediately.
+  if (!paused) {
+    dispatch({type:"TOGGLE_PLAY_PAUSED"})
+    return;
+  }
+}
 
 
-   
-    //const { video } = this.props;
-    //const {podcast} = this.props.playerGlobalContext 
     return (
       
         <ScrollView style={styles.content}>
         <View style={{ alignItems: "center"}}>
         <View style={{ alignItems: "center", marginTop: 8}}>
-    <Text style={[styles.textDark, { fontSize: 16, fontWeight: "500" }]}>{props.podcast.Podcast_Name}</Text>
+        <Text style={[styles.textDark, { fontSize: 16, fontWeight: "500" }]}>{props.podcast.Podcast_Name}</Text>
     
                     </View>
                     <View style={{ alignItems: "center", marginTop: 2}}>
@@ -94,55 +79,87 @@ toggleBookmark=()=>
                     </View>
 
         <View  style={{paddingLeft:10}}>
-        
-        
         </View>
         </View>
         
 
-<View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: 16 }}>
-                    <TouchableOpacity  onPress={() => alert('')}>
+         <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: 16 }}>
+                    <TouchableOpacity  onPress={skipBackward}>
                     <Icon name="undo"  size={28} label="10" color="white" />
                     </TouchableOpacity>
-                    {!paused && <TouchableOpacity style={styles.playButtonContainer}  onPress={(()=>dispatch({type:"SET_PAUSED"}))}>
-                   <Icon name="pause"  size={32} label="10" color="black"  style={[styles.playButton, { marginLeft: 8 }]}/>
+                    {!paused && <TouchableOpacity style={styles.playButtonContainer}  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
+                   <Icon name="pause"  size={24} label="10" color="black"  style={[styles.playButton, { marginLeft: 2 }]}/>
                    </TouchableOpacity>}
-                   {paused && <TouchableOpacity style={styles.playButtonContainer}  onPress={(()=>dispatch({type:"SET_PAUSED"}))}>
-                   <Icon name="play"  size={32} label="10" color="black"  style={[styles.playButton, { marginLeft: 8 }]}/>
+                   {paused && <TouchableOpacity style={styles.playButtonContainer}  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
+                   <Icon name="play"  size={28} label="10" color="black"  style={[styles.playButton, { marginLeft: 6 }]}/>
                    </TouchableOpacity> }
   
-                    <TouchableOpacity  onPress={() => alert('')}>
+                    <TouchableOpacity  onPress={skipForward}>
                     <Icon name="repeat"  size={28} label="10" color="white" />
                     </TouchableOpacity>
                 </View>
+
+            <View style={{alignItems:'center', paddingTop:8}}>
+    <TouchableOpacity style={styles.rateButton} onPress={(()=>dispatch({type:"SET_RATE",payload: rate+0.25}))}><Text style={{color:'white', fontSize:12, alignItems: 'center'}}>x{rate}</Text></TouchableOpacity>
+              
+            </View>
 
 
             <View>
             <Video
             ref={video}
             /* For ExoPlayer */
-            source={{ uri: 'https://storage.googleapis.com/papyrusbookimages/audio/bensound-summer.mp3' }} 
+             source={{ uri: props.podcast.AudioFileLink }} 
             //source={require('../../../assets/images/testvideo.mp4')}
             style={styles.fullScreen}
-            //audioOnly={true}
+            audioOnly={true}
             rate={rate}
             paused={paused}
+            playInBackground={true}
             volume={volume }
+            onBuffer={onBuffering}
+            bufferConfig={{
+              minBufferMs: 10000,
+              maxBufferMs: 30000,
+              bufferForPlaybackMs: 2500,
+              bufferForPlaybackAfterRebufferMs: 5000
+            }}
            // muted={this.state.muted}
-            resizeMode={'contain'}
-            //onLoad={()=>dispatch({type:"SET_DURATION", payload: duration})}
-            //onProgress={this.onProgress}
-            //onEnd={this.onEnd}
+            //resizeMode={'contain'}
+            onLoad={onLoadEnd}
+            onProgress={(progress)=>dispatch({type:"SET_CURRENT_TIME", payload: progress.currentTime})}
+            onEnd={onEnd}
            // onAudioBecomingNoisy={this.onAudioBecomingNoisy}
             //onAudioFocusChanged={this.onAudioFocusChanged}
             //repeat={false}
           />
             </View>
-            
          
-
+ 
+          <View> 
+          <ProgressBar
+                duration={props.podcast.Duration}
+                onSlideStart={handlePlayPause}
+                onSlideComplete={handlePlayPause}
+                onSlideCapture={onSeek}
+                
+              />
           
-
+         </View>
+         <View style={styles.icons}>
+         <TouchableOpacity>
+                <Icon name="heart" size={20} style={{color:'white'} }/>
+                </TouchableOpacity>
+                <TouchableOpacity >
+                <Icon name="info-circle" size={24} style={{color:'white'}}/>
+                </TouchableOpacity>
+                <TouchableOpacity >
+                <Icon name="bookmark-o" size={20} style={{color:'white'}}/>
+                </TouchableOpacity>
+                <TouchableOpacity>
+                <Icon name="share" size={20} style={{color:'white'}}/>
+                </TouchableOpacity>
+              </View>
 
         </ScrollView>
       
@@ -181,6 +198,18 @@ const styles = StyleSheet.create({
   upNextTitle: {
     fontWeight: 'bold',
     color: 'gray',
+  },
+  rateButton:{
+    //alignItems:'center' ,
+    //paddingTop: 8, 
+    alignItems: 'center',
+    justifyContent:'center', 
+    height:height/30, 
+    width:(width*7)/70, 
+    borderRadius:3, 
+    borderColor:'rgba(255, 255, 255, 0.5)', 
+    borderWidth: 1
+
   },
   thumbnail: {
     flexDirection: 'row',
@@ -230,6 +259,20 @@ playButtonContainer: {
 }, 
 text: {
   color: "#8E97A6"
+}, 
+innerProgressCompleted: {
+  height: 20,
+  backgroundColor: '#cccccc',
+},
+innerProgressRemaining: {
+  height: 20,
+  backgroundColor: '#2C2C2C',
+},
+progress: {
+  flex: 1,
+  flexDirection: 'row',
+  borderRadius: 3,
+  overflow: 'hidden',
 }
 });
 
