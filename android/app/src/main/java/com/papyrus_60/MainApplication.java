@@ -15,6 +15,7 @@ import com.facebook.soloader.SoLoader;
 //import io.invertase.firebase.auth.RNFirebaseAuthPackage;
 //import io.invertase.firebase.firestore.RNFirebaseFirestorePackage;
 import com.facebook.FacebookSdk;
+//import com.dimowner.audiorecorder.ReactNativeRecorderPackage;
 
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class MainApplication extends Application implements ReactApplication {
       // packages.add(new MyReactNativePackage());
       //packages.add(new ImagePickerPackage()) ;
       //packages.add(new RNCStatusBarPackage());
+      //packages.add(new ReactNativeRecorderPackage());
       return packages;
     }
 

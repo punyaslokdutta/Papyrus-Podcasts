@@ -8,6 +8,7 @@ import Moment from "moment";
 import {useSelector, useDispatch} from "react-redux"
 import Video from 'react-native-video';
 import ProgressBar from './ProgressBar'
+import InfoScreen from '../../../InfoScreen'
 //import videos, { type Video } from './videos';
 
 const { width,height } = Dimensions.get('window');
@@ -146,7 +147,7 @@ function handlePlayPause() {
          <TouchableOpacity>
                 <Icon name="heart" size={20} style={{color:'white'} }/>
                 </TouchableOpacity>
-                <TouchableOpacity >
+                <TouchableOpacity onPress={()=>props.navigation.navigate('InfoScreen')}>
                 <Icon name="info-circle" size={24} style={{color:'white'}}/>
                 </TouchableOpacity>
                 <TouchableOpacity >

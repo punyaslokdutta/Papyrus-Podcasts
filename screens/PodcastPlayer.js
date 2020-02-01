@@ -113,7 +113,7 @@ export default class PodcastPlayer extends React.Component{
 
   static navigationOptions = ({navigation}) => {
     return{
-      headerLeft:(<HeaderBackButton onPress={()=>{navigation.navigate('HomeScreen')}}/>)
+      headerLeft:(<HeaderBackButton onPress={()=>props.navigation.navigate('HomeScreen')}/>)
    }
   }
   translationY = new Value(0);
@@ -272,7 +272,7 @@ export default class PodcastPlayer extends React.Component{
             
             <Animated.View style={{ backgroundColor: 'white', width: videoContainerWidth, height: containerHeight }}>
               <Animated.View style={{ opacity }}>
-                <PodcastContent /*trackLength={this.state.trackLength}*/ podcast={this.props.podcast} />
+                <PodcastContent navigtion={this.props.navigation} podcast={this.props.podcast} />
               </Animated.View>
             </Animated.View>
             </ScrollView> 

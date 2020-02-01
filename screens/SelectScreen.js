@@ -4,7 +4,7 @@
 /*React Context permits to hold state at the root of your component hierarchy, and be able to inject this state easily into very deeply nested components, without the hassle to have to pass down props to every intermediate components.
 */ 
 import React, {Component} from 'react';
-import { TouchableOpacity,StyleSheet, Text, View, SafeAreaView, Dimensions, TouchableWithoutFeedback} from 'react-native';
+import { TouchableOpacity,StyleSheet, Text, View, SafeAreaView, Dimensions, TouchableWithoutFeedback, NativeModules} from 'react-native';
 import { Container,  Content , Button,Card, CardItem, Thumbnail, Body} from 'native-base';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -274,11 +274,12 @@ class SelectScreen extends Component {
                             alert("You must choose Category and Language of your Podcast");
                             return;
                         }   
-                        this.props.navigation.navigate('PreviewScreen', {
+                        NativeModules.ReactNativeRecorder.sampleMethod()
+                        /*this.props.navigation.navigate('PreviewScreen', {
           BookName: this.state.BookName,
           ChapterName:this.state.ChapterName , 
           AuthorName: this.state.AuthorName, 
-          LanguageSelected:this.state.LanguageSelected, })
+          LanguageSelected:this.state.LanguageSelected, })*/
                          }
             }>
             <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Record</Text>

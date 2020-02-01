@@ -1,7 +1,7 @@
 
 
 import React, {Component} from 'react';
-import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView} from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView, NativeModules} from 'react-native';
 import {createSwitchNavigator,
   createAppContainer,
   } from 'react-navigation'
@@ -331,13 +331,13 @@ const AppStackNavigator= createStackNavigator(
       header:null
    }},
 
-// InfoScreen:{
-//   screen:InfoScreen,
-//   navigationOptions:{
-//     header:null
-//  }
+InfoScreen:{
+  screen:InfoScreen,
+  navigationOptions:{
+    header:null
+ }
 
-// }
+}
    
   
   },
@@ -388,7 +388,7 @@ const AppDrawerNavigator=createDrawerNavigator(
       }},
     "My Drafts": {screen:StatisticsScreen, 
       navigationOptions: {
-        drawerIcon: () => (<Icon name="line-chart" size={22} style={{ color: 'white' }} />),
+        drawerIcon: () => (<TouchableOpacity onPress={()=>{NativeModules.ReactNativeRecorder.sampleMethodTwo()}}><Icon name="line-chart" size={22} style={{ color: 'white' }} /></TouchableOpacity>),
       }}, 
       Activity: {screen:ActivityScreen, 
         navigationOptions: {

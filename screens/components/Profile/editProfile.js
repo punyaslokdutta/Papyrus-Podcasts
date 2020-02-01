@@ -4,7 +4,6 @@ import React, {Component} from 'react';
 import { TouchableOpacity,StyleSheet, View, Button, SafeAreaView, Dimensions, Image, TextInput, Platform , KeyboardAvoidingView, ScrollView} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import ImagePicker from 'react-native-image-picker'
 import {Block , Text }  from '../categories/components/'
 
 
@@ -64,29 +63,29 @@ class editProfile extends Component {
     return <Text bold>{profile[name]}</Text>
   }
 
-  uploadImage=()=>
-  {
-    ImagePicker.showImagePicker(options, (response) => {
-      console.log('Response = ', response);
+  // uploadImage=()=>
+  // {
+  //   ImagePicker.showImagePicker(options, (response) => {
+  //     console.log('Response = ', response);
     
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-      } else {
-        const source = { uri: response.uri };
+  //     if (response.didCancel) {
+  //       console.log('User cancelled image picker');
+  //     } else if (response.error) {
+  //       console.log('ImagePicker Error: ', response.error);
+  //     } else if (response.customButton) {
+  //       console.log('User tapped custom button: ', response.customButton);
+  //     } else {
+  //       const source = { uri: response.uri };
     
-        // You can also display the image using data:
-        // const source = { uri: 'data:image/jpeg;base64,' + response.data };
+  //       // You can also display the image using data:
+  //       // const source = { uri: 'data:image/jpeg;base64,' + response.data };
     
-        this.setState({
-          ProfileImage: source,
-        });
-      }
-    });
-  }
+  //       this.setState({
+  //         ProfileImage: source,
+  //       });
+  //     }
+  //   });
+  // }
    
     render() {
       const { navigation } = this.props;
@@ -122,8 +121,7 @@ class editProfile extends Component {
 
         <View style={{ paddingTop:width/15}}>
 
-                <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/16, width:height/6, borderRadius:15, borderColor:'black', borderWidth: 1 }}
-                onPress={this.uploadImage} >
+                <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/16, width:height/6, borderRadius:15, borderColor:'black', borderWidth: 1 }}>
             <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'black', justifyContent:'center'}} >Edit</Text>
                 </TouchableOpacity>
         </View>  
