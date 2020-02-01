@@ -28,7 +28,7 @@ const areEqual = (prevProps, nextProps) => true;
 
   
 const dispatch=useDispatch();
-const paused=useSelector(state=>state.paused);
+const paused=useSelector(state=>state.rootReducer.paused);
   
   
    //const { title, onPress } = this.props;

@@ -22,14 +22,12 @@ const { height } = Dimensions.get('window');
 //const { Animated, Easing } = DangerZone;
 const { Value, timing } = Animated;
 const isOS = Platform.OS === 'ios';
+import store from '../../../reducers/store';
 
 
 const PlayerProvider=({children})=>{
 
-
-
-  const podcast=useSelector(state=>state.podcast)
-  
+  const podcast=useSelector(state=>state.rootReducer.podcast)
   
 
   animation = new Value(0);
@@ -87,17 +85,21 @@ useEffect(
           <View style={StyleSheet.absoluteFill}>
             {children}
           </View>
-          
+          {
+            isOS && (
+              <Animated.View
+                style={{ transform: [{ translateY }] }}
+              >
+                {
+                  podcast && <PodcastPlayer {...{podcast}} />
+                }
+              </Animated.View>
+            )
+          }
           {
             
-            !isOS && (
-             
-               
-                  podcast && <PodcastPlayer {...{podcast}} />
-                
-              
-            )
-          } 
+            !isOS && podcast && <PodcastPlayer {...{podcast}} />
+          }
         </View>
            
 

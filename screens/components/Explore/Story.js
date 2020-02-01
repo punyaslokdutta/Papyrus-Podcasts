@@ -19,10 +19,10 @@ const areEqual = (prevProps, nextProps) => true
     //console.log(props.item);
     const  userid = props.firebase._getUid();
       const item = props.item
-      var text2 = "Follow"
+      var text2 = "FOLLOW"
       if(item.isUserFollower !== undefined && item.isUserFollower[userid] === true)
       {
-        text2 = "Following"
+        text2 = "FOLLOWING"
         console.log(item.isUserFollower[userid])
       }
       

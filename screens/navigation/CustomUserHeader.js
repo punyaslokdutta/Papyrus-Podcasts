@@ -10,7 +10,7 @@ import { theme } from '../components/categories/constants';
 import UserStatsScreen from '../components/Explore/UserStatsScreen'
 import { withFirebaseHOC } from '../config/Firebase';
 import firestore from '@react-native-firebase/firestore';
-
+import {useDispatch,useSelector} from "react-redux"; 
 
 //const admin = require('firebase-admin')
 
@@ -23,24 +23,47 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
 
 retrieveData = async (message,userid,item) => {
    
-
+    
     try{
-      //const  userid =  props.firebase._getUid()
       console.log("USERID")
       console.log(userid)
-        console.log(item.id)
-        var val = userid
-        //const map1 = isUserFollower[userid]; 
-       // const wholestring = 'isUserFollower[' + userid + ']';
-if(message === 'FOLLOWING')
-{
+      console.log(item.id)
+      var val = userid
+
+    if(message === 'FOLLOW')
+    {
         let addQuery1 = await firestore().collection('users').doc(item.id).set({
                    followers_list : firestore.FieldValue.arrayUnion(userid),
                    isUserFollower : {[val] : true},
                },{ merge:true })
-        console.log("IN RETRIEVE DATA")
-        //console.log(addQuery1._data);
-      }  }
+        let addQuery2 = await firestore().collection('users').doc(userid).set({
+                   following_list : firestore.FieldValue.arrayUnion(item.id)
+               },{ merge:true })
+      
+              
+
+        console.log("IN RETRIEVE DATA -- FOLLOWWWWWWWWWWWWWWWWWWWWWWWWWWW")
+        
+        //const list1 = useSelector(state=>state.userReducer.followingList);
+
+        //console.log(list1);
+    } 
+    else if(message === 'FOLLOWING')
+     {
+      let removeQuery1 = await firestore().collection('users').doc(item.id).set({
+        followers_list : firestore.FieldValue.arrayRemove(userid),
+        isUserFollower : {[val] : false},
+    },{ merge:true })
+      
+    let removeQuery2 = await firestore().collection('users').doc(userid).set({
+      following_list : firestore.FieldValue.arrayRemove(item.id)
+  },{ merge:true })
+
+    
+console.log("IN RETRIEVE DATA -- FOLLOWING")
+     }   
+   }
+     
     catch(error){
       console.log(error)
     }
@@ -51,21 +74,6 @@ if(message === 'FOLLOWING')
 const CustomUserHeader = (props) => {
     {console.log("Inside Custom Explore user header ..................||||||||||||||||||||||")}
     
-
-
-    // useEffect(
-    //     (message) => {
-    //       //const {podcast} =playerGlobalState;
-    //        if(message === "Following")
-    //        {
-
-    //        }
-    //        else
-    //        {
-               
-    //        }
-    //     }, [message]
-    //   )
 
     if(props === undefined || props.navigation === undefined || props.navigation.state === undefined || props.navigation.state.routes[1] === undefined || 
         props.navigation.state.routes[1].params === undefined)
@@ -79,36 +87,55 @@ const CustomUserHeader = (props) => {
        var text1 = "Follow+";
        const  userid =  props.firebase._getUid()//props.navigation.state.routes[1].params.userID; 
        const item = props.navigation.state.routes[1].params.userData;
-      const wholestring = 'isUserFollower.' + userid;
-     const [message,setMessage] = useState(props.navigation.state.routes[1].params.followsOrNot);
-     //console.log(userid)
+      let wholestring = 'FOLLOW';
 
-    //  let addQuery1 = await firestore().collection('users').get()
-    //    console.log(addQuery1.docs);
-//console.log(message)
+      let initialMessage = useSelector(state=>state.userReducer.isUserFollowing[item.id])
+      let printMessage = useSelector(state=>state.userReducer.isUserFollowing)
+      if(initialMessage === true)
+        wholestring = 'FOLLOWING'
+      
+      console.log("\nINITIAL FOLLOW MESSAGEEEEEEEEEEEEEEEEEEEEEE : ", printMessage)
+     const [message,setMessage] = useState(wholestring);//props.navigation.state.routes[1].params.followsOrNot);
+     const dispatch=useDispatch();
 
-     console.log("Outside use Effect");
-  //    useEffect( (message) => {
-  //      console.log("Inside USE EFFECCCCCCCCTTTTTTTTTTTTTTTTTTT")
-  //      console.log(message)
-   
-  //         console.log(message)
-  //          console.log("IF MESSAGE IS EQUAL TO FOLLOWING")
-  //         //  let addQuery1 = await firestore().collection('users').get()
-  //         //  console.log(addQuery1.docs);
-          
-  // },[]);
+    // const following = useSelector(state=>state.userReducer.followingList)
+     //console.log("This is the Following List.",following);
      
       return (
         <View>
         <View style={{alignItems:'flex-end',paddingRight:10,paddingTop:10}}>
         <Button title={message} style={{flex:1,alignItems:'flex-end', justifyContent:'flex-end', height:SCREEN_HEIGHT/25, width:SCREEN_WIDTH/3,
                     borderRadius:5, backgroundColor:theme.colors.primary}} onPress={() => {
+                      
                       if(message === 'FOLLOW')
+                      {
+                        console.log("FoLLow")
+                        dispatch({
+                          type: "ADD_TO_FOLLOWING_MAP",
+                          payload: item.id
+                        })
                         setMessage('FOLLOWING')
-                      else
+                        console.log(printMessage)
+                      }
+                        
+                      else if(message === 'FOLLOWING')
+                      {
+                        console.log("UnFOLLOW")
+                        console.log(message)
+                        dispatch({
+                          type: "REMOVE_FROM_FOLLOWING_MAP",
+                          payload: item.id
+                        })
                         setMessage('FOLLOW')
-                        //console.log(userid)
+                        console.log(printMessage)
+                      }
+                      else
+                      {
+                        console.log('UNDEFINEDDDDDDDDD')
+                        console.log(message);
+                      }
+
+                        console.log("Before retrieve data: ",message)
                       retrieveData(message,userid,item);
 
                     }}></Button>

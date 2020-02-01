@@ -6,8 +6,8 @@ import {useSelector} from 'react-redux'
 
 
  const ProgressBar=(props) => {
-  const currentTime=useSelector(state=>state.currentTime);
-  const duration=useSelector(state=>state.duartion);
+  const currentTime=useSelector(state=>state.rootReducer.currentTime);
+  const duration=useSelector(state=>state.rootReducer.duartion);
   const position = getMinutesFromSeconds(currentTime);
   const fullDuration = getMinutesFromSeconds(duration);
   

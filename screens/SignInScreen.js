@@ -16,6 +16,7 @@ import { GoogleSignin, statusCodes } from '@react-native-community/google-signin
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import firebaseApi from './config/Firebase/firebaseApi'
 import {withFirebaseHOC} from '../screens/config/Firebase'
+import {useDispatch,useSelector} from 'react-redux'
 
 
 const validationSchema = yup.object().shape({
@@ -81,106 +82,108 @@ podRec = [
 
          ]
 
-class SignInScreen extends Component {
+  
+  const SignInScreen = (props) => {
+  
+  dispatch = useDispatch();
+    // constructor(props)
+  // {
+  //   super(props)
+  //   this.state = {
+  //     userInfo: null,
+  //     gettingLoginStatus: true,
+  //   };
+  // }
+  // componentDidMount() {
+  //   //initial configuration
+  //   GoogleSignin.configure({
+  //     //It is mandatory to call this method before attempting to call signIn()
+  //    // scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+  //     // Repleace with your webClientId generated from Firebase console
+  //     webClientId: '66057191427-s1qut9jum2u53i8gchv5u2cdtcoku2q2.apps.googleusercontent.com',
+  //     offlineAccess: true
+  //   });
+  //   //Check if user is already signed in
+  //   this._isSignedIn();
+  // }
 
-  constructor(props)
-  {
-    super(props)
-    this.state = {
-      userInfo: null,
-      gettingLoginStatus: true,
-    };
-  }
-  componentDidMount() {
-    //initial configuration
-    GoogleSignin.configure({
-      //It is mandatory to call this method before attempting to call signIn()
-     // scopes: ['https://www.googleapis.com/auth/drive.readonly'],
-      // Repleace with your webClientId generated from Firebase console
-      webClientId: '66057191427-s1qut9jum2u53i8gchv5u2cdtcoku2q2.apps.googleusercontent.com',
-      offlineAccess: true
-    });
-    //Check if user is already signed in
-    this._isSignedIn();
-  }
 
 
+  // _isSignedIn = async () => {
+  //   const isSignedIn = await GoogleSignin.isSignedIn();
+  //   if (isSignedIn) {
+  //     alert('User is already signed in');
+  //     //Get the User details as user is already signed in
+  //     this._getCurrentUserInfo();
+  //   } else {
+  //     //alert("Please Login");
+  //     console.log('Please Login');
+  //   }
+  //   this.setState({ gettingLoginStatus: false });
+  // };
 
-  _isSignedIn = async () => {
-    const isSignedIn = await GoogleSignin.isSignedIn();
-    if (isSignedIn) {
-      alert('User is already signed in');
-      //Get the User details as user is already signed in
-      this._getCurrentUserInfo();
-    } else {
-      //alert("Please Login");
-      console.log('Please Login');
-    }
-    this.setState({ gettingLoginStatus: false });
-  };
-
-  _getCurrentUserInfo = async () => {
-    try {
-      const userInfo = await GoogleSignin.signInSilently();
-      console.log('User Info --> ', userInfo);
-      this.setState({ userInfo: userInfo });
-    } catch (error) {
-      if (error.code === statusCodes.SIGN_IN_REQUIRED) {
-        alert('User has not signed in yet');
-        console.log('User has not signed in yet');
-      } else {
-        alert("Something went wrong. Unable to get user's info");
-        console.log("Something went wrong. Unable to get user's info");
-      }
-    }
-  };
-  _signIn = async () => {
-    //Prompts a modal to let the user sign in into your application.
-    try {
-      await GoogleSignin.hasPlayServices({
-        //Check if device has Google Play Services installed.
-        //Always resolves to true on iOS.
-        showPlayServicesUpdateDialog: true,
-      });
-      console.log("Crossed Play services ")
-      GoogleSignin.configure({
-        //It is mandatory to call this method before attempting to call signIn()
-       // scopes: ['https://www.googleapis.com/auth/drive.readonly'],
-        // Repleace with your webClientId generated from Firebase console
-        offlineAccess: true,
-        webClientId: '66057191427-s1qut9jum2u53i8gchv5u2cdtcoku2q2.apps.googleusercontent.com',
-      });
-      console.log(GoogleSignin.webClientId)
-      const userInfo = await GoogleSignin.signIn();
-      console.log('User Info --> ', userInfo);
-      this.setState({ userInfo: userInfo });
-    } catch (error) {
-      console.log('Message', error.message);
-      console.log(error.code)
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        console.log('User Cancelled the Login Flow');
-      } else if (error.code === statusCodes.IN_PROGRESS) {
-        console.log('Signing In');
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        console.log('Play Services Not Available or Outdated');
-      } else {
-        console.log(",,,,,,,,,,")
-        //console.log('Some Other Error Happened');
-      }
-    }
-  };
+  // _getCurrentUserInfo = async () => {
+  //   try {
+  //     const userInfo = await GoogleSignin.signInSilently();
+  //     console.log('User Info --> ', userInfo);
+  //     this.setState({ userInfo: userInfo });
+  //   } catch (error) {
+  //     if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+  //       alert('User has not signed in yet');
+  //       console.log('User has not signed in yet');
+  //     } else {
+  //       alert("Something went wrong. Unable to get user's info");
+  //       console.log("Something went wrong. Unable to get user's info");
+  //     }
+  //   }
+  // };
+  // _signIn = async () => {
+  //   //Prompts a modal to let the user sign in into your application.
+  //   try {
+  //     await GoogleSignin.hasPlayServices({
+  //       //Check if device has Google Play Services installed.
+  //       //Always resolves to true on iOS.
+  //       showPlayServicesUpdateDialog: true,
+  //     });
+  //     console.log("Crossed Play services ")
+  //     GoogleSignin.configure({
+  //       //It is mandatory to call this method before attempting to call signIn()
+  //      // scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+  //       // Repleace with your webClientId generated from Firebase console
+  //       offlineAccess: true,
+  //       webClientId: '66057191427-s1qut9jum2u53i8gchv5u2cdtcoku2q2.apps.googleusercontent.com',
+  //     });
+  //     console.log(GoogleSignin.webClientId)
+  //     const userInfo = await GoogleSignin.signIn();
+  //     console.log('User Info --> ', userInfo);
+  //     this.setState({ userInfo: userInfo });
+  //   } catch (error) {
+  //     console.log('Message', error.message);
+  //     console.log(error.code)
+  //     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+  //       console.log('User Cancelled the Login Flow');
+  //     } else if (error.code === statusCodes.IN_PROGRESS) {
+  //       console.log('Signing In');
+  //     } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+  //       console.log('Play Services Not Available or Outdated');
+  //     } else {
+  //       console.log(",,,,,,,,,,")
+  //       //console.log('Some Other Error Happened');
+  //     }
+  //   }
+  // };
  
-  _signOut = async () => {
-    //Remove user session from the device.
-    try {
-      await GoogleSignin.revokeAccess();
-      await GoogleSignin.signOut();
-      this.setState({ userInfo: null }); // Remove the user from your app's state as well
-    } catch (error) {
-      console.error(error);
+  // _signOut = async () => {
+  //   //Remove user session from the device.
+  //   try {
+  //     await GoogleSignin.revokeAccess();
+  //     await GoogleSignin.signOut();
+  //     this.setState({ userInfo: null }); // Remove the user from your app's state as well
+  //   } catch (error) {
+  //     console.error(error);
       
-    }
-  };
+  //   }
+  // };
  
   /*onGoogleLoginOrRegister = () => {
     
@@ -238,17 +241,19 @@ class SignInScreen extends Component {
         console.log(user);
         console.log(user.user.uid);
         console.log(user.user.photoURL); 
-        
         console.log(user.user.phoneNumber);
         console.log(user.user.displayName);
         console.log(user.user.email);
-        
-        
+      
+        //dispatch({type:"CHANGE_NAME", payload: user.user.displayName});
+        //dispatch({type:"CHANGE_USER_NAME", payload: user.user.username});
+        //dispatch({type:"CHANGE_DISPLAY_PICTURE", payload: user.user.displayPicture});
 
-        
-        
-
-        console.log("sdfhsdjhs");
+        // console.log("useDispatch & useSelector in SignInScreenNNNNNNNNNNNNNNNNNNNNNNNNNNNN\n\n");
+        // const nam = useSelector(state=>state.userReducer.name);
+        // const usrnam = useSelector(state=>state.userReducer.username);
+        // const photo = useSelector(state=>state.userReducer.displayPictureURL);
+        // console.log("My name is ",nam," & my username is ",usrnam," & this is my pic URL: ",photo);
 
       })
       .catch((error) => {
@@ -273,7 +278,7 @@ class SignInScreen extends Component {
 
 
 
-    render() {
+    
       return (
         
         <Formik
@@ -347,7 +352,7 @@ class SignInScreen extends Component {
             </View>
 
             <View style={{flexDirection:'row'}}>
-            <TouchableOpacity style={{paddingTop:20,paddingRight:WIDTH/8 }} onPress={this.onFBLoginOrRegister}>
+            <TouchableOpacity style={{paddingTop:20,paddingRight:WIDTH/8 }} onPress={(this.onFBLoginOrRegister)}>
          <Icon name="facebook-square" size={30} style={{color:'rgba(255, 255, 255, 0.6)'}}/>
          </TouchableOpacity>
          <TouchableOpacity style={{paddingTop:20}} onPress={this._signIn}>
@@ -369,7 +374,7 @@ class SignInScreen extends Component {
          
        
       );
-    }
+    
   }
 
 export default withFirebaseHOC(SignInScreen);

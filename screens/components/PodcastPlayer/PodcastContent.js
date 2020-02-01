@@ -20,11 +20,15 @@ const { width,height } = Dimensions.get('window');
   const video = React.createRef();
 
 
-  const rate=useSelector(state=>state.rate);
-  const paused=useSelector(state=>state.paused);
-  const volume=useSelector(state=>state.volume)
-  const currentTime=useSelector(state=>state.currentTime)
+  const rate=useSelector(state=>state.rootReducer.rate);
+  const currentTime=useSelector(state=>state.rootReducer.currentTime)
+  //const isBuffering=useSelector(state=>state.rootReducer.isBuffering);
+  const paused=useSelector(state=>state.rootReducer.paused);
+  const volume=useSelector(state=>state.rootReducer.volume)
+  //const duration=useSelector(state=>state.rootReducer.duration)
   const dispatch=useDispatch();
+  
+  //const video = React.createRef();
 
   function skipForward() {
     video.current.seek(currentTime + 15);

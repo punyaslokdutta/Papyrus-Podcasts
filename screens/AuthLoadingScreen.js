@@ -4,6 +4,7 @@ import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firest
 import {createSwitchNavigator} from 'react-navigation'
 import firebaseApi from './config/Firebase/firebaseApi'
 import {withFirebaseHOC} from '../screens/config/Firebase'
+import setUserDetails from './setUserDetails';
 
 class  AuthLoadingScreen extends Component {
     constructor(props)
@@ -14,19 +15,16 @@ class  AuthLoadingScreen extends Component {
             isAssetsLoadingComplete: false, 
           }
         }
-
         this.props.firebase._checkUserAuth=this.props.firebase._checkUserAuth.bind(this)
-       
         //this.loadApp();
     }
 
     componentDidMount=async()=>{
-    //  try {
-        // previously
-        //this.decideRoute()
+    
         console.log(this)
         console.log(this.props)
-     try{   await this.props.firebase._checkUserAuth(async (user)=>
+     try{   
+       await this.props.firebase._checkUserAuth(async (user)=>
           {
             console.log("Inside _checkUserAuth")
             console.log(this.props)
@@ -38,6 +36,7 @@ class  AuthLoadingScreen extends Component {
                   async(doc)=> {
                     var source = doc.metadata.hasPendingWrites ? "Local" : "Server";
                     console.log(source, " data: ", doc.data());
+
                   if(doc.data()===undefined){
                     try{
                       console.log(this)
@@ -52,6 +51,7 @@ class  AuthLoadingScreen extends Component {
                   else
                   {
                         unsubscribe(); // unsubscribe the firestore onSnapshot listener 
+                        this.props.navigation.navigate('setUserDetails',{user : doc.data()});
                         this.props.navigation.navigate('App');
                   }
                 })

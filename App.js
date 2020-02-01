@@ -8,7 +8,9 @@ import {createSwitchNavigator,
   import { createBottomTabNavigator, createMaterialTopTabNavigator } from 'react-navigation-tabs';
   import { createStackNavigator } from 'react-navigation-stack';
   import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
-  
+  import thunk from 'redux-thunk';
+ // import  rootReducer from './reducers/rootReducer'
+import  userReducer from './reducers/userReducer'
 //import { createStore, combineReducers, applyMiddleware } from 'redux'
 //import logger from 'redux-logger'
 import AuthLoadingScreen from './screens/AuthLoadingScreen'
@@ -40,7 +42,8 @@ import CategoryTabNavigator from './screens/navigation/CategoryTabNavigator'
 import ProfileTabNavigator from './screens/navigation/ProfileTabNavigator'
 import ExploreTabNavigator from './screens/navigation/ExploreTabNavigator'
 import UserStatsScreen from './screens/components/Explore/UserStatsScreen'
-import {createStore } from 'redux'
+import {createStore,combineReducers, applyMiddleware} from 'redux'
+//import store from './reducers/store'
 import {Provider} from 'react-redux'
 import rootReducer from './reducers/rootReducer';
 import UserFollowingScreen from './screens/components/Explore/UserFollowingScreen';
@@ -49,7 +52,7 @@ import InfoScreen from './InfoScreen'
 
 
 
-const store =createStore(rootReducer)
+//const store = createStore(rootReducer)
 
 
 //const reducer = combineReducers({ navigation })
@@ -354,32 +357,7 @@ InfoScreen:{
   
 )
 
-const CustomDrawerContentComponent=(props)=>
-(
-  
-  <Container style={{backgroundColor:'#101010'}}>
-   
-    <Body style={{alignItems:'center', paddingTop: SCREEN_HEIGHT/8}}>
-     <Image style={styles.drawerimage}
-       source={require('./assets/images/avatar.png')}
-     />
-     <Block flex={false} row center space="between" style={{paddingTop:30, paddingLeft:5}}>
-          <Text style={{color:'white', fontSize:SCREEN_HEIGHT/40 }}>Ella Alderson</Text>
-          
-    </Block>
-    <Block flex={false} row center space="between" style={{ paddingLeft:5}}>
-          <Text style={{color:'white', fontFamily:'san-serif'}}>@ellaalderson</Text>
-          
-    </Block>
 
-    <Content style={{ paddingTop: SCREEN_HEIGHT/18}}>
-    
-    <DrawerItems {...props}  activeBackgroundColor='#101010'   style={{backgroundColor: '#ffffff', }} labelStyle={{color: '#ffffff', fontSize: SCREEN_HEIGHT/35}}/>
-    
-    </Content>
-    </Body>
-  </Container>
-)
 const AppDrawerNavigator=createDrawerNavigator(
  {
     Home: {screen : AppStackNavigator, 
@@ -427,6 +405,7 @@ const AppSwitchNavigator = createSwitchNavigator(
   {
     
     AuthLoading : AuthLoadingScreen,
+    setUserDetails : setUserDetails,
     Auth : AuthStackNavigator, // this will be a stack navigator
     App : AppDrawerNavigator ,  //this is the drawer navigator 
     //Preferences: PreferencesStackNavigator 
@@ -441,10 +420,20 @@ const AppSwitchNavigator = createSwitchNavigator(
 // const router =createAppContainer(AppSwitchNavigator); 
  const AppContainer =createAppContainer(AppSwitchNavigator);  //top level navigator 
 
+ //reducers
+ const mainReducer = combineReducers({
+     
+  userReducer,
+  rootReducer
+})
+// applyMiddleware supercharges createStore with middleware:
+const store = createStore(mainReducer, applyMiddleware(thunk))
+
  //FirebaseConsumer is wrapped around withFirebaseHOC() which provides Firebase Apis
 export default class App extends Component {
   //..
   render(){
+    console.log("HHOOOWWWW???",store.getState());
     return(
     <Provider store ={store}>
     <PlayerProvider>

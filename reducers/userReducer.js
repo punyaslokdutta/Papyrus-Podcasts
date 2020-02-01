@@ -1,0 +1,43 @@
+
+
+
+const INITIAL_STATE = {
+    name: "Swayam",
+    userName: null, 
+    numFollowers: 0,
+    numFollowing: 0,
+    displayPictureURL: null,
+    followingList:[],
+    isUserFollowing: {}
+  };
+  
+  function userReducer(state = INITIAL_STATE, action)  {
+    switch (action.type) {
+        case "CHANGE_NAME":
+            return {...state, name:action.payload}
+        case "CHANGE_USER_NAME":
+            return {...state, userName:action.payload}
+        case "CHANGE_DISPLAY_PICTURE":
+            return {...state, displayPictureURL: action.payload}
+        case "ADD_ALL_TO_FOLLOWING_MAP":
+            let following_list = action.payload;
+            let length_list = following_list.length;
+            for (i = 0; i < length_list; i++) {
+                state.isUserFollowing[following_list[i]] = true;
+              }
+            return state;
+        case "ADD_TO_FOLLOWING_MAP":
+            state.isUserFollowing[action.payload] = true;
+            return state;
+        case "REMOVE_FROM_FOLLOWING_MAP":
+            state.isUserFollowing[action.payload] = false;
+            return state;
+        default:
+            return state;
+    }
+  };
+  
+  
+  export default userReducer;
+  
+  
