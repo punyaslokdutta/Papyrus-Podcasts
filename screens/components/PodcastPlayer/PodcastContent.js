@@ -5,9 +5,12 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Moment from "moment";
+import HomeScreen from '../../HomeScreen'
+import Explore from '../../Explore'
 import {useSelector, useDispatch} from "react-redux"
 import Video from 'react-native-video';
 import ProgressBar from './ProgressBar'
+import NavigationService from '../../navigation/NavigationService'
 //import videos, { type Video } from './videos';
 
 const { width,height } = Dimensions.get('window');
@@ -77,6 +80,12 @@ function handlePlayPause() {
                     <View style={{ alignItems: "center", marginTop: 2}}>
                     <Text style={[styles.text, { fontSize: 15, marginTop: 2}]}>{props.podcast.podcasterName}</Text>
                     </View>
+                    
+              {/* <View>
+                <TouchableOpacity onPress={NavigationService.navigate('Explore')}>
+                  <Text style={{color:'white'}}>qqqqqqqqqqqqqqqq</Text>
+                  </TouchableOpacity>
+                </View> */}
 
         <View  style={{paddingLeft:10}}>
         </View>

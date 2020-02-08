@@ -51,25 +51,29 @@ class UserFollowerScreen extends React.Component {
         });
         console.log('IN USER Follower SCREEN');
         // Cloud Firestore: Query
-        const userid = this.props.navigation.state.params.item.id;// props.firebase._getUid();
+        const userid = this.props.navigation.state.params.id;// props.firebase._getUid();
         var wholestring = "isUserFollowing." + userid;
         console.log(wholestring);
 
   
         let FollowerQuery =  await firestore().collection('users').where('following_list','array-contains',userid).orderBy('id')
-                                                .limit(this.state.limit).get();
-        let FollowerData = FollowerQuery.docs.map(document=>document.data());
-        var lastVisibleFollower = this.state.lastVisibleFollower;
-        //var lastVisibleChapter = this.state.lastVisibleChapterPodcast;
-
-        lastVisibleFollower = FollowerData[FollowerData.length - 1].id;        
-        //lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].PodcastID;
-         
-        this.setState({
-            Followers: FollowerData,
-       lastVisibleFollower:lastVisibleFollower,
-        loading:false
-        });
+                                                .limit(this.state.limit).onSnapshot(
+                                                  async(docs) => {
+                                                    let FollowerData = docs.docs.map(document=>document.data());
+                                                    var lastVisibleFollower = this.state.lastVisibleFollower;
+                                                    //var lastVisibleChapter = this.state.lastVisibleChapterPodcast;
+                                            
+                                                    lastVisibleFollower = FollowerData[FollowerData.length - 1].id;        
+                                                    //lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].PodcastID;
+                                                     
+                                                    this.setState({
+                                                        Followers: FollowerData,
+                                                   lastVisibleFollower:lastVisibleFollower,
+                                                    loading:false
+                                                    });
+                                                  }
+                                                );
+        
       }
       catch (error) {
         console.log(error);
@@ -86,7 +90,7 @@ class UserFollowerScreen extends React.Component {
         refreshing: true
          }); 
 
-         const  userid = this.props.navigation.state.params.item.id;
+         const  userid = this.props.navigation.state.params.id;
          var wholestring = "isUserFollowing." + userid;
          console.log(wholestring);
   
@@ -181,7 +185,7 @@ class UserFollowerScreen extends React.Component {
     onEndReached = ({ distanceFromEnd }) => {
       if(this.state.Followers.length>5)
       if(!this.onEndReachedCalledDuringMomentum){
-          this.retrieveMoreBookPodcasts()
+          this.retrieveMoreFollowers()
           this.onEndReachedCalledDuringMomentum = true;
       }
       

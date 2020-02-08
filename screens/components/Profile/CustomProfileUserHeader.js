@@ -1,14 +1,14 @@
 
 import React, {Component,useState,useEffect} from 'react';
-import UserBookPodcast from '../components/Explore/UserBookPodcast';
-import UserChapterPodcast from '../components/Explore/UserChapterPodcast';
+//import UserBookPodcast from '../components/Explore/UserBookPodcast';
+//import UserChapterPodcast from '../components/Explore/UserChapterPodcast';
 import {createMaterialTopTabNavigator} from 'react-navigation-tabs';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView} from 'react-native';
-import { Block, Text } from '../components/categories/components'
-import { theme } from '../components/categories/constants';
-import UserStatsScreen from '../components/Explore/UserStatsScreen'
-import { withFirebaseHOC } from '../config/Firebase';
+import { Block, Text } from '../categories/components'
+import { theme } from '../categories/constants';
+import UserStatsScreen from '../Explore/UserStatsScreen'
+import { withFirebaseHOC } from '../../config/Firebase';
 import firestore from '@react-native-firebase/firestore';
 import {useDispatch,useSelector} from "react-redux"; 
 
@@ -71,12 +71,12 @@ console.log("IN RETRIEVE DATA -- FOLLOWING")
 };
 
 
-const CustomUserHeader = (props) => {
-    {console.log("Inside Custom Explore user header ..................||||||||||||||||||||||")}
+const CustomProfileUserHeader = (props) => {
+    {console.log("Inside Custom Profile Explore user header ..................||||||||||||||||||||||")}
     
 
-    if(props === undefined || props.navigation === undefined || props.navigation.state === undefined || props.navigation.state.routes[1] === undefined || 
-        (props.navigation.state.routes[1].params === undefined && (props.navigation.state.routes[3] === undefined || props.navigation.state.routes[3].params === undefined)))
+    if(props === undefined || props.navigation === undefined || props.navigation.state === undefined || props.navigation.state.routes[3] === undefined || 
+        props.navigation.state.routes[3].params === undefined)
         {
           console.log("ERROR  ",props.navigation.state.routes[1]);
             return(
@@ -92,16 +92,13 @@ const CustomUserHeader = (props) => {
        const  userid =  props.firebase._getUid()//props.navigation.state.routes[1].params.userID; 
       //  if(props.navigation.state.routes[1].params !== undefined)
       //  {
-      //    console.log("Error 2146667")
+      //    console.log("Error 2346667")
       //    if(props.navigation.state.routes[1].params.userData !== undefined)
       //    item = props.navigation.state.routes[1].params.userData;
       //  }
          
       //  else 
-      if(props.navigation.state.routes[1].params === undefined || props.navigation.state.routes[1].params.userData === undefined)
          item = props.navigation.state.routes[3].params.userData;
-      if(props.navigation.state.routes[3] === undefined || props.navigation.state.routes[3].params === undefined || props.navigation.state.routes[3].params.userData === undefined)
-         item = props.navigation.state.routes[1].params.userData;
       let wholestring = 'FOLLOW';
        
       let initialMessage = useSelector(state=>state.userReducer.isUserFollowing[item.id])
@@ -157,15 +154,15 @@ const CustomUserHeader = (props) => {
         </View>
           <View style={{alignItems:'center',justifyContent:'center', flexDirection:'column'}}>
             <View style={{flexDirection:'column'}}>
-      <Text h3 >{item.name}'s</Text>
+      <Text h3 >{props.navigation.state.routes[3].params.userData.name}'s</Text>
               <View style = {{alignItems:'center'}}>
               <Text h2 bold>Collections</Text>
               </View>
               </View>
               
-              <TouchableOpacity style={{alignItems:'center'}} onPress={() => props.navigation.navigate('UserStatsScreen',{item:item})}>
+              <TouchableOpacity style={{alignItems:'center'}} onPress={() => props.navigation.navigate('UserStatsScreen',{item:props.navigation.state.routes[3].params.userData})}>
               <Image
-                  source={{uri : item.displayPicture}}
+                  source={{uri : props.navigation.state.routes[3].params.userData.displayPicture}}
                   style={styles.avatar}
                 />
                 </TouchableOpacity>
@@ -176,7 +173,7 @@ const CustomUserHeader = (props) => {
     
   };
 
-  export default withFirebaseHOC(CustomUserHeader);
+  export default withFirebaseHOC(CustomProfileUserHeader);
 
   const styles = StyleSheet.create({
     container: {

@@ -3,7 +3,6 @@
 
 const INITIAL_STATE = {
     name: null,
-    email: null,
     userName: null, 
     numFollowers: 0,
     numFollowing: 0,
@@ -16,18 +15,13 @@ const INITIAL_STATE = {
     listenedChapterPodcasts: 0,
     introduction : null,
     createdBookPodcasts : 0,
-    createdChapterPodcasts : 0,
-    navigation:null
+    createdChapterPodcasts : 0
   };
   
-  function userReducer(state = INITIAL_STATE, action)  {
+  function otherUserReducer(state = INITIAL_STATE, action)  {
     switch (action.type) {
-        case "ADD_NAVIGATION":
-            return {...state,navigation:action.payload}
         case "CHANGE_STATS":
             return {...state,stats:action.payload}
-        case "CHANGE_EMAIL":
-            return {...state,email:action.payload}
         case "CHANGE_NAME":
             return {...state, name:action.payload}
         case "CHANGE_USER_NAME":
@@ -50,9 +44,6 @@ const INITIAL_STATE = {
             state.isUserFollowing[action.payload] = false;
             state.numFollowing = state.numFollowing - 1;
             return state;
-        case "SET_IS_USER_FOLLOWING":
-            state.isUserFollowing[action.payload] = false;
-            return state;
         case "ADD_NUM_FOLLOWERS":
             return {...state,numFollowers: action.payload};
         case "ADD_PERSONAL_LISTENING_TIME":
@@ -67,13 +58,12 @@ const INITIAL_STATE = {
             return {...state,createdBookPodcasts: action.payload};
         case "ADD_NUM_CREATED_CHAPTER_PODCASTS":
             return {...state,createdChapterPodcasts: action.payload};
-        
         default:
             return state;
     }
   };
   
   
-  export default userReducer;
+  export default otherUserReducer;
   
   

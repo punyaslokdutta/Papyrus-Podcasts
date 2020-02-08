@@ -8,6 +8,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import SelectScreen from '../screens/SelectScreen'
 import PodcastPlayer from '../screens/PodcastPlayer'
 import AddModal from '../screens/components/Record/AddModal'
+import { withNavigation } from 'react-navigation';
 //import Animated, { Easing } from 'react-native-reanimated';
 
 import * as theme from './components/constants/theme';
@@ -342,4 +343,4 @@ class RecordBook extends Component {
   }
 }
 
-export default RecordBook;
+export default withNavigation(RecordBook);

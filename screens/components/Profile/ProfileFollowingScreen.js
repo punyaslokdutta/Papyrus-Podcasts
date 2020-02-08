@@ -3,10 +3,10 @@ import firestore from '@react-native-firebase/firestore';
 import { StyleSheet, Text, View, Image, TouchableOpacity,FlatList,  Dimensions,SafeAreaView, ScrollView,ActivityIndicator} from 'react-native';
 import Podcast from '../Home/Podcast'
 import {withFirebaseHOC} from '../../config/Firebase'
-import FollowingItem from './FollowingItem';
+import FollowingItem from '../Explore/FollowingItem';
 var {width, height}=Dimensions.get('window')
 
-class UserFollowingScreen extends React.Component {
+class ProfileFollowingScreen extends React.Component {
     
     static navigationOptions={
         header:null
@@ -49,7 +49,7 @@ class UserFollowingScreen extends React.Component {
         this.setState({
           loading: true,
         });
-        console.log('IN USER FOLLOWING SCREEN');
+        console.log('IN Profile FOLLOWING SCREEN');
         // Cloud Firestore: Query
         const userid = this.props.navigation.state.params.id;// props.firebase._getUid();
         var wholestring = "isUserFollower." + userid;
@@ -80,7 +80,7 @@ class UserFollowingScreen extends React.Component {
      try
       {
 
-        {console.log("retrieveMoreBookPodcasts starts()")}
+        {console.log("retrieveMoreProfileFollowings starts()")}
 
       this.setState({
         refreshing: true
@@ -100,7 +100,7 @@ class UserFollowingScreen extends React.Component {
                             .limit(this.state.limit);
         
       // Cloud Firestore: Query Snapshot
-      {console.log("retrieveMoreUserFollowings afterQuery()")}
+      {console.log("retrieveMoreProfileFollowings afterQuery()")}
          
         }
         catch(error)
@@ -181,7 +181,7 @@ class UserFollowingScreen extends React.Component {
     onEndReached = ({ distanceFromEnd }) => {
       if(this.state.Followings.length>5)
       if(!this.onEndReachedCalledDuringMomentum){
-          this.retrieveMoreFollowings();
+        this.retrieveMoreFollowings();
           this.onEndReachedCalledDuringMomentum = true;
       }
       
@@ -219,7 +219,7 @@ class UserFollowingScreen extends React.Component {
   }
   
 
-export default withFirebaseHOC(UserFollowingScreen);
+export default withFirebaseHOC(ProfileFollowingScreen);
 
 
 const styles = StyleSheet.create({

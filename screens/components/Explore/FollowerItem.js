@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
 
         return (
           //<TouchableOpacity  onPress={(()=>dispatch({type:"SET_PODCAST", payload: props.item}))}>
-    <TouchableOpacity onPress={() => props.navigation.navigate('ExploreTabNavigator', {userData:props.item,userID:props.item.id,followsOrNot:text2})}>
+    <TouchableOpacity onPress={() => props.navigation.navigate('ExploreTabNavigator', {userData:props.item,followsOrNot:text2})}>
         <View style={{flexDirection:'row', marginLeft: 15}}>
         <Image source={{ uri: props.item.displayPicture }} style={{width:width/4,height:height/8}}/>
         <Text style={styles.username}>{props.item.name}</Text>

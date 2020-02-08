@@ -1,6 +1,7 @@
 // @flow
 import * as React from 'react';
-import { Dimensions, StyleSheet , Image, StatusBar,SafeAreaView,  TouchableOpacity , View,Text, ScrollView } from 'react-native';
+import NavigationService from './navigation/NavigationService'
+import { Dimensions, StyleSheet , Image, StatusBar,SafeAreaView,  TouchableOpacity , View,Text, ScrollView,BackHandler,Alert } from 'react-native';
 //import {
  // Video, Constants, DangerZone, GestureHandler,
 //} from 'expo';
@@ -10,12 +11,13 @@ import Moment from "moment";
 import { HeaderBackButton } from 'react-navigation';
 import HomeScreen from './HomeScreen'
 
-
-
+import { withNavigation } from 'react-navigation';
+import Animated, { Easing } from 'react-native-reanimated';
+//const { Value, timing } = Animated;
 //import { type Video as VideoModel } from './videos';
 import PodcastContent from '../screens/components/PodcastPlayer/PodcastContent';
 import PlayerControls, { PLACEHOLDER_WIDTH } from './components/PodcastPlayer/PlayerControl';
-import Animated, { Easing } from 'react-native-reanimated';
+
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 //const { Animated, Easing } = DangerZone;
 //const { State, PanGestureHandler } = GestureHandler;
@@ -109,11 +111,11 @@ function runSpring(clock, value, dest) {
   video: VideoModel,
 };
 */
-export default class PodcastPlayer extends React.Component{
+class PodcastPlayer extends React.Component{
 
   static navigationOptions = ({navigation}) => {
     return{
-      headerLeft:(<HeaderBackButton onPress={()=>{navigation.navigate('HomeScreen')}}/>)
+      headerLeft:(<HeaderBackButton onPress={()=>{NavigationService.navigate('HomeScreen')}}/>)
    }
   }
   translationY = new Value(0);
@@ -132,6 +134,7 @@ export default class PodcastPlayer extends React.Component{
 
   constructor(props) {
     super(props);
+    this.back_Button_Press = this.back_Button_Press.bind(this);
     this.state=
     {
      // title: "Book Podcast", 
@@ -183,6 +186,39 @@ export default class PodcastPlayer extends React.Component{
   }
 
   
+  back_Button_Press = (navigation) => {
+   
+      // Put your own code here, which you want to exexute on back button press.
+      console.log("In back button press")
+      console.log(this.props)
+      // Alert.alert(
+      //   ' Exit From App ',
+      //   ' Do you want to exit From App ?',
+      //   [
+      //     { text: 'Yes', onPress: () => this.props.navigation.goBack() },
+      //     { text: 'No', onPress: () => console.log('NO Pressed') }
+      //   ],
+      //   { cancelable: false },
+      // );
+         
+      this.props.navigation.pop(2);
+
+      // Return true to enable back button over ride.
+      return true;
+    }
+
+
+
+componentWillMount() {
+ 
+    BackHandler.addEventListener('hardwareBackPress', this.back_Button_Press);
+  }
+
+
+componentWillUnmount() {
+  
+    BackHandler.removeEventListener('hardwareBackPress', this.back_Button_Press);
+  }
 
   componentDidUpdate(prevProps) {
     if (prevProps !== this.props) {
@@ -197,6 +233,7 @@ export default class PodcastPlayer extends React.Component{
   }).start();
 
   render() {
+   
     const {
       onGestureEvent, translateY: y, offsetY2,
     } = this;
@@ -251,6 +288,12 @@ export default class PodcastPlayer extends React.Component{
         ...shadow,
       }}
     >
+      {/* <View>
+                <TouchableOpacity onPress={NavigationService.navigate('HomeScreen')}>
+                  <Text>qqqqqqqqqqqqqqqq</Text>
+                  </TouchableOpacity>
+                </View> */}
+
         <PanGestureHandler
           onHandlerStateChange={onGestureEvent}
           activeOffsetY={[-10, 10]}
@@ -265,7 +308,9 @@ export default class PodcastPlayer extends React.Component{
                 source={{uri:this.props.podcast.Podcast_Pictures[0]}}
                 style={{ width: videoWidth, height: videoHeight }}
               />
+
                </Animated.View>
+
                </PanGestureHandler>
                <ScrollView  scrollEventThrottle={16} >
               
@@ -278,11 +323,9 @@ export default class PodcastPlayer extends React.Component{
             </ScrollView> 
 
 
-            </Animated.View>
-         
-       
-        
-      
+            </Animated.View>    
     );
   }
 }
+
+export default PodcastPlayer;

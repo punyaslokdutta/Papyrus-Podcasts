@@ -12,6 +12,8 @@ import Podcast from './components/Home/Podcast'
 import firebaseApi from './config/Firebase/firebaseApi'
 import {Text} from './components/categories/components';
 import {withFirebaseHOC} from '../screens/config/Firebase'
+import { withNavigation } from 'react-navigation';
+import { useDispatch } from 'react-redux';
 
 var {width, height}=Dimensions.get('window')
 const styles = StyleSheet.create({
@@ -211,18 +213,15 @@ class HomeScreen extends React.Component {
         this.setState({
           loading: true,
         });
+
+        //const dispatch = useDispatch();
+
+        //dispatch({type:"ADD_NAVIGATION",payload:this.props.navigation});
+
         console.log('Retrieving Data');
         const  userid = this.props.firebase._getUid();
-
-        // let userDoc = await firestore().collection('users').doc(userid).get();
-        // useDispatch({type:"CHANGE_NAME", payload: userDoc.data.name});
-        // useDispatch({type:"CHANGE_USER_NAME", payload: userDoc.data.username});
-        // useDispatch({type:"CHANGE_DISPLAY_PICTURE", payload: userDoc.data.displayPicture});
-
-       // dispatch({type:"SET_PODCAST", payload: props.podcast})
-
         //For books in section list
-        let bookDocuments = await firestore().collection('users').doc(userid).collection('privateUserData')
+        let bookDocuments =  await firestore().collection('users').doc(userid).collection('privateUserData')
         .doc('privateData').collection('bookRecommendations').get()
         let bookPodcasts = bookDocuments.docs.map(document => document.data());
 
@@ -537,4 +536,4 @@ class HomeScreen extends React.Component {
   }
 
 
-export default withFirebaseHOC(HomeScreen);
+export default withNavigation(withFirebaseHOC(HomeScreen));

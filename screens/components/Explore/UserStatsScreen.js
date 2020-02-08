@@ -26,8 +26,8 @@ var {width, height}=Dimensions.get('window')
             imageURL: this.props.navigation.state.params.item.displayPicture,
             name: this.props.navigation.state.params.item.name,
             introduction: this.props.navigation.state.params.item.introduction, 
-            followersCount: this.props.navigation.state.params.item.follower_count,
-            followingCount: this.props.navigation.state.params.item.following_count
+            followersCount: this.props.navigation.state.params.item.followers_list.length,
+            followingCount: this.props.navigation.state.params.item.following_list.length
         }
         console.log("In USER STATS SCREENNNNNNNNNNNNNN")
     }
@@ -64,136 +64,7 @@ var {width, height}=Dimensions.get('window')
     )
   }
 
-  renderRewards() {
-    return (
-      <Card shadow style={{ paddingBottom: theme.sizes.base*1 ,paddingVertical: theme.sizes.base * 1}}>       
-        {/* <Block color="gray3" style={styles.hLine} /> */}
-        {/* <Text>{"\n"}</Text> */}
-        <Card shadow style={{ paddingVertical: theme.sizes.base * 1}}>
-        <Block row>
-          <Block center flex={0.8}>
-            <Text size={20} spacing={1} primary>12</Text>
-            <Text spacing={0.7}>Books</Text>
-          </Block>
-          
-          <Block center flex={0.8}>
-            <Text size={20} spacing={1} primary>33</Text>
-            <Text spacing={0.7}>Chapters</Text>
-          </Block>
-
-          <Block center flex={0.8}>
-            <Text size={20} spacing={0.5} primary>332</Text>
-            <View style={{alignItems:'center', flexDirection:'column'}}>
-            <Text>Minutes</Text>
-            
-            </View>
-          </Block>
-        </Block>
-
-        <Block color="gray3" style={styles.hLine} />
-
-        <Block style={{ marginBottom: theme.sizes.base * 0.1}}>
-          {/* <Block row center style={{ paddingLeft: 6 }}>
-  <Text body spacing={0.7}>Retention rate of listeners -> {"\t"}</Text>
-            <Text size={20} primary spacing={0.7}>7.4</Text>
-          </Block> */}
-         <Block center>
-            <Text size={20} spacing={0.5} primary>7.4</Text>
-            <View style={{alignItems:'center', flexDirection:'column'}}>
-            <Text>Retention rate of listeners (%)</Text>
-            
-            </View>
-          </Block>
-        </Block>
-    </Card>
-
-        {/* <Block color="gray3" style={styles.hLine} /> */}
-         
-        <Card shadow style={{ paddingVertical: theme.sizes.base * 1}}>
-        <Block center style={{paddingBottom:20}}>
-          <AnimatedCircularProgress
-            size={214} // can use  with * .5 => 50%
-            fill={95} // percentage
-            lineCap="round" // line ending style
-            rotation={120}
-            arcSweepAngle={280}
-            width={theme.sizes.base}
-            tintColor={theme.colors.primary} // gradient is not supported
-            backgroundColor={theme.colors.gray3}
-            backgroundWidth={theme.sizes.base / 2}
-          >
-            {() => (
-              <Block center middle>
-                <Text h2 medium>8.1</Text>
-                <Text h3 transform="uppercase">good</Text>
-              </Block>
-            )}
-          </AnimatedCircularProgress>
-        </Block>
-
-        <Block center>
-          <Text title spacing={1} style={{fontWeight:'italic', marginVertical: 8}}>
-            Gnosis Score
-          </Text>
-        </Block>
-        <Block >
-          <Text style={{fontWeight:'italic', marginVertical: 8}}>
-            * Gnosis Score is calculated monthly based on the 4 factors given below -
-        </Text>
-        <Text spacing={1}>
-             1. Count of your podcast listeners. {"\n"}
-             2. Count of likes on your podcasts. {"\n"}
-             3. Nature of comments on your podcasts.{"\n"}
-             4. Total time spent on the App by listeners listening to your podcasts.
-          </Text>
-          <Text style={{marginVertical: 8}}>
-            * We won't make "Gnosis Score" public and only serves as a self improvement tool.
-            
-
-          </Text>
-
-         
-        </Block>
-        </Card>
-      </Card>
-    )
-  }
-
-  renderChallenges() {
-    return (
-      <Block>
-        <Block style={{
-            marginTop: theme.sizes.base,
-            marginBottom: theme.sizes.base,
-            paddingHorizontal: theme.sizes.base / 3
-          }}
-        >
-          <Text spacing={0.7} transform="uppercase">
-            Challenges taken
-          </Text>
-        </Block>
-
-        <Card row shadow color="gray">
-          <Block middle flex={0.4}>
-            <Badge color={rgba(theme.colors.white, '0.2')} size={74}>
-              <Badge color={rgba(theme.colors.white, '0.2')} size={52}>
-                <FontAwesome name="check" color="white" size={theme.sizes.h1} />
-              </Badge>
-            </Badge>
-          </Block>
-          <Block middle>
-            <Text size={theme.sizes.base} spacing={0.4} medium white>
-              Hit zero pedestrians
-            </Text>
-            <Text size={theme.sizes.base} spacing={0.4} medium white>
-              during next trip - $5
-            </Text>
-          </Block>
-        </Card>
-      </Block>
-    )
-  }
-
+  
   render() {
     return (
       <ScrollView style={styles.rewards} showsVerticalScrollIndicator={false}>
@@ -205,7 +76,7 @@ var {width, height}=Dimensions.get('window')
           <Text style={{paddingTop:height/20, paddingHorizontal:width/10, fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
           {this.state.followingCount}
           </Text>
-          <TouchableOpacity onPress={()=>this.props.navigation.navigate('UserFollowingScreen', { item : this.props.navigation.state.params.item })}><Text style={{fontFamily:'sans-serif-light', paddingHorizontal:width/13}}>Following</Text>
+          <TouchableOpacity onPress={()=>this.props.navigation.navigate('UserFollowingScreen', { id : this.props.navigation.state.params.item.id })}><Text style={{fontFamily:'sans-serif-light', paddingHorizontal:width/13}}>Following</Text>
           </TouchableOpacity>
           </View>
     
@@ -216,7 +87,7 @@ var {width, height}=Dimensions.get('window')
             <Text style={{paddingTop:height/20 , paddingHorizontal:width/10,  fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
             {this.state.followersCount}
           </Text>                                             
-          <TouchableOpacity onPress={()=>this.props.navigation.navigate('UserFollowerScreen', { item : this.props.navigation.state.params.item })}><Text style={{fontFamily:'sans-serif-light', paddingHorizontal:width/13}}>Followers</Text></TouchableOpacity>
+          <TouchableOpacity onPress={()=>this.props.navigation.navigate('UserFollowerScreen', { id : this.props.navigation.state.params.item.id })}><Text style={{fontFamily:'sans-serif-light', paddingHorizontal:width/13}}>Followers</Text></TouchableOpacity>
           </View>
 
         </View>

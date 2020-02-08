@@ -11,77 +11,15 @@ import { Block, Badge, Card, Text } from '../categories/components';
 import { theme, mocks } from '../categories/constants';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import firestore from '@react-native-firebase/firestore';
+import {useSelector,useDispatch} from 'react-redux';
+import ProfileFollowingScreen from '../Profile/ProfileFollowingScreen';
+import ProfileFollowerScreen from '../Profile/ProfileFollowerScreen';
+//import { theme, mocks } from '../categories/constants';
 
 var {width, height}=Dimensions.get('window')
 
- class Profile_StatsScreen  extends React.Component {
-
-    constructor(props)
-    {
-        super(props);
-        this.state={
-            totalListenCount: 10, 
-            book_podcast_listen_count:20 , 
-            chapter_podcast_listen_count: 200, 
-            Gnosis_Score :4.5 ,
-            Books_recorded_count: 23, 
-            Chapter_Recorder_count: 34, 
-            Time: 23, 
-
-
-        }
-    }
-  
-  ////////
-  componentDidMount = async () => {
-    try {
-      this.retrieveData();
-    }
-    catch (error) {
-      console.log(error);
-    }
-  };
-
-  retrieveData = async () => {
-    try {
-      this.setState({
-        loading: true,
-      });
-      console.log('Retrieving Data in Profile Stats Screen');
-      const  userid = this.props.firebase._getUid();
-      var wholestring = "isUserFollowing." + userid;
-      console.log(wholestring);
-
-
-      let followingQuery = await firestore().collection('users').where(wholestring,'==',true).get();
-      let followingData = followingQuery.docs.map(document=>document.data());
-      console.log("These are the users our main user follows");
-      console.log(followingData[0]);
-      console.log(followingData[1]);
-      console.log(followingData[2]); 
-      //For books in section list
-      //let userFollowerDocuments = await firestore().collection('users').where
-      //let bookPodcasts = bookDocuments.docs.map(document => document.data());
-
-      //For podcasts in section list
-      
-
-    this.setState({
-        //  books: bookPodcasts,
-          //headerPodcasts: documentData_podcasts,
-          //podcasts: podcastsData,
-          //lastVisibleID:lastVisiblePodcast,
-          loading: false, 
-          onEndReachedCalledDuringMomentum : true
-        });
-
-    }
-    catch (error) {
-      console.log(error);
-    }
-  };
-  //////
-  renderMonthly() {
+//////
+  renderMonthly = () => {
     return (
       <Card shadow style={{ paddingVertical: theme.sizes.padding * 0.25 }}>
         <Block>
@@ -112,7 +50,7 @@ var {width, height}=Dimensions.get('window')
     )
   }
 
-  renderRewards() {
+  renderRewards = (stats) => {
     return (
       <Card shadow style={{ paddingBottom: theme.sizes.base*1 ,paddingVertical: theme.sizes.base * 1}}>       
         {/* <Block color="gray3" style={styles.hLine} /> */}
@@ -146,7 +84,7 @@ var {width, height}=Dimensions.get('window')
             <Text size={20} primary spacing={0.7}>7.4</Text>
           </Block> */}
          <Block center>
-            <Text size={20} spacing={0.5} primary>7.4</Text>
+            <Text size={20} spacing={0.5} primary>{stats.retention_rate_of_listeners}</Text>
             <View style={{alignItems:'center', flexDirection:'column'}}>
             <Text>Retention rate of listeners (%)</Text>
             
@@ -172,7 +110,7 @@ var {width, height}=Dimensions.get('window')
           >
             {() => (
               <Block center middle>
-                <Text h2 medium>8.1</Text>
+                <Text h2 medium>{stats.gnosis_score}</Text>
                 <Text h3 transform="uppercase">good</Text>
               </Block>
             )}
@@ -196,81 +134,60 @@ var {width, height}=Dimensions.get('window')
           </Text>
           <Text style={{marginVertical: 8}}>
             * We won't make "Gnosis Score" public and only serves as a self improvement tool.
-            
-
           </Text>
-
-         
         </Block>
         </Card>
       </Card>
     )
   }
 
-  renderChallenges() {
-    return (
-      <Block>
-        <Block style={{
-            marginTop: theme.sizes.base,
-            marginBottom: theme.sizes.base,
-            paddingHorizontal: theme.sizes.base / 3
-          }}
-        >
-          <Text spacing={0.7} transform="uppercase">
-            Challenges taken
-          </Text>
-        </Block>
+const Profile_StatsScreen = (props) => {
 
-        <Card row shadow color="gray">
-          <Block middle flex={0.4}>
-            <Badge color={rgba(theme.colors.white, '0.2')} size={74}>
-              <Badge color={rgba(theme.colors.white, '0.2')} size={52}>
-                <FontAwesome name="check" color="white" size={theme.sizes.h1} />
-              </Badge>
-            </Badge>
-          </Block>
-          <Block middle>
-            <Text size={theme.sizes.base} spacing={0.4} medium white>
-              Hit zero pedestrians
-            </Text>
-            <Text size={theme.sizes.base} spacing={0.4} medium white>
-              during next trip - $5
-            </Text>
-          </Block>
-        </Card>
-      </Block>
-    )
-  }
-
-  render() {
-    return (
+     const stats = useSelector(state=>state.userReducer.stats);
+     console.log("INSIDE PROFILE STATS SCREEN\n",stats);
+     const name = useSelector(state=>state.userReducer.name);
+     const numFollowings = useSelector(state=>state.userReducer.numFollowing);  
+     const profilePic = useSelector(state=>state.userReducer.displayPictureURL);
+     
+     const numFollowers = useSelector(state=>state.userReducer.numFollowers);  
+     const userid = props.firebase._getUid();
+    //  const totalListenCount =  stats.totalListenCount, 
+    //  const book_podcast_listen_count = stats.book_podcast_listen_count, 
+    //  const chapter_podcast_listen_count = stats.chapter_podcast_listen_count, 
+    //  const Gnosis_Score = stats.gnosis_score,
+    //  const Books_recorded_count = stats.Books_recorded_count, 
+    //  const Chapter_Recorder_count = stats.Chapter_Recorder_count, 
+    //  const Time = stats.Time 	 
+	 return (
       <ScrollView style={styles.rewards} showsVerticalScrollIndicator={false}>
         <View>
   
         <View>
         <View style={{flexDirection:'row'}}>
+    <TouchableOpacity onPress={()=>props.navigation.navigate('ProfileFollowingScreen', { id : userid })}>
         <View>
           <Text style={{paddingTop:height/20, paddingHorizontal:width/10, fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
-            220
+            {numFollowings}
           </Text>
          <Text style={{fontFamily:'sans-serif-light', paddingHorizontal:width/13}}>Following</Text>
           </View>
-    
+    </TouchableOpacity>
             <View style={{alignItems:'center', justifyContent:'center', flex:3, paddingTop:height/50}}>
-              <Image source={require('../../../assets/images/avatar.png')}  style={{width:100, height:100, borderRadius:50 }}/>
+              <Image source={{uri: profilePic}}  style={{width:100, height:100, borderRadius:50 }}/>
             </View>
+            <TouchableOpacity onPress={()=>props.navigation.navigate('ProfileFollowerScreen', { id : userid })}>
             <View>
             <Text style={{paddingTop:height/20 , paddingHorizontal:width/10,  fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
-            100
+            {numFollowers}
           </Text>
           <Text style={{fontFamily:'sans-serif-light', paddingHorizontal:width/13}}>Followers</Text>
           </View>
-
+          </TouchableOpacity>
         </View>
         </View>
         <View style={{ alignItems:'center',flex:1,marginTop:20}}>
        
-       <Text style={{ fontSize:24, fontWeight:"200",  textShadowColor:'black', fontFamily:'sans-serif-light', alignItems:'center', justifyContent:'center'}}>Ella Alderson</Text>
+   <Text style={{ fontSize:24, fontWeight:"200",  textShadowColor:'black', fontFamily:'sans-serif-light', alignItems:'center', justifyContent:'center'}}>{name}</Text>
        
 
         </View>
@@ -280,7 +197,7 @@ var {width, height}=Dimensions.get('window')
         </View>
 
         <View style={{alignItems:'center',flex:1}}>
-        <Button  style={{flex:1, justifyContent:'center', height:height/25, width:width/3, borderRadius:5, backgroundColor:theme.colors.primary}} onPress={()=>this.props.navigation.navigate('editProfile')}>
+        <Button  style={{flex:1, justifyContent:'center', height:height/25, width:width/3, borderRadius:5, backgroundColor:theme.colors.primary}} onPress={()=>props.navigation.navigate('editProfile')}>
         <Text>Edit Profile</Text>
         </Button>
 
@@ -290,43 +207,41 @@ var {width, height}=Dimensions.get('window')
        
           <Text h3 bold>Listening Statistics</Text>
         </Block>
-        {this.renderMonthly()}
+        {renderMonthly(stats)}
         {/* <Block flex={false} row center space="between" style={styles.header}> */}
          <View style={{alignItems:'center'}}>
 
     <Text h3 bold>{"\n"}Your Podcast Statistics</Text>
         </View>
         {/* </Block> */}
-        {this.renderRewards()}
+        {renderRewards(stats)}
         
       </ScrollView>
     )
-  }
 }
-
 
 export default withFirebaseHOC(Profile_StatsScreen);
 
 const styles = StyleSheet.create({
-    header: {
-        paddingHorizontal: theme.sizes.base * 2,
-        paddingTop: theme.sizes.base * 2.0,
-        paddingBottom :theme.sizes.base * 1,
-        alignItems : 'center',
-        justifyContent : 'center'
-      },
-  rewards: {
-    padding: theme.sizes.padding,
-    backgroundColor: theme.colors.gray4,
-  },
-  // horizontal line
-  hLine: {
-    marginVertical: theme.sizes.base * 1,
-    height: 1,
-  },
-  // vertical line
-  vLine: {
-    marginVertical: theme.sizes.base / 2,
-    width: 1,
-  },
+  header: {
+      paddingHorizontal: theme.sizes.base * 2,
+      paddingTop: theme.sizes.base * 2.0,
+      paddingBottom :theme.sizes.base * 1,
+      alignItems : 'center',
+      justifyContent : 'center'
+    },
+rewards: {
+  padding: theme.sizes.padding,
+  backgroundColor: theme.colors.gray4,
+},
+// horizontal line
+hLine: {
+  marginVertical: theme.sizes.base * 1,
+  height: 1,
+},
+// vertical line
+vLine: {
+  marginVertical: theme.sizes.base / 2,
+  width: 1,
+},
 })
