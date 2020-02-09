@@ -44,5 +44,8 @@ xmlns:tools="http://schemas.android.com/tools"
 					 android:screenOrientation="portrait">
 		</activity>
     </application>
+    
 
 </manifest>
+
+

@@ -128,6 +128,7 @@ const firebaseApi={
 
         const documentRef = await firestore().collection('users').doc(`${user._user.uid}`).set({
             name: user._user.displayName,
+            id: user._user.uid,
             username: "",
             displayPicture: user._user.photoURL,
             email: user._user.email,

@@ -51,11 +51,11 @@ class UserFollowingScreen extends React.Component {
         });
         console.log('IN USER FOLLOWING SCREEN');
         // Cloud Firestore: Query
-        const userid = this.props.navigation.state.params.item.id;// props.firebase._getUid();
+        const userid = this.props.navigation.state.params.id;// props.firebase._getUid();
         var wholestring = "isUserFollower." + userid;
         console.log(wholestring);
 
-  
+        
         let followingQuery =  await firestore().collection('users').where('followers_list','array-contains',userid).orderBy('id')
                                                 .limit(this.state.limit).get();
         let followingData = followingQuery.docs.map(document=>document.data());
@@ -86,7 +86,7 @@ class UserFollowingScreen extends React.Component {
         refreshing: true
          }); 
 
-         const  userid = this.props.navigation.state.params.item.id;
+         const  userid = this.props.navigation.state.params.id;
          var wholestring = "isUserFollower." + userid;
          console.log(wholestring);
   
@@ -181,7 +181,7 @@ class UserFollowingScreen extends React.Component {
     onEndReached = ({ distanceFromEnd }) => {
       if(this.state.Followings.length>5)
       if(!this.onEndReachedCalledDuringMomentum){
-          this.retrieveMoreBookPodcasts()
+          this.retrieveMoreFollowings();
           this.onEndReachedCalledDuringMomentum = true;
       }
       

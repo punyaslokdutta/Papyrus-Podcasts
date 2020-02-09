@@ -76,19 +76,34 @@ const CustomUserHeader = (props) => {
     
 
     if(props === undefined || props.navigation === undefined || props.navigation.state === undefined || props.navigation.state.routes[1] === undefined || 
-        props.navigation.state.routes[1].params === undefined)
+        (props.navigation.state.routes[1].params === undefined && (props.navigation.state.routes[3] === undefined || props.navigation.state.routes[3].params === undefined)))
         {
+          console.log("ERROR  ",props.navigation.state.routes[1]);
             return(
+              
                 <Text>FGHJVBJ</Text>
             )        
         }
     else
     {
+      console.log("ERROR 222222 ",props.navigation.state.routes[1]);
        var text1 = "Follow+";
+       let item = "W";
        const  userid =  props.firebase._getUid()//props.navigation.state.routes[1].params.userID; 
-       const item = props.navigation.state.routes[1].params.userData;
+      //  if(props.navigation.state.routes[1].params !== undefined)
+      //  {
+      //    console.log("Error 2146667")
+      //    if(props.navigation.state.routes[1].params.userData !== undefined)
+      //    item = props.navigation.state.routes[1].params.userData;
+      //  }
+         
+      //  else 
+      if(props.navigation.state.routes[1].params === undefined || props.navigation.state.routes[1].params.userData === undefined)
+         item = props.navigation.state.routes[3].params.userData;
+      if(props.navigation.state.routes[3] === undefined || props.navigation.state.routes[3].params === undefined || props.navigation.state.routes[3].params.userData === undefined)
+         item = props.navigation.state.routes[1].params.userData;
       let wholestring = 'FOLLOW';
-
+       
       let initialMessage = useSelector(state=>state.userReducer.isUserFollowing[item.id])
       let printMessage = useSelector(state=>state.userReducer.isUserFollowing)
       if(initialMessage === true)
@@ -142,15 +157,15 @@ const CustomUserHeader = (props) => {
         </View>
           <View style={{alignItems:'center',justifyContent:'center', flexDirection:'column'}}>
             <View style={{flexDirection:'column'}}>
-      <Text h3 >{props.navigation.state.routes[1].params.userData.name}'s</Text>
+      <Text h3 >{item.name}'s</Text>
               <View style = {{alignItems:'center'}}>
               <Text h2 bold>Collections</Text>
               </View>
               </View>
               
-              <TouchableOpacity style={{alignItems:'center'}} onPress={() => props.navigation.navigate('UserStatsScreen',{item:props.navigation.state.routes[1].params.userData})}>
+              <TouchableOpacity style={{alignItems:'center'}} onPress={() => props.navigation.navigate('UserStatsScreen',{item:item})}>
               <Image
-                  source={{uri : props.navigation.state.routes[1].params.userData.displayPicture}}
+                  source={{uri : item.displayPicture}}
                   style={styles.avatar}
                 />
                 </TouchableOpacity>

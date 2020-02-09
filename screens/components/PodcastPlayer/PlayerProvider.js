@@ -3,6 +3,7 @@ import React, {Component, useState, createContext, useReducer, useCallback, useE
 import {
   View, StyleSheet, Dimensions, StatusBar, Platform,
 } from 'react-native';
+import {withNavigation} from 'react-navigation';
 //import { DangerZone } from 'expo';
 import PodcastPlayer from '../../PodcastPlayer'; //instead of Video Modal 
 import podcasts from './podcasts';
@@ -28,8 +29,9 @@ import store from '../../../reducers/store';
 const PlayerProvider=(props)=>{
 
   const podcast=useSelector(state=>state.rootReducer.podcast)
-  const navigation =useSelector(state=>state.userReducer.navigation)
-  
+  const navigation=useSelector(state=>state.userReducer.navigation)
+
+  console.log("Inside PlayerProvider\n\n",props,navigation);
 
   animation = new Value(0);
 
@@ -52,13 +54,6 @@ const PlayerProvider=(props)=>{
   //   }, [], 
   
   // )
-
-
-
-
-  
-
-  
     const translateY = animation.interpolate({
       inputRange: [0, 1],
       outputRange: [height, 0],
@@ -76,14 +71,14 @@ const PlayerProvider=(props)=>{
                 style={{ transform: [{ translateY }] }}
               >
                 {
-                  podcast && <PodcastPlayer {...{podcast}} />
+                  podcast && <PodcastPlayer {...{podcast}} {...{navigation}} />
                 }
               </Animated.View>
             )
           }
           {
             
-            !isOS && podcast && <PodcastPlayer {...{podcast}} />
+            !isOS && podcast && <PodcastPlayer {...{podcast}} {...{navigation}}/>
           }
         </View>
            
@@ -101,4 +96,4 @@ const styles = StyleSheet.create({
 });
 
 
-export { PlayerProvider};
+export default PlayerProvider;

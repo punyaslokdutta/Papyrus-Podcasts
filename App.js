@@ -1,18 +1,23 @@
-
+import ProfileFollowerScreen from './screens/components/Profile/ProfileFollowerScreen'
+import ProfileFollowingScreen from './screens/components/Profile/ProfileFollowingScreen'
 
 import React, {Component} from 'react';
 import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView, NativeModules} from 'react-native';
 import {createSwitchNavigator,
   createAppContainer,
   } from 'react-navigation'
+import NavigationService from './screens/navigation/NavigationService';
+
+
   import { createBottomTabNavigator, createMaterialTopTabNavigator } from 'react-navigation-tabs';
   import { createStackNavigator } from 'react-navigation-stack';
   import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
-  import thunk from 'redux-thunk';
- // import  rootReducer from './reducers/rootReducer'
-import  userReducer from './reducers/userReducer'
-//import { createStore, combineReducers, applyMiddleware } from 'redux'
-//import logger from 'redux-logger'
+  
+import thunk from 'redux-thunk';
+import userReducer from './reducers/userReducer'
+import rootReducer from './reducers/rootReducer';
+import otherUserReducer from './reducers/otherUserReducer'
+
 import AuthLoadingScreen from './screens/AuthLoadingScreen'
 import SignInScreen from './screens/SignInScreen'
 import SignUpScreen from './screens/SignUpScreen'
@@ -36,7 +41,7 @@ import ActivityScreen from './screens/ActivityScreen'
 import SettingsScreen from './screens/SettingsScreen'
 import editProfile  from './screens/components/Profile/editProfile'
 import firebaseApi, {FirebaseProvider} from './screens/config/Firebase'
-import {PlayerProvider} from './screens/components/PodcastPlayer/PlayerProvider';
+import PlayerProvider from './screens/components/PodcastPlayer/PlayerProvider';
 import Profile_StatsScreen from './screens/components/Profile/Profile_StatsScreen'
 import CategoryTabNavigator from './screens/navigation/CategoryTabNavigator'
 import ProfileTabNavigator from './screens/navigation/ProfileTabNavigator'
@@ -45,7 +50,7 @@ import UserStatsScreen from './screens/components/Explore/UserStatsScreen'
 import {createStore,combineReducers, applyMiddleware} from 'redux'
 //import store from './reducers/store'
 import {Provider} from 'react-redux'
-import rootReducer from './reducers/rootReducer';
+
 import UserFollowingScreen from './screens/components/Explore/UserFollowingScreen';
 import UserFollowerScreen from './screens/components/Explore/UserFollowerScreen';
 import InfoScreen from './InfoScreen'
@@ -155,7 +160,25 @@ const ProfileStackNavigator=createStackNavigator(
    }}, 
     Profile_StatsScreen:{screen: Profile_StatsScreen, navigationOptions: {
      // header: null,
-  }}
+  }},
+  ProfileFollowingScreen:{screen:ProfileFollowingScreen,navigationOptions: {
+      //header:null
+    }},
+    ProfileFollowerScreen: {screen:ProfileFollowerScreen,navigationOptions: {
+      //header:null
+    }},
+    UserFollowingScreen : {screen : UserFollowingScreen,navigationOptions:{
+
+    }},
+    UserFollowerScreen : {screen : UserFollowerScreen,navigationOptions:{
+
+    }},
+    UserStatsScreen:{screen : UserStatsScreen,navigationOptions:{
+
+    }},
+    ExploreTabNavigator : {screen : ExploreTabNavigator,navigationOptions:{
+
+    }}
   }, 
   {
     //headerMode:'none',
@@ -327,10 +350,17 @@ const AppStackNavigator= createStackNavigator(
 
 
     },
-  //   PodcastPlayer: {screen :PodcastPlayer,
-  //   navigationOptions:{
-  //     header:null
-  //  }},
+    PlayerProvider: {
+      screen: PlayerProvider,
+      navigationOptions:{
+        header:null
+     }
+    },
+
+    PodcastPlayer: {screen :PodcastPlayer,
+    navigationOptions:{
+      header:null
+   }},
    RecordBook: {screen :RecordBook,
     navigationOptions:{
       header:null
@@ -411,6 +441,7 @@ const AppSwitchNavigator = createSwitchNavigator(
     Auth : AuthStackNavigator, // this will be a stack navigator
     App : AppDrawerNavigator ,  //this is the drawer navigator 
     //Preferences: PreferencesStackNavigator 
+
   },
   {
     initialRouteName:'AuthLoading'
@@ -423,6 +454,10 @@ const AppSwitchNavigator = createSwitchNavigator(
  const AppContainer =createAppContainer(AppSwitchNavigator);  //top level navigator 
 
  //reducers
+//  const userReducers = combineReducers({
+//   userReducer,
+//   otherUserReducer 
+//  })
  const mainReducer = combineReducers({
      
   userReducer,

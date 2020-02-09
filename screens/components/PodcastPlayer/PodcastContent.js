@@ -5,6 +5,8 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Moment from "moment";
+import HomeScreen from '../../HomeScreen'
+import Explore from '../../Explore'
 import {useSelector, useDispatch} from "react-redux"
 import Video from 'react-native-video';
 import ProgressBar from './ProgressBar'
@@ -66,6 +68,10 @@ function handlePlayPause() {
   }
 }
 
+function parentSlideDown(){
+  props.slideDown();
+}
+
 
     return (
       
@@ -78,6 +84,12 @@ function handlePlayPause() {
                     <View style={{ alignItems: "center", marginTop: 2}}>
                     <Text style={[styles.text, { fontSize: 15, marginTop: 2}]}>{props.podcast.podcasterName}</Text>
                     </View>
+                    
+              {/* <View>
+                <TouchableOpacity onPress={NavigationService.navigate('Explore')}>
+                  <Text style={{color:'white'}}>qqqqqqqqqqqqqqqq</Text>
+                  </TouchableOpacity>
+                </View> */}
 
         <View  style={{paddingLeft:10}}>
         </View>
@@ -154,7 +166,8 @@ function handlePlayPause() {
                 <Icon name="heart" size={20} style={{color:'white'} }/>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={()=>{
-                   dispatch({type:"TOGGLE_MINI_PLAYER"})
+                   //dispatch({type:"TOGGLE_MINI_PLAYER"})
+                   parentSlideDown()
                   props.navigation.navigate('InfoScreen')
                 }}>
                 <Icon name="info-circle" size={24} style={{color:'white'}}/>

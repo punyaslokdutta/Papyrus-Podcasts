@@ -41,8 +41,8 @@ class  AuthLoadingScreen extends Component {
                     try{
                       console.log(this)
                       console.log(this.props)
-                      const addNewUser= await this.props.firebase._createNewUser(user)// 
-                       }
+                      const addNewUser= await this.props.firebase._createNewUser(user)
+                        }
                        catch(error)
                        {
                          console.log(error)
@@ -50,7 +50,8 @@ class  AuthLoadingScreen extends Component {
                   }
                   else
                   {
-                        unsubscribe(); // unsubscribe the firestore onSnapshot listener 
+                        unsubscribe(); // unsubscribe the firestore onSnapshot listener
+                       
                         this.props.navigation.navigate('setUserDetails',{user : doc.data()});
                         this.props.navigation.navigate('App');
                   }

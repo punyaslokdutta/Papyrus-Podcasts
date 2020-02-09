@@ -13,12 +13,13 @@ import HomeScreen from './HomeScreen'
 import {useSelector, useDispatch} from "react-redux"
 
 
-
-
+import { withNavigation } from 'react-navigation';
+import Animated, { Easing } from 'react-native-reanimated';
+//const { Value, timing } = Animated;
 //import { type Video as VideoModel } from './videos';
 import PodcastContent from '../screens/components/PodcastPlayer/PodcastContent';
 import PlayerControls, { PLACEHOLDER_WIDTH } from './components/PodcastPlayer/PlayerControl';
-import Animated, { Easing } from 'react-native-reanimated';
+//import Animated, { Easing } from 'react-native-reanimated';
 import { PanGestureHandler, State, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 //const { Animated, Easing } = DangerZone;
 //const { State, PanGestureHandler } = GestureHandler;
@@ -344,6 +345,12 @@ const PodcastPlayer=(props)=>{
         ...shadow,
       }}
     >
+      {/* <View>
+                <TouchableOpacity onPress={NavigationService.navigate('HomeScreen')}>
+                  <Text>qqqqqqqqqqqqqqqq</Text>
+                  </TouchableOpacity>
+                </View> */}
+
         <PanGestureHandler
           //onHandlerStateChange={onGestureEvent}
           activeOffsetY={[-100, 100]}
@@ -352,12 +359,13 @@ const PodcastPlayer=(props)=>{
           <TouchableNativeFeedback onPress={slideDown}>
             <Animated.View style={{ backgroundColor: 'white', width: videoContainerWidth }}>
               <Animated.View style={{ ...StyleSheet.absoluteFillObject, opacity: playerControlOpaciy }}>
-                <PlayerControls title={props.podcast.Podcast_Name} onPress={slideUp}  />
+                <PlayerControls title={props.podcast.Podcast_Name} onPress={slideUp}      />
               </Animated.View>
               <Animated.Image
                 source={{uri:props.podcast.Podcast_Pictures[0]}}
                 style={{ width: videoWidth, height: videoHeight, borderColor:'black' }}
               />
+
                </Animated.View>
                </TouchableNativeFeedback>
                </PanGestureHandler>
@@ -366,17 +374,13 @@ const PodcastPlayer=(props)=>{
             
             <Animated.View style={{ backgroundColor: 'white', width: videoContainerWidth, height: containerHeight }}>
               <Animated.View style={{ opacity }}>
-                <PodcastContent  podcast={props.podcast} navigation={navigation}/>
+                <PodcastContent  podcast={props.podcast} navigation={navigation} slideDown={slideDown} />
               </Animated.View>
             </Animated.View>
             </ScrollView> 
 
 
-            </Animated.View>
-         
-       
-        
-      
+            </Animated.View>    
     );
   
 }

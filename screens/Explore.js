@@ -53,19 +53,28 @@ class Explore extends React.Component {
           loading: true,
         });
         console.log('Retrieving Data');
-       
-        let userQuery = await firestore().collection('users').where('isTopStoryTeller','==',true).get(); 
+        
+        let userQuery = await firestore().collection('users').where('isTopStoryTeller','==',true).onSnapshot(
+          async(docs)=> {
+            console.log("EXPLORE SCREEN TOP STORYTELLER documents : ",docs._docs[0]._data)
+            documentUsers = docs._docs.map(document => document._data);
+            
+             this.setState({
+               storytellers:documentUsers
+             })
+          }//let documentUsers = userQuery.docs.map(document => document.data());
+        ); 
         let podcastQuery = await firestore().collectionGroup('Podcasts').where('isTrendingPodcast','==',true).get();
         let bookQuery = await firestore().collectionGroup('Podcasts').where('isShortStory','==',true).get();
         let chapterQuery = await firestore().collectionGroup('Podcasts').where('isClassicNovel','==',true).get();
         
-        let documentUsers = userQuery.docs.map(document => document.data());
+        
         let documentPodcasts = podcastQuery.docs.map(document => document.data());
         let documentBooks = bookQuery.docs.map(document => document.data());
         let documentChapters = chapterQuery.docs.map(document => document.data());
         
         this.setState({
-          storytellers: documentUsers,
+         // storytellers: documentUsers,
           podcasts: documentPodcasts,
           books: documentBooks,
           chapters: documentChapters,
