@@ -4,7 +4,7 @@
 /*React Context permits to hold state at the root of your component hierarchy, and be able to inject this state easily into very deeply nested components, without the hassle to have to pass down props to every intermediate components.
 */ 
 import React, {Component} from 'react';
-import { TouchableOpacity,StyleSheet, Text, View, SafeAreaView, Dimensions, TouchableWithoutFeedback, NativeModules} from 'react-native';
+import { TouchableOpacity,StyleSheet, Text, View, SafeAreaView, Dimensions, TouchableWithoutFeedback, NativeModules,NativeEventEmitter} from 'react-native';
 import { Container,  Content , Button,Card, CardItem, Thumbnail, Body} from 'native-base';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -15,7 +15,6 @@ import StartRecordScreen from '../screens/StartRecordScreen'
 import { TagSelect } from 'react-native-tag-select'
 import PreviewScreen from '../screens/PreviewScreen'
 //import PlayerContext from '../screens/components/PodcastPlayer/PlayerContext'
-
 
 const { width, height } = Dimensions.get('window');
 
@@ -44,14 +43,24 @@ class SelectScreen extends Component {
 
         
     }
-    componentDidMount=()=>
+
+
+    
+    componentDidMount()
     {
     // console.log(this.context)
      //const ctx =this.context.setPodcast(null, this.state.eventSource )
     // console.log(this.context)
+   
+  }
 
-    }
+  componentWillMount() {
+    // const eventEmitter = new NativeEventEmitter(NativeModules.ReactNativeRecorder);
+    // eventEmitter.addListener('abcd', (event) => {
+    //    console.log(event.eventProperty) // "someValue"
 
+    // })
+  }
 
     componentDidUpdate=()=>
     {
@@ -61,6 +70,11 @@ class SelectScreen extends Component {
       //const ctx =this.context.setPodcast(null, this.state.eventSource)
       //console.log(this.context)
       //}
+      const eventEmitter = new NativeEventEmitter(NativeModules.ReactNativeRecorder);
+    eventEmitter.addListener('abcd', (event) => {
+       console.log(event.eventProperty) // "someValue"
+
+    })
 
     }
 
@@ -97,6 +111,9 @@ class SelectScreen extends Component {
          }
        )
      }
+
+
+
 
      
 
@@ -275,11 +292,11 @@ class SelectScreen extends Component {
                             return;
                         }   
                         NativeModules.ReactNativeRecorder.sampleMethod()
-                        /*this.props.navigation.navigate('PreviewScreen', {
-          BookName: this.state.BookName,
-          ChapterName:this.state.ChapterName , 
-          AuthorName: this.state.AuthorName, 
-          LanguageSelected:this.state.LanguageSelected, })*/
+          //               this.props.navigation.navigate('PreviewScreen', {
+          // BookName: this.state.BookName,
+          // ChapterName:this.state.ChapterName , 
+          // AuthorName: this.state.AuthorName, 
+          // LanguageSelected:this.state.LanguageSelected, })*/
                          }
             }>
             <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Record</Text>

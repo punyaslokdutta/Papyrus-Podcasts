@@ -25,29 +25,16 @@ const isOS = Platform.OS === 'ios';
 import store from '../../../reducers/store';
 
 
-const PlayerProvider=({children})=>{
+const PlayerProvider=(props)=>{
 
   const podcast=useSelector(state=>state.rootReducer.podcast)
+  const navigation =useSelector(state=>state.userReducer.navigation)
   
 
   animation = new Value(0);
-useEffect(
-  (podcast) => {
-    //const {podcast} =playerGlobalState;
-    animation = new Value(0);
 
-    timing(
-      animation,
-      {
-        toValue: podcast ? 1 : 0,
-        duration: 300,
-        easing: Easing.inOut(Easing.ease),
-      },
-    ).start();
-  }, [podcast]
-)
 
-          
+  
 
  
 
@@ -77,13 +64,11 @@ useEffect(
       outputRange: [height, 0],
     });
     return (
-      <PlayerContext.Provider value={podcast}>
-          
-      
+      <PlayerContext.Provider value={podcast }>
         <StatusBar barStyle="dark-content" />
         <View style={styles.container}>
           <View style={StyleSheet.absoluteFill}>
-            {children}
+            {props.children}
           </View>
           {
             isOS && (

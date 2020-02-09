@@ -50,11 +50,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.dimowner.audiorecorder.ARApplication;
 import com.dimowner.audiorecorder.AppConstants;
 import com.dimowner.audiorecorder.ColorMap;
 import com.dimowner.audiorecorder.R;
+import com.dimowner.audiorecorder.ReactNativeRecorderModule;
 import com.dimowner.audiorecorder.app.PlaybackService;
 import com.dimowner.audiorecorder.app.RecordingService;
 import com.dimowner.audiorecorder.app.info.ActivityInformation;
@@ -67,6 +69,16 @@ import com.dimowner.audiorecorder.util.AndroidUtils;
 import com.dimowner.audiorecorder.util.AnimationUtil;
 import com.dimowner.audiorecorder.util.FileUtil;
 import com.dimowner.audiorecorder.util.TimeUtils;
+import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.ReactNativeHost;
+import com.facebook.react.ReactPackage;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.CatalystInstance;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeArray;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.io.File;
 import java.util.List;
@@ -125,6 +137,7 @@ public class MainActivity extends Activity implements MainContract.View, View.On
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+
         arApplication=ARApplication.getApplicationInstacne(this);
         arApplication.initialiseComponent();
 		colorMap = ARApplication.getInjector().provideColorMap();
@@ -271,7 +284,12 @@ public class MainActivity extends Activity implements MainContract.View, View.On
 		} else if (id == R.id.btn_record_stop) {
 			presenter.stopRecording(false);
 		} else if (id == R.id.btn_record_delete) {
-			presenter.stopRecording(true);
+
+			WritableMap params1 = Arguments.createMap();
+			params1.putString("eventProperty", "someValue");
+			if (ReactNativeRecorderModule.mycontext!=null) {
+				sendEvent(ReactNativeRecorderModule.mycontext, "abcd", params1);
+			}
 		} else if (id == R.id.btn_stop) {
 			presenter.stopPlayback();
 		} else if (id == R.id.btn_share) {//				AndroidUtils.shareAudioFile(getApplicationContext(), presenter.getActiveRecordPath(), presenter.getActiveRecordName());
@@ -847,4 +865,11 @@ public class MainActivity extends Activity implements MainContract.View, View.On
 			presenter.startRecording();
 		}
 	}
+
+	private void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
+		reactContext
+				.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+				.emit(eventName, params);
+	}
+
 }

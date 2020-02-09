@@ -1,5 +1,5 @@
 // @flow
-import * as React from 'react';
+import  React, {useRef} from 'react';
 import {
   View, StyleSheet, Text, Image, ScrollView,TouchableOpacity, TouchableWithoutFeedback,Dimensions, 
 } from 'react-native';
@@ -17,7 +17,7 @@ const { width,height } = Dimensions.get('window');
 };*/
 
  const PodcastContent=(props)=> {
-  const video = React.createRef();
+  const video = useRef();
 
 
   const rate=useSelector(state=>state.rootReducer.rate);
@@ -149,9 +149,14 @@ function handlePlayPause() {
          </View>
          <View style={styles.icons}>
          <TouchableOpacity>
+
+               
                 <Icon name="heart" size={20} style={{color:'white'} }/>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={()=>props.navigation.navigate('InfoScreen')}>
+                <TouchableOpacity onPress={()=>{
+                   dispatch({type:"TOGGLE_MINI_PLAYER"})
+                  props.navigation.navigate('InfoScreen')
+                }}>
                 <Icon name="info-circle" size={24} style={{color:'white'}}/>
                 </TouchableOpacity>
                 <TouchableOpacity >
@@ -188,7 +193,8 @@ const styles = StyleSheet.create({
   icons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingTop:height/30
+    //paddingRight:30,
+    paddingTop:height/30,
   },
   upNext: {
     borderTopWidth: 1,

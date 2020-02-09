@@ -7,6 +7,7 @@ import com.facebook.react.PackageList;
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.ReactApplication;
+import com.brentvatne.react.ReactVideoPackage;
 //import com.reactnativecommunity.statusbar.RNCStatusBarPackage;
 import com.horcrux.svg.SvgPackage;
 import com.facebook.react.ReactNativeHost;
@@ -37,6 +38,7 @@ public class MainApplication extends Application implements ReactApplication {
       //packages.add(new ImagePickerPackage()) ;
       //packages.add(new RNCStatusBarPackage());
       //packages.add(new ReactNativeRecorderPackage());
+      packages.add(new ReactVideoPackage() );
       return packages;
     }
 

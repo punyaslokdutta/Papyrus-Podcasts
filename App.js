@@ -49,6 +49,8 @@ import rootReducer from './reducers/rootReducer';
 import UserFollowingScreen from './screens/components/Explore/UserFollowingScreen';
 import UserFollowerScreen from './screens/components/Explore/UserFollowerScreen';
 import InfoScreen from './InfoScreen'
+import CustomDrawerContentComponent from './screens/navigation/CustomDrawerContentComponent'
+import setUserDetails  from './screens/setUserDetails'
 
 
 
@@ -325,10 +327,10 @@ const AppStackNavigator= createStackNavigator(
 
 
     },
-    PodcastPlayer: {screen :PodcastPlayer,
-    navigationOptions:{
-      header:null
-   }},
+  //   PodcastPlayer: {screen :PodcastPlayer,
+  //   navigationOptions:{
+  //     header:null
+  //  }},
    RecordBook: {screen :RecordBook,
     navigationOptions:{
       header:null

@@ -29,12 +29,13 @@ const areEqual = (prevProps, nextProps) => true;
   
 const dispatch=useDispatch();
 const paused=useSelector(state=>state.rootReducer.paused);
+
   
   
    //const { title, onPress } = this.props;
     return (
       
-      <TouchableWithoutFeedback onPress={props.onPress} style={{borderColor:'black'}}>
+      <TouchableWithoutFeedback onPress={props.onPress} style={{borderColor:'black'}} >
         <View style={styles.container}>
           <View style={styles.placeholder} />
           <Text style={styles.title} numberOfLine={3}>{props.title}</Text>
@@ -42,10 +43,10 @@ const paused=useSelector(state=>state.rootReducer.paused);
             <Icon name="play" size={24} style={styles.icon}/></TouchableOpacity>}
           {!paused && <TouchableOpacity  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
             <Icon name="pause" size={24} style={styles.icon}/></TouchableOpacity>}
-                <TouchableWithoutFeedback  onPress={(()=>{dispatch({type:"TOGGLE_PLAY_PAUSED"})
+                <TouchableOpacity onPress={(()=>{dispatch({type:"TOGGLE_PLAY_PAUSED"})
                   dispatch({type:"SET_PODCAST", payload: null})})}>
                 <Icon name="times-circle" size={24} style={styles.icon}/>
-                </TouchableWithoutFeedback>
+                </TouchableOpacity>
         </View>
       </TouchableWithoutFeedback>
       
@@ -59,7 +60,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    borderColor:'black'
+    borderWidth:0.25, 
   },
   title: {
     flex: 1,

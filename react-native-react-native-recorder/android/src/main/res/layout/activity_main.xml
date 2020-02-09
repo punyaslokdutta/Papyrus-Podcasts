@@ -265,7 +265,7 @@
 					android:padding="@dimen/spacing_normal"
 					android:layout_gravity="center"
 					android:scaleType="center"
-					android:visibility="invisible"
+					android:visibility="visible"
 					android:src="@drawable/ic_delete_forever_36"/>
 
 			<ImageButton

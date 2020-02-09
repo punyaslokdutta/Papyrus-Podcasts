@@ -129,7 +129,7 @@ public class MainPresenter implements MainContract.UserActionsListener {
 					if (view != null) {
 						view.showRecordingStart();
 						view.keepScreenOn(prefs.isKeepScreenOn());
-						view.startRecordingService();
+						//view.startRecordingService();
 					}
 				}
 
@@ -161,7 +161,7 @@ public class MainPresenter implements MainContract.UserActionsListener {
 				public void onRecordingStopped(long id, File file) {
 					if (view != null) {
 						view.keepScreenOn(false);
-						view.stopRecordingService();
+						//view.stopRecordingService();
 						view.hideProgress();
 						view.showRecordingStop();
 						loadActiveRecord();
@@ -309,7 +309,7 @@ public class MainPresenter implements MainContract.UserActionsListener {
 			audioPlayer.removePlayerCallback(playerCallback);
 			appRecorder.removeRecordingCallback(appRecorderCallback);
 			this.localRepository.setOnRecordsLostListener(null);
-			this.view.stopPlaybackService();
+		//	this.view.stopPlaybackService();
 			this.view = null;
 		}
 	}

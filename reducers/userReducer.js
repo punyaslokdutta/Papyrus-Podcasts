@@ -8,7 +8,8 @@ const INITIAL_STATE = {
     numFollowing: 0,
     displayPictureURL: null,
     followingList:[],
-    isUserFollowing: {}
+    isUserFollowing: {}, 
+    navigation:null
   };
   
   function userReducer(state = INITIAL_STATE, action)  {
@@ -32,6 +33,8 @@ const INITIAL_STATE = {
         case "REMOVE_FROM_FOLLOWING_MAP":
             state.isUserFollowing[action.payload] = false;
             return state;
+        case "ADD_NAVIGATION":
+            return {...state, navigation:action.payload}
         default:
             return state;
     }
