@@ -184,6 +184,24 @@ public class AudioRecorder implements RecorderContract.Recorder {
 		}
 	}
 
+	@Override
+	public void resetRecorder() {
+       if (isRecording){
+		   ARApplication.setRecording(false);
+		   stopRecordingTimer();
+		   if (recorderCallback!=null){
+		   	recorderCallback.resetWaveform();
+		   }
+		   recorder.reset();
+		   recorder.release();
+		   recordFile = null;
+		   isPrepared = false;
+		   isRecording = false;
+		   isPaused = false;
+		   recorder = null;
+	   }
+	}
+
 	private void startRecordingTimer() {
 		timerProgress = new Timer();
 		timerProgress.schedule(new TimerTask() {

@@ -13,6 +13,7 @@ public interface AppRecorder {
 	void pauseRecording();
 	void resumeRecording();
 	void stopRecording();
+	void resetRecorder();
 	List<Integer> getRecordingData();
 	boolean isRecording();
 	boolean isPaused();

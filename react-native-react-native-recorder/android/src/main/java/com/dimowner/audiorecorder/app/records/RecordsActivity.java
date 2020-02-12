@@ -31,6 +31,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -66,6 +67,10 @@ import com.dimowner.audiorecorder.util.AndroidUtils;
 import com.dimowner.audiorecorder.util.AnimationUtil;
 import com.dimowner.audiorecorder.util.FileUtil;
 import com.dimowner.audiorecorder.util.TimeUtils;
+import com.facebook.react.ReactActivity;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -73,7 +78,7 @@ import java.util.List;
 
 import timber.log.Timber;
 
-public class RecordsActivity extends Activity implements RecordsContract.View, View.OnClickListener {
+public class RecordsActivity extends ReactActivity implements RecordsContract.View, View.OnClickListener {
 
 	public static final int REQ_CODE_READ_EXTERNAL_STORAGE_PLAYBACK = 406;
 

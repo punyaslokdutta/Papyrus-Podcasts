@@ -13,6 +13,7 @@ import ProgressBar from './ProgressBar'
 import InfoScreen from '../../../InfoScreen'
 //import videos, { type Video } from './videos';
 
+
 const { width,height } = Dimensions.get('window');
 /*type VideoContentProps = 
   video: Video,
@@ -168,7 +169,7 @@ function parentSlideDown(){
                 <TouchableOpacity onPress={()=>{
                    //dispatch({type:"TOGGLE_MINI_PLAYER"})
                    parentSlideDown()
-                  props.navigation.navigate('InfoScreen')
+                   props.navigation.navigate('InfoScreen', {podcast:props.podcast})
                 }}>
                 <Icon name="info-circle" size={24} style={{color:'white'}}/>
                 </TouchableOpacity>
@@ -179,6 +180,8 @@ function parentSlideDown(){
                 <Icon name="share" size={20} style={{color:'white'}}/>
                 </TouchableOpacity>
               </View>
+
+              
 
         </ScrollView>
       

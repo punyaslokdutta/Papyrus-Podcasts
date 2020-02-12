@@ -29,6 +29,7 @@ public interface RecorderContract {
 		void onRecordProgress(long mills, int amp);
 		void onStopRecord(File output);
 		void onError(AppException throwable);
+		void resetWaveform();
 	}
 
 	interface Recorder {
@@ -37,6 +38,7 @@ public interface RecorderContract {
 		void startRecording();
 		void pauseRecording();
 		void stopRecording();
+		void resetRecorder();
 		boolean isRecording();
 		boolean isPaused();
 	}

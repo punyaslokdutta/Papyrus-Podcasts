@@ -1,137 +1,139 @@
-import React, { Component } from 'react';
-import firestore from '@react-native-firebase/firestore';
-import ActivityIndicator from 'react-native';
-import { Text, StyleSheet, View, Animated, Image, Dimensions, ScrollView, TouchableOpacity } from 'react-native'
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import * as theme from './screens/components/constants/theme';
+import React, { Component, useState } from "react";
+import {
+  Dimensions,
+  Image,
+  FlatList,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity, View
+} from "react-native";
+import Icon from 'react-native-vector-icons/FontAwesome'
 
-const { width, height } = Dimensions.get('window');
-//const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView)
+import { Button, Divider, Block, Text } from "./screens/components/categories/components";
+import { theme, mocks } from "./screens/components/categories/constants";
+
+import {useSelector } from 'react-redux'
+
+const { width, height } = Dimensions.get("window");
+
+ InfoScreen=(props)=> {
+  const podcast=useState(props.navigation.state.params.podcast)
+  //const navigation=useSelector(state=>state.userReducer.navigation)
+  //console.log(podcast[0].Podcast_Pictures)
+    
+   const navigationOptions = ({ navigation }) => {
+    return {
+      headerRight: (
+        <Button onPress={() => {}}>
+          <Icon name="ellipsis-h" color={theme.colors.black} />
+        </Button>
+      )
+    };
+  };
+
+
+   function renderGallery() {
+    const { product } = props;
+    return (
+      <FlatList
+        horizontal
+        pagingEnabled
+        scrollEnabled
+        showsHorizontalScrollIndicator={false}
+        snapToAlignment="center"
+        data={podcast[0].Podcast_Pictures}
+        keyExtractor={(item, index) => `${index}`}
+        renderItem={( {item} ) => (
+          <Image
+            source={{uri:item}}
+            resizeMode="contain"
+            style={{ width, height: height / 2.8 }}
+          />
+        )}
+      />
+    );
+  }
+
+    const { product } =props;
+
+    return (
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {renderGallery()}
+
+        <Block style={styles.product}>
+          <Text h2 bold>
+            {podcast[0].Podcast_Name}
+          </Text>
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+          <Block flex={false} row margin={[theme.sizes.base, 0]}>
+            { podcast[0].Tags_Array && podcast[0].Tags_Array.map(tag => (
+              <Text key={`tag-${tag}`} caption gray style={styles.tag}>
+                {tag}
+              </Text>
+            ))}
+          </Block>
+          </ScrollView>
+          <Text gray light height={22}>
+            {podcast[0].description}
+          </Text>
+
+          <Divider margin={[theme.sizes.padding * 0.9, 0]} />
+
+          <Block>
+            <Text semibold>Related</Text>
+            <Block row margin={[theme.sizes.padding * 0.9, 0]}>
+              {product.images.slice(1, 3).map((image, index) => (
+                <Image
+                  key={`gallery-${index}`}
+                  source={image}
+                  style={styles.image}
+                />
+              ))}
+              <Block
+                flex={false}
+                card
+                center
+                middle
+                color="rgba(197,204,214,0.20)"
+                style={styles.more}
+              >
+                <Text gray>+{product.images.slice(3).length}</Text>
+              </Block>
+            </Block>
+          </Block>
+        </Block>
+      </ScrollView>
+    );
+  
+}
+
+InfoScreen.defaultProps = {
+  product: mocks.products[0]
+};
+
+export default InfoScreen;
 
 const styles = StyleSheet.create({
-  TouchableOpacityStyle: {
-    position: 'absolute',
-    width: 50,
-    height: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-    right: 30,
-    bottom: 30,
+  product: {
+    paddingHorizontal: theme.sizes.base * 2,
+    paddingVertical: theme.sizes.padding
   },
- 
-  FloatingButtonStyle: {
-    resizeMode: 'contain',
-    width: 50,
-    height: 50,
-    //backgroundColor:'black'
+  tag: {
+    borderColor: theme.colors.gray2,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: theme.sizes.base,
+    paddingHorizontal: theme.sizes.base*0.5,
+    paddingVertical: theme.sizes.base / 2.5,
+    marginRight: theme.sizes.base * 0.625
   },
-  flex: {
-    flex: 0,
+  image: {
+    width: width / 3.26,
+    height: width / 3.26,
+    marginRight: theme.sizes.base
   },
-  column: {
-    flexDirection: 'column'
-  },
-  row: {
-    flexDirection: 'row'
-  },
-  header: {
-    // backgroundColor: 'transparent',
-    paddingHorizontal: theme.sizes.padding,
-    paddingTop: theme.sizes.padding,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-  },
-  back: {
-    width: theme.sizes.base * 3,
-    height: theme.sizes.base * 3,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-  },
-  content: {
-    // backgroundColor: theme.colors.active,
-    // borderTopLeftRadius: theme.sizes.border,
-    // borderTopRightRadius: theme.sizes.border,
-  },
-  contentHeader: {
-    backgroundColor: 'transparent',
-    padding: theme.sizes.padding,
-    backgroundColor: theme.colors.white,
-    borderTopLeftRadius: theme.sizes.radius*4,
-    borderTopRightRadius: theme.sizes.radius*4,
-    marginTop: -theme.sizes.padding / 2,
-  },
-  avatar: {
-    position: 'absolute',
-    top: -theme.sizes.margin,
-    right: theme.sizes.margin,
-    width: theme.sizes.padding * 2,
-    height: theme.sizes.padding * 2,
-    borderRadius: theme.sizes.padding,
-  },
-  shadow: {
-    shadowColor: theme.colors.black,
-    shadowOffset: {
-      width: 0,
-      height: 6,
-    },
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
-  },
-  indicator: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 80
-  },
-  dotsContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    bottom: 36,
-    right: 0,
-    left: 0
-  },
-  dots: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginHorizontal: 6,
-    backgroundColor: theme.colors.gray,
-  },
-  title: {
-    fontSize: theme.sizes.font * 2,
-    fontWeight: 'bold'
-  },
-  description: {
-    fontSize: theme.sizes.font * 1.2,
-    lineHeight: theme.sizes.font * 2,
-    color: theme.colors.black,
-    //fonFamily: 'sans-serif-light'
-    
+  more: {
+    width: 55,
+    height: 55
   }
 });
 
-const InfoScreen =(props)=> {
-
-
-
-
- 
-
-  //component did mount
- 
-
-return (
-    <ScrollView>
-        <Text>InfoScreen</Text>
-    </ScrollView>
-    
-    );
- 
-        }
-
-export default InfoScreen;

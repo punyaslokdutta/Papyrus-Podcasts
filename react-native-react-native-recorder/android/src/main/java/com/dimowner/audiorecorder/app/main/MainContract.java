@@ -80,6 +80,7 @@ public interface MainContract {
 
 		void startRecording();
 		void stopRecording(boolean deleteRecord);
+		void resetRecording();
 
 		void startPlayback();
 		void pausePlayback();

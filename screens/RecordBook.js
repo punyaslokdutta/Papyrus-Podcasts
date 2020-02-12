@@ -298,8 +298,8 @@ class RecordBook extends Component {
             <TouchableOpacity onPress={()=>this.props.navigation.navigate('SelectScreen')}>
               <Card style={{borderRadius: 5  ,width:((width*4)/5 ) , height:(height)/8 , paddingTop :10}}>
               <CardItem style={{flexDirection:'column', alignItems:'center'}}>
-            <FontAwesome name="microphone" color={theme.colors.black} size={theme.sizes.font * 2} />
-            <Text>Narrate</Text>
+             <FontAwesome name="microphone" color={theme.colors.black} size={theme.sizes.font * 2} />
+            <Text>Record</Text>
             </CardItem>
             </Card>
           </TouchableOpacity>

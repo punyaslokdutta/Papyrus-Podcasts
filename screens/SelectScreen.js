@@ -70,13 +70,15 @@ class SelectScreen extends Component {
       //const ctx =this.context.setPodcast(null, this.state.eventSource)
       //console.log(this.context)
       //}
+      var path="/storage/emulated/0/AudioRecorder/"
+      var fileType=".m4a"
       const eventEmitter = new NativeEventEmitter(NativeModules.ReactNativeRecorder);
-    eventEmitter.addListener('abcd', (event) => {
-       console.log(event.eventProperty) // "someValue"
+    eventEmitter.addListener('RecordFile', (event) => {
+       var audioFilePath=path.concat(event.eventProperty,fileType)
+       console.log(audioFilePath)
 
     })
-
-    }
+  }
 
     onPressAdd2()
     {

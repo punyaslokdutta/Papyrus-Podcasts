@@ -372,6 +372,11 @@ public class MainPresenter implements MainContract.UserActionsListener {
 	}
 
 	@Override
+	public void resetRecording() {
+		appRecorder.resetRecorder();
+	}
+
+	@Override
 	public void startPlayback() {
 		if (record != null) {
 			if (!audioPlayer.isPlaying()) {

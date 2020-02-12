@@ -78,6 +78,7 @@ public class AppRecorderImpl implements AppRecorder {
 				recordingData.add(amplitude);
 			}
 
+
 			@Override
 			public void onStopRecord(final File output) {
 				onRecordProcessing();
@@ -137,6 +138,11 @@ public class AppRecorderImpl implements AppRecorder {
 			public void onError(AppException e) {
 				Timber.e(e);
 				onRecordingError(e);
+			}
+
+			@Override
+			public void resetWaveform() {
+               recordingData.clear();
 			}
 		};
 		audioRecorder.setRecorderCallback(recorderCallback);
@@ -214,6 +220,11 @@ public class AppRecorderImpl implements AppRecorder {
 		if (audioRecorder.isRecording()) {
 			audioRecorder.stopRecording();
 		}
+	}
+
+	@Override
+	public void resetRecorder() {
+          audioRecorder.resetRecorder();
 	}
 
 	@Override
