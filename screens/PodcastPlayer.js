@@ -353,7 +353,7 @@ const PodcastPlayer=(props)=>{
 
         <PanGestureHandler
           //onHandlerStateChange={onGestureEvent}
-          activeOffsetY={[-100, 100]}
+          activeOffsetY={[-10, 10]}
           //{...{ onGestureEvent }}
         >
           <TouchableNativeFeedback onPress={slideDown}>

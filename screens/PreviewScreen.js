@@ -20,6 +20,7 @@ const options = {
 class PreviewScreen extends Component {
   constructor(props)
   {
+    
     super(props)
     this.state={
       PodcastImage: null, 
@@ -30,9 +31,12 @@ class PreviewScreen extends Component {
     }
   }
 
+ 
+
   
    
     render() {
+      
       const { navigation } = this.props;
       const BookName=navigation.getParam('BookName', null);
       const chapterName=navigation.getParam('ChapterName', null);
