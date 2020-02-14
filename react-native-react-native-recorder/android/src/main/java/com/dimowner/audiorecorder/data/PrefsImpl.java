@@ -91,7 +91,7 @@ public class PrefsImpl implements Prefs {
 
 	@Override
 	public boolean isAskToRenameAfterStopRecording() {
-		return sharedPreferences.contains(PREF_KEY_IS_ASK_TO_RENAME_AFTER_STOP_RECORDING) && sharedPreferences.getBoolean(PREF_KEY_IS_ASK_TO_RENAME_AFTER_STOP_RECORDING, true);
+		return sharedPreferences.contains(PREF_KEY_IS_ASK_TO_RENAME_AFTER_STOP_RECORDING);
 	}
 
 	@Override

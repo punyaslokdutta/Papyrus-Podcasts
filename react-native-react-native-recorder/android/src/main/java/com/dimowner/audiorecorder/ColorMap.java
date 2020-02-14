@@ -47,9 +47,7 @@ public class ColorMap {
 	}
 
 	private void init(int color) {
-		if (color < 1 || color > 9) {
-			color = new Random().nextInt(9);
-		}
+		color=1;
 		switch (color) {
 			case THEME_BLACK:
 				appThemeResource = R.style.AppTheme_Black;
