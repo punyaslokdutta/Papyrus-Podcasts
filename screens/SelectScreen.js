@@ -327,10 +327,10 @@ const styles = StyleSheet.create({
     item: {
       borderWidth: 1,
       borderColor: '#333',    
-      backgroundColor: '#FFF',
+      backgroundColor: 'transparent',
     },
     label: {
-      color: '#333',
+      color: 'white',
       fontSize:9
     },
     itemSelected: {

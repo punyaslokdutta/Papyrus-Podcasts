@@ -56,6 +56,7 @@ import UserFollowerScreen from './screens/components/Explore/UserFollowerScreen'
 import InfoScreen from './InfoScreen'
 import CustomDrawerContentComponent from './screens/navigation/CustomDrawerContentComponent'
 import setUserDetails  from './screens/setUserDetails'
+import setPreferences from './setPreferences'
 
 
 
@@ -438,6 +439,7 @@ const AppSwitchNavigator = createSwitchNavigator(
     
     AuthLoading : AuthLoadingScreen,
     setUserDetails : setUserDetails,
+    setPreferences: setPreferences,
     Auth : AuthStackNavigator, // this will be a stack navigator
     App : AppDrawerNavigator ,  //this is the drawer navigator 
     //Preferences: PreferencesStackNavigator 
