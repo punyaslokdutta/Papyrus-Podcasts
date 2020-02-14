@@ -34,6 +34,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -135,6 +136,7 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
     private ColorMap colorMap;
     private ColorMap.OnThemeColorChangeListener onThemeColorChangeListener;
     ImageButton btn_upload;
+    String newName = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,7 +164,7 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
         playProgress = findViewById(R.id.play_progress);
         pnlImportProgress = findViewById(R.id.pnl_import_progress);
         pnlRecordProcessing = findViewById(R.id.pnl_record_processing);
-        //btn_upload=findViewById(R.id.btn_records_list);
+        btn_upload = findViewById(R.id.btn_records_list);
 
         txtProgress.setText(TimeUtils.formatTimeIntervalHourMinSec2(0));
 
@@ -179,7 +181,7 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
         btnShare.setOnClickListener(this);
         btnImport.setOnClickListener(this);
         txtName.setOnClickListener(this);
-        //	btn_upload.setOnClickListener(this);
+        btn_upload.setOnClickListener(this);
         playProgress.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -271,6 +273,7 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
     public void onClick(View view) {
         int id = view.getId();
         if (id == R.id.btn_play) {//This method Starts or Pause playback.
+            btn_upload.setVisibility(View.GONE);
             if (FileUtil.isFileInExternalStorage(getApplicationContext(), presenter.getActiveRecordPath())) {
                 if (checkStoragePermissionPlayback()) {
                     presenter.startPlayback();
@@ -279,6 +282,7 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
                 presenter.startPlayback();
             }
         } else if (id == R.id.btn_record) {
+            btn_upload.setVisibility(View.GONE);
             if (checkRecordPermission2()) {
                 if (checkStoragePermission2()) {
                     //Start or stop recording
@@ -288,6 +292,10 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
         } else if (id == R.id.btn_record_stop) {
             presenter.stopRecording(false);
         } else if (id == R.id.btn_record_delete) {
+            if (waveformView.getWaveformLength() > 0) {
+                waveformView.clearRecordingData();
+                waveformView.moveToStart();
+            }
             waveformView.seekPx(0);
             btnRecord.setImageResource(R.drawable.ic_record);
             txtProgress.setText(TimeUtils.formatTimeIntervalHourMinSec2(0));
@@ -307,7 +315,17 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
                 setRecordName(presenter.getActiveRecordId(), new File(presenter.getActiveRecordPath()), false);
             }
         } else if (id == R.id.btn_records_list) {
+            WritableMap params1 = Arguments.createMap();
+            params1.putString("eventProperty", newName);
+            try {
+                getReactInstanceManager().getCurrentReactContext()
+                        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                        .emit("RecordFile", params1);
 
+            } catch (Exception e) {
+                Log.e("ReactNative", "Caught Exception: " + e.getMessage());
+            }
+            onBackPressed();
         }
     }
 
@@ -697,7 +715,7 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
             public void onTextChanged(CharSequence s, int start, int before, int count) {
             }
         });
-        editText.setTextColor(getResources().getColor(R.color.text_primary_light));
+        editText.setTextColor(getResources().getColor(R.color.text_primary_dark));
         editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.text_medium));
 
         int pad = (int) getResources().getDimension(R.dimen.spacing_normal);
@@ -717,22 +735,14 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
                 .setView(container)
                 .setPositiveButton(R.string.btn_save, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        String newName = editText.getText().toString();
-                        WritableMap params1 = Arguments.createMap();
-                        params1.putString("eventProperty", newName);
-                        try {
-                            getReactInstanceManager().getCurrentReactContext()
-                                    .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                    .emit("RecordFile", params1);
+                        newName = editText.getText().toString();
 
-                        } catch (Exception e){
-                            Log.e("ReactNative", "Caught Exception: " + e.getMessage());
-                        }
 
                         if (!fileName.equalsIgnoreCase(newName)) {
                             presenter.renameRecord(recordId, newName);
                         }
                         dialog.dismiss();
+                        btn_upload.setVisibility(View.VISIBLE);
                     }
                 })
                 .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
@@ -919,4 +929,9 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
                 .emit(eventName, params);
     }
 
+    @Override
+    public void onBackPressed() {
+        presenter.stopRecording(false);
+        finish();
+    }
 }

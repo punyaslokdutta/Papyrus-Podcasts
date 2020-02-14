@@ -24,7 +24,7 @@ const CustomCategoryHeader = props => {
                  <TouchableOpacity onPress={() => props.navigation.navigate('CategoryScreen')}>
                 <Image
                   resizeMode="contain"
-                  source={require('../../assets/icons/Back.png')}
+                  source={""}
                   style={{ width: 20, height: 50, marginTop: 2,marginLeft: theme.sizes.base}}
                 />
                 </TouchableOpacity> 
