@@ -50,7 +50,7 @@ class  AuthLoadingScreen extends Component {
                        {
                          console.log(error)
                        }
-                      // this.props.navigation.navigate('setPreferences')
+                      // thi s.props.navigation.navigate('setPreferences')
                   }
                   else
                   {

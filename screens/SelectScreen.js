@@ -26,14 +26,6 @@ const SelectScreen =(props)=> {
   const dispatch=useDispatch();
 
 
-
-  /*componentWillMount() {
-    // const eventEmitter = new NativeEventEmitter(NativeModules.ReactNativeRecorder);
-    // eventEmitter.addListener('abcd', (event) => {
-    //    console.log(event.eventProperty) // "someValue"
-
-    // })
-  }*/
   useEffect(
     ()=>
     {

@@ -1,15 +1,15 @@
-
-
 import React, {Component} from 'react';
 import { TouchableOpacity,StyleSheet, View, Button, SafeAreaView, Dimensions, Image, TextInput, Platform , KeyboardAvoidingView, ScrollView} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
+import ImagePicker from 'react-native-image-picker'
 import {Block , Text }  from '../categories/components/'
-
-
+import storage,{firebase} from '@react-native-firebase/storage'
+//import firebase from '@react-native-firebase/app';
+//import {anthology} from '../../../assets/images'
 const { width, height } = Dimensions.get('window');
 import{theme, mocks} from '../categories/constants/'
-
+import {withFirebaseHOC} from '../../config/Firebase'
 
 
 
@@ -32,7 +32,7 @@ class editProfile extends Component {
       profile: {},
     }
   }
-  componentDidMount() {
+  componentDidMount = async () => {
     this.setState({ profile: this.props.profile });
   }
 
@@ -63,29 +63,56 @@ class editProfile extends Component {
     return <Text bold>{profile[name]}</Text>
   }
 
-  // uploadImage=()=>
-  // {
-  //   ImagePicker.showImagePicker(options, (response) => {
-  //     console.log('Response = ', response);
-    
-  //     if (response.didCancel) {
-  //       console.log('User cancelled image picker');
-  //     } else if (response.error) {
-  //       console.log('ImagePicker Error: ', response.error);
-  //     } else if (response.customButton) {
-  //       console.log('User tapped custom button: ', response.customButton);
-  //     } else {
-  //       const source = { uri: response.uri };
-    
-  //       // You can also display the image using data:
-  //       // const source = { uri: 'data:image/jpeg;base64,' + response.data };
-    
-  //       this.setState({
-  //         ProfileImage: source,
-  //       });
-  //     }
-  //   });
-  // }
+  uploadImage = async () =>
+  {
+  
+
+    ImagePicker.showImagePicker(options, async(response) => {
+      console.log('Response URI = ', response.uri);
+      console.log('Response PATH = ', response.path);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else {
+        const source = { uri: response.uri };
+       console.log("Before storageRef.putFile");
+       this.setState({
+        ProfileImage: source,
+      });
+         var storageRef = storage().ref('books/10000_5.jpg');
+
+
+          console.log("Before storageRef.putFile");
+         storageRef.putFile(response.path)//: 'content://com.miui.gallery.open/raw/storage/emulated/DCIM/Camera/IMG_20200214_134628_1.jpg')
+         .on(
+             firebase.storage.TaskEvent.STATE_CHANGED,
+           snapshot => {
+             console.log("snapshot: " + snapshot.state);
+             console.log("progress: " + (snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+   
+             if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+               console.log("Success");
+             }
+           },
+           error => {
+             unsubscribe();
+             console.log("image upload error: " + error.toString());
+           },
+           () => {
+             storageRef.getDownloadURL()
+               .then((downloadUrl) => {
+                 console.log("File available at: " + downloadUrl);
+               })
+           }
+         )
+       
+      }
+    });
+  }
    
     render() {
       const { navigation } = this.props;
@@ -121,32 +148,15 @@ class editProfile extends Component {
 
         <View style={{ paddingTop:width/15}}>
 
-                <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/16, width:height/6, borderRadius:15, borderColor:'black', borderWidth: 1 }}>
+                <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/16, width:height/6, borderRadius:15, borderColor:'black', borderWidth: 1 }}
+                onPress={this.uploadImage} >
             <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'black', justifyContent:'center'}} >Edit</Text>
                 </TouchableOpacity>
         </View>  
       </View> 
 
       </View> 
-      <Block style={styles.inputs}>
-            <Block row space="between" margin={[10, 0]} style={styles.inputRow}>
-              <Block>
-                <Text gray2 style={{ marginBottom: 10 }}>Name</Text>
-                {this.renderEdit('Name')}
-              </Block>
-              <Text medium primary onPress={() => this.toggleEdit('Name')}>
-                {editing === 'Name' ? 'Save' : 'Edit'}
-              </Text>
-            </Block>
-            <Block row space="between" margin={[10, 0]} style={styles.inputRow}>
-              <Block>
-                <Text gray2 style={{ marginBottom: 10 }}>Username</Text>
-                {this.renderEdit('username')}
-              </Block>
-              <Text medium primary onPress={() => this.toggleEdit('username')}>
-                {editing === 'username' ? 'Save' : 'Edit'}
-              </Text>
-            </Block>
+      <Block style={styles.inputs}>   
             <Block row space="between" margin={[10, 0]} style={styles.inputRow}>
               <Block>
                 <Text gray2 style={{ marginBottom: 10 }}>Website</Text>
@@ -183,7 +193,7 @@ class editProfile extends Component {
     }
   }
 
-export default editProfile;
+export default withFirebaseHOC(editProfile);
 editProfile.defaultProps = {
   profile: mocks.profile,
 }
