@@ -43,6 +43,7 @@ public class AudioRecorder implements RecorderContract.Recorder {
 	private boolean isPaused = false;
 	private Timer timerProgress;
 	private long progress = 0;
+	public long recordedTimeDuration=0;
 
 	private RecorderContract.RecorderCallback recorderCallback;
 
@@ -163,7 +164,9 @@ public class AudioRecorder implements RecorderContract.Recorder {
 	@Override
 	public void stopRecording() {
 		if (isRecording) {
+
 			stopRecordingTimer();
+			ARApplication.recorderTimeDuration(recordedTimeDuration);
 			try {
 				recorder.stop();
 				ARApplication.setRecording(false);
@@ -220,6 +223,7 @@ public class AudioRecorder implements RecorderContract.Recorder {
 	}
 
 	private void stopRecordingTimer() {
+		recordedTimeDuration=progress;
 		timerProgress.cancel();
 		timerProgress.purge();
 		progress = 0;
@@ -239,4 +243,5 @@ public class AudioRecorder implements RecorderContract.Recorder {
 	public boolean isPaused() {
 		return isPaused;
 	}
+
 }

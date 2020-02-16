@@ -28,68 +28,74 @@ import timber.log.Timber;
 
 public class ARApplication {
 
-	private static String PACKAGE_NAME ;
-	public static volatile Handler applicationHandler;
-	public static Context mContext;
+    private static String PACKAGE_NAME;
+    public static volatile Handler applicationHandler;
+    public static Context mContext;
 
-	public static ARApplication arApplicationn= new ARApplication();
+    public static ARApplication arApplicationn = new ARApplication();
 
-	private  ARApplication(){}
+    private ARApplication() {
+    }
 
-	public static ARApplication getApplicationInstacne(Context context){
-		mContext=context;
-		return  arApplicationn;
-	}
+    public static ARApplication getApplicationInstacne(Context context) {
+        mContext = context;
+        return arApplicationn;
+    }
 
-	/** Screen width in dp */
-	private static float screenWidthDp = 0;
+    /**
+     * Screen width in dp
+     */
+    private static float screenWidthDp = 0;
 
-	public static Injector injector;
+    public static Injector injector;
 
-	private static boolean isRecording = false;
+    private static boolean isRecording = false;
 
-	public static Injector getInjector() {
-		return injector;
-	}
+    public static long timeDuration = 0;
 
-	public static String appPackage() {
-		return PACKAGE_NAME;
-	}
+    public static Injector getInjector() {
+        return injector;
+    }
 
-	/**
-	 * Calculate density pixels per second for record duration.
-	 * Used for visualisation waveform in view.
-	 * @param durationSec record duration in seconds
-	 */
-	public static float getDpPerSecond(float durationSec) {
-		if (durationSec > AppConstants.LONG_RECORD_THRESHOLD_SECONDS) {
-			return AppConstants.WAVEFORM_WIDTH * screenWidthDp / durationSec;
-		} else {
-			return AppConstants.SHORT_RECORD_DP_PER_SECOND;
-		}
-	}
+    public static String appPackage() {
+        return PACKAGE_NAME;
+    }
 
-	public static int getLongWaveformSampleCount() {
-		return (int)(AppConstants.WAVEFORM_WIDTH * screenWidthDp);
-	}
+    /**
+     * Calculate density pixels per second for record duration.
+     * Used for visualisation waveform in view.
+     *
+     * @param durationSec record duration in seconds
+     */
+    public static float getDpPerSecond(float durationSec) {
+        if (durationSec > AppConstants.LONG_RECORD_THRESHOLD_SECONDS) {
+            return AppConstants.WAVEFORM_WIDTH * screenWidthDp / durationSec;
+        } else {
+            return AppConstants.SHORT_RECORD_DP_PER_SECOND;
+        }
+    }
 
-	public void  initialiseComponent() {
-		if (BuildConfig.DEBUG) {
-			//Timber initialization
-			Timber.plant(new Timber.DebugTree() {
-				@Override
-				protected String createStackElementTag(StackTraceElement element) {
-					return "AR-AR " + super.createStackElementTag(element) + ":" + element.getLineNumber();
-				}
-			});
-		}
-		//		Fabric.with(this, new Crashlytics());
+    public static int getLongWaveformSampleCount() {
+        return (int) (AppConstants.WAVEFORM_WIDTH * screenWidthDp);
+    }
 
-		//PACKAGE_NAME = getApplicationContext().getPackageName();
-		applicationHandler = new Handler(mContext.getMainLooper());
-		screenWidthDp = AndroidUtils.pxToDp(AndroidUtils.getScreenWidth(mContext));
-		injector = new Injector(mContext);
-	}
+    public void initialiseComponent() {
+        if (BuildConfig.DEBUG) {
+            //Timber initialization
+            Timber.plant(new Timber.DebugTree() {
+                @Override
+                protected String createStackElementTag(StackTraceElement element) {
+                    return "AR-AR " + super.createStackElementTag(element) + ":" + element.getLineNumber();
+                }
+            });
+        }
+        //		Fabric.with(this, new Crashlytics());
+
+        //PACKAGE_NAME = getApplicationContext().getPackageName();
+        applicationHandler = new Handler(mContext.getMainLooper());
+        screenWidthDp = AndroidUtils.pxToDp(AndroidUtils.getScreenWidth(mContext));
+        injector = new Injector(mContext);
+    }
 
 /*	@Override
 	public void onTerminate() {
@@ -100,12 +106,15 @@ public class ARApplication {
 	}*/
 
 
+    public static boolean isRecording() {
+        return isRecording;
+    }
 
-	public static boolean isRecording() {
-		return isRecording;
-	}
+    public static void recorderTimeDuration(long time) {
+        timeDuration = time;
+    }
 
-	public static void setRecording(boolean recording) {
-		ARApplication.isRecording = recording;
-	}
+    public static void setRecording(boolean recording) {
+        ARApplication.isRecording = recording;
+    }
 }

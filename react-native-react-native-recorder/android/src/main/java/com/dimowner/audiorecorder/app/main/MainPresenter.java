@@ -70,6 +70,7 @@ public class MainPresenter implements MainContract.UserActionsListener {
 	private boolean isProcessing = false;
 	private boolean deleteRecord = false;
 	private boolean listenPlaybackProgress = true;
+	public static  long  durationUploadedfile=0;
 
 	/** Flag true defines that presenter called to show import progress when view was not bind.
 	 * And after view bind we need to show import progress.*/
@@ -717,6 +718,7 @@ public class MainPresenter implements MainContract.UserActionsListener {
 					File newFile = fileRepository.provideRecordFile(name);
 					if (FileUtil.copyFile(fileDescriptor, newFile)) {
 						long duration = AndroidUtils.readRecordDuration(newFile);
+						durationUploadedfile=duration;
 						if (duration/1000000 < AppConstants.LONG_RECORD_THRESHOLD_SECONDS) {
 							//Do simple import for short records.
 							id = localRepository.insertFile(newFile.getAbsolutePath());
