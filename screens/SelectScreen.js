@@ -50,8 +50,9 @@ const SelectScreen =(props)=> {
       const filePath="/storage/emulated/0/AudioRecorder/"
       var audioFilePath=null;
       eventEmitter.addListener('RecordFile', (event) => {
-           audioFilePath=filePath.concat(event.eventProperty,fileType)
+           audioFilePath=filePath.concat(event.eventName,fileType)
           console.log("RecordedFilePath :" +audioFilePath)
+          console.log("timeduration :" , +event.eventDuration)
           //console.log(props)
           //navigateToPreview()
           
@@ -242,12 +243,9 @@ const SelectScreen =(props)=> {
                             alert("You must choose Category and Language of your Podcast");
                             return;
                         }   
-                        props.navigation.navigate('PreviewScreen', {
-          BookName: BookName,
-          ChapterName:ChapterName , 
-          AuthorName: AuthorName, 
-          LanguageSelected:LanguageSelected, }
- )
+
+            NativeModules.ReactNativeRecorder.uploadActivity()
+ 
                          }
             }>
             <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Upload</Text>
@@ -270,6 +268,8 @@ const SelectScreen =(props)=> {
                          }
             }>
             <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Record</Text>
+          
+
                 </TouchableOpacity>
         </View>
        

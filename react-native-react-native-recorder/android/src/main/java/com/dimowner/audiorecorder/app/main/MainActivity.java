@@ -65,6 +65,7 @@ import com.dimowner.audiorecorder.app.info.RecordInfo;
 import com.dimowner.audiorecorder.app.records.RecordsActivity;
 import com.dimowner.audiorecorder.app.settings.SettingsActivity;
 import com.dimowner.audiorecorder.app.widget.WaveformView;
+import com.dimowner.audiorecorder.audio.recorder.AudioRecorder;
 import com.dimowner.audiorecorder.data.database.Record;
 import com.dimowner.audiorecorder.util.AndroidUtils;
 import com.dimowner.audiorecorder.util.AnimationUtil;
@@ -129,10 +130,15 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
     private LinearLayout pnlRecordProcessing;
 
     private MainContract.UserActionsListener presenter;
+    private MainContract.UserActionsListener presenter1;
+
     private ServiceConnection serviceConnection;
     private PlaybackService playbackService;
     private boolean isBound = false;
     private ARApplication arApplication;
+    private ARApplication arApplication1;
+    private long recorderTime = 0;
+
     private ColorMap colorMap;
     private ColorMap.OnThemeColorChangeListener onThemeColorChangeListener;
     ImageButton btn_upload;
@@ -243,6 +249,17 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
 			}
 		};
 		colorMap.addOnThemeColorChangeListener(onThemeColorChangeListener);*/
+
+
+        Bundle bundle = getIntent().getExtras();
+
+        if (bundle != null) {
+            if (bundle.getInt("import") == 1) {
+                if (checkStoragePermissionImport()) {
+                    startFileSelector();
+                }
+            }
+        }
     }
 
     @Override
@@ -315,8 +332,16 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
                 setRecordName(presenter.getActiveRecordId(), new File(presenter.getActiveRecordPath()), false);
             }
         } else if (id == R.id.btn_records_list) {
+           int duration=Integer.parseInt(txtDuration.getText().toString().split(":")[0] + txtDuration.getText().toString().split(":")[1]);
             WritableMap params1 = Arguments.createMap();
-            params1.putString("eventProperty", newName);
+            if (newName.length() == 0 || newName == null && flag == 1) {
+                params1.putString("eventName", txtName.getText().toString());
+                params1.putInt("eventDuration", duration);
+
+            } else {
+                params1.putString("eventName", newName);
+                params1.putInt("eventDuration", duration);
+            }
             try {
                 getReactInstanceManager().getCurrentReactContext()
                         .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
@@ -329,7 +354,7 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
         }
     }
 
-    private void startFileSelector() {
+    public void startFileSelector() {
         Intent intent_upload = new Intent();
         intent_upload.setType("audio/*");
         intent_upload.addCategory(Intent.CATEGORY_OPENABLE);
@@ -338,11 +363,14 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
         startActivityForResult(intent_upload, REQ_CODE_IMPORT_AUDIO);
     }
 
+    int flag = 0;
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQ_CODE_IMPORT_AUDIO && resultCode == RESULT_OK) {
             presenter.importAudioFile(getApplicationContext(), data.getData());
+            flag = 1;
         }
     }
 
@@ -394,6 +422,7 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
         btnRecord.setImageResource(R.drawable.ic_pause_circle_filled);
         btnPlay.setEnabled(false);
         btnImport.setEnabled(false);
+        btnImport.setVisibility(View.GONE);
         btnShare.setEnabled(false);
         btnDelete.setVisibility(View.VISIBLE);
         btnDelete.setEnabled(true);
@@ -417,6 +446,7 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
         btnRecord.setImageResource(R.drawable.ic_record);
         btnPlay.setEnabled(true);
         btnImport.setEnabled(true);
+        btnImport.setVisibility(View.VISIBLE);
         btnShare.setEnabled(true);
         playProgress.setEnabled(true);
         btnDelete.setVisibility(View.INVISIBLE);
@@ -817,7 +847,7 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
         inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
     }
 
-    private boolean checkStoragePermissionImport() {
+    public boolean checkStoragePermissionImport() {
         if (presenter.isStorePublic()) {
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
@@ -923,15 +953,10 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
         }
     }
 
-    private void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
-        reactContext
-                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                .emit(eventName, params);
-    }
-
     @Override
     public void onBackPressed() {
         presenter.stopRecording(false);
         finish();
     }
+
 }
