@@ -16,7 +16,7 @@ const SelectScreen =(props)=> {
   const [ChapterName, setChapterName]=useState(null);
   const [AuthorName, setAuthorName]=useState(null);
   const [LanguageSelected, setLanguageSelected]=useState(null);
-  const [recordedFilePath, setRecordedFilePath]=useState(null);
+  //const [recordedFilePath, setRecordedFilePath]=useState(null);
   const eventEmitter=useRef(new NativeEventEmitter(NativeModules.ReactNativeRecorder)).current;
   const addModal=React.createRef(null);
   const addChapterModal=React.createRef(null);
@@ -58,7 +58,13 @@ const SelectScreen =(props)=> {
           
         
        
-       //this.props.navigation.navigate('PreviewScreen')
+       props.navigation.navigate('PreviewScreen', {
+
+         BookName: BookName, 
+         ChapterName:ChapterName, 
+         AuthorName:AuthorName, 
+         LanguageSelected:LanguageSelected, 
+         recordedFilePath: audioFilePath})
 
     })
    //setRecordedFilePath(audioFilePath)
@@ -327,10 +333,10 @@ const styles = StyleSheet.create({
     item: {
       borderWidth: 1,
       borderColor: '#333',    
-      backgroundColor: '#FFF',
+      backgroundColor: 'transparent',
     },
     label: {
-      color: '#333',
+      color: 'white',
       fontSize:9
     },
     itemSelected: {
