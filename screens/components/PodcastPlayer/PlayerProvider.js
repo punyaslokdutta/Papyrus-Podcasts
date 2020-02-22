@@ -34,23 +34,9 @@ const PlayerProvider=(props)=>{
   console.log("Inside PlayerProvider\n\n",props,navigation);
 
   animation = new Value(0);
-useEffect(
-  (podcast) => {
-    //const {podcast} =playerGlobalState;
-    animation = new Value(0);
 
-    timing(
-      animation,
-      {
-        toValue: podcast ? 1 : 0,
-        duration: 300,
-        easing: Easing.inOut(Easing.ease),
-      },
-    ).start();
-  }, [podcast]
-)
 
-          
+  
 
  
 
@@ -73,9 +59,7 @@ useEffect(
       outputRange: [height, 0],
     });
     return (
-      <PlayerContext.Provider value={podcast}>
-          
-      
+      <PlayerContext.Provider value={podcast }>
         <StatusBar barStyle="dark-content" />
         <View style={styles.container}>
           <View style={StyleSheet.absoluteFill}>

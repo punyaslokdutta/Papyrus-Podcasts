@@ -1,102 +1,116 @@
 
-//Passing Props Child to Parent — Use a callback and states
-//React’s one-way data-binding model means that child components cannot send back values to parent components unless explicitly allowed to do so
-/*React Context permits to hold state at the root of your component hierarchy, and be able to inject this state easily into very deeply nested components, without the hassle to have to pass down props to every intermediate components.
-*/ 
-import React, {Component} from 'react';
-import { TouchableOpacity,StyleSheet, Text, View, SafeAreaView, Dimensions, TouchableWithoutFeedback} from 'react-native';
-import { Container,  Content , Button,Card, CardItem, Thumbnail, Body} from 'native-base';
+import React, { useState, useRef, useEffect} from 'react';
+import { TouchableOpacity,StyleSheet, Text, View, SafeAreaView, Dimensions, NativeModules,NativeEventEmitter} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
-import FontAwesome, { Icons } from 'react-native-fontawesome';
-import HomeScreen from '../screens/HomeScreen'
 import AddModal from '../screens/components/Record/AddModal'
 import AddChapterModal from '../screens/components/Record/AddChapterModal'
-import StartRecordScreen from '../screens/StartRecordScreen'
 import { TagSelect } from 'react-native-tag-select'
 import PreviewScreen from '../screens/PreviewScreen'
-//import PlayerContext from '../screens/components/PodcastPlayer/PlayerContext'
-
+import {useSelector, useDispatch} from 'react-redux'
 
 const { width, height } = Dimensions.get('window');
 
-class SelectScreen extends Component {
-  //static contextType = PlayerContext
+const SelectScreen =(props)=> {
+  const [categoryClicked, setcategoryClicked]=useState(null);
+  const [BookName, setBookName]=useState(null);
+  const [ChapterName, setChapterName]=useState(null);
+  const [AuthorName, setAuthorName]=useState(null);
+  const [LanguageSelected, setLanguageSelected]=useState(null);
+  //const [recordedFilePath, setRecordedFilePath]=useState(null);
+  const eventEmitter=useRef(new NativeEventEmitter(NativeModules.ReactNativeRecorder)).current;
+  const addModal=React.createRef(null);
+  const addChapterModal=React.createRef(null);
+  const tagSelected=React.createRef(null);
 
-    constructor(props)
+  //const podcast=useSelector(state=>state.rootReducer.podcast)
+  const dispatch=useDispatch();
+
+
+
+  /*componentWillMount() {
+    // const eventEmitter = new NativeEventEmitter(NativeModules.ReactNativeRecorder);
+    // eventEmitter.addListener('abcd', (event) => {
+    //    console.log(event.eventProperty) // "someValue"
+
+    // })
+  }*/
+  useEffect(
+    ()=>
     {
-        super(props);
-        this.onPressAdd2=this.onPressAdd2.bind(this)
-        this.onPressAdd=this.onPressAdd.bind(this)
-        this.setLanguage=this.setLanguage.bind(this)
-        this.unsetLanguage=this.unsetLanguage.bind(this)
-        //this.renderDetailsSection=this.renderDetailsSection.bind(this)
-        this.state={
-          categoryClicked: '', 
-          BookName: '',
-          ChapterName: '', 
-          AuthorName: '', 
-          LanguageSelected:'', 
-          eventSource: 'SelectScreen'
+       dispatch({type:"SET_PODCAST", payload: null})
+    }, [tagSelected]
+  )
+ 
 
+  useEffect(
+    () => {
+      
+      console.log("Inside useEffect - componentDidUpdate of SelectScreen");
+      const fileType=".m4a"
+      const filePath="/storage/emulated/0/AudioRecorder/"
+      var audioFilePath=null;
+      eventEmitter.addListener('RecordFile', (event) => {
+           audioFilePath=filePath.concat(event.eventName,fileType)
+          console.log("RecordedFilePath :" +audioFilePath)
+          console.log("timeduration :" , +event.eventDuration)
+          //console.log(props)
+          //navigateToPreview()
           
-        }
-       
-
         
-    }
-    componentDidMount=()=>
-    {
-    // console.log(this.context)
-     //const ctx =this.context.setPodcast(null, this.state.eventSource )
-    // console.log(this.context)
+       
+       props.navigation.navigate('PreviewScreen', {
 
-    }
+         BookName: BookName, 
+         ChapterName:ChapterName, 
+         AuthorName:AuthorName, 
+         LanguageSelected:LanguageSelected, 
+         recordedFilePath: audioFilePath})
 
+    })
+   //setRecordedFilePath(audioFilePath)
+    //console.log(recordedFilePath)
 
-    componentDidUpdate=()=>
-    {
-      //if(this.context.podcast!==null && this.context.eventSource!=='Podcast')
-      //{
-      //console.log(this.context)
-      //const ctx =this.context.setPodcast(null, this.state.eventSource)
-      //console.log(this.context)
-      //}
+    // if(recordedFilePath)
+    // {
 
-    }
+    // props.navigation.navigate('PreviewScreen', {
+    //   BookName: BookName,
+    //   ChapterName:ChapterName , 
+    //   AuthorName: AuthorName, 
+    //   LanguageSelected:LanguageSelected, })}
+     
+      
+    }, [eventEmitter.current])
+  
 
-    onPressAdd2()
+    onPressAdd2=()=>
     {
         //console.log(this.ref)
-        this.refs.addChapterModal.showAddModal();
+        addChapterModal.current.showAddModal();
        
     }
 
-     onPressAdd()
+     onPressAdd=()=>
      {
-        this.refs.addModal.showAddModal();
+        addModal.current.showAddModal();
 
 
         
      }
 
-     setLanguage(language)
+     setLanguage=(language)=>
      {
        console.log(language)
-       this.setState(
-         {
-           LanguageSelected:language
-         }
-       )
+       setLanguageSelected(language);
      }
-     unsetLanguage()
+     unsetLanguage=()=>
      {
-      console.log(this.state.LanguageSelected)
-       this.setState(
-         {
-           LanguageSelected:''
-         }
-       )
+      console.log(LanguageSelected)
+      setLanguageSelected(null);
      }
+
+
+
 
      
 
@@ -104,41 +118,23 @@ class SelectScreen extends Component {
      {
        if(data.categoryClicked==='Chapter')
        {
-       this.setState(
-         {
-            categoryClicked: data.categoryClicked,
-            BookName:data.newBookName,
-            ChapterName: data.newChapterName,
-            AuthorName: data.newAuthorName
-
-         }  
-       )
+       setcategoryClicked(data.categoryClicked);
+       setBookName(data.newBookName);
+       setChapterName(data.newChapterName);
+       setAuthorName(data.newAuthorName);
       }
       else if (data.categoryClicked==='Book'){
-        this.setState(
-          {
-             categoryClicked: data.categoryClicked,
-             BookName:data.newBookName,
-             ChapterName:'',
-             AuthorName: data.newAuthorName
- 
-          }  
-        )
+        setcategoryClicked(data.categoryClicked);
+        setBookName(data.newBookName);
+        setChapterName(null);
+        setAuthorName(data.newAuthorName);
 
       }
-        console.log(data)
-       console.log(this.state)
+       console.log(data)
+       //console.log(this.state)
     }   
 
 
-
-
-
-     
-     
-  
-   
-    render() {
       const data = [
         { id: 1, label: 'English' },
         { id: 2, label: 'Hindi' },
@@ -160,7 +156,7 @@ class SelectScreen extends Component {
         <SafeAreaView style={{flex:1, backgroundColor:'#101010'}}>
 
         <View style={styles.AppHeader}>
-        <TouchableOpacity onPress={()=>this.props.navigation.goBack(null)}>
+        <TouchableOpacity onPress={()=>props.navigation.goBack(null)}>
         <View style={{paddingLeft: width/12 ,paddingVertical:height/20, flexDirection:'row'} }>
           <Icon name="times" size={20} style={{color:'white'}}/>
           <Text style={{fontFamily:'san-serif-light', color:'white', paddingLeft:(width*7)/24, fontSize:20}}>Select</Text>
@@ -180,7 +176,7 @@ class SelectScreen extends Component {
 
          <View style={{paddingVertical:height/20, flexDirection:'row', paddingLeft:width/4} }>
          <View>
-         <TouchableOpacity onPress={this.onPressAdd}  >
+         <TouchableOpacity onPress={onPressAdd}  >
          <Icon name="book" size={50} style={{color:'white'}}/>
          </TouchableOpacity>
          <Text style={{fontFamily:'sans-serif-light', color:'white', fontSize:14, paddingTop:5}}>Book</Text>
@@ -190,7 +186,7 @@ class SelectScreen extends Component {
 
 
          <View style={{paddingLeft:width/4}}>
-         <TouchableOpacity onPress={this.onPressAdd2}>
+         <TouchableOpacity onPress={onPressAdd2}>
          <Icon name="newspaper-o" size={50} style={{color:'white'}}/>
          </TouchableOpacity>
          <Text style={{fontFamily:'sans-serif-light', color:'white', fontSize:14, paddingTop:5}}>Chapter</Text>
@@ -218,9 +214,7 @@ class SelectScreen extends Component {
           data={data}
           max={1}
 
-          ref={(tag) => {
-            this.tag = tag;
-          }}
+          ref={tagSelected}
           
           onMaxError={() => {
             alert('Multiple Languages Error', 'You can select only one language while recording a Book or Chapter podcast');
@@ -231,12 +225,12 @@ class SelectScreen extends Component {
 
              console.log(tag)
 
-             if(this.state.LanguageSelected==='')
+             if(LanguageSelected===null)
              {
-                 this.setLanguage(tag.label)
+                 setLanguage(tag.label)
              }
              else{
-               this.unsetLanguage()
+               setLanguage(null)
 
              }
           }
@@ -251,16 +245,13 @@ class SelectScreen extends Component {
         <View>
             <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/20, width:(width*7)/24, borderRadius:15, borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }} 
             onPress={() => {
-                         if (this.state.BookName.length === 0 || this.state.AuthorName.length === 0 || this.state.LanguageSelected.length === 0) {
+                         if (BookName === null || AuthorName.length === null || LanguageSelected.length === null) {
                             alert("You must choose Category and Language of your Podcast");
                             return;
                         }   
-                        this.props.navigation.navigate('PreviewScreen', {
-          BookName: this.state.BookName,
-          ChapterName:this.state.ChapterName , 
-          AuthorName: this.state.AuthorName, 
-          LanguageSelected:this.state.LanguageSelected, }
- )
+
+            NativeModules.ReactNativeRecorder.uploadActivity()
+ 
                          }
             }>
             <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Upload</Text>
@@ -270,18 +261,21 @@ class SelectScreen extends Component {
 
                 <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/20, width:(width*7)/24, borderRadius:15, backgroundColor:'rgba(0, 0, 0, 0.7)', borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }} 
                  onPress={() => {
-                         if (this.state.BookName.length === 0 || this.state.AuthorName.length === 0 || this.state.LanguageSelected.length === 0) {
+                         if (BookName === null || AuthorName === null || LanguageSelected ===null) {
                             alert("You must choose Category and Language of your Podcast");
                             return;
                         }   
-                        this.props.navigation.navigate('PreviewScreen', {
-          BookName: this.state.BookName,
-          ChapterName:this.state.ChapterName , 
-          AuthorName: this.state.AuthorName, 
-          LanguageSelected:this.state.LanguageSelected, })
+                        NativeModules.ReactNativeRecorder.sampleMethod()
+          //               this.props.navigation.navigate('PreviewScreen', {
+          // BookName: this.state.BookName,
+          // ChapterName:this.state.ChapterName , 
+          // AuthorName: this.state.AuthorName, 
+          // LanguageSelected:this.state.LanguageSelected, })*/
                          }
             }>
             <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Record</Text>
+          
+
                 </TouchableOpacity>
         </View>
        
@@ -294,16 +288,16 @@ class SelectScreen extends Component {
 
        
 
-<AddModal ref={'addModal'} navigation={this.props.navigation} parentCallback = {this.callbackFunction} >
+<AddModal ref={addModal} navigation={props.navigation} parentCallback = {callbackFunction} >
 </AddModal>
 
-<AddChapterModal ref={'addChapterModal'} navigation={this.props.navigation} parentCallback = {this.callbackFunction} >
+<AddChapterModal ref={addChapterModal} navigation={props.navigation} parentCallback = {callbackFunction} >
     
     </AddChapterModal>
         </SafeAreaView> 
         
       );
-    }
+    
   }
 
 export default SelectScreen;
@@ -339,10 +333,10 @@ const styles = StyleSheet.create({
     item: {
       borderWidth: 1,
       borderColor: '#333',    
-      backgroundColor: '#FFF',
+      backgroundColor: 'transparent',
     },
     label: {
-      color: '#333',
+      color: 'white',
       fontSize:9
     },
     itemSelected: {

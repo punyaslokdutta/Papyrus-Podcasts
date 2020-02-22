@@ -127,14 +127,6 @@ const editProfile = (props) => {
     
   }
 
-  function insertBeforeLastOccurrence(strToSearch, strToFind, strToInsert) {
-    //[TASK] --> inserts strToInsert before the last occurence of strToFind in strToSearch
-    var n = strToSearch.lastIndexOf(strToFind);
-    if (n < 0) return strToSearch;
-    return strToSearch.substring(0,n) + strToInsert + strToSearch.substring(n);    
-}
-
-
     async function uploadImage () {
     //[TASK] --> upload images from user's local storage to google cloud storage
     ImagePicker.showImagePicker(options, async (response) => {

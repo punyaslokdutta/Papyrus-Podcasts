@@ -26,6 +26,7 @@ class  AuthLoadingScreen extends Component {
     
         console.log(this)
         console.log(this.props)
+        //this.props.navigation.navigate('setPreferences')
      try{   
        await this.props.firebase._checkUserAuth(async (user)=>
           {
@@ -39,22 +40,24 @@ class  AuthLoadingScreen extends Component {
                   async(doc)=> {  
                     var source = doc.metadata.hasPendingWrites ? "Local" : "Server";
                     console.log(source, " data: ", doc.data());
-
+                    
                   if(doc.data()===undefined){
                     try{
                       console.log(this)
                       console.log(this.props)
+
                       const addNewUser= await this.props.firebase._createNewUser(user)
                         }
                        catch(error)
                        {
                          console.log(error)
                        }
+                      // this.props.navigation.navigate('setPreferences')
                   }
                   else
                   {
                         unsubscribe(); // unsubscribe the firestore onSnapshot listener
-                       
+                        
                         this.props.navigation.navigate('setUserDetails',{user : doc.data()});
                         this.props.navigation.navigate('App');
                   }
@@ -68,6 +71,7 @@ class  AuthLoadingScreen extends Component {
             
           }
             else{
+             // this.props.navigation.navigate('setPreferences')
               this.props.navigation.navigate('Auth')
             }
        })

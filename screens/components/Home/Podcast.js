@@ -144,8 +144,9 @@ const styles = StyleSheet.create({
             {marginLeft: theme.sizes.margin },
           ]} key ={props.index}>
            <View style={[styles.flex, styles.recommendationHeader]}>
-           <TouchableOpacity  onPress={(()=>{dispatch({type:"ADD_NAVIGATION",payload:props.navigation})
-                                              dispatch({type:"SET_PODCAST", payload: props.podcast})})}>
+           <TouchableOpacity  onPress={(()=>{
+             dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
+             dispatch({type:"SET_PODCAST", payload: props.podcast})})}>
            <Image style={[styles.recommendationImage]} source={ {uri: props.podcast.Podcast_Pictures["0"]}} />
 
            </TouchableOpacity>

@@ -255,7 +255,7 @@ HomeStackNavigator.navigationOptions = ({ navigation }) => {
 }
 
 const AppTabNavigator=createBottomTabNavigator(
-  { 
+  {
     Home: {screen:HomeStackNavigator, 
     navigationOptions:{
       tabBarLabel:'Home',
@@ -357,6 +357,12 @@ const AppStackNavigator= createStackNavigator(
      }
     },
 
+    InfoScreen: {
+      screen: InfoScreen,
+      navigationOptions:{
+        header:null
+     }
+    },
     PodcastPlayer: {screen :PodcastPlayer,
     navigationOptions:{
       header:null

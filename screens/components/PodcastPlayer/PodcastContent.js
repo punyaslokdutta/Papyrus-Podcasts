@@ -1,5 +1,5 @@
 // @flow
-import * as React from 'react';
+import  React, {useRef} from 'react';
 import {
   View, StyleSheet, Text, Image, ScrollView,TouchableOpacity, TouchableWithoutFeedback,Dimensions, 
 } from 'react-native';
@@ -10,8 +10,9 @@ import Explore from '../../Explore'
 import {useSelector, useDispatch} from "react-redux"
 import Video from 'react-native-video';
 import ProgressBar from './ProgressBar'
-import NavigationService from '../../navigation/NavigationService'
+import InfoScreen from '../../../InfoScreen'
 //import videos, { type Video } from './videos';
+
 
 const { width,height } = Dimensions.get('window');
 /*type VideoContentProps = 
@@ -19,7 +20,7 @@ const { width,height } = Dimensions.get('window');
 };*/
 
  const PodcastContent=(props)=> {
-  const video = React.createRef();
+  const video = useRef();
 
 
   const rate=useSelector(state=>state.rootReducer.rate);
@@ -66,6 +67,10 @@ function handlePlayPause() {
     dispatch({type:"TOGGLE_PLAY_PAUSED"})
     return;
   }
+}
+
+function parentSlideDown(){
+  props.slideDown();
 }
 
 
@@ -157,9 +162,15 @@ function handlePlayPause() {
          </View>
          <View style={styles.icons}>
          <TouchableOpacity>
+
+               
                 <Icon name="heart" size={20} style={{color:'white'} }/>
                 </TouchableOpacity>
-                <TouchableOpacity >
+                <TouchableOpacity onPress={()=>{
+                   //dispatch({type:"TOGGLE_MINI_PLAYER"})
+                   parentSlideDown()
+                   props.navigation.navigate('InfoScreen', {podcast:props.podcast})
+                }}>
                 <Icon name="info-circle" size={24} style={{color:'white'}}/>
                 </TouchableOpacity>
                 <TouchableOpacity >
@@ -169,6 +180,8 @@ function handlePlayPause() {
                 <Icon name="share" size={20} style={{color:'white'}}/>
                 </TouchableOpacity>
               </View>
+
+              
 
         </ScrollView>
       
@@ -196,7 +209,8 @@ const styles = StyleSheet.create({
   icons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingTop:height/30
+    //paddingRight:30,
+    paddingTop:height/30,
   },
   upNext: {
     borderTopWidth: 1,

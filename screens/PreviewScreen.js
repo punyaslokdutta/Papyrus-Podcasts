@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import { TouchableOpacity,StyleSheet, Text, View, Button, SafeAreaView, Dimensions, Image, TextInput, Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
-import ImagePicker from 'react-native-image-picker'
 
 
 
@@ -21,6 +20,7 @@ const options = {
 class PreviewScreen extends Component {
   constructor(props)
   {
+    
     super(props)
     this.state={
       PodcastImage: null, 
@@ -31,31 +31,12 @@ class PreviewScreen extends Component {
     }
   }
 
-  uploadImage=()=>
-  {
-    ImagePicker.showImagePicker(options, (response) => {
-      console.log('Response = ', response);
-    
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-      } else {
-        const source = { uri: response.uri };
-    
-        // You can also display the image using data:
-        // const source = { uri: 'data:image/jpeg;base64,' + response.data };
-    
-        this.setState({
-          PodcastImage: source,
-        });
-      }
-    });
-  }
+ 
+
+  
    
     render() {
+      
       const { navigation } = this.props;
       const BookName=navigation.getParam('BookName', null);
       const chapterName=navigation.getParam('ChapterName', null);
@@ -81,8 +62,7 @@ class PreviewScreen extends Component {
 
         <View style={{ paddingTop:width/15}}>
 
-                <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/16, width:height/6, borderRadius:15, borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }}
-                onPress={this.uploadImage} >
+                <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/16, width:height/6, borderRadius:15, borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }} >
             <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Choose Image</Text>
                 </TouchableOpacity>
         </View>  
@@ -118,7 +98,7 @@ class PreviewScreen extends Component {
       <View style={{ paddingTop:height/8, alignItems:'center'}}>
 
                 <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/16, width:height/6, borderRadius:15, borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }}
-                onPress={this.uploadImage} >
+                >
             <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Share</Text>
                 </TouchableOpacity>
         </View>  

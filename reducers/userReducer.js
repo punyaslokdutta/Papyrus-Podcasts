@@ -48,6 +48,8 @@ const INITIAL_STATE = {
             state.isUserFollowing[action.payload] = false;
             state.numFollowing = state.numFollowing - 1;
             return state;
+        case "ADD_NAVIGATION":
+            return {...state, navigation:action.payload}
         case "SET_IS_USER_FOLLOWING":
             state.isUserFollowing[action.payload] = false;
             return state;

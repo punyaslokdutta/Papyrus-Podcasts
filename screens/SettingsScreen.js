@@ -96,7 +96,7 @@ const SettingsScreen = (props) => {
         <TouchableOpacity onPress={() => props.navigation.goBack()}>
           <Image
             resizeMode="contain"
-            source={require('../assets/icons/Back.png')}
+            source={"../assets/icons/Back.png"}
             style={{ width: 20, height: 24, marginRight: theme.sizes.base  }}
           />
         </TouchableOpacity>

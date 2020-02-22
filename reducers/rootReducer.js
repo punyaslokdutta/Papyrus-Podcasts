@@ -10,11 +10,15 @@ const INITIAL_STATE = {
   isBuffering:null, 
   duration: 0.0, 
   resizeMode:'contain', 
+  isMiniPlayer:false,
 
 };
 
 function rootReducer(state = INITIAL_STATE, action)  {
   switch (action.type) {
+      case "TOGGLE_MINI_PLAYER":
+        console.log("TOGGLE_MINI_PLAYER")
+          return {...state, isMiniPlayer:!state.isMiniPlayer}
       case "SET_PODCAST":
         console.log("SET_PODCAST"+" " +action.payload)
           return {...state, podcast:action.payload}
