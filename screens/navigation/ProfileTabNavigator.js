@@ -36,7 +36,8 @@ const ProfileTabNavigator =createMaterialTopTabNavigator(
       showLabel: true,
       activeTintColor:'black',
       inactiveTintColor:'grey',
-      borderTopWidth: 0,
+      borderTopWidth: 20,
+
       elevation :5,
       adaptive: true, 
       style:

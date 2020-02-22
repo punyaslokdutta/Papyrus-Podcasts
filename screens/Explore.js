@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import SearchScreen from './components/Explore/SearchScreen'
 import * as theme from '../screens/components/constants/theme';
 import firestore from '@react-native-firebase/firestore';
-import { StyleSheet, Text, View, SafeAreaView, ActivityIndicator, TextInput, Platform, StatusBar,TouchableOpacity, ScrollView, Image} from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, ActivityIndicator, TextInput, Platform, StatusBar,TouchableOpacity,Dimensions, ScrollView, Image} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import TrendingPodcast from './components/Explore/TrendingPodcast'
@@ -13,6 +13,9 @@ import CategoryScreen from './CategoryScreen'
 import Podcast from './components/Home/Podcast'
 import ExploreBook from './components/Explore/ExploreBook'
 import searchIcon from '../assets/searchIcon.png';
+
+const {width,height} = Dimensions.get('window')
+
 class Explore extends React.Component {
 
   constructor(props)
@@ -52,29 +55,20 @@ class Explore extends React.Component {
         this.setState({
           loading: true,
         });
-        console.log('Retrieving Data');
+        console.log('Retrieving Data in Explore Screen');
         
-        let userQuery = await firestore().collection('users').where('isTopStoryTeller','==',true).onSnapshot(
-          async(docs)=> {
-            console.log("EXPLORE SCREEN TOP STORYTELLER documents : ",docs._docs[0]._data)
-            documentUsers = docs._docs.map(document => document._data);
-            
-             this.setState({
-               storytellers:documentUsers
-             })
-          }//let documentUsers = userQuery.docs.map(document => document.data());
-        ); 
+        let userQuery = await firestore().collection('users').where('isTopStoryTeller','==',true).get();
         let podcastQuery = await firestore().collectionGroup('Podcasts').where('isTrendingPodcast','==',true).get();
         let bookQuery = await firestore().collectionGroup('Podcasts').where('isShortStory','==',true).get();
         let chapterQuery = await firestore().collectionGroup('Podcasts').where('isClassicNovel','==',true).get();
         
-        
+        let documentUsers = userQuery._docs.map(document => document._data);
         let documentPodcasts = podcastQuery.docs.map(document => document.data());
         let documentBooks = bookQuery.docs.map(document => document.data());
         let documentChapters = chapterQuery.docs.map(document => document.data());
         
         this.setState({
-         // storytellers: documentUsers,
+          storytellers: documentUsers,
           podcasts: documentPodcasts,
           books: documentBooks,
           chapters: documentChapters,
@@ -161,22 +155,10 @@ class Explore extends React.Component {
       )
     }
   
-    render() {
-      
-      if(this.state.books.length == 0)
+    renderMainHeader = () => 
+    {
       return (
-        <View style={styles.container}>
-          <ActivityIndicator/>
-        </View>
-      );
-      else
-      return (
-        /*<View style={styles.container}>
-          <Text>HomeScreen</Text>
-        </View>*/
-
-        <SafeAreaView style={{flex:1, backgroundColor:'white'}}>
-        <View style={styles.AppHeader}>
+      <View style={styles.AppHeader}>
         <TouchableOpacity onPress={()=>this.props.navigation.toggleDrawer()}>
         <View style={{paddingLeft: 15,paddingRight:10 ,paddingVertical:26} }>
           <Icon name="bars" size={22}/>
@@ -199,6 +181,25 @@ class Explore extends React.Component {
         </TouchableOpacity>
         </View> 
         </View>
+      )
+    }
+
+    render() {
+      
+      if(this.state.books.length == 0)
+      return (
+        <View>
+        <View style={{paddingBottom: (height*5)/12}}>
+      {this.renderMainHeader()}
+          </View>
+      <ActivityIndicator/>
+      </View>     
+      );
+      else
+      return (
+    
+        <SafeAreaView style={{flex:1, backgroundColor:'white'}}>
+        {this.renderMainHeader()}
         <ScrollView  scrollEventThrottle={16}>
         <View style={{height:120}}>
         <View style={{flex:1}}>

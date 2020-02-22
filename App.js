@@ -255,7 +255,7 @@ HomeStackNavigator.navigationOptions = ({ navigation }) => {
 }
 
 const AppTabNavigator=createBottomTabNavigator(
-  {
+  { 
     Home: {screen:HomeStackNavigator, 
     navigationOptions:{
       tabBarLabel:'Home',

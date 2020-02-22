@@ -520,7 +520,15 @@ class HomeScreen extends React.Component {
 
     render() {
       if(this.state.loading === true)
-        return <ActivityIndicator/>
+        return (
+          <View>
+            <View style={{paddingBottom: (height*5)/12}}>
+          {this.renderMainHeader()}
+              </View>
+          <ActivityIndicator/>
+          </View>      
+        ) 
+        
       else
         return (
         // <SafeAreaView style={{flex:1, backgroundColor:'#F5FCFF'}}>
@@ -536,4 +544,4 @@ class HomeScreen extends React.Component {
   }
 
 
-export default withNavigation(withFirebaseHOC(HomeScreen));
+export default withFirebaseHOC(HomeScreen);

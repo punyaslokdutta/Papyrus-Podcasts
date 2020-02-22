@@ -1,4 +1,7 @@
 rootProject.name = 'Papyrus_60'
+
+include ':@react-native-firebase_app'
+project(':@react-native-firebase_app').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-firebase/app/android')
 //include ':@react-native-community_status-bar'
 //project(':@react-native-community_status-bar').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-community/status-bar/android')
 include ':react-native-svg'

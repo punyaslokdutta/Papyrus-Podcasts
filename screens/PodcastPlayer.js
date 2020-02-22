@@ -130,7 +130,7 @@ class PodcastPlayer extends React.Component{
 
   //onGestureEvent: $Call<event>;
 
-  //translateY: Value;
+  //translateYRef: Value;
 
   constructor(props) {
     super(props);
@@ -156,7 +156,7 @@ class PodcastPlayer extends React.Component{
         },
       ],
       { useNativeDriver: true },
-      
+     // {slideUp();}
     );
     const clockY = new Clock();
     const finalTranslateY = add(add(translationY, offsetY), multiply(0.2, velocityY));
@@ -165,7 +165,7 @@ class PodcastPlayer extends React.Component{
       0,
       upperBound,
     );
-    this.translateY = cond(
+    this.translateYRef = cond(
       eq(state, State.END),
       [
         set(translationY, runSpring(clockY, add(translationY, offsetY), snapPoint)),
@@ -235,51 +235,52 @@ componentWillUnmount() {
   render() {
    
     const {
-      onGestureEvent, translateY: y, offsetY2,
+      onGestureEvent, translateYRef:x, offsetY2,
     } = this;
-    const translateY = add(y, offsetY2);
+    const translateYR = add(x, offsetY2);
     const { podcast } = this.props;
-    const tY = interpolate(translateY, {
+    const tY = interpolate(translateYR, {
       inputRange: [0, midBound],
       outputRange: [0, midBound],
       extrapolate: Extrapolate.CLAMP,
     });
-    const opacity = interpolate(translateY, {
+    const opacity = interpolate(translateYR, {
       inputRange: [0, midBound - 100],
       outputRange: [1, 0],
       extrapolate: Extrapolate.CLAMP,
     });
-    const statusBarOpacity = interpolate(translateY, {
+    const statusBarOpacity = interpolate(translateYR, {
       inputRange: [0, 100],
       outputRange: [1, 0],
       extrapolateLeft: Extrapolate.CLAMP,
     });
-    const videoContainerWidth = interpolate(translateY, {
+    const videoContainerWidth = interpolate(translateYR, {
       inputRange: [0, midBound],
       outputRange: [width, width],
       extrapolate: Extrapolate.CLAMP,
     });
-    const videoWidth = interpolate(translateY, {
+    const videoWidth = interpolate(translateYR, {
       inputRange: [0, midBound, upperBound],
       outputRange: [width, width  , PLACEHOLDER_WIDTH],
       extrapolate: Extrapolate.CLAMP,
     });
-    const videoHeight = interpolate(translateY, {
+    const videoHeight = interpolate(translateYR, {
       inputRange: [0, midBound, upperBound],
       outputRange: [height*12/24, minHeight * 1.3, minHeight],
       extrapolate: Extrapolate.CLAMP,
     });
     
-    const containerHeight = interpolate(translateY, {
+    const containerHeight = interpolate(translateYR, {
       inputRange: [0, midBound],
       outputRange: [height, 0],
       extrapolate: Extrapolate.CLAMP,
     });
-    const playerControlOpaciy = interpolate(translateY, {
+    const playerControlOpaciy = interpolate(translateYR, {
       inputRange: [midBound, upperBound],
       outputRange: [0, 1],
       extrapolate: Extrapolate.CLAMP,
     });
+    console.log("In THIS of PodcastPlayer : ",this);
     return (
     
       <Animated.View
