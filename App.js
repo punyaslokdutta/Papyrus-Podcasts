@@ -16,6 +16,7 @@ import NavigationService from './screens/navigation/NavigationService';
 import thunk from 'redux-thunk';
 import userReducer from './reducers/userReducer'
 import rootReducer from './reducers/rootReducer';
+import recorderReducer from './reducers/recorderReducer'
 import otherUserReducer from './reducers/otherUserReducer'
 
 import AuthLoadingScreen from './screens/AuthLoadingScreen'
@@ -34,8 +35,6 @@ import CategoryScreen from './screens/CategoryScreen'
 import RecordBook from './screens/RecordBook'
 import StatisticsScreen from './screens/StatisticsScreen'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import {Container, Content, Header, Body} from 'native-base'
-import { Block, Text } from './screens/components/categories/components/';
 import { theme } from './screens/components/categories/constants';
 import ActivityScreen from './screens/ActivityScreen'
 import SettingsScreen from './screens/SettingsScreen'
@@ -48,7 +47,6 @@ import ProfileTabNavigator from './screens/navigation/ProfileTabNavigator'
 import ExploreTabNavigator from './screens/navigation/ExploreTabNavigator'
 import UserStatsScreen from './screens/components/Explore/UserStatsScreen'
 import {createStore,combineReducers, applyMiddleware} from 'redux'
-//import store from './reducers/store'
 import {Provider} from 'react-redux'
 
 import UserFollowingScreen from './screens/components/Explore/UserFollowingScreen';
@@ -60,11 +58,6 @@ import setPreferences from './setPreferences'
 
 
 
-//const store = createStore(rootReducer)
-
-
-//const reducer = combineReducers({ navigation })
-//const store = createStore(reducer, applyMiddleware(logger))
 var {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
 const IS_IPHONE_X = SCREEN_HEIGHT === 812 || SCREEN_HEIGHT=== 896;
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? (IS_IPHONE_X ? 44 : 20) : 0;
@@ -77,9 +70,6 @@ const AuthStackNavigator= createStackNavigator(
     
     SignIn: SignInScreen,
     SignUp: SignUpScreen, 
-    //BooksSelected: BooksSelectedScreen, 
-    //ChaptersSelected : ChaptersSelectedScreen, 
-    //AuthorsSelected: AuthorsSelectedScreen
   },
   {
     headerMode: 'none',
@@ -89,13 +79,6 @@ const AuthStackNavigator= createStackNavigator(
    }
 )
 
-/////////////
-/////////////
-
-  
-/*const PreferencesStackNavigator =createStackNavigator(
-  {}
-)*/
 
 
 
@@ -119,7 +102,7 @@ const CategoryStackNavigator=createStackNavigator(
 }
 )
 
-////////////////
+
 
 
 const ExploreStackNavigator=createStackNavigator(
@@ -188,20 +171,7 @@ const ProfileStackNavigator=createStackNavigator(
    
 }
 )
-/*ProfileStackNavigator.navigationOptions = ({ navigation }) => {
-  /*if(navigation.state.index==0){
-      return {
-          tabBarVisible: false,
-      };
-  }
-  return {
-      //tabBarVisible: true,
-     header: props => <CustomProfileHeader {...props} />, 
-     headerStyle: {        
-      backgroundColor: "transparent"      
-    }
-  }
-}*/
+
 
 const RecordStackNavigator= createStackNavigator(
   {
@@ -215,19 +185,9 @@ const RecordStackNavigator= createStackNavigator(
     headerMode:'none',
   }
     
-     
-    
-     
-
-  
 )
 
 RecordStackNavigator.navigationOptions = ({ navigation }) => {
-  /*if(navigation.state.index==0){
-      return {
-          tabBarVisible: false,
-      };
-  }*/
   return {
       tabBarVisible: false,
   }
@@ -236,7 +196,6 @@ RecordStackNavigator.navigationOptions = ({ navigation }) => {
 const HomeStackNavigator= createStackNavigator(
   {
     HomeScreen :{screen: HomeScreen},
-   // RecordBook :{screen: RecordBook},
 
   },
   {
@@ -245,11 +204,6 @@ const HomeStackNavigator= createStackNavigator(
 )
 
 HomeStackNavigator.navigationOptions = ({ navigation }) => {
-  /*if(navigation.state.index==0){
-      return {
-          tabBarVisible: false,
-      };
-  }*/
   return {
       tabBarVisible: true,
   }
@@ -300,11 +254,11 @@ const AppTabNavigator=createBottomTabNavigator(
 
 
 
-  },{initialRouteName:'Home',
+  },{initialRouteName:'Explore',
   order:['Home', 'Explore', 'Record', 'Category', 'Profile'],
   headerMode: 'none',
   navigationOptions:
-  {
+  {    
     tabBarVisible: true,
     headerVisible: false
   }, 
@@ -452,16 +406,10 @@ const AppSwitchNavigator = createSwitchNavigator(
 
 //const App =createAppContainer(AppSwitchNavigator); // ^3.0.8 react-navigation 
 
-// const router =createAppContainer(AppSwitchNavigator); 
  const AppContainer =createAppContainer(AppSwitchNavigator);  //top level navigator 
 
- //reducers
-//  const userReducers = combineReducers({
-//   userReducer,
-//   otherUserReducer 
-//  })
  const mainReducer = combineReducers({
-     
+  recorderReducer,
   userReducer,
   rootReducer
 })
@@ -472,7 +420,7 @@ const store = createStore(mainReducer, applyMiddleware(thunk))
 export default class App extends Component {
   //..
   render(){
-    console.log("HHOOOWWWW???",store.getState());
+    console.log("REDUX_STORE_STATE: " + store.getState());
     return(
     <Provider store ={store}>
     <PlayerProvider>

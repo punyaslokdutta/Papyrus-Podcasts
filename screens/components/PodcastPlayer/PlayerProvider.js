@@ -23,7 +23,6 @@ const { height } = Dimensions.get('window');
 //const { Animated, Easing } = DangerZone;
 const { Value, timing } = Animated;
 const isOS = Platform.OS === 'ios';
-import store from '../../../reducers/store';
 
 
 const PlayerProvider=(props)=>{

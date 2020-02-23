@@ -1,34 +1,27 @@
 // @flow
 import React ,{ useState, useEffect , useRef, useCallback} from 'react';
-import { Dimensions, StyleSheet , Image, StatusBar,BackHandler, SafeAreaView,  TouchableNativeFeedback,TouchableOpacity , View,Text, ScrollView, Alert } from 'react-native';
-//import {
- // Video, Constants, DangerZone, GestureHandler,
-//} from 'expo';
-
+import { StyleSheet , Image, StatusBar,BackHandler, SafeAreaView,  TouchableNativeFeedback,TouchableOpacity , View,Text, ScrollView, Alert, Dimensions } from 'react-native';
 import Slider from "react-native-slider";
 import Moment from "moment";
 
 import { HeaderBackButton } from 'react-navigation';
 import HomeScreen from './HomeScreen'
 import {useSelector, useDispatch} from "react-redux"
-
-
+import ExtraDimensions from 'react-native-extra-dimensions-android';
 import { withNavigation } from 'react-navigation';
 import Animated, { Easing } from 'react-native-reanimated';
-//const { Value, timing } = Animated;
-//import { type Video as VideoModel } from './videos';
 import PodcastContent from '../screens/components/PodcastPlayer/PodcastContent';
 import PlayerControls, { PLACEHOLDER_WIDTH } from './components/PodcastPlayer/PlayerControl';
-//import Animated, { Easing } from 'react-native-reanimated';
 import { PanGestureHandler, State, TouchableWithoutFeedback } from 'react-native-gesture-handler';
-//const { Animated, Easing } = DangerZone;
-//const { State, PanGestureHandler } = GestureHandler;
-const { width, height } = Dimensions.get('window');
-const { statusBarHeight } = StatusBar.currentHeight
+var {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window');
+const height =ExtraDimensions.getRealWindowHeight();
+const width=ExtraDimensions.getRealWindowWidth();
+const STATUS_BAR_HEIGHT= ExtraDimensions.getStatusBarHeight();
+//const isNotchEnabled= SCREEN_HEIGHT+
+const SOFT_MENU_BAR_HEIGHT =  (ExtraDimensions.getSoftMenuBarHeight() === 0) ? 0 :ExtraDimensions.getSoftMenuBarHeight() ;
 
-
-const minHeight = height/10;
-const midBound = (height*10)/11 - height/20;
+const minHeight = height/12;
+const midBound = (height*10)/11 - (height/8 );
 const upperBound = midBound + minHeight;
 const {
   Extrapolate,
@@ -257,20 +250,7 @@ const PodcastPlayer=(props)=>{
 
  
   }
-  // componentWillUnmount()
-  // {
-  //   BackHandler.removeEventListener('hardwareBackPress', this.back_Buttton_Press);
-  // }
-
-  
-
-  // componentDidUpdate(prevProps) {
-  //  //BackHandler.addEventListener('hardwareBackPress', this.back_Buttton_Press);
-  //   if (prevProps.podcast !== this.props.podcsast) {
-  //     this.slideUp();
-  //   }
-  // }
-
+ 
   function slideUp(){
     dispatch({type:"TOGGLE_MINI_PLAYER"})
     timing(offsetY, {
@@ -345,17 +325,6 @@ const PodcastPlayer=(props)=>{
         ...shadow,
       }}
     >
-      {/* <View>
-                <TouchableOpacity onPress={NavigationService.navigate('HomeScreen')}>
-                  <Text>qqqqqqqqqqqqqqqq</Text>
-                  </TouchableOpacity>
-                </View> */}
-
-        <PanGestureHandler
-          //onHandlerStateChange={onGestureEvent}
-          activeOffsetY={[-10, 10]}
-          //{...{ onGestureEvent }}
-        >
           <TouchableNativeFeedback onPress={slideDown}>
             <Animated.View style={{ backgroundColor: 'white', width: videoContainerWidth }}>
               <Animated.View style={{ ...StyleSheet.absoluteFillObject, opacity: playerControlOpaciy }}>
@@ -368,7 +337,7 @@ const PodcastPlayer=(props)=>{
 
                </Animated.View>
                </TouchableNativeFeedback>
-               </PanGestureHandler>
+               
                <ScrollView  scrollEventThrottle={16} >
               
             
