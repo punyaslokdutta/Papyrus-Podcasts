@@ -64,6 +64,13 @@ class UserChapterPodcast extends React.Component {
         {
           console.log(error);
         }
+        if(documentChapterPodcasts.docs.length == 0)
+          {
+            this.setState({
+              loading:false
+              
+              });
+          }
         let documentData_chapterPodcasts = documentChapterPodcasts.docs.map(document => document.data());
         //var lastVisibleBook = this.state.lastVisibleBookPodcast;
   
@@ -77,7 +84,7 @@ class UserChapterPodcast extends React.Component {
             chapterPodcasts: documentData_chapterPodcasts,
             //lastVisibleBookPodcast:lastVisibleBook,
             lastVisibleChapterPodcast: lastVisibleChapter,
-            loading:false,
+            loading:false
             //refreshing:false
             });
       }
@@ -123,9 +130,7 @@ class UserChapterPodcast extends React.Component {
          
        // Cloud Firestore: Document Data
        let documentData = documentSnapshots.docs.map(document => document.data());
-       this.setState({
-        refreshing:false
-    });
+       
        // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
        if(documentData.length != 0)
        {
@@ -170,10 +175,13 @@ class UserChapterPodcast extends React.Component {
     
     renderFooter = () => {
       try {
-        if (this.state.refreshing === true && this.state.chapterPodcasts.length > 6) {
+        if (this.state.refreshing == true && this.state.chapterPodcasts.length > 6) {
           return (
             //null
+            <View>
+            <Text>Refreshing</Text>
             <ActivityIndicator />
+            </View>
           )
         }
         else {
@@ -189,7 +197,7 @@ class UserChapterPodcast extends React.Component {
     
 
     onEndReached = ({ distanceFromEnd }) => {
-      if(this.state.chapterPodcasts.length>5)
+      if(this.state.chapterPodcasts.length > 5)
       {
       if(!this.onEndReachedCalledDuringMomentum){
           this.retrieveMoreChapterPodcasts()
@@ -198,31 +206,39 @@ class UserChapterPodcast extends React.Component {
   }
 }
 
- 
+
     render() {
-      const { navigation } = this.props;
-      return (
-       
-         <View style = {{paddingBottom:20}}>
-             <View>
-         {/* {this.state.activeIndex ? this.renderSectionTwo() : this.renderSectionOne()} */}
-         <FlatList  nestedScrollEnabled={true}
-        data={this.state.chapterPodcasts}
-        renderItem={this.renderData}
-        numColumns={2}
-        showsVerticalScrollIndicator={false}
-        keyExtractor={item => item.PodcastID}
-        //ListHeaderComponent={this.renderHeader}
-         ListFooterComponent={this.renderFooter}
-        onEndReached={this.onEndReached}
-        onEndReachedThreshold={0.5}
-        refreshing={this.state.refreshing}
-        onMomentumScrollBegin={() => { this.onEndReachedCalledDuringMomentum = false; }}
-      />
-         </View>
-         </View>
-      
-      );
+     
+      if(this.state.loading)
+      {
+        return (
+          <View style={{paddingTop: height/3}}>
+          <ActivityIndicator/>
+          </View>
+        ) 
+      }
+      else
+      {
+        return (
+          <View style = {{paddingBottom:20}}>
+              <View>
+          <FlatList  nestedScrollEnabled={true}
+          data={this.state.chapterPodcasts}
+          renderItem={this.renderData}
+          numColumns={2}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={item => item.PodcastID}
+          ListFooterComponent={this.renderFooter}
+          onEndReached={this.onEndReached}
+          onEndReachedThreshold={0.5}
+          refreshing={this.state.refreshing}
+          onMomentumScrollBegin={() => { this.onEndReachedCalledDuringMomentum = false; }}
+        />
+          </View>
+          </View>
+        
+        );
+      }
     }
   }
   

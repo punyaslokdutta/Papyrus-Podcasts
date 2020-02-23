@@ -188,33 +188,39 @@ class UserBookPodcast extends React.Component {
       
   }
 
-   
-    
- 
     render() {
-      const { navigation } = this.props;
-      return (
-       
-         <View style = {{paddingBottom:20}}>
-             <View>
-         {/* {this.state.activeIndex ? this.renderSectionTwo() : this.renderSectionOne()} */}
-         <FlatList   nestedScrollEnabled={true}
-        data={this.state.bookPodcasts}
-        renderItem={this.renderData}
-        numColumns={2}
-        showsVerticalScrollIndicator={false}
-        keyExtractor={item => item.PodcastID}
-       // ListHeaderComponent={this.renderHeader}
-         ListFooterComponent={this.renderFooter}
-        onEndReached={this.onEndReached}
-        onEndReachedThreshold={0.5}
-        refreshing={this.state.refreshing}
-        onMomentumScrollBegin={() => { this.onEndReachedCalledDuringMomentum = false; }}
-      />
-      </View>
-         </View>
-      
-      );
+     
+      if(this.state.loading)
+      {
+        return (
+          <View style={{paddingTop: height/3}}>
+          <ActivityIndicator/>
+          </View>
+        ) 
+      }
+      else
+      {
+        return (
+        
+          <View style = {{paddingBottom:20}}>
+          <View>
+          <FlatList   nestedScrollEnabled={true}
+          data={this.state.bookPodcasts}
+          renderItem={this.renderData}
+          numColumns={2}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={item => item.PodcastID}
+          ListFooterComponent={this.renderFooter}
+          onEndReached={this.onEndReached}
+          onEndReachedThreshold={0.5}
+          refreshing={this.state.refreshing}
+          onMomentumScrollBegin={() => { this.onEndReachedCalledDuringMomentum = false; }}
+        />
+        </View>
+          </View>
+        
+        );
+      }
     }
   }
   

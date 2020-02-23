@@ -317,6 +317,7 @@ const PodcastPlayer=(props)=>{
       outputRange: [0, 1],
       extrapolate: Extrapolate.CLAMP,
     });
+    console.log("In THIS of PodcastPlayer : ",this);
     return (
     
       <Animated.View

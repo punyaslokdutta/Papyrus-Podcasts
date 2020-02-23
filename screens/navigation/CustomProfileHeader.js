@@ -20,7 +20,7 @@ const CustomProfileHeader = props => {
     const profilePicURL = useSelector(state=>state.userReducer.displayPictureURL)
     return (
   
-        <View style={{alignItems:'center',justifyContent:'center',paddingTop: 30, flexDirection:'column'}}>
+        <View style={{alignItems:'center',justifyContent:'center',paddingTop: 30,paddingBottom:15, flexDirection:'column'}}>
           <View style={{flexDirection:'column'}}>
     <Text h3 >{name}'s</Text>
             <View style = {{alignItems:'center'}}>

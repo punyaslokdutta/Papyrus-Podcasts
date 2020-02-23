@@ -10,26 +10,24 @@ const INITIAL_STATE = {
     displayPictureURL: null,
     followingList:[],
     isUserFollowing: {},
-    stats : null,
-    personalListeningTime : 0,
-    listenedBookPodcasts : 0,
-    listenedChapterPodcasts: 0,
     introduction : null,
-    createdBookPodcasts : 0,
-    createdChapterPodcasts : 0,
-    navigation:null
+    numCreatedBookPodcasts : 0,
+    numCreatedChapterPodcasts : 0,
+    totalMinutesRecorded : 0,
+    navigation:null,
+    website:null
   };
   
   function userReducer(state = INITIAL_STATE, action)  {
     switch (action.type) {
         case "ADD_NAVIGATION":
             return {...state,navigation:action.payload}
-        case "CHANGE_STATS":
-            return {...state,stats:action.payload}
         case "CHANGE_EMAIL":
             return {...state,email:action.payload}
         case "CHANGE_NAME":
             return {...state, name:action.payload}
+        case "CHANGE_WEBSITE":
+            return {...state, website:action.payload}
         case "CHANGE_USER_NAME":
             return {...state, userName:action.payload}
         case "CHANGE_DISPLAY_PICTURE":
@@ -57,19 +55,14 @@ const INITIAL_STATE = {
             return state;
         case "ADD_NUM_FOLLOWERS":
             return {...state,numFollowers: action.payload};
-        case "ADD_PERSONAL_LISTENING_TIME":
-            return {...state,personalListeningTime: action.payload};
-        case "ADD_NUM_LISTENED_BOOK_PODCASTS":
-            return {...state,listenedBookPodcasts: action.payload};
-        case "ADD_NUM_LISTENED_CHAPTER_PODCASTS":
-            return {...state,listenedChapterPodcasts: action.payload};
         case "ADD_INTRODUCTION":
             return {...state,introduction: action.payload};    
         case "ADD_NUM_CREATED_BOOK_PODCASTS":
-            return {...state,createdBookPodcasts: action.payload};
+            return {...state,numCreatedBookPodcasts: action.payload};
         case "ADD_NUM_CREATED_CHAPTER_PODCASTS":
-            return {...state,createdChapterPodcasts: action.payload};
-        
+            return {...state,numCreatedChapterPodcasts: action.payload};
+        case "ADD_TOTAL_MINUTES_RECORDED":
+            return {...state,totalMinutesRecorded: action.payload};
         default:
             return state;
     }

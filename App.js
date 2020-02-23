@@ -2,7 +2,9 @@ import ProfileFollowerScreen from './screens/components/Profile/ProfileFollowerS
 import ProfileFollowingScreen from './screens/components/Profile/ProfileFollowingScreen'
 
 import React, {Component} from 'react';
-import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView, NativeModules} from 'react-native';
+import CustomDrawerContentComponent from './screens/navigation/CustomDrawerContentComponent';
+import setUserDetails from './screens/setUserDetails'
+import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView} from 'react-native';
 import {createSwitchNavigator,
   createAppContainer,
   } from 'react-navigation'
@@ -52,9 +54,6 @@ import {Provider} from 'react-redux'
 import UserFollowingScreen from './screens/components/Explore/UserFollowingScreen';
 import UserFollowerScreen from './screens/components/Explore/UserFollowerScreen';
 import InfoScreen from './InfoScreen'
-import CustomDrawerContentComponent from './screens/navigation/CustomDrawerContentComponent'
-import setUserDetails  from './screens/setUserDetails'
-import setPreferences from './setPreferences'
 
 
 
@@ -312,6 +311,12 @@ const AppStackNavigator= createStackNavigator(
      }
     },
 
+    InfoScreen: {
+      screen: InfoScreen,
+      navigationOptions:{
+        header:null
+     }
+    },
     PodcastPlayer: {screen :PodcastPlayer,
     navigationOptions:{
       header:null
@@ -321,13 +326,13 @@ const AppStackNavigator= createStackNavigator(
       header:null
    }},
 
-InfoScreen:{
-  screen:InfoScreen,
-  navigationOptions:{
-    header:null
- }
+// InfoScreen:{
+//   screen:InfoScreen,
+//   navigationOptions:{
+//     header:null
+//  }
 
-}
+// }
    
   
   },
@@ -353,7 +358,7 @@ const AppDrawerNavigator=createDrawerNavigator(
       }},
     "My Drafts": {screen:StatisticsScreen, 
       navigationOptions: {
-        drawerIcon: () => (<TouchableOpacity onPress={()=>{NativeModules.ReactNativeRecorder.sampleMethodTwo()}}><Icon name="line-chart" size={22} style={{ color: 'white' }} /></TouchableOpacity>),
+        drawerIcon: () => (<Icon name="line-chart" size={22} style={{ color: 'white' }} />),
       }}, 
       Activity: {screen:ActivityScreen, 
         navigationOptions: {
@@ -393,7 +398,6 @@ const AppSwitchNavigator = createSwitchNavigator(
     
     AuthLoading : AuthLoadingScreen,
     setUserDetails : setUserDetails,
-    setPreferences: setPreferences,
     Auth : AuthStackNavigator, // this will be a stack navigator
     App : AppDrawerNavigator ,  //this is the drawer navigator 
     //Preferences: PreferencesStackNavigator 
@@ -425,7 +429,9 @@ export default class App extends Component {
     <Provider store ={store}>
     <PlayerProvider>
     <FirebaseProvider value={firebaseApi}> 
-    <AppContainer/> 
+    <AppContainer ref={navigatorRef => {
+          NavigationService.setTopLevelNavigator(navigatorRef);
+        }}/> 
     </FirebaseProvider>
     </PlayerProvider>
     </Provider>

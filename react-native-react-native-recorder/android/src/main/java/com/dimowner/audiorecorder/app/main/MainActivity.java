@@ -27,9 +27,12 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.OpenableColumns;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -290,7 +293,6 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
     public void onClick(View view) {
         int id = view.getId();
         if (id == R.id.btn_play) {//This method Starts or Pause playback.
-            btn_upload.setVisibility(View.GONE);
             if (FileUtil.isFileInExternalStorage(getApplicationContext(), presenter.getActiveRecordPath())) {
                 if (checkStoragePermissionPlayback()) {
                     presenter.startPlayback();
@@ -332,14 +334,14 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
                 setRecordName(presenter.getActiveRecordId(), new File(presenter.getActiveRecordPath()), false);
             }
         } else if (id == R.id.btn_records_list) {
-           int duration=Integer.parseInt(txtDuration.getText().toString().split(":")[0] + txtDuration.getText().toString().split(":")[1]);
+           int duration=Integer.parseInt(txtDuration.getText().toString().split(":")[0]) *60 + Integer.parseInt(txtDuration.getText().toString().split(":")[1]);
             WritableMap params1 = Arguments.createMap();
             if (newName.length() == 0 || newName == null && flag == 1) {
-                params1.putString("eventName", txtName.getText().toString());
+                params1.putString("eventName", extractFileName(this,importFile));
                 params1.putInt("eventDuration", duration);
 
             } else {
-                params1.putString("eventName", newName);
+                params1.putString("eventName", extractFileName(this,importFile));
                 params1.putInt("eventDuration", duration);
             }
             try {
@@ -354,6 +356,23 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
         }
     }
 
+    private String extractFileName(Context context, Uri uri) {
+        Cursor cursor = context.getContentResolver().query(uri, null, null, null, null, null);
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                String name = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+//				TODO: find a better way to extract file extension.
+                if (!name.contains(".")) {
+                    return name + ".m4a";
+                }
+                return name;
+            }
+        } finally {
+            cursor.close();
+        }
+        return null;
+    }
+
     public void startFileSelector() {
         Intent intent_upload = new Intent();
         intent_upload.setType("audio/*");
@@ -365,10 +384,13 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
 
     int flag = 0;
 
+    Uri importFile=null;
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQ_CODE_IMPORT_AUDIO && resultCode == RESULT_OK) {
+            importFile=data.getData();
             presenter.importAudioFile(getApplicationContext(), data.getData());
             flag = 1;
         }
@@ -956,6 +978,8 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
     @Override
     public void onBackPressed() {
         presenter.stopRecording(false);
+        presenter.stopPlayback();
+
         finish();
     }
 

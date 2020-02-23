@@ -15,7 +15,6 @@
     "@react-native-firebase/auth": "^6.0.1",
     "@react-native-firebase/firestore": "^6.0.1",
     "@react-native-firebase/storage": "^6.3.3",
-    "faker": "^4.1.0",
     "firebase-admin": "^8.9.2",
     "firebase-functions": "^3.3.0",
     "formik": "^1.5.8",
@@ -23,6 +22,7 @@
     "hex-to-rgba": "^1.0.2",
     "moment": "^2.24.0",
     "native-base": "^2.10.0",
+    "path": "^0.12.7",
     "react": "^16.9",
     "react-moment": "^0.9.6",
     "react-native": "^0.61.5",
@@ -58,6 +58,7 @@
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
+    "stream": "0.0.2",
     "yup": "^0.27.0"
   },
   "devDependencies": {
