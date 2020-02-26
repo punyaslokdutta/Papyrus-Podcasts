@@ -4,7 +4,7 @@ import ProfileFollowingScreen from './screens/components/Profile/ProfileFollowin
 import React, {Component} from 'react';
 import CustomDrawerContentComponent from './screens/navigation/CustomDrawerContentComponent';
 import setUserDetails from './screens/setUserDetails'
-import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView} from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView,NativeModules} from 'react-native';
 import {createSwitchNavigator,
   createAppContainer,
   } from 'react-navigation'
@@ -402,23 +402,20 @@ const AppDrawerNavigator=createDrawerNavigator(
       navigationOptions: {
         drawerIcon: () => (<Icon name="home" size={24} style={{ color: 'white' }} />),
       }},
-    "My Drafts": {screen:StatisticsScreen, 
+    Drafts: {screen:StatisticsScreen, 
       navigationOptions: {
-        drawerIcon: () => (<Icon name="line-chart" size={22} style={{ color: 'white' }} />),
+        drawerIcon: () => (<TouchableOpacity onPress={()=>{NativeModules.ReactNativeRecorder.sampleMethodTwo()}}>
+          <Icon name="line-chart" size={22} style={{ color: 'white' }} />
+          </TouchableOpacity>),
       }}, 
-      Activity: {screen:ActivityScreen, 
-        navigationOptions: {
-          drawerIcon: () => (<Icon name="bell" size={22} style={{ color: 'white' }} />),
-        }},
-        Settings: {screen:SettingsScreen, 
-          navigationOptions: {
-            drawerIcon: () => (<Icon name="cog" size={22} style={{ color: 'white' }} />),
-          }},
-    
-    //SignOut: SignOut
-   
-
-    
+    Activity: {screen:ActivityScreen, 
+      navigationOptions: {
+        drawerIcon: () => (<Icon name="bell" size={22} style={{ color: 'white' }} />),
+      }},
+    Settings: {screen:SettingsScreen, 
+      navigationOptions: {
+        drawerIcon: () => (<Icon name="cog" size={22} style={{ color: 'white' }} />),
+      }}
   }, 
   {
     drawerWidth: SCREEN_WIDTH/2,

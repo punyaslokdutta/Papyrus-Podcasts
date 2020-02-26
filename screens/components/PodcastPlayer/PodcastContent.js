@@ -58,7 +58,8 @@ function onEnd() {
 }
 function onBuffering()
 {
-  dispatch({type:"BUFFERING_PODCAST"})
+  console.log("Buffer Triggered");
+  dispatch({type:"BUFFERING_PODCAST",payload:true})
 }
 
 function handlePlayPause() {

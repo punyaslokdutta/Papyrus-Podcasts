@@ -34,6 +34,7 @@ function rootReducer(state = INITIAL_STATE, action)  {
         console.log("SET_DURATION_ACTION"+ " " + action.payload)
         return {...state, duration:action.payload}
       case "BUFFERING_PODCAST":
+        console.log("BUFFERING_PODCAST"+ " " + action.payload)
           return {...state, isBuffering:action.payload}
       case "SET_PAUSED":
           return {...state, paused:!state.paused}

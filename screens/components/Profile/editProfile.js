@@ -145,7 +145,7 @@ const editProfile = (props) => {
         console.log("Before storageRef.putFile");
 
        // var storageRef_680 = storage().ref('books/10000_5_680x680.jpg');
-        var referencePath = 'books/' + userid + '.jpg'; 
+        var referencePath = 'users/' + userid + "/" + userid + "_" + Date.Now() + '.jpg'; 
         var storageRef = storage().ref(referencePath);
 
         ImageResizer.createResizedImage(response.path, 400, 400, 'JPEG', 100)
