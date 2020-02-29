@@ -223,6 +223,13 @@ public class AppRecorderImpl implements AppRecorder {
 	}
 
 	@Override
+	public void finishRecording() {
+		if (audioRecorder.isRecording()) {
+			audioRecorder.finishRecording();
+		}
+	}
+
+	@Override
 	public void resetRecorder() {
           audioRecorder.resetRecorder();
 	}

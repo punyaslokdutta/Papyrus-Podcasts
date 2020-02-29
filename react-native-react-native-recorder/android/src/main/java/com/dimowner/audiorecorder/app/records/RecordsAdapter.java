@@ -346,24 +346,6 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return -1;
     }
 
-    void markAddedToBookmarks(int id) {
-        for (int i = 0; i < data.size(); i++) {
-            if (data.get(i).getId() == id) {
-                data.get(i).setBookmarked(true);
-                notifyItemChanged(i);
-            }
-        }
-    }
-
-    void markRemovedFromBookmarks(int id) {
-        for (int i = 0; i < data.size(); i++) {
-            if (data.get(i).getId() == id) {
-                data.get(i).setBookmarked(false);
-                notifyItemChanged(i);
-            }
-        }
-    }
-
     private boolean hasDateHeader(List<ListItem> data, long time) {
         for (int i = data.size() - 1; i >= 0; i--) {
             if (data.get(i).getType() == ListItem.ITEM_TYPE_DATE) {

@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -94,9 +95,7 @@ public class RecordsActivity extends ReactActivity implements RecordsContract.Vi
     private ImageButton btnNext;
     private ImageButton btnPrev;
     private ImageButton btnDelete;
-    private ImageButton btnBookmarks;
     private ImageButton btnSort;
-    private ImageButton btnCheckBookmark;
     private TextView txtProgress;
     private TextView txtDuration;
     private TextView txtName;
@@ -114,6 +113,7 @@ public class RecordsActivity extends ReactActivity implements RecordsContract.Vi
     private ColorMap colorMap;
     private boolean isBound = false;
     private ARApplication arApplication;
+    public static int listSize=0;
 
     public static Intent getStartIntent(Context context) {
         Intent intent = new Intent(context, RecordsActivity.class);
@@ -137,8 +137,7 @@ public class RecordsActivity extends ReactActivity implements RecordsContract.Vi
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
-                ARApplication.getInjector().releaseRecordsPresenter();
+                onBackPressed();
             }
         });
 
@@ -151,7 +150,6 @@ public class RecordsActivity extends ReactActivity implements RecordsContract.Vi
         btnPrev = findViewById(R.id.btn_prev);
         btnDelete = findViewById(R.id.btn_delete);
         btnSort = findViewById(R.id.btn_sort);
-        btnCheckBookmark = findViewById(R.id.btn_check_bookmark);
         txtEmpty = findViewById(R.id.txtEmpty);
         txtTitle = findViewById(R.id.txt_title);
         txtSubTitle = findViewById(R.id.txt_sub_title);
@@ -160,7 +158,6 @@ public class RecordsActivity extends ReactActivity implements RecordsContract.Vi
         btnNext.setOnClickListener(this);
         btnPrev.setOnClickListener(this);
         btnDelete.setOnClickListener(this);
-        btnCheckBookmark.setOnClickListener(this);
         btnSort.setOnClickListener(this);
 
         playProgress = findViewById(R.id.play_progress);
@@ -553,9 +550,7 @@ public class RecordsActivity extends ReactActivity implements RecordsContract.Vi
                         }
                     }
             );
-        } else if (viewId == R.id.btn_check_bookmark) {
-            //presenter.checkBookmarkActiveRecord();
-        }  else if (viewId == R.id.btn_sort) {
+        } else if (viewId == R.id.btn_sort) {
             showMenu(view);
         } else if (viewId == R.id.txt_name) {
             if (presenter.getActiveRecordId() != -1) {
@@ -605,6 +600,7 @@ public class RecordsActivity extends ReactActivity implements RecordsContract.Vi
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        presenter.stopPlayback();
         ARApplication.getInjector().releaseRecordsPresenter();
         finish();
     }
@@ -699,12 +695,21 @@ public class RecordsActivity extends ReactActivity implements RecordsContract.Vi
             txtEmpty.setVisibility(View.VISIBLE);
             adapter.setData(new ArrayList<ListItem>(), order);
         } else {
+            setListSize(records);
             adapter.setData(records, order);
             txtEmpty.setVisibility(View.GONE);
             if (touchLayout.getVisibility() == View.VISIBLE) {
                 adapter.showFooter();
             }
         }
+    }
+
+    public void setListSize(List<ListItem> records){
+
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("RecordListPref", 0);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putInt("key_name", records.size()); // Storing integer
+
     }
 
     @Override
@@ -719,11 +724,7 @@ public class RecordsActivity extends ReactActivity implements RecordsContract.Vi
         txtEmpty.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void showEmptyBookmarksList() {
-        txtEmpty.setText(R.string.no_bookmarks);
-        txtEmpty.setVisibility(View.VISIBLE);
-    }
+
 
     @Override
     public void showPanelProgress() {
@@ -752,22 +753,6 @@ public class RecordsActivity extends ReactActivity implements RecordsContract.Vi
     @Override
     public void hidePlayPanel() {
         hidePanel();
-    }
-
-    @Override
-    public void addedToBookmarks(int id, boolean isActive) {
-        if (isActive) {
-            btnCheckBookmark.setImageResource(R.drawable.ic_bookmark);
-        }
-        adapter.markAddedToBookmarks(id);
-    }
-
-    @Override
-    public void removedFromBookmarks(int id, boolean isActive) {
-        if (isActive) {
-            btnCheckBookmark.setImageResource(R.drawable.ic_bookmark_bordered);
-        }
-        adapter.markRemovedFromBookmarks(id);
     }
 
     @Override
@@ -842,6 +827,7 @@ public class RecordsActivity extends ReactActivity implements RecordsContract.Vi
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         editText.setLayoutParams(lp);
+
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -858,7 +844,7 @@ public class RecordsActivity extends ReactActivity implements RecordsContract.Vi
             public void onTextChanged(CharSequence s, int start, int before, int count) {
             }
         });
-        editText.setTextColor(getResources().getColor(R.color.text_primary_light));
+        editText.setTextColor(getResources().getColor(R.color.text_primary_dark));
         editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, getResources().getDimension(R.dimen.text_medium));
 
         int pad = (int) getResources().getDimension(R.dimen.spacing_normal);

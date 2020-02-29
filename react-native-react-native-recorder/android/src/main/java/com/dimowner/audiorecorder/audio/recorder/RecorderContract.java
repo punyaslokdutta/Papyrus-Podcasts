@@ -38,6 +38,7 @@ public interface RecorderContract {
 		void startRecording();
 		void pauseRecording();
 		void stopRecording();
+		void finishRecording();
 		void resetRecorder();
 		boolean isRecording();
 		boolean isPaused();

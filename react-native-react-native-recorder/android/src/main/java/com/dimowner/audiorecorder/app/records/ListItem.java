@@ -127,10 +127,6 @@ public class ListItem implements Parcelable {
 		return bookmarked;
 	}
 
-	public void setBookmarked(boolean bookmarked) {
-		this.bookmarked = bookmarked;
-	}
-
 	public int[] getAmps() {
 		return amps;
 	}
