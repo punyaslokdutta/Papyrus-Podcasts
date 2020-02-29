@@ -72,15 +72,15 @@
 					/>
 
 			<ImageButton
-					android:id="@+id/list_item_bookmark"
-					android:layout_width="36dp"
-					android:layout_height="36dp"
-					android:adjustViewBounds="true"
-					android:background="?android:selectableItemBackgroundBorderless"
-					android:contentDescription="@null"
-					android:layout_gravity="bottom|end"
-					android:scaleType="center"
-					android:src="@drawable/ic_bookmark_bordered_small"/>
+				android:id="@+id/list_item_upload"
+				android:layout_width="36dp"
+				android:layout_height="29dp"
+				android:layout_gravity="bottom|end"
+				android:adjustViewBounds="true"
+				android:background="?android:selectableItemBackgroundBorderless"
+				android:contentDescription="@null"
+				android:scaleType="center"
+				android:src="@drawable/ic_bookmark_bordered_small" />
 		</FrameLayout>
 
 		<FrameLayout

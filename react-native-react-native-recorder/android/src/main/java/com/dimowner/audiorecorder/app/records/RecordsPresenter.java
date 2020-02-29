@@ -429,11 +429,6 @@ public class RecordsPresenter implements RecordsContract.UserActionsListener {
 									view.showWaveForm(rec.getAmps(), rec.getDuration());
 									view.showDuration(TimeUtils.formatTimeIntervalHourMinSec2(rec.getDuration() / 1000));
 									view.showRecordName(FileUtil.removeFileExtension(rec.getName()));
-									if (rec.isBookmarked()) {
-										view.bookmarksSelected();
-									} else {
-										view.bookmarksUnselected();
-									}
 									if (audioPlayer.isPlaying() || audioPlayer.isPause()) {
 										view.showActiveRecord(rec.getId());
 									}
@@ -453,7 +448,6 @@ public class RecordsPresenter implements RecordsContract.UserActionsListener {
 
 								view.hideProgress();
 								view.hidePanelProgress();
-								view.bookmarksUnselected();
 								if (recordList.size() == 0) {
 									view.showEmptyList();
 								}
@@ -496,15 +490,9 @@ public class RecordsPresenter implements RecordsContract.UserActionsListener {
 									view.showWaveForm(rec.getAmps(), rec.getDuration());
 									view.showDuration(TimeUtils.formatTimeIntervalHourMinSec2(rec.getDuration() / 1000));
 									view.showRecordName(FileUtil.removeFileExtension(rec.getName()));
-									if (rec.isBookmarked()) {
-										view.bookmarksSelected();
-									} else {
-										view.bookmarksUnselected();
-									}
 								}
 								view.hideProgress();
 								view.hidePanelProgress();
-								view.bookmarksUnselected();
 							}
 						}
 					});
@@ -541,7 +529,6 @@ public class RecordsPresenter implements RecordsContract.UserActionsListener {
 									}
 									view.hideProgress();
 									view.hidePanelProgress();
-									view.bookmarksSelected();
 									if (recordList.size() == 0) {
 										view.showEmptyBookmarksList();
 									}

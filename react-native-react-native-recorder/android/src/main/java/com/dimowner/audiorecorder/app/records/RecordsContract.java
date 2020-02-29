@@ -64,9 +64,6 @@ public interface RecordsContract {
 
 		void showActiveRecord(int id);
 
-		void bookmarksSelected();
-		void bookmarksUnselected();
-
 		void showRecordInfo(RecordInfo info);
 
 		void showRecordsLostMessage(List<Record> list);
