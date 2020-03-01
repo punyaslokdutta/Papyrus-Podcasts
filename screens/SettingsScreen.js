@@ -8,73 +8,86 @@ import { Divider, Button, Switch } from '../screens/components/categories/compon
 import {withFirebaseHOC} from './config/Firebase'
 import { theme, mocks } from '../screens/components/categories/constants/';
 import Icon from 'react-native-vector-icons/FontAwesome'
-
+import { firebase } from '@react-native-firebase/functions';
 import {useSelector,useDispatch} from 'react-redux'
 
 const SettingsScreen = (props) => {
-//  var state = {
-//     budget: 850,
-//     monthly: 1700,
-//     notifications: true,
-//     newsletter: false,
-//     editing: false,
-//     profile: {},
-//   };
+
   const dispatch = useDispatch();  
   const userid = props.firebase._getUid();
   const accountName = useSelector(state=>state.userReducer.name)
   const userName = useSelector(state=>state.userReducer.userName)
   const accountEmail = useSelector(state=>state.userReducer.email)
   const accountPicURI = useSelector(state=>state.userReducer.displayPictureURL)
-  // componentDidMount() {
-  //   this.setState({ profile: this.props.profile });
-  // }
+  
   const [editing,setEditing] = useState(null);
   const [notifications,setNotifications] =useState(true);
 
   async function handleEdit(name, text) {
-    //const { profile } = this.state;
     console.log("IN Handle Edit function");
-    if(name === 'account')
+    switch(name)
     {
-      
-      dispatch({type:'CHANGE_NAME',payload:text});
-
-      let addQuery1 = await firestore().collection('users').doc(userid).set({
-        name : text
-    },{ merge:true })
-    }   
-    else if(name === 'username')
-    {
-      dispatch({type:'CHANGE_USER_NAME',payload:text});
-      
-      let addQuery1 = await firestore().collection('users').doc(userid).set({
-        username : text
-    },{ merge:true })
+      case 'account':
+        dispatch({type:'CHANGE_NAME',payload:text});
+        break;
+      case 'username':
+        dispatch({type:'CHANGE_USER_NAME',payload:text});
+        break;
+      default:
+        break;
     }
-      
-
-      // const userNAME = useSelector(state=>state.userReducer.username)
-      // console.log(userNAME);
-   // profile[name] = text;
-    //perform query here
-    //this.setState({ profile });
   }
 
-  function toggleEdit(name) {
-    //const { editing } = editing;
+   async function toggleEdit(name) {
     const f = !editing ? name : null;
+    if(f == null) // On press of 'Save' Button
+    {
+      switch(name)
+      {
+        case 'account':
+          await firestore().collection('users').doc(userid).set({  // change in actual doc
+            name : accountName
+           },{ merge:true })
+
+          const instance = firebase.app().functions("asia-northeast1").httpsCallable('changeUserNameInPodcastsAsiaEast');
+          try 
+          {          
+            await instance({ // change in podcast docs created by  user
+              changedName : accountName
+            });
+          }
+          catch (e) 
+          {
+            console.log(e);
+          }
+          break;
+        case 'username':
+          await firestore().collection('users').doc(userid).set({ // change in actual doc
+            username : userName
+        },{ merge:true })
+          break;
+        default:
+          break;
+      }
+    }
     setEditing(f);
-    //this.setState({ editing: !editing ? name : null });
   }
 
   function renderEdit(name) {
    // const { profile, editing } = this.state;
     var val = 9;
-   if(name === 'account')
-       val = accountName
-    else if(name === 'username')
-       val = userName;
+    switch(name)
+    {
+      case 'account':
+        val = accountName;
+        break;
+      case 'username':
+        val = userName;
+        break;
+      default:
+        break;
+    }
+
     if (editing === name) {
       
       return (
@@ -85,11 +98,8 @@ const SettingsScreen = (props) => {
       )
     }
   return <Text bold>{val}</Text>
-  // }
   }
-  // render() {
-   // const { profile, editing } = state;
-   // const profile= {};
+ 
     return (
       <Block>
         <Block flex={false} row center space="between" style={styles.header}>

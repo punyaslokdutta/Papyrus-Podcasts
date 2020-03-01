@@ -14,13 +14,11 @@
     "@react-native-firebase/app": "^6.0.1",
     "@react-native-firebase/auth": "^6.0.1",
     "@react-native-firebase/firestore": "^6.0.1",
+    "@react-native-firebase/functions": "^6.3.4",
     "@react-native-firebase/storage": "^6.3.3",
     "events": "^3.1.0",
     "faker": "^4.1.0",
     "firebase-admin": "^8.9.2",
-
-
-    
     "firebase-functions": "^3.3.0",
     "formik": "^1.5.8",
     "fs-extra": "^8.1.0",
