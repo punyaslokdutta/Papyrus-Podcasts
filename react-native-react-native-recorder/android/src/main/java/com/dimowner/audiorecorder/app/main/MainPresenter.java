@@ -378,6 +378,13 @@ public class MainPresenter implements MainContract.UserActionsListener {
 	}
 
 	@Override
+	public void finishRecording() {
+		if (appRecorder.isRecording()) {
+			appRecorder.finishRecording();
+		}
+	}
+
+	@Override
 	public void startPlayback() {
 		if (record != null) {
 			if (!audioPlayer.isPlaying()) {
@@ -696,6 +703,11 @@ public class MainPresenter implements MainContract.UserActionsListener {
 	@Override
 	public void enablePlaybackProgressListener() {
 		listenPlaybackProgress = true;
+	}
+
+	@Override
+	public int getRecordSize() {
+		return localRepository.getAllRecords().size();
 	}
 
 	@Override

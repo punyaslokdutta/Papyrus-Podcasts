@@ -188,6 +188,29 @@ public class AudioRecorder implements RecorderContract.Recorder {
 	}
 
 	@Override
+	public void finishRecording() {
+		if (isRecording) {
+
+			stopRecordingTimer();
+			ARApplication.recorderTimeDuration(recordedTimeDuration);
+			try {
+				recorder.stop();
+				ARApplication.setRecording(false);
+			} catch (RuntimeException e) {
+				Timber.e(e, "stopRecording() problems");
+			}
+			recorder.release();
+			recordFile = null;
+			isPrepared = false;
+			isRecording = false;
+			isPaused = false;
+			recorder = null;
+		} else {
+			Timber.e("Recording has already stopped or hasn't started");
+		}
+	}
+
+	@Override
 	public void resetRecorder() {
        if (isRecording){
 		   ARApplication.setRecording(false);

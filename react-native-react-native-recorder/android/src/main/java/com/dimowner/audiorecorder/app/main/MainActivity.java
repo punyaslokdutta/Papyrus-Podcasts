@@ -21,10 +21,12 @@ import android.animation.Animator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
@@ -44,6 +46,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.MimeTypeMap;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -133,7 +136,6 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
     private LinearLayout pnlRecordProcessing;
 
     private MainContract.UserActionsListener presenter;
-    private MainContract.UserActionsListener presenter1;
 
     private ServiceConnection serviceConnection;
     private PlaybackService playbackService;
@@ -309,7 +311,26 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
                 }
             }
         } else if (id == R.id.btn_record_stop) {
-            presenter.stopRecording(false);
+            int listSize = presenter.getRecordSize();
+
+            if (listSize > 9) {
+                presenter.finishRecording();
+                new AlertDialog.Builder(this)
+                        .setTitle("Draft Is Flooded")
+                        .setMessage("Please Delete Record From Draft To Continue")
+
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+
+                presenter.finishRecording();
+            } else {
+                presenter.stopRecording(false);
+            }
         } else if (id == R.id.btn_record_delete) {
             if (waveformView.getWaveformLength() > 0) {
                 waveformView.clearRecordingData();
@@ -323,6 +344,7 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
 
         } else if (id == R.id.btn_stop) {
             presenter.stopPlayback();
+
         } else if (id == R.id.btn_share) {//				AndroidUtils.shareAudioFile(getApplicationContext(), presenter.getActiveRecordPath(), presenter.getActiveRecordName());
             showMenu(view);
         } else if (id == R.id.btn_import) {
@@ -334,16 +356,11 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
                 setRecordName(presenter.getActiveRecordId(), new File(presenter.getActiveRecordPath()), false);
             }
         } else if (id == R.id.btn_records_list) {
-           int duration=Integer.parseInt(txtDuration.getText().toString().split(":")[0]) *60 + Integer.parseInt(txtDuration.getText().toString().split(":")[1]);
+            int duration = Integer.parseInt(txtDuration.getText().toString().split(":")[0]) * 60 + Integer.parseInt(txtDuration.getText().toString().split(":")[1]);
             WritableMap params1 = Arguments.createMap();
-            if (newName.length() == 0 || newName == null && flag == 1) {
-                params1.putString("eventName", extractFileName(this,importFile));
-                params1.putInt("eventDuration", duration);
+            params1.putString("eventName", txtName.getText().toString());
+            params1.putInt("eventDuration", duration);
 
-            } else {
-                params1.putString("eventName", extractFileName(this,importFile));
-                params1.putInt("eventDuration", duration);
-            }
             try {
                 getReactInstanceManager().getCurrentReactContext()
                         .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
@@ -370,6 +387,7 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
         } finally {
             cursor.close();
         }
+
         return null;
     }
 
@@ -382,17 +400,46 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
         startActivityForResult(intent_upload, REQ_CODE_IMPORT_AUDIO);
     }
 
-    int flag = 0;
-
-    Uri importFile=null;
+    Uri importFile = null;
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQ_CODE_IMPORT_AUDIO && resultCode == RESULT_OK) {
-            importFile=data.getData();
-            presenter.importAudioFile(getApplicationContext(), data.getData());
-            flag = 1;
+
+            importFile = data.getData();
+            ContentResolver contentResolver = getContentResolver();
+            MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+            String extension = mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(importFile));
+            int listSize = presenter.getRecordSize();
+
+            if (listSize > 9) {
+                new AlertDialog.Builder(this)
+                        .setTitle("Draft Is Flooded")
+                        .setMessage("Please Delete Record From Draft To Continue")
+
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+            } else if (extension.equals("wav") || extension.equals("pcm")) {
+                new AlertDialog.Builder(this)
+                        .setTitle("Invalid File Format")
+                        .setMessage("Please Select MP3/MP4/AAC File To Upload")
+
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+            } else {
+                presenter.importAudioFile(getApplicationContext(), data.getData());
+            }
         }
     }
 
