@@ -51,7 +51,7 @@ const SelectScreen =(props)=> {
           recordedFilePath: audioFilePath})
     })
        
-    }, [eventEmitter.current])
+    }, [])
   
 
     function onPressAdd2()
@@ -213,7 +213,7 @@ const SelectScreen =(props)=> {
                         dispatch({type:'CHANGE_CHAPTER',payload:ChapterName}) 
                         dispatch({type:'CHANGE_AUTHOR',payload:AuthorName}) 
                         dispatch({type:'CHANGE_LANGUAGE',payload:LanguageSelected}) 
-            NativeModules.ReactNativeRecorder.uploadActivity()
+                        NativeModules.ReactNativeRecorder.uploadActivity()
  
                          }
             }>

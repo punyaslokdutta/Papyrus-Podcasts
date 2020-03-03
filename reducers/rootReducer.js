@@ -11,7 +11,8 @@ const INITIAL_STATE = {
   duration: 0.0, 
   resizeMode:'contain', 
   isMiniPlayer:false,
-
+  numLikes: 0,
+  isHomeScreen:null
 };
 
 function rootReducer(state = INITIAL_STATE, action)  {
@@ -22,11 +23,15 @@ function rootReducer(state = INITIAL_STATE, action)  {
       case "SET_PODCAST":
         console.log("SET_PODCAST"+" " +action.payload)
           return {...state, podcast:action.payload}
+      case "SET_IS_HOME_SCREEN":
+        return {...state, isHomeScreen:action.payload}
       case "SET_VOLUME":
           return {...state, volume:action.payload}
       case "SET_RATE":
         console.log("SET_RATE"+" " +action.payload)
           return {...state,rate:((action.payload)>2.0? 1.0 :(action.payload) )}
+      case "SET_NUM_LIKES":
+          return {...state, numLikes:action.payload}
       case "SET_CURRENT_TIME":
           console.log("SET_CURRENT_TIME_ACTION"+" " +action.payload)
           return {...state, currentTime:(action.payload)}

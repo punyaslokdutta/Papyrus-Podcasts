@@ -21,13 +21,28 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
 
 
   
-  /////////////
-  
+  // /////////////
+  // ProfileBookPodcast:{ screen: ProfileBookPodcast,navigationOptions:{
+  //   tabBarLabel:'Books',
+  //   tabBarIcon:({tintColor})=>(
+  //     <Icon name="book" color={tintColor} size={20}/>
+  //   )
+  // }} 
   
   const ExploreTabNavigator = createMaterialTopTabNavigator(
     {
-      UserBookPodcast : { screen: props => <UserBookPodcast {...props}/>},
-      UserChapterPodcast : { screen: props => <UserChapterPodcast {...props}/>}
+      UserBookPodcasts : { screen: props => <UserBookPodcast {...props}/>,navigationOptions:{
+        tabBarLabel:'Books',
+        tabBarIcon:({tintColor})=>(
+          <Icon name="book" color={tintColor} size={20}/>
+        )
+      }},
+      UserChapterPodcasts : { screen: props => <UserChapterPodcast {...props}/>,navigationOptions:{
+        tabBarLabel:'Chapters',
+        tabBarIcon:({tintColor})=>(
+          <Icon name="newspaper-o" color={tintColor} size={20}/>
+        )
+      }}
     },
     {tabBarOptions:{
       showIcon: true,

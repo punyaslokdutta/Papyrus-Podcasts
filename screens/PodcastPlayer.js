@@ -323,7 +323,7 @@ const PodcastPlayer=(props)=>{
       <Animated.View
       style={{
         transform: [{ translateY: tY }],
-        ...shadow,
+        //...shadow,
       }}
     >
           <TouchableNativeFeedback onPress={slideDown}>
@@ -344,7 +344,7 @@ const PodcastPlayer=(props)=>{
             
             <Animated.View style={{ backgroundColor: 'white', width: videoContainerWidth, height: containerHeight }}>
               <Animated.View style={{ opacity }}>
-                <PodcastContent  podcast={props.podcast} navigation={navigation} slideDown={slideDown} />
+              <PodcastContent userID={props.userID} podcast={props.podcast} navigation={navigation} slideDown={slideDown} />
               </Animated.View>
             </Animated.View>
             </ScrollView> 

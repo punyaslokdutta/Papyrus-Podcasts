@@ -146,7 +146,12 @@ const styles = StyleSheet.create({
            <View style={[styles.flex, styles.recommendationHeader]}>
            <TouchableOpacity  onPress={(()=>{
              dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
-             dispatch({type:"SET_PODCAST", payload: props.podcast})})}>
+             dispatch({type:"SET_PODCAST", payload: props.podcast})
+             dispatch({type:"SET_NUM_LIKES", payload: props.podcast.numUsersLiked})
+             if(props.isHomeScreen)
+                dispatch({type:"SET_IS_HOME_SCREEN", payload: props.isHomeScreen})
+
+            })}>
            <Image style={[styles.recommendationImage]} source={ {uri: props.podcast.Podcast_Pictures["0"]}} />
 
            </TouchableOpacity>

@@ -37,14 +37,15 @@ const paused=useSelector(state=>state.rootReducer.paused);
       
       <TouchableWithoutFeedback onPress={props.onPress} style={{borderColor:'black'}} >
         <View style={styles.container}>
-          <View style={styles.placeholder} />
+          <View style={styles.placeholder}/>
           <Text style={styles.title} numberOfLine={3}>{props.title}</Text>
           {paused && <TouchableOpacity  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
             <Icon name="play" size={24} style={styles.icon}/></TouchableOpacity>}
           {!paused && <TouchableOpacity  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
             <Icon name="pause" size={24} style={styles.icon}/></TouchableOpacity>}
                 <TouchableOpacity onPress={(()=>{dispatch({type:"TOGGLE_PLAY_PAUSED"})
-                  dispatch({type:"SET_PODCAST", payload: null})})}>
+                  dispatch({type:"SET_PODCAST", payload: null})
+                  dispatch({type:"SET_IS_HOME_SCREEN", payload: null})})}>
                 <Icon name="times-circle" size={24} style={styles.icon}/>
                 </TouchableOpacity>
         </View>

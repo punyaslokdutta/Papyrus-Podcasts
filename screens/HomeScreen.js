@@ -415,7 +415,7 @@ class HomeScreen extends React.Component {
         if (i >= section.data.length) {
           break;
         }
-        items.push(<Podcast podcast={section.data[i]} key={section.data[i].podcastID}  navigation={this.props.navigation}  />);
+        items.push(<Podcast isHomeScreen={true} podcast={section.data[i]} key={section.data[i].podcastID}  navigation={this.props.navigation}  />);
       }
       return (
         <View

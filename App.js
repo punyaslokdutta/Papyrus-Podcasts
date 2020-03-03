@@ -4,23 +4,24 @@ import ProfileFollowingScreen from './screens/components/Profile/ProfileFollowin
 import React, {Component} from 'react';
 import CustomDrawerContentComponent from './screens/navigation/CustomDrawerContentComponent';
 import setUserDetails from './screens/setUserDetails'
-import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView} from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView,  NativeModules} from 'react-native';
 import {createSwitchNavigator,
   createAppContainer,
   } from 'react-navigation'
 import NavigationService from './screens/navigation/NavigationService';
-
+import LikersScreen from './screens/components/PodcastPlayer/LikersScreen'
+import setPreferences from './setPreferences'
 
   import { createBottomTabNavigator, createMaterialTopTabNavigator } from 'react-navigation-tabs';
   import { createStackNavigator } from 'react-navigation-stack';
   import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
+  import { fromRight } from 'react-navigation-transitions';
   
 import thunk from 'redux-thunk';
 import userReducer from './reducers/userReducer'
 import rootReducer from './reducers/rootReducer';
 import recorderReducer from './reducers/recorderReducer'
-import otherUserReducer from './reducers/otherUserReducer'
-
+import authReducer from './reducers/authReducer'
 import AuthLoadingScreen from './screens/AuthLoadingScreen'
 import SignInScreen from './screens/SignInScreen'
 import SignUpScreen from './screens/SignUpScreen'
@@ -30,7 +31,6 @@ import Explore from './screens/Explore'
 import SearchScreen from './screens/components/Explore/SearchScreen'
 import PodcastPlayer from './screens/PodcastPlayer'
 import SelectScreen from './screens/SelectScreen'
-import StartRecordScreen from './screens/StartRecordScreen'
 import PreviewScreen from './screens/PreviewScreen'
 import TagsScreen from './screens/TagsScreen'
 import CategoryScreen from './screens/CategoryScreen'
@@ -50,14 +50,13 @@ import ExploreTabNavigator from './screens/navigation/ExploreTabNavigator'
 import UserStatsScreen from './screens/components/Explore/UserStatsScreen'
 import {createStore,combineReducers, applyMiddleware} from 'redux'
 import {Provider} from 'react-redux'
-
 import UserFollowingScreen from './screens/components/Explore/UserFollowingScreen';
 import UserFollowerScreen from './screens/components/Explore/UserFollowerScreen';
 import InfoScreen from './InfoScreen'
 
 
 
-var {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
+const  {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
 const IS_IPHONE_X = SCREEN_HEIGHT === 812 || SCREEN_HEIGHT=== 896;
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? (IS_IPHONE_X ? 44 : 20) : 0;
 const HEADER_HEIGHT = Platform.OS === 'ios' ? (IS_IPHONE_X ? 88 : 64) : 64;
@@ -67,22 +66,19 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
 const AuthStackNavigator= createStackNavigator(
   {
     
-    SignIn: SignInScreen,
-    SignUp: SignUpScreen, 
+    SignInScreen: SignInScreen,
+    SignUpScreen: SignUpScreen, 
   },
   {
     headerMode: 'none',
+    initialRouteName:'SignInScreen',
+    transitionConfig: () => fromRight(),
     navigationOptions: {
       headerVisible: false,
+     
     }
    }
 )
-
-
-
-
-
-
 
 
 
@@ -92,13 +88,13 @@ const CategoryStackNavigator=createStackNavigator(
       header:null
     }},
     CategoryTabNavigator : {screen : CategoryTabNavigator,navigationOptions:{
-      //header:null
     }} 
   }, 
   {
-    //headerMode:'none',
-    //initialRouteName:Profile,  
-}
+    headerMode:'none', 
+    initialRouteName:'CategoryScreen',
+    transitionConfig: () => fromRight(),
+  }
 )
 
 
@@ -127,11 +123,11 @@ const ExploreStackNavigator=createStackNavigator(
 
   }, 
   {
-    //headerMode:'none',
-    //initialRouteName:Profile,
-   
-   
-}
+    //headerMode:'none', 
+    //initialRouteName:'CategoryScreen',
+    transitionConfig: () => fromRight(),
+  }
+
 )
 
 
@@ -142,13 +138,10 @@ const ProfileStackNavigator=createStackNavigator(
        header: null,
    }}, 
     Profile_StatsScreen:{screen: Profile_StatsScreen, navigationOptions: {
-     // header: null,
   }},
-  ProfileFollowingScreen:{screen:ProfileFollowingScreen,navigationOptions: {
-      //header:null
+    ProfileFollowingScreen:{screen:ProfileFollowingScreen,navigationOptions: {
     }},
     ProfileFollowerScreen: {screen:ProfileFollowerScreen,navigationOptions: {
-      //header:null
     }},
     UserFollowingScreen : {screen : UserFollowingScreen,navigationOptions:{
 
@@ -163,27 +156,19 @@ const ProfileStackNavigator=createStackNavigator(
 
     }}
   }, 
-  {
-    //headerMode:'none',
-    //initialRouteName:Profile,
-   
-   
-}
 )
-
 
 const RecordStackNavigator= createStackNavigator(
   {
     SelectScreen: {screen:SelectScreen},
-    //StartRecord: {screen:StartRecordScreen},
     PreviewScreen: {screen:PreviewScreen},
     Tags : {screen:TagsScreen} ,
   },
   {
-    //initialRouteName: SelectScreen ,
-    headerMode:'none',
-  }
-    
+    headerMode:'none', 
+    initialRouteName:'SelectScreen',
+    transitionConfig: () => fromRight(),
+  }  
 )
 
 RecordStackNavigator.navigationOptions = ({ navigation }) => {
@@ -195,7 +180,6 @@ RecordStackNavigator.navigationOptions = ({ navigation }) => {
 const HomeStackNavigator= createStackNavigator(
   {
     HomeScreen :{screen: HomeScreen},
-
   },
   {
     headerMode:'none',
@@ -249,11 +233,7 @@ const AppTabNavigator=createBottomTabNavigator(
         )
       } 
     }, 
-    
-
-
-
-  },{initialRouteName:'Explore',
+  },{initialRouteName:'Home',
   order:['Home', 'Explore', 'Record', 'Category', 'Profile'],
   headerMode: 'none',
   navigationOptions:
@@ -274,12 +254,8 @@ const AppTabNavigator=createBottomTabNavigator(
       height: SCREEN_HEIGHT/11, 
     },
   }, 
-   
-
   }
 )
-
-
 
 
 const AppStackNavigator= createStackNavigator(
@@ -287,17 +263,6 @@ const AppStackNavigator= createStackNavigator(
     AppTabNavigator:
     {
       screen: AppTabNavigator,
-      /*navigationOptions:({navigation})=>({
-        title:'PAPYRUS',
-        headerLeft: (
-        <TouchableOpacity onPress={()=>navigation.toggleDrawer()}>
-        <View style={{paddingHorizontal: 10}}>
-          <Icon name="bars" size={24}/>
-        </View>
-        </TouchableOpacity>
-        )
-      }
-      )*/
       navigationOptions: {
         header: null
     }
@@ -310,7 +275,12 @@ const AppStackNavigator= createStackNavigator(
         header:null
      }
     },
-
+    LikersScreen: {
+      screen: LikersScreen,
+      navigationOptions:{
+        header:null
+     }
+    },
     InfoScreen: {
       screen: InfoScreen,
       navigationOptions:{
@@ -324,28 +294,16 @@ const AppStackNavigator= createStackNavigator(
    RecordBook: {screen :RecordBook,
     navigationOptions:{
       header:null
-   }},
-
-// InfoScreen:{
-//   screen:InfoScreen,
-//   navigationOptions:{
-//     header:null
-//  }
-
-// }
-   
-  
-  },
-    
-      /*{
-        headerMode: 'none',
-        navigationOptions: {
-          headerVisible: false,
-        }
-       }*/
-    
+   }}, 
+  }, 
+  {
+    headerMode: 'none',
+    transitionConfig: () => fromRight(),
+    navigationOptions: {
+      headerVisible: false,
      
-
+    }
+   }
   
 )
 
@@ -358,7 +316,7 @@ const AppDrawerNavigator=createDrawerNavigator(
       }},
     "My Drafts": {screen:StatisticsScreen, 
       navigationOptions: {
-        drawerIcon: () => (<Icon name="line-chart" size={22} style={{ color: 'white' }} />),
+        drawerIcon: () => (<TouchableOpacity onPress={()=>{NativeModules.ReactNativeRecorder.sampleMethodTwo()}}><Icon name="line-chart" size={22} style={{ color: 'white' }} /></TouchableOpacity>),
       }}, 
       Activity: {screen:ActivityScreen, 
         navigationOptions: {
@@ -398,9 +356,9 @@ const AppSwitchNavigator = createSwitchNavigator(
     
     AuthLoading : AuthLoadingScreen,
     setUserDetails : setUserDetails,
-    Auth : AuthStackNavigator, // this will be a stack navigator
-    App : AppDrawerNavigator ,  //this is the drawer navigator 
-    //Preferences: PreferencesStackNavigator 
+    Auth : AuthStackNavigator, 
+    App : AppDrawerNavigator ,  
+    setPreferences: setPreferences 
 
   },
   {
@@ -408,40 +366,32 @@ const AppSwitchNavigator = createSwitchNavigator(
   }
 )
 
-//const App =createAppContainer(AppSwitchNavigator); // ^3.0.8 react-navigation 
 
- const AppContainer =createAppContainer(AppSwitchNavigator);  //top level navigator 
+ const AppContainer =createAppContainer(AppSwitchNavigator); 
 
  const mainReducer = combineReducers({
   recorderReducer,
   userReducer,
-  rootReducer
+  rootReducer, 
+  authReducer, 
 })
-// applyMiddleware supercharges createStore with middleware:
+
 const store = createStore(mainReducer, applyMiddleware(thunk))
 
- //FirebaseConsumer is wrapped around withFirebaseHOC() which provides Firebase Apis
 export default class App extends Component {
-  //..
   render(){
     console.log("REDUX_STORE_STATE: " + store.getState());
     return(
     <Provider store ={store}>
-    <PlayerProvider>
     <FirebaseProvider value={firebaseApi}> 
-    <AppContainer ref={navigatorRef => {
-          NavigationService.setTopLevelNavigator(navigatorRef);
-        }}/> 
-    </FirebaseProvider>
+    <PlayerProvider>
+    <AppContainer/> 
     </PlayerProvider>
+    </FirebaseProvider>
     </Provider>
     );
   }
 }
-
-//export default App;
-
-
 
 
 const styles = StyleSheet.create({

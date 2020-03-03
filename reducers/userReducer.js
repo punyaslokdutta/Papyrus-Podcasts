@@ -9,6 +9,7 @@ const INITIAL_STATE = {
     numFollowing: 0,
     displayPictureURL: null,
     followingList:[],
+    isPodcastLiked: {},
     isUserFollowing: {},
     introduction : null,
     numCreatedBookPodcasts : 0,
@@ -28,6 +29,16 @@ const INITIAL_STATE = {
             return {...state, name:action.payload}
         case "CHANGE_WEBSITE":
             return {...state, website:action.payload}
+        case "SET_PODCASTS_LIKED":
+            let liker_list = action.payload;
+            let length_liker_list = liker_list.length;
+            for (i = 0; i < length_liker_list; i++) {
+                state.isPodcastLiked[liker_list[i]] = true;
+              }
+            return state;
+        case "ADD_TO_PODCASTS_LIKED":
+            state.isPodcastLiked[action.payload] = true;
+            return state;
         case "CHANGE_USER_NAME":
             return {...state, userName:action.payload}
         case "CHANGE_DISPLAY_PICTURE":

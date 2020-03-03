@@ -1,18 +1,20 @@
 
 
-import React, {Component} from 'react';
-import {SafeAreaView,
+import React from 'react';
+import {
   ActivityIndicator,
-  TouchableOpacity, StyleSheet, Text, View, AsyncStorage, Dimensions, ImageBackground, Button} from 'react-native';
+  TouchableOpacity, StyleSheet, Text, View, AsyncStorage, Dimensions, ImageBackground, Button, Image} from 'react-native';
 import bgImage from '../assets/bgImage.jpg'
 import { TextInput } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome'
-import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { Formik } from 'formik';
+import {withFirebaseHOC} from '../screens/config/Firebase'
 import * as yup from 'yup';
+import {firebase} from '@react-native-firebase/auth';
+import {useDispatch} from 'react-redux'
 
 const validationSchema = yup.object().shape({ 
-  Fullname: yup
+  fullName: yup
     .string()
     .label('Fullname')
     .required("*Name is a required field"),
@@ -27,44 +29,65 @@ const validationSchema = yup.object().shape({
     .label('Password')
     .required("*Password is a required field")
     .min(6, 'Password must be atleast 6 characters'),
-    confirmPassword: yup
+  confirmPassword: yup
     .string()
+    .oneOf([yup.ref('password'), null], 'Password must match')
     .required("*Confirm Password is a required field")
     .label('Confirm password')
     .min(6, 'Password must be atleast 6 characters')
-    .test('passwords-match', 'Donot match', function(value) {
-      console.log(value)
-      return this.parent.password === value;
-    }),
+    
 });
+
+
+
+async function _signupWithEmail (email, password, fullName){
+
+  try {
+    const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+    console.log("USER CREDENTIAL = ",userCredential);
+
+  } catch (e) {
+    console.error(e.message);
+  }
+}
+
+
+
 
 var {width:WIDTH, height:HEIGHT}=Dimensions.get('window')
 
-class SignUpScreen extends React.Component {
-  
-   
-    render() {
+const SignUpScreen=(props)=>{
+
+  const dispatch=useDispatch();
       return (
         <Formik
-      initialValues={{ Fullname: '', email: '', password: '', confirmPassword:'', }}
+      initialValues={{ fullName: '', email: '', password: '',confirmPassword:'' }}
       onSubmit={(values, actions) => {
-        alert(JSON.stringify(values));
-        setTimeout(() => {
+         // alert(JSON.stringify(values));
+         dispatch({type:"SET_FULL_NAME", payload: values.fullName})
+         _signupWithEmail( values.email, values.password, values.fullName)
           actions.setSubmitting(false);
-          this.props.navigation.navigate('App')
-        }, 1000);
-        
       }}
       validationSchema={validationSchema}
     >   
     {formikProps => (
-        <ImageBackground  source ={bgImage} style={styles.backgroundContainer}> 
+        <View style={styles.backgroundContainer}>
+           <View style={{ }}>
+
+<TouchableOpacity>
+    <Image
+      resizeMode="contain"
+      source={require('../assets/images/papyrusLogo.png')}
+      style={{ width: 150, height: 150 }}
+    />
+  </TouchableOpacity>      
+   </View>
         <View style={styles.positions}>
-        <TextInput style={styles.Input}   placeholder={'Fullname'} placeholderTextColor={'rgba(255, 255, 255, 0.5)'} underlineColorAndroid='transparent'
-          onChangeText={formikProps.handleChange('Fullname')}
+        <TextInput style={styles.Input}   placeholder={'Fullname'} placeholderTextColor={'rgba(255, 255, 255, 0.5)'} borderColor={'rgb(218,165,32)'} underlineColorAndroid='transparent'
+          onChangeText={formikProps.handleChange('fullName')}
           /> 
           <Text style={{ color: 'rgba(255, 255, 255, 0.5)', paddingLeft:45 ,fontFamily:'sans-serif-light' , fontSize:12 }}>
-          {formikProps.touched.Fullname && formikProps.errors.Fullname}
+          {formikProps.touched.fullName && formikProps.errors.fullName}
           </Text>
           
         </View>
@@ -91,16 +114,16 @@ class SignUpScreen extends React.Component {
           secureTextEntry
           /> 
           <Text style={{ color: 'rgba(255, 255, 255, 0.5)', paddingLeft:45 ,fontFamily:'sans-serif-light' , fontSize:12 }}>
-          {formikProps.touched.confirmpassword && formikProps.errors.confirmpassword}
+          {formikProps.touched.confirmPassword && formikProps.errors.confirmPassword}
           </Text>
           </View>
           {formikProps.isSubmitting ? (
             <ActivityIndicator />
           ) : (
             <View>
-            <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:45, width:WIDTH -55, borderRadius:15, backgroundColor:'rgba(0, 0, 0, 0.7)', borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }}
+            <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:45, width:WIDTH -55, borderRadius:15, backgroundColor:'rgba(0, 0, 0, 0.7)', borderColor:'rgb(218,165,32)', borderWidth: 1 }}
         onPress={formikProps.handleSubmit} >
-            <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'rgba(255, 255, 255, 0.5)', justifyContent:'center'}} >Login</Text>
+            <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'rgb(218,165,32)', justifyContent:'center'}} >Submit</Text>
                 </TouchableOpacity>
              
               </View>
@@ -121,20 +144,20 @@ class SignUpScreen extends React.Component {
             </View>
         <View style={{ paddingTop:HEIGHT/8}}>
         <TouchableOpacity>
-        <Text style={{ fontFamily:'sans-serif-light', color:'rgba(255, 255, 255, 0.5)', fontSize:10}}>By clicking "SignUp" you agree to Papyrus's Terms and Privacy Policy</Text>
+        <Text style={{ fontFamily:'sans-serif-light', color:'rgba(255, 255, 255, 0.5)', fontSize:10}}>By clicking "Submit" you agree to Papyrus's Terms and Privacy Policy</Text>
        </TouchableOpacity>
         </View>
-        
+        </View>
+      
 
          
 
-         </ImageBackground>
+         
       )}
       </Formik>);
-    }
   }
 
-export default SignUpScreen;
+export default withFirebaseHOC(SignUpScreen);
 
 
 const styles = StyleSheet.create({
@@ -143,7 +166,8 @@ const styles = StyleSheet.create({
     width: null,
     height: null,
     alignItems: 'center',
-    paddingTop:HEIGHT/3.5,
+    paddingTop:HEIGHT/24,
+    backgroundColor:'#101010'
   },
   logo:{
     width:120,
@@ -171,7 +195,8 @@ const styles = StyleSheet.create({
     backgroundColor:'rgba(0, 0, 0, 0.7)',
     color:'rgba(255, 255, 255, 0.7)', 
     marginHorizontal:25, 
-    fontFamily:'sans-serif-light'
+    fontFamily:'sans-serif-light', 
+   // borderColor:'rgb(218,165,32)'
   },
    positions:
   {

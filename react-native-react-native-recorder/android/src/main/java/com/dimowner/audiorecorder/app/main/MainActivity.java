@@ -337,7 +337,7 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
            int duration=Integer.parseInt(txtDuration.getText().toString().split(":")[0]) *60 + Integer.parseInt(txtDuration.getText().toString().split(":")[1]);
             WritableMap params1 = Arguments.createMap();
             if (newName.length() == 0 || newName == null && flag == 1) {
-                params1.putString("eventName", extractFileName(this,importFile));
+                params1.putString("eventName", txtName.getText().toString());
                 params1.putInt("eventDuration", duration);
 
             } else {
