@@ -314,23 +314,20 @@ const AppDrawerNavigator=createDrawerNavigator(
       navigationOptions: {
         drawerIcon: () => (<Icon name="home" size={24} style={{ color: 'white' }} />),
       }},
-    "My Drafts": {screen:StatisticsScreen, 
+    Drafts: {screen:StatisticsScreen, 
       navigationOptions: {
-        drawerIcon: () => (<TouchableOpacity onPress={()=>{NativeModules.ReactNativeRecorder.sampleMethodTwo()}}><Icon name="line-chart" size={22} style={{ color: 'white' }} /></TouchableOpacity>),
+        drawerIcon: () => (<TouchableOpacity onPress={()=>{NativeModules.ReactNativeRecorder.sampleMethodTwo()}}>
+          <Icon name="line-chart" size={22} style={{ color: 'white' }} />
+          </TouchableOpacity>),
       }}, 
-      Activity: {screen:ActivityScreen, 
-        navigationOptions: {
-          drawerIcon: () => (<Icon name="bell" size={22} style={{ color: 'white' }} />),
-        }},
-        Settings: {screen:SettingsScreen, 
-          navigationOptions: {
-            drawerIcon: () => (<Icon name="cog" size={22} style={{ color: 'white' }} />),
-          }},
-    
-    //SignOut: SignOut
-   
-
-    
+    Activity: {screen:ActivityScreen, 
+      navigationOptions: {
+        drawerIcon: () => (<Icon name="bell" size={22} style={{ color: 'white' }} />),
+      }},
+    Settings: {screen:SettingsScreen, 
+      navigationOptions: {
+        drawerIcon: () => (<Icon name="cog" size={22} style={{ color: 'white' }} />),
+      }}
   }, 
   {
     drawerWidth: SCREEN_WIDTH/2,

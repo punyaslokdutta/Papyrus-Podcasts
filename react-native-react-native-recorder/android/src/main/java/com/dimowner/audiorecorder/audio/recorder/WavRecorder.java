@@ -204,6 +204,11 @@ public class WavRecorder implements RecorderContract.Recorder {
 	}
 
 	@Override
+	public void finishRecording() {
+
+	}
+
+	@Override
 	public void resetRecorder() {
 
 	}

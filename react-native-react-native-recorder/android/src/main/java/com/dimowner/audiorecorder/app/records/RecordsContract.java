@@ -46,7 +46,6 @@ public interface RecordsContract {
 		void addRecords(List<ListItem> records, int order);
 
 		void showEmptyList();
-		void showEmptyBookmarksList();
 
 		void showPanelProgress();
 		void hidePanelProgress();
@@ -57,15 +56,9 @@ public interface RecordsContract {
 
 		void hidePlayPanel();
 
-		void addedToBookmarks(int id, boolean isActive);
-		void removedFromBookmarks(int id, boolean isActive);
-
 		void showSortType(int type);
 
 		void showActiveRecord(int id);
-
-		void bookmarksSelected();
-		void bookmarksUnselected();
 
 		void showRecordInfo(RecordInfo info);
 
@@ -99,12 +92,6 @@ public interface RecordsContract {
 		void updateRecordsOrder(int order);
 
 		void loadRecordsPage(int page);
-
-		void applyBookmarksFilter();
-		void checkBookmarkActiveRecord();
-
-		void addToBookmark(int id);
-		void removeFromBookmarks(int id);
 
 		void setActiveRecord(long id, Callback callback);
 

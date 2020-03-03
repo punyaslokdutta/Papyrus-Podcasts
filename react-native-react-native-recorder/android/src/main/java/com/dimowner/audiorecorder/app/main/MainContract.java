@@ -81,6 +81,7 @@ public interface MainContract {
 		void startRecording();
 		void stopRecording(boolean deleteRecord);
 		void resetRecording();
+		void finishRecording();
 
 		void startPlayback();
 		void pausePlayback();
@@ -115,5 +116,7 @@ public interface MainContract {
 		void disablePlaybackProgressListener();
 
 		void enablePlaybackProgressListener();
+
+		int getRecordSize();
 	}
 }

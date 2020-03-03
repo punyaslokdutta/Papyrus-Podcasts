@@ -87,16 +87,6 @@
 				android:padding="@dimen/spacing_normal"
 				android:src="@drawable/ic_sort"/>
 
-		<ImageButton
-				android:id="@+id/btn_bookmarks"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:contentDescription="@null"
-				android:layout_gravity="center_vertical|end"
-				android:background="?android:selectableItemBackgroundBorderless"
-				android:padding="@dimen/spacing_normal"
-				android:src="@drawable/ic_bookmark_bordered"/>
-
 	</LinearLayout>
 
 	<View
@@ -164,18 +154,6 @@
 						android:textSize="@dimen/text_xlarge"
 						android:textStyle="bold"
 						tools:text="00:00:00"/>
-
-				<ImageButton
-						android:id="@+id/btn_check_bookmark"
-						android:layout_width="@dimen/bottom_pnl_small_btn_size"
-						android:layout_height="@dimen/bottom_pnl_small_btn_size"
-						android:adjustViewBounds="true"
-						android:background="?android:selectableItemBackgroundBorderless"
-						android:contentDescription="@null"
-						android:layout_gravity="center_vertical|end"
-						android:scaleType="center"
-						android:layout_marginEnd="@dimen/spacing_small"
-						android:src="@drawable/ic_bookmark_bordered"/>
 			</FrameLayout>
 
 			<FrameLayout

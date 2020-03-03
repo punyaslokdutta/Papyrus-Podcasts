@@ -1,10 +1,13 @@
 import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
 import {useSelector} from "react-redux";
 import React, {Component} from 'react';
-import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView} from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView,NativeModules} from 'react-native';
 import {Container, Content, Header, Body} from 'native-base'
 import { theme } from '../components/categories/constants';
 import { Block, Text } from '../components/categories/components/';
+
+import ActivityScreen from '../ActivityScreen';
+import SettingsScreen from '../SettingsScreen';
 
 
 var {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
@@ -37,9 +40,30 @@ return(
           
     </Block>
 
+
     <Content style={{ paddingTop: SCREEN_HEIGHT/18}}>
     
-    <DrawerItems {...props}  activeBackgroundColor='#101010'   style={{backgroundColor: '#ffffff', }} labelStyle={{color: '#ffffff', fontSize: SCREEN_HEIGHT/35}}/>
+    <DrawerItems {...props} onItemPress = {
+          ( route ) =>       
+          {    
+            switch(route.route.routeName)
+            {
+                case 'Home':
+                  props.onItemPress(route);
+                  break;
+                case 'Drafts':
+                  {NativeModules.ReactNativeRecorder.sampleMethodTwo()}
+                  break;
+                case 'Activity':
+                  props.onItemPress(route);
+                  break;
+                case 'Settings':
+                  props.onItemPress(route);
+                  break;  
+            }
+          }
+          } 
+          activeBackgroundColor='#101010'   style={{backgroundColor: '#ffffff', }} labelStyle={{color: '#ffffff', fontSize: SCREEN_HEIGHT/35}}/>
     
     </Content>
     </Body>

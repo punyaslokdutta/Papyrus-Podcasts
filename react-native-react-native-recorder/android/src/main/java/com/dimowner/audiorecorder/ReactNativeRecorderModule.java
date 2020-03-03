@@ -1,12 +1,10 @@
 package com.dimowner.audiorecorder;
 
-import com.dimowner.audiorecorder.app.main.SecondActivity;
 import com.dimowner.audiorecorder.app.records.RecordsActivity;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.dimowner.audiorecorder.app.main.MainActivity;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.Callback;
 
 import android.content.Intent;
 
