@@ -115,7 +115,7 @@ async function updatePodcastsLiked(props){
 
     return (
       
-        <ScrollView style={styles.content}>
+        <View style={styles.content}>
         <View style={{ alignItems: "center"}}>
         <View style={{ alignItems: "center", marginTop: 8}}>
         <Text style={[styles.textDark, { fontSize: 16, fontWeight: "500" }]}>{props.podcast.Podcast_Name}</Text>
@@ -227,7 +227,7 @@ async function updatePodcastsLiked(props){
 
               
 
-        </ScrollView>
+        </View>
       
     );
   }
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     //paddingRight:30,
-    paddingTop:height/30,
+    paddingTop:height/10,
   },
   upNext: {
     borderTopWidth: 1,

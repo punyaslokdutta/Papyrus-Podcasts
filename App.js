@@ -11,7 +11,7 @@ import {createSwitchNavigator,
 import NavigationService from './screens/navigation/NavigationService';
 import LikersScreen from './screens/components/PodcastPlayer/LikersScreen'
 import setPreferences from './setPreferences'
-
+import WelcomeScreen from './screens/WelcomeScreen'
   import { createBottomTabNavigator, createMaterialTopTabNavigator } from 'react-navigation-tabs';
   import { createStackNavigator } from 'react-navigation-stack';
   import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
@@ -67,7 +67,8 @@ const AuthStackNavigator= createStackNavigator(
   {
     
     SignInScreen: SignInScreen,
-    SignUpScreen: SignUpScreen, 
+    SignUpScreen: SignUpScreen,
+    //WelcomeScreen:WelcomeScreen 
   },
   {
     headerMode: 'none',
@@ -91,7 +92,7 @@ const CategoryStackNavigator=createStackNavigator(
     }} 
   }, 
   {
-    headerMode:'none', 
+    //headerMode:'none', 
     initialRouteName:'CategoryScreen',
     transitionConfig: () => fromRight(),
   }

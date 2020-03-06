@@ -339,7 +339,7 @@ const PodcastPlayer=(props)=>{
                </Animated.View>
                </TouchableNativeFeedback>
                
-               <ScrollView  scrollEventThrottle={16} >
+               <View>
               
             
             <Animated.View style={{ backgroundColor: 'white', width: videoContainerWidth, height: containerHeight }}>
@@ -347,7 +347,7 @@ const PodcastPlayer=(props)=>{
               <PodcastContent userID={props.userID} podcast={props.podcast} navigation={navigation} slideDown={slideDown} />
               </Animated.View>
             </Animated.View>
-            </ScrollView> 
+            </View> 
 
 
             </Animated.View>    

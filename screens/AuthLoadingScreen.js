@@ -62,9 +62,8 @@ class  AuthLoadingScreen extends Component {
                   else
                   {
                         unsubscribe(); // unsubscribe the firestore onSnapshot listener
-                        
                         this.props.navigation.navigate('setUserDetails',{user : doc.data()});
-                        this.props.navigation.navigate('App');
+                         
                   }
                 })
               }
@@ -89,17 +88,6 @@ class  AuthLoadingScreen extends Component {
     
   }
 
-    /*loadLocalAsync = async () => {
-      return await Promise.all([
-        Asset.loadAsync([
-          require('../assets/flame.png'),
-          require('../assets/icon.png')
-        ]),
-        Font.loadAsync({
-          ...Icon.Ionicons.font
-        })
-      ])
-    }*/
 
     handleLoadingError = error => {
       // In this case, you might want to report the error to your error

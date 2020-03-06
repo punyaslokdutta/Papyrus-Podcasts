@@ -7,7 +7,7 @@ import {useSelector} from 'react-redux'
 
  const ProgressBar=(props) => {
   const currentTime=useSelector(state=>state.rootReducer.currentTime);
-  const duration=useSelector(state=>state.rootReducer.duartion);
+  const duration=useSelector(state=>state.rootReducer.duration);
   const position = getMinutesFromSeconds(currentTime);
   const fullDuration = getMinutesFromSeconds(duration);
   
@@ -18,7 +18,7 @@ import {useSelector} from 'react-redux'
       <Slider
         value={currentTime}
         minimumValue={1}
-        maximumValue={duration===undefined?300:duration}
+        maximumValue={duration===undefined?600:duration}
         step={0.01}
         onValueChange={(value)=>handleOnSlide(value)}
         onSlidingStart={props.onSlideStart}
@@ -30,7 +30,7 @@ import {useSelector} from 'react-redux'
       <View style={styles.timeWrapper}>
         <Text style={styles.timeLeft}>{position}</Text>{
             duration!==undefined &&
-        <Text style={styles.timeRight}>{duration}</Text>
+        <Text style={styles.timeRight}>{fullDuration}</Text>
  }
       </View>
     </View>
@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 5,
+    paddingTop:10
   },
   timeLeft: {
     flex: 1,

@@ -4,6 +4,42 @@ import {withFirebaseHOC} from './config/Firebase'
 import {useSelector,useDispatch} from 'react-redux'
 import firestore from '@react-native-firebase/firestore';
 
+
+
+
+
+async function retrieveDataPrivate(dispatch, userid)
+{
+
+
+  let doc = 9;
+  try{
+   doc = await firestore().collection('users').doc(userid).collection("privateUserData").doc("privateData").get();          
+      console.log("Inside Private QUERY");
+      console.log(doc)
+      
+      doc._data.podcastsLiked && dispatch({type:'SET_PODCASTS_LIKED',payload:doc._data.podcastsLiked})
+
+      doc._data.email && dispatch({type:'CHANGE_EMAIL',payload:doc._data.email})
+      doc._data.name && dispatch({type:'CHANGE_NAME',payload:doc._data.name})
+      doc._data.userName && dispatch({type:'CHANGE_USER_NAME',payload:doc._data.userName})
+      doc._data.displayPicture && dispatch({type:'CHANGE_DISPLAY_PICTURE',payload:doc._data.displayPicture})
+      (doc.data.following_list.length!=0) && dispatch({type:'ADD_ALL_TO_FOLLOWING_MAP',payload:doc._data.following_list})
+      doc._data.website && dispatch({type:'CHANGE_WEBSITE',payload:doc._data.website})
+      doc._data.introduction && dispatch({type:'ADD_INTRODUCTION',payload: doc._data.introduction})
+      doc._data.numCreatedBookPodcasts && dispatch({type:'ADD_NUM_CREATED_BOOK_PODCASTS',payload: doc._data.numCreatedBookPodcasts})
+      doc._data.numCreatedChapterPodcasts && dispatch({type:'ADD_NUM_CREATED_CHAPTER_PODCASTS',payload: doc._data.numCreatedChapterPodcasts})
+      doc._data.totalMinutesRecorded && dispatch({type:'ADD_TOTAL_MINUTES_RECORDED',payload: doc._data.totalMinutesRecorded})
+  
+  }
+  catch(error)
+  {
+      console.log("ERROR IN SET USER DETAILS\n\n");
+      console.log(error)
+  }
+
+}
+
   async function retrieveDataPublic(dispatch,userid){
 
     let doc = 9;
@@ -11,23 +47,9 @@ import firestore from '@react-native-firebase/firestore';
      doc = await firestore().collection('users').doc(userid).get();
                    
         console.log("Inside PUBLIC QUERY");
-        console.log(doc)
-        
-        dispatch({type:'SET_PODCASTS_LIKED',payload:doc._data.podcastsLiked})
-
-        dispatch({type:'CHANGE_EMAIL',payload:doc._data.email})
-        dispatch({type:'CHANGE_NAME',payload:doc._data.name})
-        dispatch({type:'CHANGE_USER_NAME',payload:doc._data.username})
-        dispatch({type:'CHANGE_DISPLAY_PICTURE',payload:doc._data.displayPicture})
-        dispatch({type:'ADD_ALL_TO_FOLLOWING_MAP',payload:doc._data.following_list})
-        dispatch({type:'CHANGE_WEBSITE',payload:doc._data.website})
-
+        console.log(doc);
         const numFollowers = doc._data.followers_list.length;
-        dispatch({type:'ADD_NUM_FOLLOWERS',payload:numFollowers})
-        dispatch({type:'ADD_INTRODUCTION',payload: doc._data.introduction})
-        dispatch({type:'ADD_NUM_CREATED_BOOK_PODCASTS',payload: doc._data.numCreatedBookPodcasts})
-        dispatch({type:'ADD_NUM_CREATED_CHAPTER_PODCASTS',payload: doc._data.numCreatedChapterPodcasts})
-        dispatch({type:'ADD_TOTAL_MINUTES_RECORDED',payload: doc._data.totalMinutesRecorded})
+        numFollowers && dispatch({type:'ADD_NUM_FOLLOWERS',payload:numFollowers})
     
     }
     catch(error)
@@ -38,22 +60,6 @@ import firestore from '@react-native-firebase/firestore';
   }
 
 
-//   async function retrieveData (dispatch,userid) {
-//     console.log("HIIIIIIIIIIIIIIIIIIIIIIII123456789")
-//     console.log(userid);
-//     let doc = 9;
-//     try{
-//      doc = await firestore().collection('users').doc(userid).collection('privateUserData').doc('privateData').get();
-//         console.log("Inside PRIVATE QUERY");
-//         console.log(doc)
-//         dispatch({type:'CHANGE_STATS',payload:doc._data})
-//     }
-//     catch(error)
-//     {
-//         console.log("ERROR IN SET USER DETAILS\n\n");
-//         console.log(error)
-//     }
-// }
 
 const setUserDetails = (props) => {
     // const bookid = this.props.navigation.state.params;
@@ -66,8 +72,10 @@ const setUserDetails = (props) => {
 
     useEffect( () => {
      //retrieveData(dispatch,userid);
+     retrieveDataPrivate(dispatch, userid)
      retrieveDataPublic(dispatch,userid)
      console.log("PRIVATE DATA")
+     props.navigation.navigate('App');
       }, [])
 
     

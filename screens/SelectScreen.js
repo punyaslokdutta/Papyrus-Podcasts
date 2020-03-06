@@ -8,6 +8,7 @@ import { TagSelect } from 'react-native-tag-select'
 import PreviewScreen from '../screens/PreviewScreen'
 import {useSelector, useDispatch} from 'react-redux'
 import { withFirebaseHOC } from './config/Firebase';
+import { duration } from 'moment';
 
 const { width, height } = Dimensions.get('window');
 
@@ -48,7 +49,8 @@ const SelectScreen =(props)=> {
           console.log("RecordedFilePath :" +audioFilePath)
           console.log("timeduration :" , +event.eventDuration)
          props.navigation.navigate('PreviewScreen', {  
-          recordedFilePath: audioFilePath})
+          recordedFilePath: audioFilePath, 
+          duration:event.eventDuration})
     })
        
     }, [])

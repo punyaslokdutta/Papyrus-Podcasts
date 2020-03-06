@@ -12,6 +12,7 @@ import {withFirebaseHOC} from '../screens/config/Firebase'
 import * as yup from 'yup';
 import {firebase} from '@react-native-firebase/auth';
 import {useDispatch} from 'react-redux'
+import { AccessToken, LoginManager } from 'react-native-fbsdk';
 
 const validationSchema = yup.object().shape({ 
   fullName: yup
@@ -57,6 +58,42 @@ async function _signupWithEmail (email, password, fullName){
 var {width:WIDTH, height:HEIGHT}=Dimensions.get('window')
 
 const SignUpScreen=(props)=>{
+
+
+  onFBLoginOrRegister = async () => {
+    LoginManager.logInWithPermissions(['public_profile', 'email',])
+      .then((result) => {
+        if (result.isCancelled) {
+          return Promise.reject(new Error('The user cancelled the request'));
+        }
+        // Retrieve the access token
+        return AccessToken.getCurrentAccessToken();
+      })
+      .then((data) => {
+        // Create a new Firebase credential with the token
+        const credential = firebase.auth.FacebookAuthProvider.credential(data.accessToken);
+        // Login with the credential
+
+        return firebase.auth().signInWithCredential(credential);
+      })
+      .then(async(user) => {
+        // If you need to do anything with the user, do it here
+        // The user will be logged in automatically by the
+        // `onAuthStateChanged` listener we set up in App.js earlier
+        console.log("username: ")
+        console.log(user);
+        console.log(user.user.uid);
+        console.log(user.user.photoURL); 
+        console.log(user.user.phoneNumber);
+        console.log(user.user.displayName);
+        console.log(user.user.email);
+      })
+      .catch((error) => {
+        const { code, message } = error;
+        console.log(code);
+        console.log(message);
+      });
+  }
 
   const dispatch=useDispatch();
       return (
@@ -135,7 +172,7 @@ const SignUpScreen=(props)=>{
             </View>
 
             <View style={{flexDirection:'row'}}>
-            <TouchableOpacity style={{paddingTop:20,paddingRight:WIDTH/8 }}>
+         <TouchableOpacity style={{paddingTop:20,paddingRight:WIDTH/8 }} onPress={()=>{onFBLoginOrRegister()}}>
          <Icon name="facebook-square" size={30} style={{color:'rgba(255, 255, 255, 0.6)'}}/>
          </TouchableOpacity>
          <TouchableOpacity style={{paddingTop:20}}>

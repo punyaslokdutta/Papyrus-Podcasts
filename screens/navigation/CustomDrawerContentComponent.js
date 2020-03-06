@@ -36,7 +36,7 @@ return(
           
     </Block>
     <Block flex={false} row center space="between" style={{ paddingLeft:5}}>
-<Text style={{color:'white', fontFamily:'san-serif'}}>@{username}</Text>
+<Text style={{color:'white', fontFamily:'san-serif',textAlign:'center'}}>{username}</Text>
           
     </Block>
 

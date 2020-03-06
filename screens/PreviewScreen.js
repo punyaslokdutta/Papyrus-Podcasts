@@ -1,5 +1,5 @@
 import React, { Component, useState, useEffect } from 'react';
-import { TouchableOpacity, StyleSheet, Text, View, Button, SafeAreaView, Dimensions, Image,  TextInput, Platform } from 'react-native';
+import { TouchableOpacity, StyleSheet, Text, View, Button, SafeAreaView, Dimensions, Image,  TextInput, Platform , BackHandler} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import storage, { firebase } from '@react-native-firebase/storage'
@@ -10,7 +10,9 @@ import { ScrollView } from 'react-native-gesture-handler';
 import firestore from '@react-native-firebase/firestore';
 import { useSelector } from 'react-redux';
 import ImageResizer from 'react-native-image-resizer';
-//import * as Progress from 'react-native-progress';
+import * as Progress from 'react-native-progress';
+import Toast from 'react-native-simple-toast';
+import HomeScreen from './HomeScreen';
 
 const { width, height } = Dimensions.get('window');
 const options = {
@@ -23,7 +25,6 @@ const initialTags  ={
   tagsArray: [], 
 
 }
-//addPodcastToFirestore = () 
 const PreviewScreen = (props) => {
 
   const [PodcastImage, setPodcastImage] = useState(null);
@@ -31,6 +32,7 @@ const PreviewScreen = (props) => {
   const BookName=useSelector(state=>state.recorderReducer.BookName)
   const AuthorName=useSelector(state=>state.recorderReducer.AuthorName)
   const LanguageSelected=useSelector(state=>state.recorderReducer.LanguageSelected)
+ 
   //BOOK_ID to be returned from recorderReducer which will be dispatched by Algolia 
   //For Now, Books which are not present in our database is handled. 
   // 1. Create a Book Document , Get the Doc RefId . Make Podcast Collection and Document. 
@@ -50,6 +52,12 @@ const PreviewScreen = (props) => {
   const [tagsText, settagsText]=useState('#fff');
   const [podcastImageDownloadURL,setPodcastImageDownloadURL] = useState(null);
   const [podcastAudioDownloadURL,setPodcastAudioDownloadURL] = useState(null);
+  const [Duration , setDuration]=useState(props.navigation.getParam('duration'))
+  const [progress, setProgress]=useState(0)
+  const [indeterminate, setIndeterminate]=useState(true)
+  const [toggleIndicator, setToggleIndicator]=useState(false)
+  const [uploadPodcastSuccess, setUploadPodcastSuccess]=useState(false)
+  const [warningMessage, setWarningMessage]=useState(false)
 
   const userName = useSelector(state=>state.userReducer.name);
   const userID = props.firebase._getUid()
@@ -60,7 +68,7 @@ const PreviewScreen = (props) => {
                 AudioFileLink: podcastAudioDownloadURL,
                 ChapterName: "",
                 Book_Name: BookName, 
-                Duration: 20,
+                Duration: Duration,
                 Genres: ["Non-Fiction","Science & Technology"],
                 Language: LanguageSelected,
                 Podcast_Name: PodcastName,
@@ -71,23 +79,78 @@ const PreviewScreen = (props) => {
                 podcasterID: userID,
                 podcasterName: userName
             })
-            .then(function(docRef) {
+            .then(function(docRef, props) {
                 console.log("Document written with ID: ", docRef.id);
                 firestore().collection('Books').doc('7gGB4CjIiGRgB8yYD8N3').collection('Podcasts')
                         .doc(docRef.id).set({
                             PodcastID: docRef.id
                         },{merge:true})
+                        Toast.show("Successfully uploaded")
+                        //setUploadPodcastSuccess(true);
+                        //props.navigation.navigate('HomeScreen');
+                        
+                        
+
+            
 
             })
             .catch(function(error) {
                 console.error("Error adding document: ", error);
+                Toast.show("Error: Please try again.")
             });
+            
+          
     },[podcastAudioDownloadURL])
+
+
+
+
+    useEffect(
+      () => {
+        console.log("Inside useEffect - componentDidMount of PreviewScreen");
+        BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
+        return () => {
+          console.log(" back_Button_Press Unmounted");
+          BackHandler.removeEventListener("hardwareBackPress",  back_Button_Press);
+          uploadPodcastSuccess && props.navigation.navigate('HomeScreen');
+
+        };
+      }, [back_Button_Press])
 
 
   function updateTagState(state){
     setTags(state);
   };
+
+
+  function uploadPodcast(recordedFilePath)
+  {
+    //BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
+    setToggleIndicator(true);
+    uploadAudio(recordedFilePath);
+  }
+
+  function back_Button_Press()
+  {
+    console.log("Inside BackButton Press");
+    if(!warningMessage)
+    {
+      Toast.show("Warning: Changes will be discarded on BackPress")
+      setWarningMessage(true);
+      return true;
+      //dispatch({type:"TOGGLE_MINI_PLAYER"})
+      
+  }
+  return false;
+ 
+
+
+    //BackHandler.removeEventListener('hardwareBackPress', this.back_Buttton_Press);
+
+   
+
+ 
+  }
 
 
   
@@ -102,12 +165,14 @@ const PreviewScreen = (props) => {
       .on(
         firebase.storage.TaskEvent.STATE_CHANGED,
         snapshot => {
-        
+          setIndeterminate(false);
           console.log("snapshot: " + snapshot.state);
           console.log("progress: " + (snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+          setProgress((snapshot.bytesTransferred / snapshot.totalBytes));
           
           if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
             console.log("Success");
+            //setIndeterminate(true);
 
           }
         },
@@ -152,9 +217,10 @@ const PreviewScreen = (props) => {
           .on(
             firebase.storage.TaskEvent.STATE_CHANGED,
             snapshot => {
+              //setIndeterminate(false);
               console.log("snapshot: " + snapshot.state);
               console.log("progress: " + (snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-
+              //setProgress((snapshot.bytesTransferred / snapshot.totalBytes));
               if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
                 console.log("Success");
               }
@@ -260,28 +326,32 @@ const PreviewScreen = (props) => {
           autoCorrect={false}
           />
       </View>
+
+     { 
+
+     toggleIndicator && 
+     
+     <View style={{ paddingTop: height / 8, alignItems: 'center'}}> 
+      <Progress.Bar
+          color={rgb(218,165,32)}
+          style={styles.progress}
+          progress={progress}
+          indeterminate={indeterminate}
+        />
+      </View>
+     }
       
-      
-      
+      {!toggleIndicator && 
+       <View style={{ paddingTop: height / 8, alignItems: 'center' }}>
 
-
-
-      <View style={{ paddingTop: height / 8, alignItems: 'center' }}>
-
-        <TouchableOpacity onPress={() => {uploadAudio(recordedFilePath) }} style={{ alignItems: 'center', justifyContent: 'center', height: height / 16, width: height / 6, borderRadius: 15, borderColor: 'rgba(255, 255, 255, 0.5)', borderWidth: 1 }}
+        <TouchableOpacity onPress={() => {uploadPodcast(recordedFilePath)
+        }} style={{ alignItems: 'center', justifyContent: 'center', height: height / 16, width: height / 6, borderRadius: 15, borderColor:rgb(218,165,32), borderWidth: 1 }}
         >
-          <Text style={{ alignItems: 'center', fontFamily: 'sans-serif-light', color: 'white', justifyContent: 'center' }} >Share</Text>
+          <Text style={{ alignItems: 'center', fontFamily: 'sans-serif-light', color:rgb(218,165,32),  justifyContent: 'center' }} >Share</Text>
         </TouchableOpacity>
       </View>
+}
 
-
-     <View>
-  <Text style={{ fontFamily: 'san-serif-light', color: 'white', paddingLeft: (width * 7) / 35, fontSize: 20 }}>{BookName}</Text>
-  <Text style={{ fontFamily: 'san-serif-light', color: 'white', paddingLeft: (width * 7) / 35, fontSize: 20 }}>{ChapterName}</Text>
-  <Text style={{ fontFamily: 'san-serif-light', color: 'white', paddingLeft: (width * 7) / 35, fontSize: 20 }}>{AuthorName}</Text>
-  <Text style={{ fontFamily: 'san-serif-light', color: 'white', paddingLeft: (width * 7) / 35, fontSize: 20 }}>{LanguageSelected}</Text>
-  <Text style={{ fontFamily: 'san-serif-light', color: 'white', paddingLeft: (width * 7) / 35, fontSize: 20 }}>{recordedFilePath}</Text>
-      </View>
 
 
       
@@ -353,6 +423,13 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingRight: 10
 
+  },
+  progress: {
+    
+
+    //margin: 10,
+    //paddingTop: height / 8,
+    //alignItems: 'center'
   },
   TextInputStyleClass2: {
 
