@@ -86,7 +86,7 @@ const PreviewScreen = (props) => {
                             PodcastID: docRef.id
                         },{merge:true})
                         Toast.show("Successfully uploaded")
-                        //setUploadPodcastSuccess(true);
+                        setUploadPodcastSuccess(true);
                         //props.navigation.navigate('HomeScreen');
                         
                         
@@ -102,7 +102,12 @@ const PreviewScreen = (props) => {
           
     },[podcastAudioDownloadURL])
 
-
+    
+    useEffect(
+      () => {
+        uploadPodcastSuccess && props.navigation.navigate('HomeScreen');
+      },[uploadPodcastSuccess]
+    )
 
 
     useEffect(
@@ -116,6 +121,7 @@ const PreviewScreen = (props) => {
 
         };
       }, [back_Button_Press])
+      
 
 
   function updateTagState(state){
@@ -153,6 +159,8 @@ const PreviewScreen = (props) => {
   }
 
 
+
+
   
 
   async function uploadAudio(FilePath) {
@@ -185,6 +193,7 @@ const PreviewScreen = (props) => {
             .then((downloadUrl) => {
               console.log("File available at: " + downloadUrl);
               setPodcastAudioDownloadURL(downloadUrl);
+              //setUploadPodcastSuccess(true);
             })
         }
       )
