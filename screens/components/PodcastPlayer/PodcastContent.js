@@ -29,11 +29,12 @@ const { width,height } = Dimensions.get('window');
   //const 
   const rate=useSelector(state=>state.rootReducer.rate);
   const currentTime=useSelector(state=>state.rootReducer.currentTime)
+
   //const isBuffering=useSelector(state=>state.rootReducer.isBuffering);
   const paused=useSelector(state=>state.rootReducer.paused);
   const volume=useSelector(state=>state.rootReducer.volume);
   const liked = useSelector(state=>state.userReducer.isPodcastLiked[props.podcast.PodcastID]);
-  
+  const isBuffering =useSelector(state=>state.rootReducer.isBuffering);
   //const duration=useSelector(state=>state.rootReducer.duration)
   const dispatch=useDispatch();
   
@@ -124,12 +125,6 @@ async function updatePodcastsLiked(props){
                     <View style={{ alignItems: "center", marginTop: 2}}>
                     <Text style={[styles.text, { fontSize: 15, marginTop: 2}]}>{props.podcast.podcasterName}</Text>
                     </View>
-                    
-              {/* <View>
-                <TouchableOpacity onPress={NavigationService.navigate('Explore')}>
-                  <Text style={{color:'white'}}>qqqqqqqqqqqqqqqq</Text>
-                  </TouchableOpacity>
-                </View> */}
 
         <View  style={{paddingLeft:10}}>
         </View>
@@ -140,7 +135,7 @@ async function updatePodcastsLiked(props){
                     <TouchableOpacity  onPress={skipBackward}>
                     <Icon name="undo"  size={28} label="10" color="white" />
                     </TouchableOpacity>
-                    {!paused && <TouchableOpacity style={styles.playButtonContainer}  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
+                    {!paused  && <TouchableOpacity style={styles.playButtonContainer}  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
                    <Icon name="pause"  size={24} label="10" color="black"  style={[styles.playButton, { marginLeft: 2 }]}/>
                    </TouchableOpacity>}
                    {paused && <TouchableOpacity style={styles.playButtonContainer}  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>

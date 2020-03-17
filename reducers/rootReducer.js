@@ -7,7 +7,7 @@ const INITIAL_STATE = {
   rate: 1,
   currentTime:0.0,
   paused: true,
-  isBuffering:null, 
+  isBuffering:true, 
   duration: 0.0, 
   resizeMode:'contain', 
   isMiniPlayer:false,

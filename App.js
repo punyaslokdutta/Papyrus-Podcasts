@@ -109,18 +109,10 @@ const ExploreStackNavigator=createStackNavigator(
     SearchScreen : {screen : SearchScreen,navigationOptions: {
        header: null,
    }},
-     ExploreTabNavigator : {screen : ExploreTabNavigator,navigationOptions:{
-
-     }},
-      UserStatsScreen : {screen : UserStatsScreen,navigationOptions:{
-
-      }},
-      UserFollowingScreen : {screen : UserFollowingScreen,navigationOptions:{
-
-      }},
-      UserFollowerScreen : {screen : UserFollowerScreen,navigationOptions:{
-
-      }}
+     ExploreTabNavigator : {screen : ExploreTabNavigator},
+      UserStatsScreen : {screen : UserStatsScreen},
+      UserFollowingScreen : {screen : UserFollowingScreen},
+      UserFollowerScreen : {screen : UserFollowerScreen}
 
   }, 
   {
