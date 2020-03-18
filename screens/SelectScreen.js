@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useEffect} from 'react';
+import React, { useState, useRef, useEffect, useCallback} from 'react';
 import { TouchableOpacity,StyleSheet, Text, View, SafeAreaView, Dimensions, NativeModules,NativeEventEmitter} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import AddModal from '../screens/components/Record/AddModal'
@@ -7,6 +7,7 @@ import AddChapterModal from '../screens/components/Record/AddChapterModal'
 import { TagSelect } from 'react-native-tag-select'
 import PreviewScreen from '../screens/PreviewScreen'
 import {useSelector, useDispatch} from 'react-redux'
+import { withFirebaseHOC } from './config/Firebase';
 
 const { width, height } = Dimensions.get('window');
 
@@ -26,14 +27,6 @@ const SelectScreen =(props)=> {
   const dispatch=useDispatch();
 
 
-
-  /*componentWillMount() {
-    // const eventEmitter = new NativeEventEmitter(NativeModules.ReactNativeRecorder);
-    // eventEmitter.addListener('abcd', (event) => {
-    //    console.log(event.eventProperty) // "someValue"
-
-    // })
-  }*/
   useEffect(
     ()=>
     {
@@ -51,70 +44,33 @@ const SelectScreen =(props)=> {
       var audioFilePath=null;
       eventEmitter.addListener('RecordFile', (event) => {
            audioFilePath=filePath.concat(event.eventName,fileType)
+          console.log(props)
           console.log("RecordedFilePath :" +audioFilePath)
           console.log("timeduration :" , +event.eventDuration)
-          //console.log(props)
-          //navigateToPreview()
-          
-        
-       
-       props.navigation.navigate('PreviewScreen', {
-
-         BookName: BookName, 
-         ChapterName:ChapterName, 
-         AuthorName:AuthorName, 
-         LanguageSelected:LanguageSelected, 
-         recordedFilePath: audioFilePath})
-
+         props.navigation.navigate('PreviewScreen', {  
+          recordedFilePath: audioFilePath})
     })
-   //setRecordedFilePath(audioFilePath)
-    //console.log(recordedFilePath)
-
-    // if(recordedFilePath)
-    // {
-
-    // props.navigation.navigate('PreviewScreen', {
-    //   BookName: BookName,
-    //   ChapterName:ChapterName , 
-    //   AuthorName: AuthorName, 
-    //   LanguageSelected:LanguageSelected, })}
-     
-      
-    }, [eventEmitter.current])
+       
+    }, [])
   
 
-    onPressAdd2=()=>
+    function onPressAdd2()
     {
-        //console.log(this.ref)
-        addChapterModal.current.showAddModal();
-       
+        addChapterModal.current.showAddModal();  
     }
 
-     onPressAdd=()=>
+     function onPressAdd()
      {
-        addModal.current.showAddModal();
-
-
-        
+        addModal.current.showAddModal();     
      }
 
-     setLanguage=(language)=>
+     function setLanguage(language)
      {
-       console.log(language)
        setLanguageSelected(language);
-     }
-     unsetLanguage=()=>
-     {
-      console.log(LanguageSelected)
-      setLanguageSelected(null);
+       console.log(LanguageSelected)
      }
 
-
-
-
-     
-
-     callbackFunction=(data)=>
+     function callbackFunction(data)
      {
        if(data.categoryClicked==='Chapter')
        {
@@ -130,7 +86,8 @@ const SelectScreen =(props)=> {
         setAuthorName(data.newAuthorName);
 
       }
-       console.log(data)
+       //console.log(data)
+
        //console.log(this.state)
     }   
 
@@ -161,14 +118,16 @@ const SelectScreen =(props)=> {
           <Icon name="times" size={20} style={{color:'white'}}/>
           <Text style={{fontFamily:'san-serif-light', color:'white', paddingLeft:(width*7)/24, fontSize:20}}>Select</Text>
         </View>
-       
-        
-        
 
         </TouchableOpacity>
 
         </View>
         <View style={{paddingVertical:height/24, alignItems:'center'} }>
+      <View style={{paddingBottom:20, alignItems:'center'}}>
+      <Text style={{fontFamily:'sans-serif-light', color:'white',  fontSize:10}}>{BookName}</Text>
+      <Text style={{fontFamily:'sans-serif-light', color:'white',  fontSize:10}}>{AuthorName}</Text>
+      <Text style={{fontFamily:'sans-serif-light', color:'white',  fontSize:10}}>{LanguageSelected}</Text>
+       </View>   
           <Text style={{fontFamily:'sans-serif-light', color:'white',  fontSize:14}}>Select the category you want</Text>
           <Text style={{fontFamily:'sans-serif-light', color:'white', fontSize:14}}>to record/upload</Text>
           
@@ -245,12 +204,16 @@ const SelectScreen =(props)=> {
         <View>
             <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/20, width:(width*7)/24, borderRadius:15, borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }} 
             onPress={() => {
-                         if (BookName === null || AuthorName.length === null || LanguageSelected.length === null) {
+                         if (BookName === null || AuthorName === null || LanguageSelected === null) {
                             alert("You must choose Category and Language of your Podcast");
                             return;
-                        }   
+                        }  
 
-            NativeModules.ReactNativeRecorder.uploadActivity()
+                        dispatch({type:'CHANGE_BOOK',payload:BookName})
+                        dispatch({type:'CHANGE_CHAPTER',payload:ChapterName}) 
+                        dispatch({type:'CHANGE_AUTHOR',payload:AuthorName}) 
+                        dispatch({type:'CHANGE_LANGUAGE',payload:LanguageSelected}) 
+                        NativeModules.ReactNativeRecorder.uploadActivity()
  
                          }
             }>
@@ -264,30 +227,20 @@ const SelectScreen =(props)=> {
                          if (BookName === null || AuthorName === null || LanguageSelected ===null) {
                             alert("You must choose Category and Language of your Podcast");
                             return;
-                        }   
+                        } 
+                        dispatch({type:'CHANGE_BOOK',payload:BookName})
+                        dispatch({type:'CHANGE_CHAPTER',payload:ChapterName}) 
+                        dispatch({type:'CHANGE_AUTHOR',payload:AuthorName}) 
+                        dispatch({type:'CHANGE_LANGUAGE',payload:LanguageSelected})      
                         NativeModules.ReactNativeRecorder.sampleMethod()
-          //               this.props.navigation.navigate('PreviewScreen', {
-          // BookName: this.state.BookName,
-          // ChapterName:this.state.ChapterName , 
-          // AuthorName: this.state.AuthorName, 
-          // LanguageSelected:this.state.LanguageSelected, })*/
                          }
             }>
             <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Record</Text>
           
 
                 </TouchableOpacity>
+        </View>     
         </View>
-       
-                
-             
-        </View>
-
-       
-
-
-       
-
 <AddModal ref={addModal} navigation={props.navigation} parentCallback = {callbackFunction} >
 </AddModal>
 

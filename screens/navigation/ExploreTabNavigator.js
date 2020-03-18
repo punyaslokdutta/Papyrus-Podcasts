@@ -12,22 +12,26 @@ import { withFirebaseHOC } from '../config/Firebase';
 import CustomUserHeader from './CustomUserHeader';
 
 
-
 var {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
 const IS_IPHONE_X = SCREEN_HEIGHT === 812 || SCREEN_HEIGHT=== 896;
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? (IS_IPHONE_X ? 44 : 20) : 0;
 const HEADER_HEIGHT = Platform.OS === 'ios' ? (IS_IPHONE_X ? 88 : 64) : 64;
 const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
-
-
-  
-  /////////////
-  
   
   const ExploreTabNavigator = createMaterialTopTabNavigator(
     {
-      UserBookPodcast : { screen: props => <UserBookPodcast {...props}/>},
-      UserChapterPodcast : { screen: props => <UserChapterPodcast {...props}/>}
+      UserBookPodcast : { screen: props => <UserBookPodcast {...props}/>,navigationOptions:{
+        tabBarLabel:'Books',
+        tabBarIcon:({tintColor})=>(
+          <Icon name="book" color={tintColor} size={20}/>
+        )
+      }},
+      UserChapterPodcast : { screen: props => <UserChapterPodcast {...props}/>,navigationOptions:{
+        tabBarLabel:'Chapters',
+        tabBarIcon:({tintColor})=>(
+          <Icon name="newspaper-o" color={tintColor} size={20}/>
+        )
+      }}
     },
     {tabBarOptions:{
       showIcon: true,
@@ -54,7 +58,7 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
        navigationOptions:
        {
          tabBarVisible: true,
-         //headerVisible: true,
+         headerVisible: true,
            header: props => <CustomUserHeader {...props} />, 
          
        }

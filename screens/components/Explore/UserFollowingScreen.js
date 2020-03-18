@@ -15,7 +15,6 @@ class UserFollowingScreen extends React.Component {
    {
      super(props)
      {
-
       this.state={
         Followings:[], 
         //chapterPodcasts:[],

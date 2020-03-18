@@ -58,7 +58,12 @@ const TrendingPodcast= React.memo((props)=> {
       //                 <Image source={this.props.ImageUri} style={{width:210, height:130, resizeMode:'cover',  overflow:'hidden', paddingRight:10}}/>
       //             </View>    
       <View style={[styles.shadow,{height:height/5, width:width/2, marginLeft:20, borderwidth:5, borderColor:'#dddddd',overflow:'hidden', paddingRight:10,borderRadius:5}]}>
-      <TouchableOpacity onPress={(()=>dispatch({type:"SET_PODCAST", payload: props.item}))}> 
+      <TouchableOpacity onPress={(()=>
+        {
+          dispatch({type:"SET_PODCAST", payload: props.item})
+          dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
+          dispatch({type:"SET_NUM_LIKES", payload: props.item.numUsersLiked})
+        })}> 
       <Image style={[{width:width/2 - 10, height:height/5,borderRadius:5, resizeMode:'cover',  overflow:'hidden'}]} source={{ uri: item.Podcast_Pictures["0"] }} />
 
       </TouchableOpacity>

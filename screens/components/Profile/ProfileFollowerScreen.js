@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import { StyleSheet, Text, View, Image, TouchableOpacity,FlatList,  Dimensions,SafeAreaView, ScrollView,ActivityIndicator} from 'react-native';
-import Podcast from '../Home/Podcast'
+import { StyleSheet, Text, View, Image, TouchableOpacity,FlatList,  Dimensions,ActivityIndicator} from 'react-native';
 import {withFirebaseHOC} from '../../config/Firebase'
 import FollowerItem from '../Explore/FollowerItem';
 var {width, height}=Dimensions.get('window')

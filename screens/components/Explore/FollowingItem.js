@@ -132,6 +132,7 @@ const styles = StyleSheet.create({
   console.log("Inside Following Item")
   console.log(props);
 
+  console.log("userData = ",props.item);
   //const dispatch=useDispatch();
     const userid = props.item.id;
   const item = props.item
@@ -141,7 +142,27 @@ const styles = StyleSheet.create({
   
         return (
           //<TouchableOpacity  onPress={(()=>dispatch({type:"SET_PODCAST", payload: props.item}))}>
-    <TouchableOpacity onPress={() => props.navigation.navigate('ExploreTabNavigator', {userData:props.item,userID:props.item.id,followsOrNot:text2})}>
+    <TouchableOpacity onPress={() => {
+      //PROBLEM -- HAS TO BE FIXED AFTERWARDS
+      // Directly navigating to ExploreTabNavigator(props.navigation.navigate) is not updating the UserBookPodcast & UserChapterPodcast
+      // Directly pushing ExploreTabNavigator(props.navigation.push) is not updating the CustomUserHeader
+      // This is a temporary solution provided which doesn't follow the chain of unique ExploreTabNavigators & unique UserStatsScreen &
+      // simply falls back to the last point from which 1st time ExploreTabNavigator was opened.
+      // Have to provide a solution which directly passes props to both CustomUserHeader & ExploreTabNavigator(UserBookPodcast & UserChapterPodcast)
+      // so that complete chain of user profiles is followed back to the 1st screen.
+      
+      // [1] props.navigation.navigate shall update the props in CustomUserHeader
+      props.navigation.navigate({
+        routeName: 'ExploreTabNavigator',
+        params : {userData:props.item,followsOrNot:text2},
+        //key : 'user' + userid 
+      })
+      // [2] Move to top of stack,i.e, pop all screens until the last one
+      props.navigation.popToTop();
+      // [3] props.navigation.push will move us towards updated ExploreTabNavigator with updated CustomUserHeader
+      props.navigation.push('ExploreTabNavigator', {userData:props.item,followsOrNot:text2})
+      
+      }}>
         <View style={[styles.shadow,{marginLeft: 15}]}>
         <Image source={{ uri: props.item.displayPicture }} style={{width:width/4,height:height/8}}/>
         <Text style={styles.username}>{props.item.name}</Text>

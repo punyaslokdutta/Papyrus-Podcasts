@@ -11,14 +11,14 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 
 import { Button, Divider, Block, Text } from "./screens/components/categories/components";
 import { theme, mocks } from "./screens/components/categories/constants";
-
+import LikersScreen from './screens/components/PodcastPlayer/LikersScreen'
 import {useSelector } from 'react-redux'
 
 const { width, height } = Dimensions.get("window");
 
  InfoScreen=(props)=> {
   const podcast=useState(props.navigation.state.params.podcast)
-  //const navigation=useSelector(state=>state.userReducer.navigation)
+  const numUsersLiked=useSelector(state=>state.rootReducer.numLikes)
   //console.log(podcast[0].Podcast_Pictures)
     
    const navigationOptions = ({ navigation }) => {
@@ -77,8 +77,15 @@ const { width, height } = Dimensions.get("window");
             {podcast[0].description}
           </Text>
 
-          <Divider margin={[theme.sizes.padding * 0.9, 0]} />
+          <TouchableOpacity onPress={() => {props.navigation.navigate('LikersScreen',
+              {podcastID:podcast[0].PodcastID})}}>
+          <View>
+            <Text>{"\n"}{numUsersLiked} Likes</Text>
+          </View>
+        </TouchableOpacity>
 
+          <Divider margin={[theme.sizes.padding * 0.9, 0]} />
+         
           <Block>
             <Text semibold>Related</Text>
             <Block row margin={[theme.sizes.padding * 0.9, 0]}>

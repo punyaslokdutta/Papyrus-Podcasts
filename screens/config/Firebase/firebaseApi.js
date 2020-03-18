@@ -18,26 +18,7 @@ import storage from '@react-native-firebase/storage'
 const firebaseApi={
     
     
-     _signupWithEmail: async (email, password) =>{
-        try {
-          await auth().createUserWithEmailAndPassword(email, password);
-        } catch (e) {
-          console.error(e.message);
-        }
-      },
-
-      _loginWithEmail :async (email, password) => {
-        try {
-           await firebase
-             .auth()
-             .signInWithEmailAndPassword(email, password)
-             .then(res => {
-                 console.log(res.user.email);
-          });
-    } catch (error) {
-          console.log(error.toString(error));
-        }
-      },
+     
       _signOutUser : async () => {
         try {
             //await AsyncStorage.clear();
@@ -57,25 +38,27 @@ const firebaseApi={
       },
 
 
-     _createNewUser:async(user) => {
+     _createNewUser:async(user,fullName) => {
 
         //const query11 = await firestore().collection('users').doc("656523232").get();
-        console.log("QQUUEERRYY");
-        //console.log(query11);
-        
-    
+        console.log("createNewUser QQUUEERRYY");
+        var name = null;
+        if(fullName == null)
+            name = user._user.displayName;
+        else
+            name = fullName;
         const user1 = await firestore().collection('users').doc(`${user._user.uid}`)
+        
         let documentSnapshots = await user1.get();
-        // let documentSnapshots = await initialQuery.get();
-        // console.log(documentSnapshots);
+        
         const doc1 = await user1.collection('privateUserData').doc("privateData").set({
                             uid: user._user.uid,
-                            phoneNumber: user._user.phoneNumber,
+                           // phoneNumber: user._user.phoneNumber,
                             account_creation_time: 25,
                             lastSignIn_time: 26,
                             following_posts: [],
-                            book_recommendations: bookRec,
-                            podcast_recommendations: podRec,
+                            book_recommendations: null,
+                            podcast_recommendations: null,
                             listen_count_in_previous_day: 0,
                             podcasts_list_user_liked: 0,
                             retention_rate_of_listeners: 0,
@@ -83,10 +66,10 @@ const firebaseApi={
         });
 
         const documentRef = await firestore().collection('users').doc(`${user._user.uid}`).set({
-            name: user._user.displayName,
+            name: name,
             id: user._user.uid,
             username: "",
-            displayPicture: user._user.photoURL,
+            displayPicture: "",
             email: user._user.email,
             introduction: "",
             follower_count: 0,

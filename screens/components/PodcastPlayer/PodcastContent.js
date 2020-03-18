@@ -1,5 +1,5 @@
 // @flow
-import  React, {useRef} from 'react';
+import  React, {useState,useEffect,useRef} from 'react';
 import {
   View, StyleSheet, Text, Image, ScrollView,TouchableOpacity, TouchableWithoutFeedback,Dimensions, 
 } from 'react-native';
@@ -11,6 +11,9 @@ import {useSelector, useDispatch} from "react-redux"
 import Video from 'react-native-video';
 import ProgressBar from './ProgressBar'
 import InfoScreen from '../../../InfoScreen'
+import firestore from '@react-native-firebase/firestore';
+import { firebase } from '@react-native-firebase/functions';
+
 //import videos, { type Video } from './videos';
 
 
@@ -21,17 +24,31 @@ const { width,height } = Dimensions.get('window');
 
  const PodcastContent=(props)=> {
   const video = useRef();
+  const userID = props.userID;
+  
 
+  const userItem = useSelector(state=>state.userReducer.userItem)
 
+  const isHomeScreen = useSelector(state=>state.rootReducer.isHomeScreen)
+  //const 
   const rate=useSelector(state=>state.rootReducer.rate);
   const currentTime=useSelector(state=>state.rootReducer.currentTime)
   //const isBuffering=useSelector(state=>state.rootReducer.isBuffering);
   const paused=useSelector(state=>state.rootReducer.paused);
-  const volume=useSelector(state=>state.rootReducer.volume)
+  const volume=useSelector(state=>state.rootReducer.volume);
+  const liked = useSelector(state=>state.userReducer.isPodcastLiked[props.podcast.PodcastID]);
+  const userDisplayPictureURL = useSelector(state=>state.userReducer.displayPictureURL);
+  const name = useSelector(state=>state.userReducer.name);
   //const duration=useSelector(state=>state.rootReducer.duration)
   const dispatch=useDispatch();
   
   //const video = React.createRef();
+
+//   useEffect(
+//     () => {
+//      setLikedState(true);
+//    }, [liked]
+//  )
 
   function skipForward() {
     video.current.seek(currentTime + 15);
@@ -74,6 +91,58 @@ function parentSlideDown(){
   props.slideDown();
 }
 
+async function updatePodcastsLiked(props){
+
+  //setLikedState(true);
+  dispatch({type:'ADD_TO_PODCASTS_LIKED',payload:props.podcast.PodcastID})
+  const numUsers = props.podcast.numUsersLiked + 1;
+
+  dispatch({type:'SET_NUM_LIKES',payload:numUsers})
+
+  const likedPodcasts = await firestore().collection('users').doc(userID).set({
+        podcastsLiked : firestore.FieldValue.arrayUnion(props.podcast.PodcastID)
+  },{merge:true})
+  
+  console.log("[PodcastContent] In function updatePodcastsLiked, numUsers = ",numUsers);
+
+  const numlikedUsers = await firestore().collection('Books').doc(props.podcast.BookID).collection('Podcasts').doc(props.podcast.PodcastID)
+                                  .set({
+    numUsersLiked : numUsers
+  },{merge:true})
+
+
+  console.log("props.podcast = ",props.podcast);
+
+  const instance = firebase.app().functions("asia-northeast1").httpsCallable('addActivity');
+  try 
+  {          
+    await instance({ // change in podcast docs created by  user
+      userItem : userItem,
+      podcast : props.podcast,
+      timestamp : Date.now(),
+      photoURL : userDisplayPictureURL,
+      PodcastID : props.podcast.PodcastID,
+      userID : props.podcast.podcasterID,
+      podcastImageURL : props.podcast.Podcast_Pictures[0],
+      type : "like",
+      Name : name,
+      podcastName : props.podcast.Podcast_Name 
+    });
+  }
+  catch (e) 
+  {
+    console.log(e);
+  }
+  
+  if(isHomeScreen)
+  {
+    await firestore().collection('users').doc(userID).collection('privateUserData')
+                .doc('privateData').collection('podcastRecommendations')
+                .doc(props.podcast.podcastID).set({
+                  numUsersLiked : numUsers
+                },{merge:true})
+  }
+} 
 
     return (
       
@@ -134,10 +203,10 @@ function parentSlideDown(){
             volume={volume }
             onBuffer={onBuffering}
             bufferConfig={{
-              minBufferMs: 10000,
-              maxBufferMs: 30000,
-              bufferForPlaybackMs: 2500,
-              bufferForPlaybackAfterRebufferMs: 5000
+            minBufferMs: 10000,
+            maxBufferMs: 30000,
+            bufferForPlaybackMs: 2500,
+            bufferForPlaybackAfterRebufferMs: 5000
             }}
            // muted={this.state.muted}
             //resizeMode={'contain'}
@@ -157,15 +226,20 @@ function parentSlideDown(){
                 onSlideStart={handlePlayPause}
                 onSlideComplete={handlePlayPause}
                 onSlideCapture={onSeek}
-                
               />
           
          </View>
          <View style={styles.icons}>
-         <TouchableOpacity>
+         <TouchableOpacity onPress={() => {
+                if(liked != true)
+                updatePodcastsLiked(props);
+         }}>
 
-               
-                <Icon name="heart" size={20} style={{color:'white'} }/>
+               {
+               liked ? 
+                 <Icon name="heart" size={20} style={{color:'rgb(218,165,32)'} }/> :
+                 <Icon name="heart" size={20} style={{color:'white'} }/> 
+               }
                 </TouchableOpacity>
                 <TouchableOpacity onPress={()=>{
                    //dispatch({type:"TOGGLE_MINI_PLAYER"})

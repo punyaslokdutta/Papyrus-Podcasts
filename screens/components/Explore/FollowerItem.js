@@ -8,7 +8,8 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import * as theme from '../constants/theme'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import {useDispatch} from "react-redux"
-
+import ExploreTabNavigator from '../../navigation/ExploreTabNavigator'
+import CustomUserHeader from '../../navigation/CustomUserHeader'
 
 var {width, height}=Dimensions.get('window')
 
@@ -132,7 +133,7 @@ const styles = StyleSheet.create({
  //const areEqual = (prevProps, nextProps) => true;
  const areEqual = (prevProps, nextProps) => true
 
- const FollowerItem = React.memo((props)=> {
+ const FollowerItem = (props)=> {
   console.log("Inside Follower Item")
   console.log(props);
 
@@ -149,7 +150,26 @@ const styles = StyleSheet.create({
 
         return (
           //<TouchableOpacity  onPress={(()=>dispatch({type:"SET_PODCAST", payload: props.item}))}>
-    <TouchableOpacity onPress={() => props.navigation.navigate('ExploreTabNavigator', {userData:props.item,followsOrNot:text2})}>
+    <TouchableOpacity onPress={() => {
+      //PROBLEM -- HAS TO BE FIXED AFTERWARDS
+      // Directly navigating to ExploreTabNavigator(props.navigation.navigate) is not updating the UserBookPodcast & UserChapterPodcast
+      // Directly pushing ExploreTabNavigator(props.navigation.push) is not updating the CustomUserHeader
+      // This is a temporary solution provided which doesn't follow the chain of unique ExploreTabNavigators & unique UserStatsScreen &
+      // simply falls back to the last point from which 1st time ExploreTabNavigator was opened.
+      // Have to provide a solution which directly passes props to both CustomUserHeader & ExploreTabNavigator(UserBookPodcast & UserChapterPodcast)
+      // so that complete chain of user profiles is followed back to the 1st screen.
+      
+      // [1] props.navigation.navigate shall update the props in CustomUserHeader
+      props.navigation.navigate({
+        routeName: 'ExploreTabNavigator',
+        params : {userData:props.item,followsOrNot:text2},
+        //key : 'user' + userid 
+      })
+      // [2] Move to top of stack,i.e, pop all screens until the last one
+      props.navigation.popToTop();
+      // [3] props.navigation.push will move us towards updated ExploreTabNavigator with updated CustomUserHeader
+      props.navigation.push('ExploreTabNavigator', {userData:props.item,followsOrNot:text2})
+    }}>
         <View style={{flexDirection:'row', marginLeft: 15}}>
         <Image source={{ uri: props.item.displayPicture }} style={{width:width/4,height:height/8}}/>
         <Text style={styles.username}>{props.item.name}</Text>
@@ -158,6 +178,6 @@ const styles = StyleSheet.create({
       </TouchableOpacity>
         );
       
-  }, areEqual);
+  };
 
 export default FollowerItem;

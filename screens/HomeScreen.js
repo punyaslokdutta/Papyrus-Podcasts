@@ -218,7 +218,7 @@ class HomeScreen extends React.Component {
 
         //dispatch({type:"ADD_NAVIGATION",payload:this.props.navigation});
 
-        console.log('Retrieving Data');
+        console.log("[HomeScreen] Retrieving Data");
         const  userid = this.props.firebase._getUid();
         //For books in section list
         let bookDocuments =  await firestore().collection('users').doc(userid).collection('privateUserData')
@@ -232,16 +232,18 @@ class HomeScreen extends React.Component {
         
         let documentData_podcasts = headerpodcasts.docs.map(document => document.data());
         var lastVisiblePodcast = this.state.lastVisibleID;
-        lastVisiblePodcast = documentData_podcasts[documentData_podcasts.length - 1].podcastID; 
+        if(documentData_podcasts.length != 0)      
+           lastVisiblePodcast = documentData_podcasts[documentData_podcasts.length - 1].podcastID; 
 
        
         //For Flatlist podcasts
         let mainpodcasts = await firestore().collection('users').doc(userid).collection('privateUserData')
         .doc('privateData').collection('podcastRecommendations')
         .orderBy('podcastID').startAfter(lastVisiblePodcast).limit(this.state.limit).get()
-
+       
         let podcastsData = mainpodcasts.docs.map(document => document.data());
-        lastVisiblePodcast = podcastsData[podcastsData.length - 1].podcastID; 
+        if(podcastsData.length != 0)      
+          lastVisiblePodcast = podcastsData[podcastsData.length - 1].podcastID; 
 
       this.setState({
             books: bookPodcasts,
@@ -270,7 +272,7 @@ class HomeScreen extends React.Component {
     retrieveMore = async () => {
      try
       {
-        {console.log("retrieveMoreBookPodcasts starts()")}
+        {console.log("[HomeScreen] retrieveMoreBookPodcasts starts()")}
 
       this.setState({
         refreshing: true
@@ -284,7 +286,7 @@ class HomeScreen extends React.Component {
           .orderBy('podcastID').startAfter(this.state.lastVisibleID).limit(this.state.limit);
         
       // Cloud Firestore: Query Snapshot
-      {console.log("retrieveMorePodcasts afterQuery()")}
+      {console.log("[HomeScreen] retrieveMorePodcasts afterQuery()")}
                 
          
         }
@@ -415,7 +417,7 @@ class HomeScreen extends React.Component {
         if (i >= section.data.length) {
           break;
         }
-        items.push(<Podcast podcast={section.data[i]} key={section.data[i].podcastID}  navigation={this.props.navigation}  />);
+        items.push(<Podcast isHomeScreen={true} podcast={section.data[i]} key={section.data[i].podcastID}  navigation={this.props.navigation}  />);
       }
       return (
         <View
@@ -455,9 +457,8 @@ class HomeScreen extends React.Component {
           renderSectionHeader={({ section }) => (
             <ScrollView>
                 
-                {console.log("SECTION DATAAAAAAAAAAAAA: ")}
-                {console.log(section)}
-                {console.log(section.title)}
+                {console.log("[HomeScreen] SECTION DATA: ",section)}
+                {console.log("[HomeScreen] SECTION TITLE: ",section.title)}
 
             {this.renderSectionBooks(section.title)}
             <Text h3 bold style={{paddingLeft: 30,   textShadowColor:'black'}}>Discover Podcasts

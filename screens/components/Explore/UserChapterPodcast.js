@@ -6,12 +6,10 @@ import {withFirebaseHOC} from '../../config/Firebase'
 
 var {width, height}=Dimensions.get('window')
 
-
-
 class UserChapterPodcast extends React.Component {
     
     static navigationOptions={
-        header:null
+       // header:null
     }
    constructor(props)
    {
@@ -24,8 +22,7 @@ class UserChapterPodcast extends React.Component {
         lastVisibleChapterPodcast:null,
         refreshing:false,
         loading:false, 
-        onEndReachedCalledDuringMomentum : true,
-        // navigation: this.props.navigation,
+        onEndReachedCalledDuringMomentum : true
       }
       }
     
@@ -33,7 +30,6 @@ class UserChapterPodcast extends React.Component {
    
      componentDidMount = () => {
       try {
-        // Cloud Firestore: Initial Query
         this.retrieveData();
       }
       catch (error) {
@@ -41,24 +37,17 @@ class UserChapterPodcast extends React.Component {
       }
     };
     
-
-     //retrieve data
      retrieveData = async () => {
       try {
-        // Set State: Loading
         this.setState({
-          loading: true,
-          //refreshing:true
+          loading: true
         });
-        console.log('Retrieving Data');
-        // Cloud Firestore: Query
+        console.log("[UserChapterPodcast] retrieveData");
         const  userid = this.props.navigation.state.params.userData.id;
         let query3 = await firestore().collectionGroup('Podcasts').where('podcasterID','==',userid);    
-        //let documentPodcasts = await query3.where('ChapterName','==',"").orderBy('PodcastID').limit(this.state.limit).get();
         let documentChapterPodcasts = 90;
         try{
          documentChapterPodcasts = await query3.where('isChapterPodcast','==',true).limit(this.state.limit).get();
-        //let documentData_podcasts = documentPodcasts.docs.map(document => document.data());
         }
         catch(error)
         {
@@ -72,20 +61,15 @@ class UserChapterPodcast extends React.Component {
               });
           }
         let documentData_chapterPodcasts = documentChapterPodcasts.docs.map(document => document.data());
-        //var lastVisibleBook = this.state.lastVisibleBookPodcast;
   
-        var lastVisibleChapter = this.state.lastVisibleChapterPodcast;
-
-        //lastVisibleBook = documentData_podcasts[documentData_podcasts.length - 1].PodcastID;        
-        lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].PodcastID;
+        var lastVisibleChapter = this.state.lastVisibleChapterPodcast;  
+        if(documentData_chapterPodcasts.length != 0)      
+          lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].PodcastID;
         
           this.setState({
-            //bookPodcasts: documentData_podcasts,
             chapterPodcasts: documentData_chapterPodcasts,
-            //lastVisibleBookPodcast:lastVisibleBook,
             lastVisibleChapterPodcast: lastVisibleChapter,
             loading:false
-            //refreshing:false
             });
       }
       catch (error) {
@@ -101,19 +85,14 @@ class UserChapterPodcast extends React.Component {
          refreshing: true
           }); 
  
-          //const  userid = this.props.firebase._getUid();
           const  userid = this.props.navigation.state.params.userData.id;
           let additionalQuery = 9;
           try{
-           // let documentChapterPodcasts = await query3.where('isChapterPodcast','==',true).limit(this.state.limit).get();
             additionalQuery = await firestore().collectionGroup('Podcasts')
                              .where('podcasterID','==',userid).where('isChapterPodcast','==',true)
                              .orderBy('PodcastID')
                              .startAfter(this.state.lastVisibleChapterPodcast)
                              .limit(this.state.limit);
-         
-       // Cloud Firestore: Query Snapshot
-          
          }
          catch(error)
          {
@@ -128,10 +107,7 @@ class UserChapterPodcast extends React.Component {
            console.log(error);
          }
          
-       // Cloud Firestore: Document Data
        let documentData = documentSnapshots.docs.map(document => document.data());
-       
-       // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
        if(documentData.length != 0)
        {
             let lastVisibleChapter = documentData[documentData.length - 1].PodcastID;
@@ -177,7 +153,6 @@ class UserChapterPodcast extends React.Component {
       try {
         if (this.state.refreshing == true && this.state.chapterPodcasts.length > 6) {
           return (
-            //null
             <View>
             <Text>Refreshing</Text>
             <ActivityIndicator />

@@ -69,8 +69,9 @@ class ProfileChapterPodcast extends React.Component {
   
         var lastVisibleChapter = this.state.lastVisibleChapterPodcast;
 
-        //lastVisibleBook = documentData_podcasts[documentData_podcasts.length - 1].PodcastID;        
-        lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].PodcastID;
+        //lastVisibleBook = documentData_podcasts[documentData_podcasts.length - 1].PodcastID;  
+        if(documentData_chapterPodcasts.length != 0)            
+          lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].PodcastID;
         
           this.setState({
             //bookPodcasts: documentData_podcasts,

@@ -24,7 +24,12 @@ const areEqual = (prevProps, nextProps) => true
         return (
           
            <View style={[styles.shadow,{height:height/7, width:(width*5)/12 + 10, marginLeft:20, borderwidth:4, borderColor:'#dddddd',overflow:'hidden', paddingRight:10,borderRadius:5}]}>
-           <TouchableOpacity onPress={(()=>dispatch({type:"SET_PODCAST", payload: props.item}))}>
+           <TouchableOpacity onPress={(()=>
+            {
+              dispatch({type:"SET_PODCAST", payload: props.item})
+              dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
+              dispatch({type:"SET_NUM_LIKES", payload: props.item.numUsersLiked})
+            })}>
            <Image style={[{width:(width*5)/12, height:height/7, resizeMode:'cover',borderRadius:5,overflow:'hidden', paddingRight:10}]} source={{ uri: item.Podcast_Pictures["0"] }} />
 
            </TouchableOpacity>

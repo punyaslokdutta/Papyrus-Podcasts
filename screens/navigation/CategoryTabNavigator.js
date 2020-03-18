@@ -75,6 +75,7 @@ const CategoryTabNavigator = createMaterialTopTabNavigator(
         fontSize: 10,
       }
     }, 
+    backBehavior : "none",
        navigationOptions:
        {
          tabBarVisible: true,

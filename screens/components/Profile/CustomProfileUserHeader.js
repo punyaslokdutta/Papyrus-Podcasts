@@ -11,6 +11,7 @@ import UserStatsScreen from '../Explore/UserStatsScreen'
 import { withFirebaseHOC } from '../../config/Firebase';
 import firestore from '@react-native-firebase/firestore';
 import {useDispatch,useSelector} from "react-redux"; 
+import { firebase } from '@react-native-firebase/functions';
 
 //const admin = require('firebase-admin')
 
@@ -21,9 +22,8 @@ const HEADER_HEIGHT = Platform.OS === 'ios' ? (IS_IPHONE_X ? 88 : 64) : 64;
 const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
 
 
-retrieveData = async (message,userid,item) => {
-   
-    
+async function retrieveData(message,userid,item,userDisplayPictureURL,name) 
+{
     try{
       console.log("USERID")
       console.log(userid)
@@ -40,13 +40,27 @@ retrieveData = async (message,userid,item) => {
                    following_list : firestore.FieldValue.arrayUnion(item.id)
                },{ merge:true })
       
-              
+        const instance = firebase.app().functions("asia-northeast1").httpsCallable('addActivity');
+        try 
+        {          
+          await instance({ // change in podcast docs created by  user
+            timestamp : Date.now(),
+            photoURL : userDisplayPictureURL,
+            PodcastID : null,
+            userID : item.id,
+            podcastImageURL : null,
+            type : "follow",
+            Name : name
+          });
+        }
+        catch (e) 
+        {
+          console.log(e);
+        }      
+
 
         console.log("IN RETRIEVE DATA -- FOLLOWWWWWWWWWWWWWWWWWWWWWWWWWWW")
         
-        //const list1 = useSelector(state=>state.userReducer.followingList);
-
-        //console.log(list1);
     } 
     else if(message === 'FOLLOWING')
      {
@@ -63,7 +77,6 @@ retrieveData = async (message,userid,item) => {
 console.log("IN RETRIEVE DATA -- FOLLOWING")
      }   
    }
-     
     catch(error){
       console.log(error)
     }
@@ -86,19 +99,14 @@ const CustomProfileUserHeader = (props) => {
         }
     else
     {
+      const userDisplayPictureURL = useSelector(state=>state.userReducer.displayPictureURL);
+      const name = useSelector(state=>state.userReducer.name);
+
       console.log("ERROR 222222 ",props.navigation.state.routes[1]);
        var text1 = "Follow+";
        let item = "W";
-       const  userid =  props.firebase._getUid()//props.navigation.state.routes[1].params.userID; 
-      //  if(props.navigation.state.routes[1].params !== undefined)
-      //  {
-      //    console.log("Error 2346667")
-      //    if(props.navigation.state.routes[1].params.userData !== undefined)
-      //    item = props.navigation.state.routes[1].params.userData;
-      //  }
-         
-      //  else 
-         item = props.navigation.state.routes[3].params.userData;
+       const  userid =  props.firebase._getUid()
+      item = props.navigation.state.routes[3].params.userData;
       let wholestring = 'FOLLOW';
        
       let initialMessage = useSelector(state=>state.userReducer.isUserFollowing[item.id])
@@ -148,7 +156,7 @@ const CustomProfileUserHeader = (props) => {
                       }
 
                         console.log("Before retrieve data: ",message)
-                      retrieveData(message,userid,item);
+                      retrieveData(message,userid,item,userDisplayPictureURL,name);
 
                     }}></Button>
         </View>

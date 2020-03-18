@@ -221,6 +221,57 @@ const editProfile = (props) => {
     });
   }
 
+  uploadImage = async () =>
+  {
+  
+
+    ImagePicker.showImagePicker(options, async(response) => {
+      console.log('Response URI = ', response.uri);
+      console.log('Response PATH = ', response.path);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else {
+        const source = { uri: response.uri };
+       console.log("Before storageRef.putFile");
+       this.setState({
+        ProfileImage: source,
+      });
+         var storageRef = storage().ref('books/10000_5.jpg');
+
+
+          console.log("Before storageRef.putFile");
+         storageRef.putFile(response.path)//: 'content://com.miui.gallery.open/raw/storage/emulated/DCIM/Camera/IMG_20200214_134628_1.jpg')
+         .on(
+             firebase.storage.TaskEvent.STATE_CHANGED,
+           snapshot => {
+             console.log("snapshot: " + snapshot.state);
+             console.log("progress: " + (snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+   
+             if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+               console.log("Success");
+             }
+           },
+           error => {
+             unsubscribe();
+             console.log("image upload error: " + error.toString());
+           },
+           () => {
+             storageRef.getDownloadURL()
+               .then((downloadUrl) => {
+                 console.log("File available at: " + downloadUrl);
+               })
+           }
+         )
+       
+      }
+    });
+  }
+   
   return (
 
     <KeyboardAvoidingView style={styles.container} enabled>

@@ -34,20 +34,20 @@ class Explore extends React.Component {
     //const ref = firestore().collection('Books');
   }
    
-    componentDidMount = () => {
-      try {
-        this.startHeaderHeight = 60
-        if(Platform.OS=='Android')
-        {
-            this.startHeaderHeight= StatusBar.currentHeight
+      componentDidMount = () => {
+        try {
+          this.startHeaderHeight = 60
+          if(Platform.OS=='Android')
+          {
+              this.startHeaderHeight= StatusBar.currentHeight
+          }
+          // Cloud Firestore: Initial Query
+          this.retrieveData();
         }
-        // Cloud Firestore: Initial Query
-        this.retrieveData();
-      }
-      catch (error) {
-        console.log(error);
-      }
-    };
+        catch (error) {
+          console.log(error);
+        }
+      };
 
     retrieveData = async () => {
       try {

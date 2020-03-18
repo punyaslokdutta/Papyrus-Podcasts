@@ -11,6 +11,7 @@ import UserStatsScreen from '../components/Explore/UserStatsScreen'
 import { withFirebaseHOC } from '../config/Firebase';
 import firestore from '@react-native-firebase/firestore';
 import {useDispatch,useSelector} from "react-redux"; 
+import { firebase } from '@react-native-firebase/functions';
 
 //const admin = require('firebase-admin')
 
@@ -20,10 +21,8 @@ const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? (IS_IPHONE_X ? 44 : 20) : 0;
 const HEADER_HEIGHT = Platform.OS === 'ios' ? (IS_IPHONE_X ? 88 : 64) : 64;
 const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
 
-
-retrieveData = async (message,userid,item) => {
-   
-    
+async function retrieveData(message,userid,item,userDisplayPictureURL,name,userItem) 
+{  
     try{
       console.log("USERID")
       console.log(userid)
@@ -40,9 +39,26 @@ retrieveData = async (message,userid,item) => {
                    following_list : firestore.FieldValue.arrayUnion(item.id)
                },{ merge:true })
       
-              
+               const instance = firebase.app().functions("asia-northeast1").httpsCallable('addActivity');
+               try 
+               {          
+                 await instance({ // change in podcast docs created by  user
+                   timestamp : Date.now(),
+                   photoURL : userDisplayPictureURL,
+                   PodcastID : null,
+                   userID : item.id,
+                   podcastImageURL : null,
+                   type : "follow",
+                   Name : name,
+                   userItem : userItem
+                 });
+               }
+               catch (e) 
+               {
+                 console.log(e);
+               }      
 
-        console.log("IN RETRIEVE DATA -- FOLLOWWWWWWWWWWWWWWWWWWWWWWWWWWW")
+        console.log("[CustomUserHeader] IN RETRIEVE DATA -- FOLLOW")
         
         //const list1 = useSelector(state=>state.userReducer.followingList);
 
@@ -60,7 +76,7 @@ retrieveData = async (message,userid,item) => {
   },{ merge:true })
 
     
-console.log("IN RETRIEVE DATA -- FOLLOWING")
+console.log("[CustomUserHeader] IN RETRIEVE DATA -- FOLLOWING")
      }   
    }
      
@@ -72,50 +88,70 @@ console.log("IN RETRIEVE DATA -- FOLLOWING")
 
 
 const CustomUserHeader = (props) => {
-    {console.log("Inside Custom Explore user header ..................||||||||||||||||||||||")}
     
-
+    console.log("Entering [CustomUserHeader]");
+    
     if(props === undefined || props.navigation === undefined || props.navigation.state === undefined || props.navigation.state.routes[1] === undefined || 
-        (props.navigation.state.routes[1].params === undefined && (props.navigation.state.routes[3] === undefined || props.navigation.state.routes[3].params === undefined)))
+        ((props.navigation.state.routes[2] != undefined && props.navigation.state.routes[2].params === undefined) && props.navigation.state.routes[1].params === undefined && (props.navigation.state.routes[3] === undefined || props.navigation.state.routes[3].params === undefined)))
         {
-          console.log("ERROR  ",props.navigation.state.routes[1]);
-            return(
-              
-                <Text>FGHJVBJ</Text>
+          console.log("[CustomUserHeader] ERROR");
+          console.log("[CustomUserHeader] props.navigation.state.routes = ",props.navigation.state.routes);
+            
+         // props.navigation.goBack();
+          //props.navigation.goBack();
+         //props.navigation.popToTop();
+          return(
+                                
+                <Text>CustomUserHeader is not visible due to programmatic errors.</Text>
             )        
         }
     else
     {
-      console.log("ERROR 222222 ",props.navigation.state.routes[1]);
-       var text1 = "Follow+";
-       let item = "W";
-       const  userid =  props.firebase._getUid()//props.navigation.state.routes[1].params.userID; 
-      //  if(props.navigation.state.routes[1].params !== undefined)
-      //  {
-      //    console.log("Error 2146667")
-      //    if(props.navigation.state.routes[1].params.userData !== undefined)
-      //    item = props.navigation.state.routes[1].params.userData;
-      //  }
-         
-      //  else 
-      if(props.navigation.state.routes[1].params === undefined || props.navigation.state.routes[1].params.userData === undefined)
-         item = props.navigation.state.routes[3].params.userData;
-      if(props.navigation.state.routes[3] === undefined || props.navigation.state.routes[3].params === undefined || props.navigation.state.routes[3].params.userData === undefined)
-         item = props.navigation.state.routes[1].params.userData;
+      console.log("[CustomUserHeader] NO ERROR");
+      console.log("[CustomUserHeader] props.navigation.state.routes = ",props.navigation.state.routes);
+      const userItem = useSelector(state=>state.userReducer.userItem);
+      //props.navigation.popToTop();
+      const userDisplayPictureURL = useSelector(state=>state.userReducer.displayPictureURL);
+      const name = useSelector(state=>state.userReducer.name);
+      let item = "W";
+      const userid =  props.firebase._getUid();
+
+      
+      if(props.navigation.state.routes[2] != undefined && props.navigation.state.routes[2].params != undefined && 
+        props.navigation.state.routes[2].params.userData != undefined)
+      {
+      item = props.navigation.state.routes[2].params.userData;
+      console.log("[CustomUserHeader] Got item from ROUTES[2]");
+      }
+      else if(props.navigation.state.routes[3] && props.navigation.state.routes[3].params && 
+                (props.navigation.state.routes[1].params === undefined || props.navigation.state.routes[1].params.userData === undefined))
+      {
+      item = props.navigation.state.routes[3].params.userData;
+      console.log("[CustomUserHeader] Got item from ROUTES[3]");
+      }  
+      if(props.navigation.state.routes[1] && props.navigation.state.routes[1].params && 
+              (props.navigation.state.routes[3] === undefined || props.navigation.state.routes[3].params === undefined || 
+                props.navigation.state.routes[3].params.userData === undefined))
+      {
+      item = props.navigation.state.routes[1].params.userData;
+      console.log("[CustomUserHeader] Got item from ROUTES[1]");
+      }
+      
+
+      
+    
       let wholestring = 'FOLLOW';
        
+      console.log("[CustomUserHeader] item = ",item);
       let initialMessage = useSelector(state=>state.userReducer.isUserFollowing[item.id])
       let printMessage = useSelector(state=>state.userReducer.isUserFollowing)
       if(initialMessage === true)
         wholestring = 'FOLLOWING'
       
-      console.log("\nINITIAL FOLLOW MESSAGEEEEEEEEEEEEEEEEEEEEEE : ", printMessage)
-     const [message,setMessage] = useState(wholestring);//props.navigation.state.routes[1].params.followsOrNot);
-     const dispatch=useDispatch();
-
-    // const following = useSelector(state=>state.userReducer.followingList)
-     //console.log("This is the Following List.",following);
-     
+      console.log("[CustomUserHeader] isUserFollowing = ", printMessage)
+      const [message,setMessage] = useState(wholestring);
+      const dispatch=useDispatch();
+ 
       return (
         <View>
         <View style={{alignItems:'flex-end',paddingRight:10,paddingTop:10}}>
@@ -151,7 +187,7 @@ const CustomUserHeader = (props) => {
                       }
 
                         console.log("Before retrieve data: ",message)
-                      retrieveData(message,userid,item);
+                      retrieveData(message,userid,item,userDisplayPictureURL,name,userItem);
 
                     }}></Button>
         </View>
@@ -163,7 +199,11 @@ const CustomUserHeader = (props) => {
               </View>
               </View>
               
-              <TouchableOpacity style={{alignItems:'center'}} onPress={() => props.navigation.navigate('UserStatsScreen',{item:item})}>
+              <TouchableOpacity style={{alignItems:'center'}} onPress={() => props.navigation.navigate({
+                routeName : 'UserStatsScreen',
+                params : {item:item},
+                key : 'user1' + item.id
+            })}>
               <Image
                   source={{uri : item.displayPicture}}
                   style={styles.avatar}

@@ -12,6 +12,11 @@ import firestore from '@react-native-firebase/firestore';
                    
         console.log("Inside PUBLIC QUERY");
         console.log(doc)
+        
+        //For sending to cloud functions so that ActivityItem gets total user item which it can forward to ExploreTabNavigator --> CustomUserHeader  
+        dispatch({type:'SET_USER_ITEM',payload:doc._data})
+
+        dispatch({type:'SET_PODCASTS_LIKED',payload:doc._data.podcastsLiked})
 
         dispatch({type:'CHANGE_EMAIL',payload:doc._data.email})
         dispatch({type:'CHANGE_NAME',payload:doc._data.name})
@@ -26,7 +31,7 @@ import firestore from '@react-native-firebase/firestore';
         dispatch({type:'ADD_NUM_CREATED_BOOK_PODCASTS',payload: doc._data.numCreatedBookPodcasts})
         dispatch({type:'ADD_NUM_CREATED_CHAPTER_PODCASTS',payload: doc._data.numCreatedChapterPodcasts})
         dispatch({type:'ADD_TOTAL_MINUTES_RECORDED',payload: doc._data.totalMinutesRecorded})
-
+    
     }
     catch(error)
     {
@@ -64,7 +69,8 @@ const setUserDetails = (props) => {
 
     useEffect( () => {
      //retrieveData(dispatch,userid);
-     retrieveDataPublic(dispatch,userid)
+     retrieveDataPublic(dispatch,userid);
+     props.navigation.navigate('App');
      console.log("PRIVATE DATA")
       }, [])
 

@@ -37,7 +37,12 @@ const TopChapters = React.memo((props)=> {
         //                 <Image source={this.props.ImageUri} style={{width:130, height:210, resizeMode:'cover',  overflow:'hidden', paddingRight:10}}/>
         //             </View>
        <View style={[styles.shadow,{height:height/4, width:width/3, marginLeft:20, borderwidth:5, borderColor:'#dddddd',overflow:'hidden', paddingRight:10,borderRadius:5}]}>
-       <TouchableOpacity onPress={(()=>dispatch({type:"SET_PODCAST", payload: props.item}))}>
+       <TouchableOpacity onPress={(()=>
+        {
+          dispatch({type:"SET_PODCAST", payload: props.item})
+          dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
+          dispatch({type:"SET_NUM_LIKES", payload: props.item.numUsersLiked})
+        })}>
        <Image style={{width:width/3 - 10, height:height/4, resizeMode:'cover',  overflow:'hidden',borderRadius:5, paddingRight:10}} source={{ uri: item.Podcast_Pictures["0"] }} />
  
        </TouchableOpacity>

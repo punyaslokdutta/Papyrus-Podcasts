@@ -1,8 +1,7 @@
 // @flow
 import React, {Component, useState, createContext, useReducer, useCallback, useEffect} from 'react';
-import {
-  View, StyleSheet, Dimensions, StatusBar, Platform,
-} from 'react-native';
+import {withFirebaseHOC} from '../../config/Firebase';
+import {View, StyleSheet, Dimensions, StatusBar, Platform} from 'react-native';
 import {withNavigation} from 'react-navigation';
 //import { DangerZone } from 'expo';
 import PodcastPlayer from '../../PodcastPlayer'; //instead of Video Modal 
@@ -19,19 +18,19 @@ import TrackPlayer, {
   useTrackPlayerEvents
 } from "react-native-track-player";
 import {useSelector} from "react-redux"
+//import { withFirebaseHOC } from '../../config/Firebase';
 const { height } = Dimensions.get('window');
 //const { Animated, Easing } = DangerZone;
 const { Value, timing } = Animated;
 const isOS = Platform.OS === 'ios';
-import store from '../../../reducers/store';
 
 
 const PlayerProvider=(props)=>{
 
   const podcast=useSelector(state=>state.rootReducer.podcast)
   const navigation=useSelector(state=>state.userReducer.navigation)
-
-  console.log("Inside PlayerProvider\n\n",props,navigation);
+  const userID = props.firebase._getUid();
+  console.log("Inside PlayerProvider\n\n",props,navigation,userID);
 
   animation = new Value(0);
 
@@ -55,8 +54,8 @@ const PlayerProvider=(props)=>{
   
   // )
     const translateY = animation.interpolate({
-      inputRange: [0, 1],
-      outputRange: [height, 0],
+      inputRange: [0, height],
+      outputRange: [0, height],
     });
     return (
       <PlayerContext.Provider value={podcast }>
@@ -71,14 +70,16 @@ const PlayerProvider=(props)=>{
                 style={{ transform: [{ translateY }] }}
               >
                 {
-                  podcast && <PodcastPlayer {...{podcast}} {...{navigation}} />
+                  podcast && <PodcastPlayer {...{userID}} {...{podcast}} {...{navigation}} />
                 }
               </Animated.View>
             )
           }
           {
             
-            !isOS && podcast && <PodcastPlayer {...{podcast}} {...{navigation}}/>
+            !isOS && podcast && <PodcastPlayer {...{userID}} {...{podcast}} {...{navigation}}/>
+           
+          
           }
         </View>
            
@@ -96,4 +97,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default PlayerProvider;
+export default withFirebaseHOC(PlayerProvider);

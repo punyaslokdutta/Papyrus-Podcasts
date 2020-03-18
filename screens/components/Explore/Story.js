@@ -15,7 +15,7 @@ const areEqual = (prevProps, nextProps) => true
 
   const Story = React.memo((props)=> {
   
-    console.log("Inside Storyyyyyyyyyyyyyyyyyyyyy################################################yyyyyyyyyyyy")
+    console.log("Inside [Story]")
     //console.log(props.item);
     const  userid = props.firebase._getUid();
       const item = props.item

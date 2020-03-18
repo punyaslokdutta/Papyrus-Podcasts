@@ -69,9 +69,9 @@ class CategoryScreen extends Component {
        return (
         <View>
         <View  style={{paddingBottom: (height*5)/12}}>
-            <Block flex={false} row center space="between" style={styles.header}>
+            {/* <Block flex={false} row center space="between" style={styles.header}>
           <Text h1 bold>Categories</Text>
-        </Block>
+        </Block> */}
           </View>
            <ActivityIndicator/>
            </View>
@@ -81,9 +81,9 @@ class CategoryScreen extends Component {
     {
       return (
         <Block>
-          <Block flex={false} row center space="between" style={styles.header}>
+          {/* <Block flex={false} row center space="between" style={styles.header}>
             <Text h1 bold>Categories</Text>
-          </Block>
+          </Block> */}
   
           <ScrollView
             showsVerticalScrollIndicator={false}
