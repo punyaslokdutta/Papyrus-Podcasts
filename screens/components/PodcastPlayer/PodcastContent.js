@@ -33,22 +33,16 @@ const { width,height } = Dimensions.get('window');
   //const 
   const rate=useSelector(state=>state.rootReducer.rate);
   const currentTime=useSelector(state=>state.rootReducer.currentTime)
+
   //const isBuffering=useSelector(state=>state.rootReducer.isBuffering);
   const paused=useSelector(state=>state.rootReducer.paused);
   const volume=useSelector(state=>state.rootReducer.volume);
   const liked = useSelector(state=>state.userReducer.isPodcastLiked[props.podcast.PodcastID]);
   const userDisplayPictureURL = useSelector(state=>state.userReducer.displayPictureURL);
   const name = useSelector(state=>state.userReducer.name);
+  
   //const duration=useSelector(state=>state.rootReducer.duration)
   const dispatch=useDispatch();
-  
-  //const video = React.createRef();
-
-//   useEffect(
-//     () => {
-//      setLikedState(true);
-//    }, [liked]
-//  )
 
   function skipForward() {
     video.current.seek(currentTime + 15);
@@ -146,7 +140,7 @@ async function updatePodcastsLiked(props){
 
     return (
       
-        <ScrollView style={styles.content}>
+        <View style={styles.content}>
         <View style={{ alignItems: "center"}}>
         <View style={{ alignItems: "center", marginTop: 8}}>
         <Text style={[styles.textDark, { fontSize: 16, fontWeight: "500" }]}>{props.podcast.Podcast_Name}</Text>
@@ -155,12 +149,6 @@ async function updatePodcastsLiked(props){
                     <View style={{ alignItems: "center", marginTop: 2}}>
                     <Text style={[styles.text, { fontSize: 15, marginTop: 2}]}>{props.podcast.podcasterName}</Text>
                     </View>
-                    
-              {/* <View>
-                <TouchableOpacity onPress={NavigationService.navigate('Explore')}>
-                  <Text style={{color:'white'}}>qqqqqqqqqqqqqqqq</Text>
-                  </TouchableOpacity>
-                </View> */}
 
         <View  style={{paddingLeft:10}}>
         </View>
@@ -171,7 +159,7 @@ async function updatePodcastsLiked(props){
                     <TouchableOpacity  onPress={skipBackward}>
                     <Icon name="undo"  size={28} label="10" color="white" />
                     </TouchableOpacity>
-                    {!paused && <TouchableOpacity style={styles.playButtonContainer}  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
+                    {!paused  && <TouchableOpacity style={styles.playButtonContainer}  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
                    <Icon name="pause"  size={24} label="10" color="black"  style={[styles.playButton, { marginLeft: 2 }]}/>
                    </TouchableOpacity>}
                    {paused && <TouchableOpacity style={styles.playButtonContainer}  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
@@ -258,7 +246,7 @@ async function updatePodcastsLiked(props){
 
               
 
-        </ScrollView>
+        </View>
       
     );
   }
@@ -285,7 +273,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     //paddingRight:30,
-    paddingTop:height/30,
+    paddingTop:height/10,
   },
   upNext: {
     borderTopWidth: 1,
