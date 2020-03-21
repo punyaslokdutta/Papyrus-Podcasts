@@ -50,7 +50,7 @@ class LikersScreen extends React.Component {
         // Cloud Firestore: Query
         const podcastId = this.props.navigation.state.params.podcastID;// props.firebase._getUid();
         
-        let likersQuery =  await firestore().collection('users').where('podcastsLiked','array-contains',podcastId).orderBy('id')
+        let likersQuery =  await firestore().collectionGroup('privateUserData').where('podcastsLiked','array-contains',podcastId).orderBy('id')
                                                 .limit(this.state.limit).get();
         let likersData = likersQuery.docs.map(document=>document.data());
         var lastVisibleLiker = this.state.lastVisibleLiker;

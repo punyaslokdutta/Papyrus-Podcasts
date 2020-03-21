@@ -48,7 +48,9 @@ class ActivityScreen  extends React.Component {
       console.log('Retrieving Data in Activity Screen');
       
       const  userid = this.props.firebase._getUid();
-      let activityQuery = await firestore().collection('users').doc(userid).collection('privateUserData').doc('privateData').collection('Activities')
+      const privateDataID = "private" + userid;
+
+      let activityQuery = await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).collection('Activities')
                                 .orderBy('creationTimestamp','desc').limit(this.state.limit).get();
       let documentActivities = activityQuery._docs.map(document => document._data);
       console.log("Document Activities: ",documentActivities);
@@ -79,9 +81,10 @@ class ActivityScreen  extends React.Component {
 
         //const  userid = this.props.firebase._getUid();
         const  userid = this.props.firebase._getUid();
+        const privateDataID = "private" + userID;
         let additionalQuery = 9;
         try{
-          additionalQuery = await firestore().collection('users').doc(userid).collection('privateUserData').doc('privateData').collection('Activities')
+          additionalQuery = await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).collection('Activities')
                            .orderBy('creationTimestamp','desc')
                            .startAfter(this.state.lastVisibleActivity)
                            .limit(this.state.limit);
@@ -172,11 +175,14 @@ class ActivityScreen  extends React.Component {
   }
 
   onEndReached = ({ distanceFromEnd }) => {
-    //if(this.state.books.length > 5)
-    if(!this.onEndReachedCalledDuringMomentum){
+    if(this.state.activities.length > 7)
+    {
+      if(!this.onEndReachedCalledDuringMomentum){
         this.retrieveMoreActivities()
         this.onEndReachedCalledDuringMomentum = true;
     }
+    }
+    
   }
 
   separator = () => <View style={[styles.separator]} />;
@@ -195,7 +201,7 @@ class ActivityScreen  extends React.Component {
             ItemSeparatorComponent={this.separator}
             //ListFooterComponent={this.renderFooter}
             onEndReached={this.onEndReached}
-            onEndReachedThreshold={0.5}
+            onEndReachedThreshold={0.01}
             refreshing={this.state.refreshing}
             onMomentumScrollBegin={() => { this.onEndReachedCalledDuringMomentum = false; }}
      />

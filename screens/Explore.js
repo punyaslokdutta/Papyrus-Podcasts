@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import SearchScreen from './components/Explore/SearchScreen'
 import * as theme from '../screens/components/constants/theme';
 import firestore from '@react-native-firebase/firestore';
-import { StyleSheet, Text, View, SafeAreaView, ActivityIndicator, TextInput, Platform, StatusBar,TouchableOpacity,Dimensions, ScrollView, Image} from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, ActivityIndicator, TextInput, Platform, StatusBar,TouchableOpacity,Dimensions, ScrollView, Image, NativeModules, NativeEventEmitter} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import TrendingPodcast from './components/Explore/TrendingPodcast'
@@ -13,6 +13,7 @@ import CategoryScreen from './CategoryScreen'
 import Podcast from './components/Home/Podcast'
 import ExploreBook from './components/Explore/ExploreBook'
 import searchIcon from '../assets/searchIcon.png';
+import PreviewScreen from './PreviewScreen';
 
 const {width,height} = Dimensions.get('window')
 
@@ -20,6 +21,8 @@ class Explore extends React.Component {
 
   constructor(props)
   {
+
+   
     super(props)
     {
       //this.renderHeader = this.renderHeader.bind(this);
@@ -32,6 +35,28 @@ class Explore extends React.Component {
       };
     }
     //const ref = firestore().collection('Books');
+  
+  }
+
+   
+
+  componentDidUpdate=(props)=>
+  {
+    const eventEmitter=new NativeEventEmitter(NativeModules.ReactNativeRecorder);
+    console.log("Inside useEffect - componentDidUpdate of ExploreScreen");
+      const fileType=".m4a"
+      const filePath="/storage/emulated/0/AudioRecorder/"
+      var audioFilePath=null;
+      eventEmitter.addListener('RecordFile', (event) => {
+           audioFilePath=filePath.concat(event.eventName,fileType)
+          console.log(props)
+          console.log("RecordedFilePath :" +audioFilePath)
+          console.log("timeduration :" , +event.eventDuration)
+         props.navigation.navigate('PreviewScreen', {  
+          recordedFilePath: audioFilePath, 
+          duration:event.eventDuration})
+    })
+
   }
    
       componentDidMount = () => {
@@ -57,12 +82,12 @@ class Explore extends React.Component {
         });
         console.log('Retrieving Data in Explore Screen');
         
-        let userQuery = await firestore().collection('users').where('isTopStoryTeller','==',true).get();
+        let userQuery = await firestore().collectionGroup('privateUserData').where('isTopStoryTeller','==',true).get();
         let podcastQuery = await firestore().collectionGroup('Podcasts').where('isTrendingPodcast','==',true).get();
         let bookQuery = await firestore().collectionGroup('Podcasts').where('isShortStory','==',true).get();
         let chapterQuery = await firestore().collectionGroup('Podcasts').where('isClassicNovel','==',true).get();
         
-        let documentUsers = userQuery._docs.map(document => document._data);
+        let documentUsers = userQuery._docs.map(document => document.data());
         let documentPodcasts = podcastQuery.docs.map(document => document.data());
         let documentBooks = bookQuery.docs.map(document => document.data());
         let documentChapters = chapterQuery.docs.map(document => document.data());

@@ -1,5 +1,5 @@
 import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
-import {useSelector} from "react-redux";
+import {useSelector, useDispatch} from "react-redux";
 import React, {Component} from 'react';
 import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView,NativeModules} from 'react-native';
 import {Container, Content, Header, Body} from 'native-base'
@@ -23,6 +23,7 @@ const CustomDrawerContentComponent = (props) =>
     const name = useSelector(state=>state.userReducer.name);
     const username = useSelector(state=>state.userReducer.userName);
     const photoURL = useSelector(state=>state.userReducer.displayPictureURL);
+    const dispatch = useDispatch();
 
 return(  
   <Container style={{backgroundColor:'#101010'}}>
@@ -36,7 +37,7 @@ return(
           
     </Block>
     <Block flex={false} row center space="between" style={{ paddingLeft:5}}>
-<Text style={{color:'white', fontFamily:'san-serif'}}>@{username}</Text>
+<Text style={{color:'white', fontFamily:'san-serif',textAlign:'center'}}>{username}</Text>
           
     </Block>
 
@@ -52,7 +53,9 @@ return(
                   props.onItemPress(route);
                   break;
                 case 'Drafts':
-                  {NativeModules.ReactNativeRecorder.sampleMethodTwo()}
+                  { dispatch({type:"TOGGLE_PLAY_PAUSED"})
+                    dispatch({type:"SET_IS_HOME_SCREEN", payload: null})
+                    NativeModules.ReactNativeRecorder.sampleMethodTwo()}
                   break;
                 case 'Activity':
                   props.onItemPress(route);

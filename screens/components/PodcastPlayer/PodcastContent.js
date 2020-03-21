@@ -25,7 +25,7 @@ const { width,height } = Dimensions.get('window');
  const PodcastContent=(props)=> {
   const video = useRef();
   const userID = props.userID;
-  
+  const privateDataID = "private" + userID;
 
   const userItem = useSelector(state=>state.userReducer.userItem)
 
@@ -93,7 +93,7 @@ async function updatePodcastsLiked(props){
 
   dispatch({type:'SET_NUM_LIKES',payload:numUsers})
 
-  const likedPodcasts = await firestore().collection('users').doc(userID).set({
+  const likedPodcasts = await firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).set({
         podcastsLiked : firestore.FieldValue.arrayUnion(props.podcast.PodcastID)
   },{merge:true})
   
@@ -131,7 +131,7 @@ async function updatePodcastsLiked(props){
   if(isHomeScreen)
   {
     await firestore().collection('users').doc(userID).collection('privateUserData')
-                .doc('privateData').collection('podcastRecommendations')
+                .doc(privateDataID).collection('podcastRecommendations')
                 .doc(props.podcast.podcastID).set({
                   numUsersLiked : numUsers
                 },{merge:true})

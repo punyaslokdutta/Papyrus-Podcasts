@@ -1,5 +1,6 @@
 import CategoryBook from '../components/categories/CategoryBook';
 import CategoryPodcast from '../components/categories/CategoryPodcast';
+import CategoryChapter from '../components/categories/CategoryChapter'; 
 import {createMaterialTopTabNavigator} from 'react-navigation-tabs';
 import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView} from 'react-native';
 import React, {Component} from 'react';
@@ -51,7 +52,13 @@ const CategoryTabNavigator = createMaterialTopTabNavigator(
         tabBarIcon:({tintColor})=>(
           <Icon name="book" color={tintColor} size={20}/>
         )
-      }}, 
+      }},
+      CategoryChapter:{ screen: CategoryChapter,navigationOptions:{
+        tabBarLabel:'Chapters',
+        tabBarIcon:({tintColor})=>(
+          <Icon name="book" color={tintColor} size={20}/>
+        )
+      }} 
     },
     {tabBarOptions:{
       showIcon: true,

@@ -38,11 +38,12 @@ exports.addActivity = functions.region("asia-northeast1").https.onCall((data, co
   console.log("context.auth = ",context.auth);
   
   const db = admin.firestore();
-  
+  const privateDataID = "private" + userID;
   // FOLLOW activity
   if(podcast === undefined)
     {
-      db.collection('users').doc(userID).collection('privateUserData').doc('privateData').collection('Activities').add({
+
+      db.collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('Activities').add({
         userItem : {userItem},
         type : type,
         creationTimestamp: creationTimestamp,
@@ -52,7 +53,7 @@ exports.addActivity = functions.region("asia-northeast1").https.onCall((data, co
       })
       .then((docRef) => {
         console.log("Document written with ID: ", docRef.id);
-       return db.collection('users').doc(userID).collection('privateUserData').doc('privateData').collection('Activities')
+       return db.collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('Activities')
                 .doc(docRef.id).set({
                     activityID: docRef.id
                 },{merge:true})
@@ -64,7 +65,7 @@ exports.addActivity = functions.region("asia-northeast1").https.onCall((data, co
     }
   else // LIKE activity
     {
-      db.collection('users').doc(userID).collection('privateUserData').doc('privateData').collection('Activities').add({
+      db.collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('Activities').add({
         userItem : {userItem},
         type : type,
         creationTimestamp: creationTimestamp,
@@ -78,7 +79,7 @@ exports.addActivity = functions.region("asia-northeast1").https.onCall((data, co
       })
       .then((docRef) => {
         console.log("Document written with ID: ", docRef.id);
-       return db.collection('users').doc(userID).collection('privateUserData').doc('privateData').collection('Activities')
+       return db.collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('Activities')
                 .doc(docRef.id).set({
                     activityID: docRef.id
                 },{merge:true})

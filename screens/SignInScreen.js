@@ -11,7 +11,6 @@ import * as yup from 'yup';
 import SignUpScreen from './SignUpScreen'
 import { AccessToken, LoginManager } from 'react-native-fbsdk';
 import { firebase } from '@react-native-firebase/auth';
-import { GoogleSignin, statusCodes } from '@react-native-community/google-signin';
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import firebaseApi from './config/Firebase/firebaseApi'
 import {withFirebaseHOC} from '../screens/config/Firebase'
@@ -38,137 +37,7 @@ const validationSchema = yup.object().shape({
 
   
   const SignInScreen = (props) => {
-  
-  //dispatch = useDispatch();
-    // constructor(props)
-  // {
-  //   super(props)
-  //   this.state = {
-  //     userInfo: null,
-  //     gettingLoginStatus: true,
-  //   };
-  // }
-  // componentDidMount() {
-  //   //initial configuration
-  //   GoogleSignin.configure({
-  //     //It is mandatory to call this method before attempting to call signIn()
-  //    // scopes: ['https://www.googleapis.com/auth/drive.readonly'],
-  //     // Repleace with your webClientId generated from Firebase console
-  //     webClientId: '66057191427-s1qut9jum2u53i8gchv5u2cdtcoku2q2.apps.googleusercontent.com',
-  //     offlineAccess: true
-  //   });
-  //   //Check if user is already signed in
-  //   this._isSignedIn();
-  // }
-   useEffect( (props)=>
-    {
-      GoogleSignin.configure({
-        scopes: ['https://www.googleapis.com/auth/drive.readonly'], // what API you want to access on behalf of the user, default is email and profile
-        webClientId: '66057191427-s1qut9jum2u53i8gchv5u2cdtcoku2q2.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
-        offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
-       // hostedDomain: '', // specifies a hosted domain restriction
-        //loginHint: '', // [iOS] The user's ID, or email address, to be prefilled in the authentication UI if possible. [See docs here](https://developers.google.com/identity/sign-in/ios/api/interface_g_i_d_sign_in.html#a0a68c7504c31ab0b728432565f6e33fd)
-        forceConsentPrompt: true, // [Android] if you want to show the authorization prompt at each login.
-        //accountName: '', // [Android] specifies an account name on the device that should be used
-        //iosClientId: '<FROM DEVELOPER CONSOLE>', // [iOS] optional, if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
-      });
 
-    
-      
-
-    }, [])
-
-
-
-  _isSignedIn = async () => {
-    const isSignedIn = await GoogleSignin.isSignedIn();
-    if (isSignedIn) {
-      alert('User is already signed in');
-      //Get the User details as user is already signed in
-      //_getCurrentUserInfo();
-    } else {
-      //alert("Please Login");
-      console.log('Please Login');
-    }
-   // this.setState({ gettingLoginStatus: false });
-  };
-
-  // // _getCurrentUserInfo = async () => {
-  // //   try {
-  // //     const userInfo = await GoogleSignin.signInSilently();
-  // //     console.log('User Info --> ', userInfo);
-  // //     this.setState({ userInfo: userInfo });
-  // //   } catch (error) {
-  // //     if (error.code === statusCodes.SIGN_IN_REQUIRED) {
-  // //       alert('User has not signed in yet');
-  // //       console.log('User has not signed in yet');
-  // //     } else {
-  // //       alert("Something went wrong. Unable to get user's info");
-  // //       console.log("Something went wrong. Unable to get user's info");
-  // //     }
-  // //   }
-  // // };
-  _signIn = async () => {
-   
-    GoogleSignin.hasPlayServices()
-        .then(res => {
-            GoogleSignin.signIn()
-            .then(res => {
-                console.log(res);
-            })
-            .catch(err => {
-                console.log(error.code);
-            });
-        })
-        .catch(err => {
-            console.log(err);
-        });
-  }
- 
-  // _signOut = async () => {
-  //   //Remove user session from the device.
-  //   try {
-  //     await GoogleSignin.revokeAccess();
-  //     await GoogleSignin.signOut();
-  //     this.setState({ userInfo: null }); // Remove the user from your app's state as well
-  //   } catch (error) {
-  //     console.error(error);
-      
-  //   }
-  // };
- 
-  onGoogleLoginOrRegister = () => {
-    
-     GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true })
-      console.log("google services are available")
-    .catch ((err) =>{
-      console.error('play services are not available');
-    })
-    console.log(GoogleSignin.webClientId)
-    console.log(GoogleSignin.offlineAccess)
-    GoogleSignin.signIn()
-    .then((data) => {
-      //Create a new Firebase credential with the token
-      const credential = firebase.auth.GoogleAuthProvider.credential(data.idToken, data.accessToken);
-      //Login with the credential
-      return firebase.auth().signInWithCredential(credential);
-    })
-    .then((user) => {
-     // If you need to do anything with the user, do it here
-      //The user will be logged in automatically by the
-     // `onAuthStateChanged` listener we set up in App.js earlier
-    })
-    .catch((error) => {
-      const { code, message } = error;
-      //For details of error codes, see the docs
-      //The message contains the default Firebase string
-      //representation of the error
-      console.log(code);
-      console.log(message);
-    });
-  };
-  
-  
   onFBLoginOrRegister = async () => {
     LoginManager.logInWithPermissions(['public_profile', 'email',])
       .then((result) => {
@@ -247,13 +116,6 @@ const validationSchema = yup.object().shape({
                 }
   }
 }
-
-
-
-
-
-
-    
       return (
         
         <Formik
@@ -281,9 +143,6 @@ const validationSchema = yup.object().shape({
           />
         </TouchableOpacity>      
          </View>
-
-        
-        
         <View style={styles.positions}>
           <TextInput style={styles.Input}   placeholder={'Email'} placeholderTextColor={'black'} underlineColorAndroid='transparent'
           onChangeText={formikProps.handleChange('email')}

@@ -15,6 +15,8 @@ const SettingsScreen = (props) => {
 
   const dispatch = useDispatch();  
   const userid = props.firebase._getUid();
+  const privateDataID = "private" + userID;
+  
   const accountName = useSelector(state=>state.userReducer.name)
   const userName = useSelector(state=>state.userReducer.userName)
   const accountEmail = useSelector(state=>state.userReducer.email)
@@ -45,7 +47,7 @@ const SettingsScreen = (props) => {
       switch(name)
       {
         case 'account':
-          await firestore().collection('users').doc(userid).set({  // change in actual doc
+          await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({  // change in actual doc
             name : accountName
            },{ merge:true })
 
@@ -62,7 +64,7 @@ const SettingsScreen = (props) => {
           }
           break;
         case 'username':
-          await firestore().collection('users').doc(userid).set({ // change in actual doc
+          await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({ // change in actual doc
             username : userName
         },{ merge:true })
           break;

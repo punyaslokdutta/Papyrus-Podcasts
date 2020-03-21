@@ -1,11 +1,12 @@
 
-import React, {Component, useState, useEffect, useContext} from 'react';
+import React, {Component, useState, useEffect, useContext, useRef} from 'react';
 import { StyleSheet, Text, View, Image, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import * as theme from '../constants/theme'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import InnerPodcast from './InnerPodcast'
 import {useDispatch} from "react-redux"
+import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 
 
 var {width, height}=Dimensions.get('window')
@@ -135,6 +136,20 @@ const styles = StyleSheet.create({
 
   const dispatch=useDispatch();
 
+ const _menu = useRef(null);
+ 
+  setMenuRef = ref => {
+    _menu = ref;
+  };
+ 
+  hideMenu = () => {
+    _menu.hide();
+  };
+ 
+  showMenu = () => {
+    _menu.show();
+  };
+
   /*useEffect(() => {
     //setPodcastState(props);
   }, []);*/
@@ -176,11 +191,13 @@ const styles = StyleSheet.create({
                 </Text>
                 <View style={{alignItems: 'flex-end',paddingRight:5}}>
             <Icon
-              name={props.podcast.saved ? 'bookmark' : 'bookmark-o'}
+              name="ellipsis-v"
               color={theme.colors.black}
               size={theme.sizes.font * 1.25}
             />
           </View>
+
+          
               </View>
               <View>
               <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>

@@ -2,6 +2,8 @@
 
 import React, {Component} from 'react';
 import { TouchableOpacity,StyleSheet, Text, View, Button} from 'react-native';
+import SignInScreen from './SignInScreen';
+import SignUpScreen from './SignUpScreen';
 
 
 class WelcomeScreen extends Component {
@@ -10,13 +12,13 @@ class WelcomeScreen extends Component {
       return (
         <View style={styles.container}>
           <TouchableOpacity style={styles.buttonStyle}
-			onPress={() => this.props.navigation.navigate('SignIn')}
+			onPress={() => this.props.navigation.navigate('SignInScreen')}
 		  >
 			 <Text style={styles.textStyle}>SignIn</Text>
 		  </TouchableOpacity>
 
       <TouchableOpacity style={styles.buttonStyle}
-			onPress={() => this.props.navigation.navigate('SignUp')}
+			onPress={() => this.props.navigation.navigate('SignUpScreen')}
 		  >
 			 <Text style={styles.textStyle}>SignUp</Text>
 		  </TouchableOpacity>

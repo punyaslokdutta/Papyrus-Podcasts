@@ -22,8 +22,12 @@ async function createUser(props, fullName)
   try
   {
   const user = props.navigation.getParam('user');
-
-  const addNewUser= await props.firebase._createNewUser(user,fullName);
+  console.log(user);
+  const uId=user._user.uid;
+  console.log(uId);
+  
+  const userName= fullName+"_" + uId.substring(3,9)
+  const addNewUser= await props.firebase._createNewUser(user,fullName, userName);
   console.log("User Document created in Firestore from setPreferences");
   }
   catch(error)
@@ -32,6 +36,11 @@ async function createUser(props, fullName)
   }
 
 }
+
+useEffect(()=>
+{
+
+}, [])
 
 
   useEffect(()=>

@@ -21,7 +21,7 @@ const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? (IS_IPHONE_X ? 44 : 20) : 0;
 const HEADER_HEIGHT = Platform.OS === 'ios' ? (IS_IPHONE_X ? 88 : 64) : 64;
 const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
 
-async function retrieveData(message,userid,item,userDisplayPictureURL,name,userItem) 
+async function retrieveData(message,userid,item,userDisplayPictureURL,name,userItem,privateDataID) 
 {  
     try{
       console.log("USERID")
@@ -32,10 +32,9 @@ async function retrieveData(message,userid,item,userDisplayPictureURL,name,userI
     if(message === 'FOLLOW')
     {
         let addQuery1 = await firestore().collection('users').doc(item.id).set({
-                   followers_list : firestore.FieldValue.arrayUnion(userid),
-                   isUserFollower : {[val] : true},
+                   followers_list : firestore.FieldValue.arrayUnion(userid)
                },{ merge:true })
-        let addQuery2 = await firestore().collection('users').doc(userid).set({
+        let addQuery2 = await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({
                    following_list : firestore.FieldValue.arrayUnion(item.id)
                },{ merge:true })
       
@@ -71,7 +70,7 @@ async function retrieveData(message,userid,item,userDisplayPictureURL,name,userI
         isUserFollower : {[val] : false},
     },{ merge:true })
       
-    let removeQuery2 = await firestore().collection('users').doc(userid).set({
+    let removeQuery2 = await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({
       following_list : firestore.FieldValue.arrayRemove(item.id)
   },{ merge:true })
 
@@ -115,7 +114,7 @@ const CustomUserHeader = (props) => {
       const name = useSelector(state=>state.userReducer.name);
       let item = "W";
       const userid =  props.firebase._getUid();
-
+      const privateDataID = "private" + userid;
       
       if(props.navigation.state.routes[2] != undefined && props.navigation.state.routes[2].params != undefined && 
         props.navigation.state.routes[2].params.userData != undefined)
@@ -187,7 +186,7 @@ const CustomUserHeader = (props) => {
                       }
 
                         console.log("Before retrieve data: ",message)
-                      retrieveData(message,userid,item,userDisplayPictureURL,name,userItem);
+                      retrieveData(message,userid,item,userDisplayPictureURL,name,userItem,privateDataID);
 
                     }}></Button>
         </View>

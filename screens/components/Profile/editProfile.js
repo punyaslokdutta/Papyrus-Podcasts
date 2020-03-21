@@ -30,15 +30,17 @@ const editProfile = (props) => {
   var introduction = useSelector(state => state.userReducer.introduction);
   var website = useSelector(state => state.userReducer.website);
 
+  console.log("WEBSITE in redux : ",website);
   var [websiteState, setWebsiteState] = useState(website);
   var [introductionState, setIntroductionState] = useState(introduction);
 
+  const privateDataID = "private" + userid;
   const dispatch = useDispatch();
   
   async function addIntroToFirestore(introduction)
   {
     console.log("Inside useEffect - introduction : ",introduction);
-    await firestore().collection('users').doc(userid).set({
+    await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({
       introduction:  introduction 
     }, { merge: true })
   }
@@ -46,7 +48,7 @@ const editProfile = (props) => {
   async function addWebsiteToFirestore(website)
   {
    // console.log("Inside useEffect - website : ",{website});
-    await firestore().collection('users').doc(userid).set({
+    await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({
       website:  website 
     }, { merge: true })
   }
@@ -121,10 +123,10 @@ const editProfile = (props) => {
         />
       )
     }
-    else {
+    else 
+    {
       return <Text bold>{defaultText}</Text>
     }
-    
   }
 
     async function uploadImage () {
@@ -145,7 +147,7 @@ const editProfile = (props) => {
         console.log("Before storageRef.putFile");
 
        // var storageRef_680 = storage().ref('books/10000_5_680x680.jpg');
-        var referencePath = 'users/' + userid + "/" + userid + "_" + Date.Now() + '.jpg'; 
+        var referencePath = 'users/' + userid + "/" + userid + "_" + Date.now() + '.jpg'; 
         var storageRef = storage().ref(referencePath);
 
         ImageResizer.createResizedImage(response.path, 400, 400, 'JPEG', 100)
@@ -182,13 +184,11 @@ const editProfile = (props) => {
                 .then(async (downloadUrl) => {
                   console.log("File available at: " + downloadUrl);
                   
-                  //var resizedDownloadURL = insertBeforeLastOccurrence(downloadUrl, ".", " again");
-                 // console.log("Resized file available at: " + resizedDownloadURL);
-                 //var resizedDownloadURL = 'http://storage.googleapis.com/papyrus-fa45c.appspot.com/books/' + userid + '%40s_720.jpg';
-                // var storageRefResized = storage().ref(referencePath);
                   dispatch({ type: 'CHANGE_DISPLAY_PICTURE', payload: downloadUrl })
-                  
-                  await firestore().collection('users').doc(userid).set({
+  
+                  const privateDataID = "private" + userid;
+                  console.log("privateDataID : ",privateDataID);
+                  await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({
                     displayPicture: downloadUrl
                   }, { merge: true })
                 })
@@ -221,56 +221,56 @@ const editProfile = (props) => {
     });
   }
 
-  uploadImage = async () =>
-  {
+  // uploadImage = async () =>
+  // {
   
 
-    ImagePicker.showImagePicker(options, async(response) => {
-      console.log('Response URI = ', response.uri);
-      console.log('Response PATH = ', response.path);
+  //   ImagePicker.showImagePicker(options, async(response) => {
+  //     console.log('Response URI = ', response.uri);
+  //     console.log('Response PATH = ', response.path);
 
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-      } else {
-        const source = { uri: response.uri };
-       console.log("Before storageRef.putFile");
-       this.setState({
-        ProfileImage: source,
-      });
-         var storageRef = storage().ref('books/10000_5.jpg');
+  //     if (response.didCancel) {
+  //       console.log('User cancelled image picker');
+  //     } else if (response.error) {
+  //       console.log('ImagePicker Error: ', response.error);
+  //     } else if (response.customButton) {
+  //       console.log('User tapped custom button: ', response.customButton);
+  //     } else {
+  //       const source = { uri: response.uri };
+  //      console.log("Before storageRef.putFile");
+  //      this.setState({
+  //       ProfileImage: source,
+  //     });
+  //        var storageRef = storage().ref('books/10000_5.jpg');
 
 
-          console.log("Before storageRef.putFile");
-         storageRef.putFile(response.path)//: 'content://com.miui.gallery.open/raw/storage/emulated/DCIM/Camera/IMG_20200214_134628_1.jpg')
-         .on(
-             firebase.storage.TaskEvent.STATE_CHANGED,
-           snapshot => {
-             console.log("snapshot: " + snapshot.state);
-             console.log("progress: " + (snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+  //         console.log("Before storageRef.putFile");
+  //        storageRef.putFile(response.path)//: 'content://com.miui.gallery.open/raw/storage/emulated/DCIM/Camera/IMG_20200214_134628_1.jpg')
+  //        .on(
+  //            firebase.storage.TaskEvent.STATE_CHANGED,
+  //          snapshot => {
+  //            console.log("snapshot: " + snapshot.state);
+  //            console.log("progress: " + (snapshot.bytesTransferred / snapshot.totalBytes) * 100);
    
-             if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
-               console.log("Success");
-             }
-           },
-           error => {
-             unsubscribe();
-             console.log("image upload error: " + error.toString());
-           },
-           () => {
-             storageRef.getDownloadURL()
-               .then((downloadUrl) => {
-                 console.log("File available at: " + downloadUrl);
-               })
-           }
-         )
+  //            if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+  //              console.log("Success");
+  //            }
+  //          },
+  //          error => {
+  //            unsubscribe();
+  //            console.log("image upload error: " + error.toString());
+  //          },
+  //          () => {
+  //            storageRef.getDownloadURL()
+  //              .then((downloadUrl) => {
+  //                console.log("File available at: " + downloadUrl);
+  //              })
+  //          }
+  //        )
        
-      }
-    });
-  }
+  //     }
+  //   });
+  // }
    
   return (
 

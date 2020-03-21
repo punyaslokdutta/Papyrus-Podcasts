@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Image, ScrollView, StyleSheet, TouchableOpacity, View,Dimensions } from 'react-native'
+import firestore from '@react-native-firebase/firestore';
 import rgba from 'hex-to-rgba';
 import {Button} from 'native-base';
 //import Icon from 'react-native-vector-icons';
@@ -26,12 +27,42 @@ var {width, height}=Dimensions.get('window')
             imageURL: this.props.navigation.state.params.item.displayPicture,
             name: this.props.navigation.state.params.item.name,
             introduction: this.props.navigation.state.params.item.introduction, 
-            followersCount: this.props.navigation.state.params.item.followers_list.length,
-            followingCount: this.props.navigation.state.params.item.following_list.length
+            followersCount: 0,
+            followingCount: this.props.navigation.state.params.item.following_list.length,
+            loading:false
         }
-        console.log("In USER STATS SCREENNNNNNNNNNNNNN")
+        console.log("In USER STATS SCREEN")
     }
   
+    componentDidMount = async () => {
+      try {
+        this.retrieveData();
+      }
+      catch (error) {
+        console.log(error);
+      }
+    };
+
+    retrieveData = async () => {
+      try {
+        this.setState({
+          loading: true
+        });
+
+        console.log("[UserStatsScreen] Retrieving Data");
+        const id_user = this.props.navigation.state.params.item.id;
+        const userPublicDoc = await firestore().collection('users').doc(id_user).get();
+        
+      this.setState({
+            followersCount : userPublicDoc._data.followers_list.length,
+            loading : false
+          });
+
+      }
+      catch (error) {
+        console.log(error);
+      }
+    };
 
   renderMonthly() {
     return (
@@ -66,6 +97,7 @@ var {width, height}=Dimensions.get('window')
 
   
   render() {
+
     return (
       <ScrollView style={styles.rewards} showsVerticalScrollIndicator={false}>
         <View>

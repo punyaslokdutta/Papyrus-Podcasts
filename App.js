@@ -11,11 +11,11 @@ import {createSwitchNavigator,
 import NavigationService from './screens/navigation/NavigationService';
 import LikersScreen from './screens/components/PodcastPlayer/LikersScreen'
 import setPreferences from './setPreferences'
-
+import WelcomeScreen from './screens/WelcomeScreen'
   import { createBottomTabNavigator, createMaterialTopTabNavigator } from 'react-navigation-tabs';
   import { createStackNavigator } from 'react-navigation-stack';
   import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
-  import { fromRight } from 'react-navigation-transitions';
+  import { fromRight , fromLeft} from 'react-navigation-transitions';
   
 import thunk from 'redux-thunk';
 import userReducer from './reducers/userReducer'
@@ -67,7 +67,8 @@ const AuthStackNavigator= createStackNavigator(
   {
     
     SignInScreen: SignInScreen,
-    SignUpScreen: SignUpScreen, 
+    SignUpScreen: SignUpScreen,
+    //WelcomeScreen:WelcomeScreen 
   },
   {
     headerMode: 'none',
@@ -182,7 +183,7 @@ const ProfileStackNavigator=createStackNavigator(
 const RecordStackNavigator= createStackNavigator(
   {
     SelectScreen: {screen:SelectScreen},
-    PreviewScreen: {screen:PreviewScreen},
+    //PreviewScreen: {screen:PreviewScreen},
     Tags : {screen:TagsScreen} ,
   },
   {
@@ -254,7 +255,7 @@ const AppTabNavigator=createBottomTabNavigator(
         )
       } 
     }, 
-  },{initialRouteName:'Home',
+  },{initialRouteName:'Explore',
   order:['Home', 'Explore', 'Record', 'Category', 'Profile'],
   headerMode: 'none',
   navigationOptions:
@@ -359,6 +360,9 @@ const AppStackNavigator= createStackNavigator(
     navigationOptions:{
       header:null
    }}, 
+   PreviewScreen: {screen:PreviewScreen}
+
+   
   }, 
   {
     

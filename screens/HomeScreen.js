@@ -220,14 +220,16 @@ class HomeScreen extends React.Component {
 
         console.log("[HomeScreen] Retrieving Data");
         const  userid = this.props.firebase._getUid();
+        const privateDataID = "private" + userID;
+
         //For books in section list
         let bookDocuments =  await firestore().collection('users').doc(userid).collection('privateUserData')
-        .doc('privateData').collection('bookRecommendations').get()
+        .doc(privateDataID).collection('bookRecommendations').get()
         let bookPodcasts = bookDocuments.docs.map(document => document.data());
 
         //For podcasts in section list
         let headerpodcasts = await firestore().collection('users').doc(userid).collection('privateUserData')
-                         .doc('privateData').collection('podcastRecommendations')
+                         .doc(privateDataID).collection('podcastRecommendations')
                          .orderBy('podcastID').limit(this.state.initialLimit).get()
         
         let documentData_podcasts = headerpodcasts.docs.map(document => document.data());
@@ -238,7 +240,7 @@ class HomeScreen extends React.Component {
        
         //For Flatlist podcasts
         let mainpodcasts = await firestore().collection('users').doc(userid).collection('privateUserData')
-        .doc('privateData').collection('podcastRecommendations')
+        .doc(privateDataID).collection('podcastRecommendations')
         .orderBy('podcastID').startAfter(lastVisiblePodcast).limit(this.state.limit).get()
        
         let podcastsData = mainpodcasts.docs.map(document => document.data());
@@ -279,10 +281,12 @@ class HomeScreen extends React.Component {
          }); 
 
          const  userid = this.props.firebase._getUid();
+         const privateDataID = "private" + userID;
+
          let additionalQuery = 9;
          try{
           additionalQuery = await firestore().collection('users').doc(userid).collection('privateUserData')
-          .doc('privateData').collection('podcastRecommendations')
+          .doc(privateDataID).collection('podcastRecommendations')
           .orderBy('podcastID').startAfter(this.state.lastVisibleID).limit(this.state.limit);
         
       // Cloud Firestore: Query Snapshot

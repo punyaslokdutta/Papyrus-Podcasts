@@ -8,6 +8,7 @@ import { TagSelect } from 'react-native-tag-select'
 import PreviewScreen from '../screens/PreviewScreen'
 import {useSelector, useDispatch} from 'react-redux'
 import { withFirebaseHOC } from './config/Firebase';
+import { duration } from 'moment';
 
 const { width, height } = Dimensions.get('window');
 
@@ -18,7 +19,7 @@ const SelectScreen =(props)=> {
   const [AuthorName, setAuthorName]=useState(null);
   const [LanguageSelected, setLanguageSelected]=useState(null);
   //const [recordedFilePath, setRecordedFilePath]=useState(null);
-  const eventEmitter=useRef(new NativeEventEmitter(NativeModules.ReactNativeRecorder)).current;
+  //const eventEmitter=useRef(new NativeEventEmitter(NativeModules.ReactNativeRecorder)).current;
   const addModal=React.createRef(null);
   const addChapterModal=React.createRef(null);
   const tagSelected=React.createRef(null);
@@ -35,23 +36,24 @@ const SelectScreen =(props)=> {
   )
  
 
-  useEffect(
-    () => {
+  // useEffect(
+  //   () => {
       
-      console.log("Inside useEffect - componentDidUpdate of SelectScreen");
-      const fileType=".m4a"
-      const filePath="/storage/emulated/0/AudioRecorder/"
-      var audioFilePath=null;
-      eventEmitter.addListener('RecordFile', (event) => {
-           audioFilePath=filePath.concat(event.eventName,fileType)
-          console.log(props)
-          console.log("RecordedFilePath :" +audioFilePath)
-          console.log("timeduration :" , +event.eventDuration)
-         props.navigation.navigate('PreviewScreen', {  
-          recordedFilePath: audioFilePath})
-    })
+  //     console.log("Inside useEffect - componentDidUpdate of SelectScreen");
+  //     const fileType=".m4a"
+  //     const filePath="/storage/emulated/0/AudioRecorder/"
+  //     var audioFilePath=null;
+  //     eventEmitter.addListener('RecordFile', (event) => {
+  //          audioFilePath=filePath.concat(event.eventName,fileType)
+  //         console.log(props)
+  //         console.log("RecordedFilePath :" +audioFilePath)
+  //         console.log("timeduration :" , +event.eventDuration)
+  //        props.navigation.navigate('PreviewScreen', {  
+  //         recordedFilePath: audioFilePath, 
+  //         duration:event.eventDuration})
+  //   })
        
-    }, [])
+  //   }, [])
   
 
     function onPressAdd2()

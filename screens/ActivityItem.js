@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
  const ActivityItem = React.memo((props)=> {
 
   const dispatch = useDispatch();
-
+  
   async function retrievePodcast(podcastID)
   {
     const podcastCollection = await firestore().collectionGroup('Podcasts').where('PodcastID','==',podcastID).get();
@@ -143,7 +143,8 @@ const styles = StyleSheet.create({
 
   async function retrieveUser(props,userID)
   {
-    const userDocument = await firestore().collection('users').doc(userID).get();
+    const privateDataID = "private" + userID;
+    const userDocument = await firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).get();
     console.log("[ActivityItem] userDocument : ", userDocument);
     const userDocumentData = userDocument.data();
     console.log("[ActivityItem] userDocumentData : ", userDocumentData);

@@ -91,6 +91,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 //import static com.dimowner.audiorecorder.ARApplication.getInjector;
 
@@ -425,20 +426,22 @@ public class MainActivity extends ReactActivity implements MainContract.View, Vi
                         })
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
-            } else if (extension.equals("wav") || extension.equals("pcm")) {
-                new AlertDialog.Builder(this)
-                        .setTitle("Invalid File Format")
-                        .setMessage("Please Select MP3/MP4/AAC File To Upload")
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                if ((Objects.equals(extension, "wav")) || (Objects.equals(extension, "pcm"))) {
+                    new AlertDialog.Builder(this)
+                            .setTitle("Invalid File Format")
+                            .setMessage("Please Select MP3/MP4/AAC File To Upload")
 
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-            } else {
-                presenter.importAudioFile(getApplicationContext(), data.getData());
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+                } else {
+                    presenter.importAudioFile(getApplicationContext(), data.getData());
+                }
             }
         }
     }
