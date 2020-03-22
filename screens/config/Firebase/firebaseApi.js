@@ -54,8 +54,8 @@ const firebaseApi={
                             lastSignIn_time: Date.now(),//have to set it in Explore useEffect()
                             following_posts: [],
                             podcastsLiked: [],
-                            created_book_podcasts_count: 0, // On podcast upload
-                            created_chapter_podcasts_count: 0,// On podcast upload
+                            numCreatedBookPodcasts: 0, // On podcast upload
+                            numCreatedChapterPodcasts: 0,// On podcast upload
                             languages_comfortable_talking: [],// In setPreferences
                             listened_book_podcasts_count: 0,
                             listened_chapter_podcasts_count: 0,
@@ -67,7 +67,9 @@ const firebaseApi={
             id: user._user.uid,
             follower_count: 0,
             followers_list: [],
-            timespent_total_by_listeners_listening: 0
+            timespent_total_by_listeners_listening: 0,
+            name: name,
+            displayPicture: user._user.photoURL
             });
         console.log("Firestore mei Data ADD HO GAYA")
     console.log(doc1);

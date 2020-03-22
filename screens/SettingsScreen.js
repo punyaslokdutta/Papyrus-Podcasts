@@ -15,8 +15,8 @@ const SettingsScreen = (props) => {
 
   const dispatch = useDispatch();  
   const userid = props.firebase._getUid();
-  const privateDataID = "private" + userID;
-  
+  const privateDataID = "private" + userid;
+
   const accountName = useSelector(state=>state.userReducer.name)
   const userName = useSelector(state=>state.userReducer.userName)
   const accountEmail = useSelector(state=>state.userReducer.email)
@@ -51,6 +51,10 @@ const SettingsScreen = (props) => {
             name : accountName
            },{ merge:true })
 
+           await firestore().collection('users').doc(userid).set({  // change in actual doc
+            name : accountName
+           },{ merge:true })
+
           const instance = firebase.app().functions("asia-northeast1").httpsCallable('changeUserNameInPodcastsAsiaEast');
           try 
           {          
@@ -65,7 +69,7 @@ const SettingsScreen = (props) => {
           break;
         case 'username':
           await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({ // change in actual doc
-            username : userName
+            userName : userName
         },{ merge:true })
           break;
         default:

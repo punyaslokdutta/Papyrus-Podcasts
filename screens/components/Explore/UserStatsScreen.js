@@ -14,7 +14,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 
 var {width, height}=Dimensions.get('window')
 
- class UserStatsScreen  extends React.Component {
+ class UserStatsScreen extends React.Component {
 
     constructor(props)
     {

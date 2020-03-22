@@ -74,7 +74,7 @@ const PreviewScreen = (props) => {
         podcastAudioDownloadURL && 
         
         firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).set({
-                    created_book_podcasts_count : incrementedValue
+              numCreatedBookPodcasts : incrementedValue
                 },{merge:true}) && 
 
         dispatch({type:"ADD_NUM_CREATED_BOOK_PODCASTS", payload: incrementedValue}) &&
@@ -82,6 +82,7 @@ const PreviewScreen = (props) => {
         firestore().collection('Books').doc('7gGB4CjIiGRgB8yYD8N3').collection('Podcasts')
       .add({
         AudioFileLink: podcastAudioDownloadURL,
+        BookID: '7gGB4CjIiGRgB8yYD8N3', 
         ChapterName: "",
         Book_Name: BookName, 
         Duration: Duration,

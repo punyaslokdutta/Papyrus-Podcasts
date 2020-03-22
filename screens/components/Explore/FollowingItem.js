@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import * as theme from '../constants/theme'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import {useDispatch} from "react-redux"
+import firestore from '@react-native-firebase/firestore';
 
 
 var {width, height}=Dimensions.get('window')
@@ -131,15 +132,24 @@ const styles = StyleSheet.create({
  const FollowingItem = React.memo((props)=> {
   console.log("Inside Following Item")
   console.log(props);
-
   console.log("userData = ",props.item);
-  //const dispatch=useDispatch();
-    const userid = props.item.id;
-  const item = props.item
   
-  const  text2 = "Following"
-    //console.log(item.isUserFollowing[userid])
-  
+  async function retrievePrivateUserData(props,userid){
+
+    const privateDataID = "private" + userid;
+    const privateUserDoc = await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).get();
+    const privateItem = privateUserDoc._data;
+    props.navigation.navigate({
+      routeName: 'ExploreTabNavigator',
+      params : {userData:privateItem},
+      //key : 'user' + userid 
+    })
+    // [2] Move to top of stack,i.e, pop all screens until the last one
+    props.navigation.popToTop();
+    // [3] props.navigation.push will move us towards updated ExploreTabNavigator with updated CustomUserHeader
+    props.navigation.push('ExploreTabNavigator', {userData:privateItem})
+  }
+
         return (
           //<TouchableOpacity  onPress={(()=>dispatch({type:"SET_PODCAST", payload: props.item}))}>
     <TouchableOpacity onPress={() => {
@@ -152,15 +162,7 @@ const styles = StyleSheet.create({
       // so that complete chain of user profiles is followed back to the 1st screen.
       
       // [1] props.navigation.navigate shall update the props in CustomUserHeader
-      props.navigation.navigate({
-        routeName: 'ExploreTabNavigator',
-        params : {userData:props.item,followsOrNot:text2},
-        //key : 'user' + userid 
-      })
-      // [2] Move to top of stack,i.e, pop all screens until the last one
-      props.navigation.popToTop();
-      // [3] props.navigation.push will move us towards updated ExploreTabNavigator with updated CustomUserHeader
-      props.navigation.push('ExploreTabNavigator', {userData:props.item,followsOrNot:text2})
+      retrievePrivateUserData(props,props.item.id);
       
       }}>
         <View style={[styles.shadow,{marginLeft: 15}]}>

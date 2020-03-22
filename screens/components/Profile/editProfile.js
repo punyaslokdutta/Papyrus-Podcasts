@@ -191,6 +191,11 @@ const editProfile = (props) => {
                   await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({
                     displayPicture: downloadUrl
                   }, { merge: true })
+
+                  await firestore().collection('users').doc(userid).set({
+                    displayPicture: downloadUrl
+                  }, { merge: true })
+
                 })
             }
           )
