@@ -161,8 +161,6 @@ const styles = StyleSheet.create({
   </Text>
   if(props.activity.type == "follow")
     activityText = <Text>{props.activity.actorName} started following you.</Text>
-  if(props.activity.podcast !== undefined)
-    console.log("[Activity Item] podcast : ",props.activity.podcast.podcast);
    
         return (
           
@@ -186,12 +184,6 @@ const styles = StyleSheet.create({
               console.log("podcastClicked")
               
                 retrievePodcast(props.activity.podcastID);
-                // dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
-                // if(props.activity.podcast !== undefined)
-                // {
-                //  dispatch({type:"SET_PODCAST", payload: props.activity.podcast.podcast})
-                //  dispatch({type:"SET_NUM_LIKES", payload: props.activity.podcast.podcast.numUsersLiked})
-                // }
               }}>
               
               <View>

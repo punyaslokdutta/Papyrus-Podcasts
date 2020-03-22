@@ -28,7 +28,7 @@ var {width, height}=Dimensions.get('window')
             name: this.props.navigation.state.params.item.name,
             introduction: this.props.navigation.state.params.item.introduction, 
             followersCount: 0,
-            followingCount: this.props.navigation.state.params.item.following_list.length,
+            followingCount: this.props.navigation.state.params.item.following_count,
             loading:false
         }
         console.log("In USER STATS SCREEN")
@@ -54,7 +54,7 @@ var {width, height}=Dimensions.get('window')
         const userPublicDoc = await firestore().collection('users').doc(id_user).get();
         
       this.setState({
-            followersCount : userPublicDoc._data.followers_list.length,
+            followersCount : userPublicDoc._data.follower_count,
             loading : false
           });
 

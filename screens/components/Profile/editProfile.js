@@ -36,13 +36,16 @@ const editProfile = (props) => {
 
   const privateDataID = "private" + userid;
   const dispatch = useDispatch();
-  
+  const [loadingWebsite,setLoadingWebsite] = useState(false);
+  const [loadingIntroduction,setLoadingIntroduction] = useState(false);
+
   async function addIntroToFirestore(introduction)
   {
     console.log("Inside useEffect - introduction : ",introduction);
     await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({
       introduction:  introduction 
     }, { merge: true })
+    setLoadingIntroduction(false);
   }
 
   async function addWebsiteToFirestore(website)
@@ -51,10 +54,13 @@ const editProfile = (props) => {
     await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({
       website:  website 
     }, { merge: true })
+    setLoadingWebsite(false);
+
   }
 
   useEffect(
      () => {
+       setLoadingWebsite(true);
       console.log("Inside useEffect - website : ",website);
       addWebsiteToFirestore(website);
     }, [website]
@@ -62,6 +68,7 @@ const editProfile = (props) => {
 
   useEffect(
      () => {
+      setLoadingIntroduction(true);
       addIntroToFirestore(introduction);
     }, [introduction]
   )
@@ -303,16 +310,12 @@ const editProfile = (props) => {
           <View style={{ alignItems: 'center' }}>
             <View style={{ paddingVertical: height / 50, flexDirection: 'column' }}>
               <View>
-               {loading ? <ActivityIndicator/> : <Image source={{ uri: ProfileImage }} style={{ width: height / 6, height: height / 6, borderRadius: height / 6, borderColor: 'black', borderWidth: 1 }} />}
-              </View>
-
-
-              <View style={{ paddingTop: width / 15 }}>
-
-                <TouchableOpacity style={{ alignItems: 'center', justifyContent: 'center', height: height / 16, width: height / 6, borderRadius: 15, borderColor: 'black', borderWidth: 1 }}
-                  onPress={uploadImage} >
-                  <Text style={{ alignItems: 'center', fontFamily: 'sans-serif-light', color: 'black', justifyContent: 'center' }} >Edit</Text>
-                </TouchableOpacity>
+               {
+                  loading ? <ActivityIndicator/> : <TouchableOpacity  onPress={uploadImage}>
+                    <Image source={{ uri: ProfileImage }} style={{ width: height / 6, height: height / 6, borderRadius: height / 6, borderColor: 'black',
+                    borderWidth: 1 }} />
+                    </TouchableOpacity>
+               }
               </View>
             </View>
 
@@ -323,18 +326,34 @@ const editProfile = (props) => {
                 <Text gray2 style={{ marginBottom: 10 }}>Website</Text>
                 {renderEdit('website')}
               </Block>
-              <Text medium primary onPress={() => toggleEdit('website')}>
-                {editing === 'website' ? 'Save' : 'Edit'}
-              </Text>
+              <TouchableOpacity onPress={() => toggleEdit('website')}>
+              <View>
+              {
+               loadingWebsite ?  
+                 <ActivityIndicator/> :
+                 (<Text medium primary>
+                 {(editing === 'website' ? 'Save' : 'Edit')}
+                 </Text>)
+              }
+              </View>
+              </TouchableOpacity>
             </Block>
             <Block row space="between" margin={[10, 0]} style={styles.inputRow}>
               <Block>
                 <Text gray2 style={{ marginBottom: 10 }}>introduction</Text>
                 {renderEdit('introduction')}
               </Block>
-              <Text medium primary onPress={() => toggleEdit('introduction')}>
-                {editing === 'introduction' ? 'Save' : 'Edit'}
-              </Text>
+              <TouchableOpacity onPress={() => toggleEdit('introduction')}>
+              <View>
+              {
+               loadingIntroduction ?  
+                 <ActivityIndicator/> :
+                 (<Text medium primary>
+                 {(editing === 'introduction' ? 'Save' : 'Edit')}
+                 </Text>)
+              }
+              </View>
+              </TouchableOpacity>
             </Block>
           </Block>
         </ScrollView>

@@ -3,9 +3,8 @@ import { StyleSheet, Text, View, Image, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import * as theme from '../constants/theme'
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import {useDispatch} from "react-redux"
+import RecordBook from '../../RecordBook' 
 import firestore from '@react-native-firebase/firestore';
-import { withFirebaseHOC } from '../../config/Firebase';
 
 
 var {width, height}=Dimensions.get('window')
@@ -123,77 +122,61 @@ const styles = StyleSheet.create({
       },
   });
 
-
-
-
  /* useContext doesn't let you subscribe to a part of the context value (or some memoized selector) without fully re-rendering.*/
  //const areEqual = (prevProps, nextProps) => true;
  const areEqual = (prevProps, nextProps) => true
-
- const FollowingItem = React.memo((props)=> {
-  console.log("Inside Following Item")
+ const SearchBookItem = React.memo((props)=> {
+  console.log("Inside SearchBookItem");
   console.log(props);
-  console.log("userData = ",props.item);
-  const realUserID = props.firebase._getUid();
-  const isUserSame = (props.item.id == realUserID);
-  console.log("isUserSame : ",isUserSame);
-  async function retrievePrivateUserData(props,userid){
-
-    const privateDataID = "private" + userid;
-
-    const privateUserDoc = await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).get();
-    const privateItem = privateUserDoc._data;
-    props.navigation.navigate({
-      routeName: 'ExploreTabNavigator',
-      params : {userData:privateItem},
-      //key : 'user' + userid 
-    })
-    // [2] Move to top of stack,i.e, pop all screens until the last one
-    props.navigation.popToTop();
-    // [3] props.navigation.push will move us towards updated ExploreTabNavigator with updated CustomUserHeader
-    props.navigation.push('ExploreTabNavigator', {userData:privateItem})
-  }
 
         return (
-          //<TouchableOpacity  onPress={(()=>dispatch({type:"SET_PODCAST", payload: props.item}))}>
-           //PROBLEM -- HAS TO BE FIXED AFTERWARDS
-      // Directly navigating to ExploreTabNavigator(props.navigation.navigate) is not updating the UserBookPodcast & UserChapterPodcast
-      // Directly pushing ExploreTabNavigator(props.navigation.push) is not updating the CustomUserHeader
-      // This is a temporary solution provided which doesn't follow the chain of unique ExploreTabNavigators & unique UserStatsScreen &
-      // simply falls back to the last point from which 1st time ExploreTabNavigator was opened.
-      // Have to provide a solution which directly passes props to both CustomUserHeader & ExploreTabNavigator(UserBookPodcast & UserChapterPodcast)
-      // so that complete chain of user profiles is followed back to the 1st screen.
-    
-    <View>
-      {
-        isUserSame ?
-
-        <TouchableOpacity onPress={() => {
-          props.navigation.navigate('ProfileTabNavigator');
-        }}>
-        <View style={[styles.shadow,{marginLeft: 15}]}>
-            <Image source={{ uri: props.item.displayPicture }} style={{width:width/4,height:height/8}}/>
-            <Text style={styles.username}>{props.item.name}</Text>
+          <TouchableOpacity onPress={() => {
+              //retrieveBookDocument(props.book.BookID);
+            props.navigation.navigate('RecordBook', {book : props.book.objectID })
+          }
+          }>
+             <View style={{flex:1,flexDirection:"row",paddingLeft:width/64,width:width,height:height/6}}>
+             
+             <View style={{flexDirection: 'row', justifyContent: 'flex-end',paddingTop:height/48,paddingLeft:width/8}}>
+              <Image style={{width:width/4,height:height/8}} source={ {uri: props.book.Book_Pictures_Array}} />
             </View>
-            {/* </TouchableOpacity> */}
-          </TouchableOpacity>
 
-        :
-        <TouchableOpacity onPress={() => {
-          // [1] props.navigation.navigate shall update the props in CustomUserHeader
-          retrievePrivateUserData(props,props.item.id);
+               <View style={[styles.flex, styles.column, styles.shadow, { width:(width)/2,padding: theme.sizes.padding / 4 }]}>
+                 <View style={{height:(height)/16}}>
+                  <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.book.Book_Name.slice(0,40)}
+                       {(props.book.Book_Name.length > 40) ? ".." : ""}</Text> 
+                 </View>
+               <View style ={{height:(height)/20}}>
+                  <Text style={{ color: theme.colors.gray_green }}>{props.book.Author_Name}</Text>
+               </View>
           
-          }}>
-            <View style={[styles.shadow,{marginLeft: 15}]}>
-            <Image source={{ uri: props.item.displayPicture }} style={{width:width/4,height:height/8}}/>
-            <Text style={styles.username}>{props.item.name}</Text>
+              <View style={[
+              styles.row,
+              { alignItems: 'center', justifyContent: 'space-between'}
+              ]}>
+                
+                <Text style={{  fontSize: theme.sizes.font * 0.9,color: theme.colors.gray_green }}>
+                  Published in {props.book.publishingYear}
+                </Text>
+                <View style={{alignItems: 'flex-end',paddingRight:5}}>
+                  <Icon
+                    name={props.book.saved ? 'bookmark' : 'bookmark-o'}
+                    color={theme.colors.black}
+                    size={theme.sizes.font * 1.25}
+                  />
+                </View>
+              </View>
+              <View>
+              <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
+                  {props.book.Book_Rating}
+                </Text>
+                </View>
             </View>
-            {/* </TouchableOpacity> */}
-          </TouchableOpacity>
-     }
-      </View>
+        
+          </View>
+      </TouchableOpacity>
         );
       
   }, areEqual);
 
-export default withFirebaseHOC(FollowingItem);
+export default SearchBookItem;

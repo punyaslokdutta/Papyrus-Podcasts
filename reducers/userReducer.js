@@ -17,7 +17,8 @@ const INITIAL_STATE = {
     numCreatedChapterPodcasts : 0,
     totalMinutesRecorded : 0,
     navigation:null,
-    website:null
+    website:null,
+    algoliaQuery: ""
   };
   
   function userReducer(state = INITIAL_STATE, action)  {
@@ -28,6 +29,8 @@ const INITIAL_STATE = {
             return {...state,navigation:action.payload}
         case "CHANGE_EMAIL":
             return {...state,email:action.payload}
+        case "SET_ALGOLIA_QUERY":
+            return {...state,algoliaQuery:action.payload}
         case "CHANGE_NAME":
             return {...state, name:action.payload}
         case "CHANGE_WEBSITE":

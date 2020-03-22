@@ -27,10 +27,15 @@ const Highlight = connectHighlight(
   }
 );
 
-const Repository = ({ repo }) => (
+const Repository = ({ repo }) => {
+
+  console.log(repo)
+  return (
   <View style={styles.repoContainer}>
+    <View>
     <Icon name="home"   size={24} />
-    <View style={{ flex: 1, flexDirection:'row' }}>
+    </View>
+    <View>
      
       <Text
         ellipsizeMode="tail"
@@ -40,10 +45,7 @@ const Repository = ({ repo }) => (
         {repo.Book_Name}
       </Text>
     </View>
-  </View>
-);
+  </View>)
+};
 
 export default Repository;
-
-
-

@@ -5,7 +5,8 @@ import FontAwesome, { Icons } from 'react-native-fontawesome';
 import SearchBox from './SearchBox';
 import styles from './styles';
 import SearchResults from './SearchResults';
-import { InstantSearch } from "react-instantsearch/dom";
+import { InstantSearch, Index ,  Configure} from "react-instantsearch/dom";
+//import algoliasearch from 'algoliasearch/lite';
 import algoliasearch from "algoliasearch";
 
 const searchClient = algoliasearch(
@@ -30,9 +31,20 @@ class SearchScreen extends React.Component {
            searchClient={searchClient}
         >
           <View style={styles.searchBoxContainer}>
-            <SearchBox />
+          <SearchBox delay={1000} />
           </View>
-          <SearchResults/>
+
+          <Index indexName="Books">
+      <Text>index: Books</Text>
+      <Configure hitsPerPage={8} />
+      <SearchResults/>
+    </Index>
+
+    <Index indexName="Books">
+    <Text>index: instant_search_price_desc</Text>
+    <Configure hitsPerPage={8} />
+      <SearchResults/>
+    </Index>
         </InstantSearch>
       </View>
                  
@@ -41,5 +53,3 @@ class SearchScreen extends React.Component {
   }
 
 export default SearchScreen;
-
-
