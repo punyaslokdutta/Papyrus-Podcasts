@@ -52,9 +52,6 @@ async function _signupWithEmail (email, password, fullName){
   }
 }
 
-
-
-
 var {width:WIDTH, height:HEIGHT}=Dimensions.get('window')
 
 const SignUpScreen=(props)=>{

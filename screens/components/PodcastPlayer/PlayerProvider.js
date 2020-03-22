@@ -12,11 +12,6 @@ import setGlobalPodcastContext from './setGlobalPodcastContext'
 import PlayerReducer from './PlayerReducer'
 import {SET_PODCAST} from './actionTypes'
 import {SET_GLOBAL_FROM_PODCAST} from './actionTypes'
-import TrackPlayer, {
-  useTrackPlayerProgress,
-  usePlaybackState,
-  useTrackPlayerEvents
-} from "react-native-track-player";
 import {useSelector} from "react-redux"
 //import { withFirebaseHOC } from '../../config/Firebase';
 const { height } = Dimensions.get('window');

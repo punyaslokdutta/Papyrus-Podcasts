@@ -54,7 +54,7 @@ import UserFollowingScreen from './screens/components/Explore/UserFollowingScree
 import UserFollowerScreen from './screens/components/Explore/UserFollowerScreen';
 import InfoScreen from './InfoScreen'
 import CustomUserHeader from './screens/navigation/CustomUserHeader'
-
+import SearchTabNavigator from './screens/navigation/SearchTabNavigator'
 
 const  {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
 const IS_IPHONE_X = SCREEN_HEIGHT === 812 || SCREEN_HEIGHT=== 896;
@@ -112,9 +112,9 @@ const ExploreStackNavigator=createStackNavigator(
      Explore : {screen : Explore,navigationOptions:{
        header:null
      }}, 
-    SearchScreen : {screen : SearchScreen,navigationOptions: {
-       header: null,
-   }},
+  //   SearchScreen : {screen : SearchScreen,navigationOptions: {
+  //      SearchScreenheader: null,
+  //  }},
     // ExploreTabNavigator : {screen : ExploreTabNavigator,navigationOptions:{
 
     // }},
@@ -360,8 +360,13 @@ const AppStackNavigator= createStackNavigator(
     navigationOptions:{
       header:null
    }}, 
-   PreviewScreen: {screen:PreviewScreen}
-
+   PreviewScreen: {screen:PreviewScreen,navigationOptions:{
+    header : null
+}},
+  
+   SearchTabNavigator: {screen: SearchTabNavigator,navigationOptions:{
+         //header : null
+   }}
    
   }, 
   {
