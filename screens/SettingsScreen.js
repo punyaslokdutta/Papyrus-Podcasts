@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react'
-import { Image, StyleSheet, ScrollView, TextInput, TouchableOpacity , View} from 'react-native'
+import { Image, StyleSheet, ScrollView, TextInput, TouchableOpacity , View,ActivityIndicator} from 'react-native'
 import Slider from 'react-native-slider';
 import firestore from '@react-native-firebase/firestore'
 //import { Divider, Button, Block, Text, Switch } from '../components';
@@ -17,23 +17,30 @@ const SettingsScreen = (props) => {
   const userid = props.firebase._getUid();
   const privateDataID = "private" + userid;
 
+  const [loadingAccountName,setLoadingAccountName] = useState(false);
+  const [loadingUserName,setLoadingUserName] = useState(false);
   const accountName = useSelector(state=>state.userReducer.name)
   const userName = useSelector(state=>state.userReducer.userName)
   const accountEmail = useSelector(state=>state.userReducer.email)
   const accountPicURI = useSelector(state=>state.userReducer.displayPictureURL)
   
+  var [accountNameState, setAccountNameState] = useState(accountName);
+  var [userNameState, setUserNameState] = useState(userName);
+
   const [editing,setEditing] = useState(null);
   const [notifications,setNotifications] =useState(true);
 
-  async function handleEdit(name, text) {
+  function handleEdit(name, text) {
     console.log("IN Handle Edit function");
     switch(name)
     {
       case 'account':
-        dispatch({type:'CHANGE_NAME',payload:text});
+        setAccountNameState(text)
+        //dispatch({type:'CHANGE_NAME',payload:text});
         break;
       case 'username':
-        dispatch({type:'CHANGE_USER_NAME',payload:text});
+        setUserNameState(text)
+        //dispatch({type:'CHANGE_USER_NAME',payload:text});
         break;
       default:
         break;
@@ -47,30 +54,37 @@ const SettingsScreen = (props) => {
       switch(name)
       {
         case 'account':
+          setLoadingAccountName(true);
+
+          dispatch({type:'CHANGE_NAME',payload:accountNameState});
           await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({  // change in actual doc
-            name : accountName
+            name : accountNameState
            },{ merge:true })
 
            await firestore().collection('users').doc(userid).set({  // change in actual doc
-            name : accountName
+            name : accountNameState
            },{ merge:true })
 
           const instance = firebase.app().functions("asia-northeast1").httpsCallable('changeUserNameInPodcastsAsiaEast');
           try 
           {          
             await instance({ // change in podcast docs created by  user
-              changedName : accountName
+              changedName : accountNameState
             });
           }
           catch (e) 
           {
             console.log(e);
           }
+          setLoadingAccountName(false);
           break;
         case 'username':
+          setLoadingUserName(true);
+          dispatch({type:'CHANGE_USER_NAME',payload:userNameState});
           await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({ // change in actual doc
-            userName : userName
+            userName : userNameState
         },{ merge:true })
+          setLoadingUserName(false);
           break;
         default:
           break;
@@ -136,18 +150,34 @@ const SettingsScreen = (props) => {
                 <Text gray2 style={{ marginBottom: 10 }}>Account</Text>
                 {renderEdit('account')}
               </Block>
-              <Text medium primary onPress={() => toggleEdit('account')}>
-                {editing === 'account' ? 'Save' : 'Edit'}
-              </Text>
+              <TouchableOpacity onPress={() => toggleEdit('account')}>
+              <View>
+              {
+               loadingAccountName ?  
+                 <ActivityIndicator/> :
+                 (<Text medium primary>
+                 {(editing === 'account' ? 'Save' : 'Edit')}
+                 </Text>)
+              }
+              </View>
+              </TouchableOpacity>
             </Block>
             <Block row space="between" margin={[10, 0]} style={styles.inputRow}>
               <Block>
                 <Text gray2 style={{ marginBottom: 10 }}>Username</Text>
                 {renderEdit('username')}
               </Block>
-              <Text medium primary onPress={() => toggleEdit('username')}>
-                {editing === 'username' ? 'Save' : 'Edit'}
-              </Text>
+              <TouchableOpacity onPress={() => toggleEdit('username')}>
+              <View>
+              {
+               loadingUserName ?  
+                 <ActivityIndicator/> :
+                 (<Text medium primary>
+                 {(editing === 'username' ? 'Save' : 'Edit')}
+                 </Text>)
+              }
+              </View>
+              </TouchableOpacity>
             </Block>
             <Block row space="between" margin={[10, 0]} style={styles.inputRow}>
               <Block>

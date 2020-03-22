@@ -9,9 +9,8 @@ const serviceAccount = require('./serviceAccount.json');
 
 exports.addActivity = functions.region("asia-northeast1").https.onCall((data, context) => {
  
-  const userItem = data.userItem;
+
   const creationTimestamp = data.timestamp;
-  const podcast = data.podcast;
   const likerOrFollowerID = context.auth.uid;
   const likerOrFollowerImage = data.photoURL;
   const podcastID = data.PodcastID;
@@ -23,9 +22,7 @@ exports.addActivity = functions.region("asia-northeast1").https.onCall((data, co
 
   console.log("ACTIVITY DETAILS: ");
 
-  console.log("userItem: ",userItem);
   console.log("type: ",type);
-  console.log("podcast: ",podcast);
   console.log("creationTimestamp: ",creationTimestamp);
   console.log("likerOrFollowerID: ",likerOrFollowerID);
   console.log("likerOrFollowerImage: ",likerOrFollowerImage);
@@ -40,11 +37,10 @@ exports.addActivity = functions.region("asia-northeast1").https.onCall((data, co
   const db = admin.firestore();
   const privateDataID = "private" + userID;
   // FOLLOW activity
-  if(podcast === undefined)
+  if(podcastName === undefined)
     {
 
       db.collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('Activities').add({
-        userItem : {userItem},
         type : type,
         creationTimestamp: creationTimestamp,
         actorID: likerOrFollowerID,
@@ -66,7 +62,6 @@ exports.addActivity = functions.region("asia-northeast1").https.onCall((data, co
   else // LIKE activity
     {
       db.collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('Activities').add({
-        userItem : {userItem},
         type : type,
         creationTimestamp: creationTimestamp,
         actorID: likerOrFollowerID,
@@ -74,8 +69,7 @@ exports.addActivity = functions.region("asia-northeast1").https.onCall((data, co
         actorName: likerOrFollowerName,
         podcastID: podcastID,
         podcastPicture: podcastPicture,
-        podcastName: podcastName,
-        podcast : {podcast}
+        podcastName: podcastName
       })
       .then((docRef) => {
         console.log("Document written with ID: ", docRef.id);

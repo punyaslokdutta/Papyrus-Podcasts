@@ -5,6 +5,7 @@ import * as theme from '../constants/theme'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import {useDispatch} from "react-redux"
 import firestore from '@react-native-firebase/firestore';
+import { withFirebaseHOC } from '../../config/Firebase';
 
 
 var {width, height}=Dimensions.get('window')
@@ -133,10 +134,13 @@ const styles = StyleSheet.create({
   console.log("Inside Following Item")
   console.log(props);
   console.log("userData = ",props.item);
-  
+  const realUserID = props.firebase._getUid();
+  const isUserSame = (props.item.id == realUserID);
+  console.log("isUserSame : ",isUserSame);
   async function retrievePrivateUserData(props,userid){
 
     const privateDataID = "private" + userid;
+
     const privateUserDoc = await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).get();
     const privateItem = privateUserDoc._data;
     props.navigation.navigate({
@@ -152,27 +156,44 @@ const styles = StyleSheet.create({
 
         return (
           //<TouchableOpacity  onPress={(()=>dispatch({type:"SET_PODCAST", payload: props.item}))}>
-    <TouchableOpacity onPress={() => {
-      //PROBLEM -- HAS TO BE FIXED AFTERWARDS
+           //PROBLEM -- HAS TO BE FIXED AFTERWARDS
       // Directly navigating to ExploreTabNavigator(props.navigation.navigate) is not updating the UserBookPodcast & UserChapterPodcast
       // Directly pushing ExploreTabNavigator(props.navigation.push) is not updating the CustomUserHeader
       // This is a temporary solution provided which doesn't follow the chain of unique ExploreTabNavigators & unique UserStatsScreen &
       // simply falls back to the last point from which 1st time ExploreTabNavigator was opened.
       // Have to provide a solution which directly passes props to both CustomUserHeader & ExploreTabNavigator(UserBookPodcast & UserChapterPodcast)
       // so that complete chain of user profiles is followed back to the 1st screen.
-      
-      // [1] props.navigation.navigate shall update the props in CustomUserHeader
-      retrievePrivateUserData(props,props.item.id);
-      
-      }}>
+    
+    <View>
+      {
+        isUserSame ?
+
+        <TouchableOpacity onPress={() => {
+          props.navigation.navigate('ProfileTabNavigator');
+        }}>
         <View style={[styles.shadow,{marginLeft: 15}]}>
-        <Image source={{ uri: props.item.displayPicture }} style={{width:width/4,height:height/8}}/>
-        <Text style={styles.username}>{props.item.name}</Text>
-        </View>
-        {/* </TouchableOpacity> */}
-      </TouchableOpacity>
+            <Image source={{ uri: props.item.displayPicture }} style={{width:width/4,height:height/8}}/>
+            <Text style={styles.username}>{props.item.name}</Text>
+            </View>
+            {/* </TouchableOpacity> */}
+          </TouchableOpacity>
+
+        :
+        <TouchableOpacity onPress={() => {
+          // [1] props.navigation.navigate shall update the props in CustomUserHeader
+          retrievePrivateUserData(props,props.item.id);
+          
+          }}>
+            <View style={[styles.shadow,{marginLeft: 15}]}>
+            <Image source={{ uri: props.item.displayPicture }} style={{width:width/4,height:height/8}}/>
+            <Text style={styles.username}>{props.item.name}</Text>
+            </View>
+            {/* </TouchableOpacity> */}
+          </TouchableOpacity>
+     }
+      </View>
         );
       
   }, areEqual);
 
-export default FollowingItem;
+export default withFirebaseHOC(FollowingItem);

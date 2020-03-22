@@ -116,8 +116,6 @@ async function updatePodcastsLiked(props){
   try 
   {          
     await instance({ // change in podcast docs created by  user
-      userItem : userItem,
-      podcast : props.podcast,
       timestamp : Date.now(),
       photoURL : userDisplayPictureURL,
       PodcastID : props.podcast.PodcastID,

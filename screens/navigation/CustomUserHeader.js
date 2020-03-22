@@ -50,8 +50,7 @@ async function retrieveData(message,userid,item,userDisplayPictureURL,name,userI
                    userID : item.id,
                    podcastImageURL : null,
                    type : "follow",
-                   Name : name,
-                   userItem : userItem
+                   Name : name
                  });
                }
                catch (e) 

@@ -6,7 +6,6 @@ import {withFirebaseHOC} from '../../config/Firebase'
 
 var {width, height}=Dimensions.get('window')
 
-
 class UserBookPodcast extends React.Component {
     
     static navigationOptions={
