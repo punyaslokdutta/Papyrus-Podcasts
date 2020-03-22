@@ -6,6 +6,7 @@ import {withFirebaseHOC} from '../../config/Firebase'
 
 var {width, height}=Dimensions.get('window')
 
+
 class UserBookPodcast extends React.Component {
     
     static navigationOptions={
@@ -158,11 +159,13 @@ class UserBookPodcast extends React.Component {
 
     onEndReached = ({ distanceFromEnd }) => {
       if(this.state.bookPodcasts.length>5)
-      if(!this.onEndReachedCalledDuringMomentum){
-          this.retrieveMoreBookPodcasts()
-          this.onEndReachedCalledDuringMomentum = true;
+      {
+        if(!this.onEndReachedCalledDuringMomentum)
+        {
+            this.retrieveMoreBookPodcasts()
+            this.onEndReachedCalledDuringMomentum = true;
+        }
       }
-      
   }
 
     render() {
@@ -181,7 +184,8 @@ class UserBookPodcast extends React.Component {
         
           <View style = {{paddingBottom:20}}>
           <View>
-          <FlatList   nestedScrollEnabled={true}
+          <FlatList   
+          nestedScrollEnabled={true}
           data={this.state.bookPodcasts}
           renderItem={this.renderData}
           numColumns={2}
