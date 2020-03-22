@@ -1,10 +1,8 @@
-
-
 import React, {Component} from 'react';
-
+import SearchScreen from './components/Explore/SearchScreen'
 import * as theme from '../screens/components/constants/theme';
 import firestore from '@react-native-firebase/firestore';
-import { StyleSheet, Text, View, SafeAreaView, ActivityIndicator, TextInput, Platform, StatusBar,TouchableOpacity, ScrollView, Image} from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, ActivityIndicator, TextInput, Platform, StatusBar,TouchableOpacity,Dimensions, ScrollView, Image, NativeModules, NativeEventEmitter} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import TrendingPodcast from './components/Explore/TrendingPodcast'
@@ -15,43 +13,66 @@ import CategoryScreen from './CategoryScreen'
 import Podcast from './components/Home/Podcast'
 import ExploreBook from './components/Explore/ExploreBook'
 import searchIcon from '../assets/searchIcon.png';
+import PreviewScreen from './PreviewScreen';
+
+const {width,height} = Dimensions.get('window')
+
 class Explore extends React.Component {
 
   constructor(props)
   {
+
+   
     super(props)
     {
       //this.renderHeader = this.renderHeader.bind(this);
       this.state={
-        books : [],
-        podcasts : [],
-        chapters : [],
         storytellers : [],
+        podcasts : [],
+        books : [],
+        chapters : [],
         loading : false
       };
     }
     //const ref = firestore().collection('Books');
+  
   }
 
-    componentWillMount()
-    {
-        this.startHeaderHeight = 60
-        if(Platform.OS=='Android')
-        {
-            this.startHeaderHeight= StatusBar.currentHeight
-        }
-    }
    
 
-    componentDidMount = () => {
-      try {
-        // Cloud Firestore: Initial Query
-        this.retrieveData();
-      }
-      catch (error) {
-        console.log(error);
-      }
-    };
+  componentDidUpdate=(props)=>
+  {
+    const eventEmitter=new NativeEventEmitter(NativeModules.ReactNativeRecorder);
+    console.log("Inside useEffect - componentDidUpdate of ExploreScreen");
+      const fileType=".m4a"
+      const filePath="/storage/emulated/0/AudioRecorder/"
+      var audioFilePath=null;
+      eventEmitter.addListener('RecordFile', (event) => {
+           audioFilePath=filePath.concat(event.eventName,fileType)
+          console.log(props)
+          console.log("RecordedFilePath :" +audioFilePath)
+          console.log("timeduration :" , +event.eventDuration)
+         props.navigation.navigate('PreviewScreen', {  
+          recordedFilePath: audioFilePath, 
+          duration:event.eventDuration})
+    })
+
+  }
+   
+      componentDidMount = () => {
+        try {
+          this.startHeaderHeight = 60
+          if(Platform.OS=='Android')
+          {
+              this.startHeaderHeight= StatusBar.currentHeight
+          }
+          // Cloud Firestore: Initial Query
+          this.retrieveData();
+        }
+        catch (error) {
+          console.log(error);
+        }
+      };
 
     retrieveData = async () => {
       try {
@@ -59,52 +80,22 @@ class Explore extends React.Component {
         this.setState({
           loading: true,
         });
-        console.log('Retrieving Data');
-        // Cloud Firestore: Query
+        console.log('Retrieving Data in Explore Screen');
         
-        // IMP let initialQuery_books = await firestore().collection('Books').doc('')
-
-        // let adminBooks = await firestore().collection('Books').doc('DWZoAul5qUavpuNAE4vk').get();
+        let userQuery = await firestore().collectionGroup('privateUserData').where('isTopStoryTeller','==',true).get();
+        let podcastQuery = await firestore().collectionGroup('Podcasts').where('isTrendingPodcast','==',true).get();
+        let bookQuery = await firestore().collectionGroup('Podcasts').where('isShortStory','==',true).get();
+        let chapterQuery = await firestore().collectionGroup('Podcasts').where('isClassicNovel','==',true).get();
         
-        // explore_podcasts = [];
-        // let queryPodcasts = adminBooks._data.explorePodcasts;
-        // var ind = 0      
-        // for(x in queryPodcasts){
-        //   let str1 = queryPodcasts[ind];
-        //   let query3 = await firestore().collectionGroup('Podcasts').where('PodcastID','==',str1).get();
-        //   explore_podcasts[ind] = query3.docs[0]._data;
-        //   ind = ind+1;
-        //   console.log(query3);
-        // }
-
-        // explore_books = [];
-        // let queryBooks = adminBooks._data.exploreBooks;
-        let bookQuery = await firestore().collection('Books').where('exploreScreen','==',true).get();
-        let podcastQuery = await firestore().collectionGroup('Podcasts').where('exploreScreen','==',true).get();
-        let chapterQuery = await firestore().collectionGroup('Chapters').where('exploreScreen','==',true).get();
-        // var ind = 0      
-        // for(x in queryBooks){
-        //   let str2 = queryBooks[ind];
-        //   let query4 = await firestore().collection('Books').where('BookID','==',str2).get();
-        //   explore_books[ind] = query4.docs[0]._data;
-        //   ind = ind+1;
-        //   console.log(query4);
-        // }
-        let documentBooks = bookQuery.docs.map(document => document.data());
+        let documentUsers = userQuery._docs.map(document => document.data());
         let documentPodcasts = podcastQuery.docs.map(document => document.data());
+        let documentBooks = bookQuery.docs.map(document => document.data());
         let documentChapters = chapterQuery.docs.map(document => document.data());
-        // Cloud Firestore: Query Snapshot
-        // IMP let documentSnapshots_books = await initialQuery_books.get();
-        //###let documentSnapshots_podcasts = await initialQuery_podcasts.get();
-        // Cloud Firestore: Document Data
-        // IMP let documentData_books = documentSnapshots_books.docs.map(document => document.data());
-        //###let documentData_podcasts = documentSnapshots_podcasts.docs.map(document => document.data());
-        // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
-        // IMP let lastVisible = documentData_books[documentData_books.length - 1].id;
-        // Set State
+        
         this.setState({
-          books: documentBooks,
+          storytellers: documentUsers,
           podcasts: documentPodcasts,
+          books: documentBooks,
           chapters: documentChapters,
           // IMP lastVisible: lastVisible,
           loading: false,
@@ -114,6 +105,25 @@ class Explore extends React.Component {
         console.log(error);
       }
     };
+
+    renderStoryTellers = () =>
+    {
+      return this.state.storytellers.map((item, index)=>
+      {
+        return(<Story item={item} index={index} key ={index} navigation={this.props.navigation}/>)
+      }) 
+    }
+
+    renderSectionStoryTellers = () =>
+    {
+      return (
+        <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
+        <View style={{flexDirection:'row' , flexWrap:'wrap',paddingBottom:10}}>{this.renderStoryTellers()}</View>
+        </View>
+        
+      )
+    }
+
     renderPodcasts=()=>
     {
        return this.state.podcasts.map((item, index)=>
@@ -128,14 +138,6 @@ class Explore extends React.Component {
       
         return (
           <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
-          {/* <View
-            style={[
-              styles.row,
-              styles.recommendedHeader
-            ]}
-          >
-            <Text style={{ fontSize: theme.sizes.font * 1.4 }}>Discover Podcasts</Text>
-          </View> */}
           <View style={{flexDirection:'row' , flexWrap:'wrap',paddingBottom:10}}>{this.renderPodcasts()}</View>
           </View>
           
@@ -154,14 +156,6 @@ class Explore extends React.Component {
     {
       return (
         <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
-        {/* <View
-          style={[
-            styles.row,
-            styles.recommendedHeader
-          ]}
-        >
-          <Text style={{ fontSize: theme.sizes.font * 1.4 }}>Discover Podcasts</Text>
-        </View> */}
         <View style={{flexDirection:'row' , flexWrap:'wrap',paddingBottom:10}}>{this.renderChapters()}</View>
         </View>
         
@@ -180,52 +174,57 @@ class Explore extends React.Component {
     {
       return (
         <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
-        {/* <View
-          style={[
-            styles.row,
-            styles.recommendedHeader
-          ]}
-        >
-          <Text style={{ fontSize: theme.sizes.font * 1.4 }}>Discover Podcasts</Text>
-        </View> */}
         <View style={{flexDirection:'row' , flexWrap:'wrap',paddingBottom:10}}>{this.renderBooks()}</View>
         </View>
         
       )
     }
   
-    render() {
-      
-      if(this.state.books.length == 0)
+    renderMainHeader = () => 
+    {
       return (
-        <View style={styles.container}>
-          <ActivityIndicator/>
-        </View>
-      );
-      else
-      return (
-        /*<View style={styles.container}>
-          <Text>HomeScreen</Text>
-        </View>*/
-
-        <SafeAreaView style={{flex:1, backgroundColor:'white'}}>
-        <View style={styles.AppHeader}>
+      <View style={styles.AppHeader}>
         <TouchableOpacity onPress={()=>this.props.navigation.toggleDrawer()}>
         <View style={{paddingLeft: 15,paddingRight:10 ,paddingVertical:26} }>
           <Icon name="bars" size={22}/>
         </View>
         </TouchableOpacity>
         <View style={{flex:1, paddingVertical:10}}>
+          <TouchableOpacity onPress={() => this.props.navigation.navigate('SearchScreen')}>
         <View style={{flexDirection:'row',height:this.startHeaderHeight, backgroundColor: 'white', paddingRight: 13, paddingVertical:10}}>
         
-            <TextInput underlineColorAndroid="transparent" placeholder="Search Books, Chapters, Authors" placeholderTextColor="black"  style={{ flex:1, fontWeight:'700',borderRadius:8, backgroundColor:'#dddd',
-            elevation:1, paddingHorizontal: 10/*marginTop: Platform.OS=='android'?30:null*/}}
-            />
-             <Icon style={{paddingLeft:5, paddingTop:5}} name="search" size={26}/>
-        
+            <Text style={{ flex:1, fontWeight:'700',borderRadius:8,backgroundColor:'#dddd',fontSize:15,
+              paddingTop: 7, paddingHorizontal: 10 }}>
+            
+              <Icon style={{paddingHorizontal:10,paddingTop:20 }} name="search" size={20} />
+              
+
+              {"  "}Search Books, Chapters, Authors
+               </Text> 
+
         </View>
+        </TouchableOpacity>
         </View> 
         </View>
+      )
+    }
+
+    render() {
+      
+      if(this.state.books.length == 0)
+      return (
+        <View>
+        <View style={{paddingBottom: (height*5)/12}}>
+      {this.renderMainHeader()}
+          </View>
+      <ActivityIndicator/>
+      </View>     
+      );
+      else
+      return (
+    
+        <SafeAreaView style={{flex:1, backgroundColor:'white'}}>
+        {this.renderMainHeader()}
         <ScrollView  scrollEventThrottle={16}>
         <View style={{height:120}}>
         <View style={{flex:1}}>
@@ -236,13 +235,7 @@ class Explore extends React.Component {
         <View style={{flex:3,paddingTop:10}}>
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
         
-        <Story ImageUri={require('../assets/indian.jpeg')} username={'rajiv_230'}/>
-        <Story ImageUri={require('../assets/dan.jpeg')} username={'Dan_Mos'}/>
-        <Story ImageUri={require('../assets/dan2.jpeg')} username={'Cylie_storm'}/>
-        <Story ImageUri={require('../assets/dan3.jpeg')} username={'brook_davis'}/>
-        <Story ImageUri={require('../assets/dan4.jpeg')} username={'sylvester23'}/>
-        <Story ImageUri={require('../assets/dan5.jpeg')} username={'Donzo'}/>
-        <Story ImageUri={require('../assets/dan7.jpeg')} username={'Donzo2'}/>
+        {this.renderSectionStoryTellers()}
         </ScrollView>
         </View>
         

@@ -1,11 +1,17 @@
 rootProject.name = 'Papyrus_60'
+include ':react-native-extra-dimensions-android'
+project(':react-native-extra-dimensions-android').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-extra-dimensions-android/android')
+include ':@react-native-firebase_app'
+project(':@react-native-firebase_app').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-firebase/app/android')
+include ':react-native-video-exoplayer'
+project(':react-native-video-exoplayer').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-video/android-exoplayer')
 //include ':@react-native-community_status-bar'
 //project(':@react-native-community_status-bar').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-community/status-bar/android')
 include ':react-native-svg'
 project(':react-native-svg').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-svg/android')
 apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); 
 applyNativeModulesSettingsGradle(settings)
-//include ':react-native-google-signin'
-//project(':react-native-google-signin').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-community/google-signin/android')
+include ':react-native-google-signin'
+project(':react-native-google-signin').projectDir = new File(rootProject.projectDir, '../node_modules/@react-native-community/google-signin/android')
 include ':app'
 

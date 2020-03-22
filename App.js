@@ -1,50 +1,62 @@
-
+import ProfileFollowerScreen from './screens/components/Profile/ProfileFollowerScreen'
+import ProfileFollowingScreen from './screens/components/Profile/ProfileFollowingScreen'
 
 import React, {Component} from 'react';
-import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView} from 'react-native';
+import CustomDrawerContentComponent from './screens/navigation/CustomDrawerContentComponent';
+import setUserDetails from './screens/setUserDetails'
+import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView,  NativeModules} from 'react-native';
 import {createSwitchNavigator,
   createAppContainer,
   } from 'react-navigation'
-  import { createBottomTabNavigator } from 'react-navigation-tabs';
+import NavigationService from './screens/navigation/NavigationService';
+import LikersScreen from './screens/components/PodcastPlayer/LikersScreen'
+import setPreferences from './setPreferences'
+import WelcomeScreen from './screens/WelcomeScreen'
+  import { createBottomTabNavigator, createMaterialTopTabNavigator } from 'react-navigation-tabs';
   import { createStackNavigator } from 'react-navigation-stack';
   import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
-  import {createMaterialTopTabNavigator} from 'react-navigation-tabs'
-//import { createStore, combineReducers, applyMiddleware } from 'redux'
-//import logger from 'redux-logger'
+  import { fromRight , fromLeft} from 'react-navigation-transitions';
+  
+import thunk from 'redux-thunk';
+import userReducer from './reducers/userReducer'
+import rootReducer from './reducers/rootReducer';
+import recorderReducer from './reducers/recorderReducer'
+import authReducer from './reducers/authReducer'
 import AuthLoadingScreen from './screens/AuthLoadingScreen'
 import SignInScreen from './screens/SignInScreen'
 import SignUpScreen from './screens/SignUpScreen'
 import SignOut from './screens/SignOut'
 import HomeScreen from './screens/HomeScreen'
 import Explore from './screens/Explore'
+import SearchScreen from './screens/components/Explore/SearchScreen'
 import PodcastPlayer from './screens/PodcastPlayer'
 import SelectScreen from './screens/SelectScreen'
-import StartRecordScreen from './screens/StartRecordScreen'
 import PreviewScreen from './screens/PreviewScreen'
 import TagsScreen from './screens/TagsScreen'
 import CategoryScreen from './screens/CategoryScreen'
 import RecordBook from './screens/RecordBook'
 import StatisticsScreen from './screens/StatisticsScreen'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import {Container, Content, Header, Body} from 'native-base'
-import { Block, Text } from './screens/components/categories/components/';
 import { theme } from './screens/components/categories/constants';
 import ActivityScreen from './screens/ActivityScreen'
 import SettingsScreen from './screens/SettingsScreen'
 import editProfile  from './screens/components/Profile/editProfile'
 import firebaseApi, {FirebaseProvider} from './screens/config/Firebase'
-import {PlayerProvider} from './screens/components/PodcastPlayer/PlayerProvider';
-import ProfileBookPodcast from './screens/components/Profile/ProfileBookPodcast'
-import ProfileChapterPodcast from './screens/components/Profile/ProfileChapterPodcast'
+import PlayerProvider from './screens/components/PodcastPlayer/PlayerProvider';
 import Profile_StatsScreen from './screens/components/Profile/Profile_StatsScreen'
+import CategoryTabNavigator from './screens/navigation/CategoryTabNavigator'
+import ProfileTabNavigator from './screens/navigation/ProfileTabNavigator'
+import ExploreTabNavigator from './screens/navigation/ExploreTabNavigator'
+import UserStatsScreen from './screens/components/Explore/UserStatsScreen'
+import {createStore,combineReducers, applyMiddleware} from 'redux'
+import {Provider} from 'react-redux'
+import UserFollowingScreen from './screens/components/Explore/UserFollowingScreen';
+import UserFollowerScreen from './screens/components/Explore/UserFollowerScreen';
+import InfoScreen from './InfoScreen'
+import CustomUserHeader from './screens/navigation/CustomUserHeader'
 
 
-
-
-
-//const reducer = combineReducers({ navigation })
-//const store = createStore(reducer, applyMiddleware(logger))
-var {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
+const  {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
 const IS_IPHONE_X = SCREEN_HEIGHT === 812 || SCREEN_HEIGHT=== 896;
 const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? (IS_IPHONE_X ? 44 : 20) : 0;
 const HEADER_HEIGHT = Platform.OS === 'ios' ? (IS_IPHONE_X ? 88 : 64) : 64;
@@ -54,160 +66,134 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
 const AuthStackNavigator= createStackNavigator(
   {
     
-    SignIn: SignInScreen,
-    SignUp: SignUpScreen, 
-    //BooksSelected: BooksSelectedScreen, 
-    //ChaptersSelected : ChaptersSelectedScreen, 
-    //AuthorsSelected: AuthorsSelectedScreen
+    SignInScreen: SignInScreen,
+    SignUpScreen: SignUpScreen,
+    //WelcomeScreen:WelcomeScreen 
   },
   {
     headerMode: 'none',
+    initialRouteName:'SignInScreen',
+    transitionConfig: () => fromRight(),
     navigationOptions: {
       headerVisible: false,
+     
     }
    }
 )
 
 
-/*const PreferencesStackNavigator =createStackNavigator(
-  {}
-)*/
-const ProfileTabNavigator =createMaterialTopTabNavigator(
-{
-   ProfileBookPodcast:{ screen: ProfileBookPodcast,navigationOptions:{
-    tabBarLabel:'Books',
-    tabBarIcon:({tintColor})=>(
-      <Icon name="book" color={tintColor} size={20}/>
-    )
-  }}, 
-   ProfileChapterPodcast: {screen:ProfileChapterPodcast, navigationOptions:{
-    tabBarLabel:'Chapters',
-    tabBarIcon:({tintColor})=>(
-      <Icon name="newspaper-o" color={tintColor} size={20}/>
-    )
-  }}, 
 
-},
-{tabBarOptions:{
-  showIcon: true,
-  showLabel: true,
-  activeTintColor:'black',
-  inactiveTintColor:'grey',
-  borderTopWidth: 0,
-  elevation :5,
-  adaptive: true, 
-  style:
+const CategoryStackNavigator=createStackNavigator(
   {
-    height: 60, 
-    backgroundColor: 'white',
-    
-  },
-  indicatorStyle: {
-    borderBottomColor: 'black',
-    borderBottomWidth: 2,
-  },
-  labelStyle: {
-    fontSize: 10,
+    CategoryScreen : {screen : CategoryScreen,navigationOptions:{
+      //header:null
+      title: 'Categories',
+      headerTintColor: 'white',
+        headerStyle: {
+          
+          backgroundColor: 'black'
+        }
+    }},
+    CategoryTabNavigator : {screen : CategoryTabNavigator,navigationOptions:{
+    }} 
+  }, 
+  {
+    //headerMode:'none', 
+    initialRouteName:'CategoryScreen',
+    transitionConfig: () => fromRight(),
   }
-}, 
-   navigationOptions:
-   {
-     tabBarVisible: true,
-     //headerVisible: true,
-       header: props => <CustomProfileHeader {...props} />, 
-     
-   }
-  }
-
 )
 
 
 
 
+const ExploreStackNavigator=createStackNavigator(
+  {
+     Explore : {screen : Explore,navigationOptions:{
+       header:null
+     }}, 
+    SearchScreen : {screen : SearchScreen,navigationOptions: {
+       header: null,
+   }},
+    // ExploreTabNavigator : {screen : ExploreTabNavigator,navigationOptions:{
 
-const CustomProfileHeader = props => {
-  {console.log("Inside Custom profile header ")}
-  {console.log(props)}
-  return (
+    // }},
+    //   UserStatsScreen : {screen : UserStatsScreen,navigationOptions:{
 
-      <View style={{alignItems:'center',justifyContent:'center',paddingTop: 30, flexDirection:'column'}}>
-        <View style={{flexDirection:'column'}}>
-          <Text h3 >Ella Alderson's</Text>
-          <View style = {{alignItems:'center'}}>
-          <Text h2 bold>Collections</Text>
-          </View>
-          </View>
-          
-          <TouchableOpacity style={{alignItems:'center'}} onPress={() => props.navigation.navigate('Profile_StatsScreen')}>
-          <Image
-              source={require('./assets/images/avatar.png')}
-              style={styles.avatar}
-            />
-            </TouchableOpacity>
-          </View>
-       
-      
-    
-  
-      
-  );
-};
+    //   }},
+    //   UserFollowingScreen : {screen : UserFollowingScreen,navigationOptions:{
+
+    //   }},
+    //   UserFollowerScreen : {screen : UserFollowerScreen,navigationOptions:{
+
+    //   }}
+
+  }, 
+  {
+    //headerMode:'none', 
+    //initialRouteName:'CategoryScreen',
+    transitionConfig: () => fromRight(),
+  }
+
+)
+
 
 const ProfileStackNavigator=createStackNavigator(
   {
-    ProfileTabNavigator : {screen : ProfileTabNavigator}, 
-    editProfile : {screen : editProfile}, 
+     ProfileTabNavigator : {screen : ProfileTabNavigator}, 
+    editProfile : {screen : editProfile,navigationOptions: {
+       header: null,
+   }}, 
     Profile_StatsScreen:{screen: Profile_StatsScreen, navigationOptions: {
-      header: null,
-  }}
+      title: 'Stats',
+      headerTintColor: 'white',
+        headerStyle: {
+          backgroundColor: 'black'
+        }
+  }},
+    ProfileFollowingScreen:{screen:ProfileFollowingScreen,navigationOptions: {
+      title: 'Following',
+      headerTintColor: 'white',
+        headerStyle: {
+          backgroundColor: 'black'
+        }
+    }},
+    ProfileFollowerScreen: {screen:ProfileFollowerScreen,navigationOptions: {
+      title: 'Followers',
+      headerTintColor: 'white',
+        headerStyle: {
+          backgroundColor: 'black'
+        }
+    }},
+    // UserFollowingScreen : {screen : UserFollowingScreen,navigationOptions:{
+
+    // }},
+    // UserFollowerScreen : {screen : UserFollowerScreen,navigationOptions:{
+
+    // }},
+    // UserStatsScreen:{screen : UserStatsScreen,navigationOptions:{
+
+    // }},
+    // ExploreTabNavigator : {screen : ExploreTabNavigator,navigationOptions:{
+
+    // }}
   }, 
-  {
-    //headerMode:'none',
-    //initialRouteName:Profile,
-   
-   
-}
 )
-/*ProfileStackNavigator.navigationOptions = ({ navigation }) => {
-  /*if(navigation.state.index==0){
-      return {
-          tabBarVisible: false,
-      };
-  }
-  return {
-      //tabBarVisible: true,
-     header: props => <CustomProfileHeader {...props} />, 
-     headerStyle: {        
-      backgroundColor: "transparent"      
-    }
-  }
-}*/
 
 const RecordStackNavigator= createStackNavigator(
   {
     SelectScreen: {screen:SelectScreen},
-    //StartRecord: {screen:StartRecordScreen},
-    PreviewScreen: {screen:PreviewScreen},
+    //PreviewScreen: {screen:PreviewScreen},
     Tags : {screen:TagsScreen} ,
   },
   {
-    //initialRouteName: SelectScreen ,
-    headerMode:'none',
-  }
-    
-     
-    
-     
-
-  
+    headerMode:'none', 
+    initialRouteName:'SelectScreen',
+    transitionConfig: () => fromRight(),
+  }  
 )
 
 RecordStackNavigator.navigationOptions = ({ navigation }) => {
-  /*if(navigation.state.index==0){
-      return {
-          tabBarVisible: false,
-      };
-  }*/
   return {
       tabBarVisible: false,
   }
@@ -216,8 +202,6 @@ RecordStackNavigator.navigationOptions = ({ navigation }) => {
 const HomeStackNavigator= createStackNavigator(
   {
     HomeScreen :{screen: HomeScreen},
-   // RecordBook :{screen: RecordBook},
-
   },
   {
     headerMode:'none',
@@ -225,11 +209,6 @@ const HomeStackNavigator= createStackNavigator(
 )
 
 HomeStackNavigator.navigationOptions = ({ navigation }) => {
-  /*if(navigation.state.index==0){
-      return {
-          tabBarVisible: false,
-      };
-  }*/
   return {
       tabBarVisible: true,
   }
@@ -244,7 +223,7 @@ const AppTabNavigator=createBottomTabNavigator(
         <Icon name="home" color={tintColor}  size={24}/>
       )
     }},
-    Explore: {screen:Explore,
+    Explore: {screen:ExploreStackNavigator,
       navigationOptions:{
         tabBarLabel:'Explore',
         tabBarIcon:({tintColor})=>(
@@ -260,7 +239,7 @@ const AppTabNavigator=createBottomTabNavigator(
         )
       } 
    },
-    Category: {screen: CategoryScreen,
+    Category: {screen: CategoryStackNavigator,
       navigationOptions:{
         tabBarLabel:'Categories',
         tabBarIcon:({tintColor})=>(
@@ -276,15 +255,11 @@ const AppTabNavigator=createBottomTabNavigator(
         )
       } 
     }, 
-    
-
-
-
-  },{initialRouteName:'Home',
+  },{initialRouteName:'Explore',
   order:['Home', 'Explore', 'Record', 'Category', 'Profile'],
   headerMode: 'none',
   navigationOptions:
-  {
+  {    
     tabBarVisible: true,
     headerVisible: false
   }, 
@@ -297,37 +272,86 @@ const AppTabNavigator=createBottomTabNavigator(
     adaptive: true, 
     style:
     {
-      paddingBottom: SCREEN_HEIGHT/45,
+      paddingBottom: SCREEN_HEIGHT/100,
       height: SCREEN_HEIGHT/11, 
     },
   }, 
-   
-
   }
 )
+
 
 const AppStackNavigator= createStackNavigator(
   {
     AppTabNavigator:
     {
       screen: AppTabNavigator,
-      /*navigationOptions:({navigation})=>({
-        title:'PAPYRUS',
-        headerLeft: (
-        <TouchableOpacity onPress={()=>navigation.toggleDrawer()}>
-        <View style={{paddingHorizontal: 10}}>
-          <Icon name="bars" size={24}/>
-        </View>
-        </TouchableOpacity>
-        )
-      }
-      )*/
       navigationOptions: {
         header: null
-    }
-
-
+       }
     },
+    PlayerProvider: {
+      screen: PlayerProvider,
+      navigationOptions:{
+        header:null
+     }
+    },
+    LikersScreen: {
+      screen: LikersScreen,
+      navigationOptions:{
+        title: 'Likes',
+        headerTintColor: 'white',
+        headerStyle: {
+          backgroundColor: 'black'
+        }
+     }
+    },
+    InfoScreen: {
+      screen: InfoScreen,
+      navigationOptions:{
+        //header:null
+        title: 'About this podcast',
+        headerTintColor: 'white',
+        headerStyle: {
+          backgroundColor: 'black'
+        }
+     }
+    },
+    ExploreTabNavigator : {screen : ExploreTabNavigator,navigationOptions:{
+    //  header: props => <CustomUserHeader {...props} />
+    }},
+    CustomUserHeader : {screen : CustomUserHeader,navigationOptions:{
+             
+    }},
+     UserStatsScreen : {screen : UserStatsScreen,navigationOptions:{
+          title: 'Stats',
+          headerTintColor: 'white',
+        headerStyle: {
+          backgroundColor: 'black'
+        }
+     }},
+     UserFollowingScreen : {screen : UserFollowingScreen,navigationOptions:{
+          title: 'Following',
+          headerTintColor: 'white',
+          headerStyle: {
+            backgroundColor: 'black'
+          }
+     }},
+     UserFollowerScreen : {screen : UserFollowerScreen,navigationOptions:{
+          title: 'Followers',
+          headerTintColor: 'white',
+          headerStyle: {
+            backgroundColor: 'black'
+          }
+     }},
+     Activity: {screen:ActivityScreen, 
+      navigationOptions: {
+       //header:null
+       title: 'Activities',
+       headerTintColor: 'white',
+       headerStyle: {
+          backgroundColor: 'black'
+        }
+      }},
     PodcastPlayer: {screen :PodcastPlayer,
     navigationOptions:{
       header:null
@@ -335,73 +359,43 @@ const AppStackNavigator= createStackNavigator(
    RecordBook: {screen :RecordBook,
     navigationOptions:{
       header:null
-   }}
+   }}, 
+   PreviewScreen: {screen:PreviewScreen}
 
    
-  
-  },
+  }, 
+  {
     
-      /*{
-        headerMode: 'none',
-        navigationOptions: {
-          headerVisible: false,
-        }
-       }*/
-    
-     
-
+    transitionConfig: () => fromRight(),
+    navigationOptions: {
+      headerVisible: false,
+      
+    }
+   }
   
 )
 
-const CustomDrawerContentComponent=(props)=>
-(
-  
-  <Container style={{backgroundColor:'#101010'}}>
-   
-    <Body style={{alignItems:'center', paddingTop: SCREEN_HEIGHT/8}}>
-     <Image style={styles.drawerimage}
-       source={require('./assets/images/plants_3.png')}
-     />
-     <Block flex={false} row center space="between" style={{paddingTop:30, paddingLeft:5}}>
-          <Text style={{color:'white', fontSize:SCREEN_HEIGHT/40 }}>Ella Alderson</Text>
-          
-    </Block>
-    <Block flex={false} row center space="between" style={{ paddingLeft:5}}>
-          <Text style={{color:'white', fontFamily:'san-serif'}}>@ellaalderson</Text>
-          
-    </Block>
 
-    <Content style={{ paddingTop: SCREEN_HEIGHT/18}}>
-    
-    <DrawerItems {...props}  activeBackgroundColor='#101010'   style={{backgroundColor: '#ffffff', }} labelStyle={{color: '#ffffff', fontSize: SCREEN_HEIGHT/35}}/>
-    
-    </Content>
-    </Body>
-  </Container>
-)
 const AppDrawerNavigator=createDrawerNavigator(
  {
     Home: {screen : AppStackNavigator, 
       navigationOptions: {
         drawerIcon: () => (<Icon name="home" size={24} style={{ color: 'white' }} />),
       }},
-    "My Drafts": {screen:StatisticsScreen, 
+    Drafts: {screen:StatisticsScreen, 
       navigationOptions: {
-        drawerIcon: () => (<Icon name="line-chart" size={22} style={{ color: 'white' }} />),
+        drawerIcon: () => (<TouchableOpacity onPress={()=>{NativeModules.ReactNativeRecorder.sampleMethodTwo()}}>
+          <Icon name="line-chart" size={22} style={{ color: 'white' }} />
+          </TouchableOpacity>),
       }}, 
-      Activity: {screen:ActivityScreen, 
-        navigationOptions: {
-          drawerIcon: () => (<Icon name="bell" size={22} style={{ color: 'white' }} />),
-        }},
-        Settings: {screen:SettingsScreen, 
-          navigationOptions: {
-            drawerIcon: () => (<Icon name="cog" size={22} style={{ color: 'white' }} />),
-          }},
-    
-    //SignOut: SignOut
-   
-
-    
+    Activity: {screen:ActivityScreen, 
+      navigationOptions: {
+        drawerIcon: () => (<Icon name="bell" size={22} style={{ color: 'white' }} />),
+      }},
+    Settings: {screen:SettingsScreen, 
+      navigationOptions: {
+        drawerIcon: () => (<Icon name="cog" size={22} style={{ color: 'white' }} />),
+      }}
   }, 
   {
     drawerWidth: SCREEN_WIDTH/2,
@@ -424,39 +418,41 @@ const AppDrawerNavigator=createDrawerNavigator(
 )
 const AppSwitchNavigator = createSwitchNavigator(
   {
-    
     AuthLoading : AuthLoadingScreen,
-    Auth : AuthStackNavigator, // this will be a stack navigator
-    App : AppDrawerNavigator ,  //this is the drawer navigator 
-    //Preferences: PreferencesStackNavigator 
+    setUserDetails : setUserDetails,
+    Auth : AuthStackNavigator, 
+    App : AppDrawerNavigator ,  
+    setPreferences: setPreferences 
   },
   {
     initialRouteName:'AuthLoading'
   }
 )
 
-//const App =createAppContainer(AppSwitchNavigator); // ^3.0.8 react-navigation 
+ const AppContainer = createAppContainer(AppSwitchNavigator); 
+ const mainReducer = combineReducers({
+  recorderReducer,
+  userReducer,
+  rootReducer, 
+  authReducer, 
+})
 
-// const router =createAppContainer(AppSwitchNavigator); 
- const AppContainer =createAppContainer(AppSwitchNavigator);  //top level navigator 
+const store = createStore(mainReducer, applyMiddleware(thunk))
 
- //FirebaseConsumer is wrapped around withFirebaseHOC() which provides Firebase Apis
 export default class App extends Component {
-  //..
   render(){
+    console.log("REDUX_STORE_STATE: " + store.getState());
     return(
-    <PlayerProvider>
+    <Provider store ={store}>
     <FirebaseProvider value={firebaseApi}> 
+    <PlayerProvider>
     <AppContainer/> 
-    </FirebaseProvider>
     </PlayerProvider>
+    </FirebaseProvider>
+    </Provider>
     );
   }
 }
-
-//export default App;
-
-
 
 
 const styles = StyleSheet.create({

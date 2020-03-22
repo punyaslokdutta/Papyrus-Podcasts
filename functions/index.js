@@ -1,54 +1,101 @@
 
-
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-
-
-
-const functions=require('firebase-functions')
-const algoliasearch=require('algoliasearch')
-
+const functions = require("firebase-functions");
 const admin = require('firebase-admin');
-admin.initializeApp();
-//import * as admin from 'firebase-admin';
+const serviceAccount = require('./serviceAccount.json');
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)//not required for uploading json to firestore
+  });
 
-exports.myStorageFunction = functions
-    .region('asia-northeast1')
-    .storage
-    .object()
-    .onFinalize((object) => {
-      // ...
+
+exports.addActivity = functions.region("asia-northeast1").https.onCall((data, context) => {
+ 
+  const userItem = data.userItem;
+  const creationTimestamp = data.timestamp;
+  const podcast = data.podcast;
+  const likerOrFollowerID = context.auth.uid;
+  const likerOrFollowerImage = data.photoURL;
+  const podcastID = data.PodcastID;
+  const userID = data.userID;
+  const podcastPicture = data.podcastImageURL;
+  const type = data.type;
+  const likerOrFollowerName = data.Name;
+  const podcastName = data.podcastName;
+
+  console.log("ACTIVITY DETAILS: ");
+
+  console.log("userItem: ",userItem);
+  console.log("type: ",type);
+  console.log("podcast: ",podcast);
+  console.log("creationTimestamp: ",creationTimestamp);
+  console.log("likerOrFollowerID: ",likerOrFollowerID);
+  console.log("likerOrFollowerImage: ",likerOrFollowerImage);
+  console.log("likerOrFollowerName: ",likerOrFollowerName);
+  console.log("podcastID: ",podcastID);
+  console.log("userID: ",userID);
+  console.log("podcastPicture: ",podcastPicture);
+  console.log("podcastName: ",podcastName);
+
+  console.log("context.auth = ",context.auth);
+  
+  const db = admin.firestore();
+  const privateDataID = "private" + userID;
+  // FOLLOW activity
+  if(podcast === undefined)
+    {
+
+      db.collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('Activities').add({
+        userItem : {userItem},
+        type : type,
+        creationTimestamp: creationTimestamp,
+        actorID: likerOrFollowerID,
+        actorImage: likerOrFollowerImage,
+        actorName: likerOrFollowerName
+      })
+      .then((docRef) => {
+        console.log("Document written with ID: ", docRef.id);
+       return db.collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('Activities')
+                .doc(docRef.id).set({
+                    activityID: docRef.id
+                },{merge:true})
+    
+    })
+    .catch(function(error) {
+        console.error("Error adding document: ", error);
     });
-
-/*exports.addMessage = functions.https.onRequest(async (req, res) => {
-  // Grab the text parameter.
-  const original = req.query.text;
-  // Push the new message into the Realtime Database using the Firebase Admin SDK.
-  const snapshot = await admin.database().ref('/Books').push({original: original});
-  // Redirect with 303 SEE OTHER to the URL of the pushed object in the Firebase console.
-  res.redirect(303, snapshot.ref.toString());
-});*/
-
-
-
-const env = functions.config();
-
-
-// Initialize the Algolia Client
-const client = algoliasearch(env.algolia.appid, env.algolia.apikey);
-const index = client.initIndex('Books');
-
-
-exports.indexBook = functions.firestore
-  .document('Books/{book_Id}')
-  .onCreate((snap, context) => {
-    const data = snap.data();
-    const objectID = snap.id;
-
-    // Add the data to the algolia index
-    return index.addObject({
-      objectID,
-      ...data
+    }
+  else // LIKE activity
+    {
+      db.collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('Activities').add({
+        userItem : {userItem},
+        type : type,
+        creationTimestamp: creationTimestamp,
+        actorID: likerOrFollowerID,
+        actorImage: likerOrFollowerImage,
+        actorName: likerOrFollowerName,
+        podcastID: podcastID,
+        podcastPicture: podcastPicture,
+        podcastName: podcastName,
+        podcast : {podcast}
+      })
+      .then((docRef) => {
+        console.log("Document written with ID: ", docRef.id);
+       return db.collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('Activities')
+                .doc(docRef.id).set({
+                    activityID: docRef.id
+                },{merge:true})
+    
+    })
+    .catch(function(error) {
+        console.error("Error adding document: ", error);
     });
-});
+    }  
+  
+  
+  
+      return true;
+  });
+
+
+
+
+

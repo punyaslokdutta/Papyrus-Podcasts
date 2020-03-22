@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import { StyleSheet, Text, View, SafeAreaView, TextInput, Platform, StatusBar,TouchableOpacity, ScrollView, Image,Dimensions, Animated,SectionList,ActivityIndicator } from 'react-native';
+import { StyleSheet, View,SafeAreaView, TextInput, Platform, StatusBar,TouchableOpacity, ScrollView, Image,Dimensions, Animated,SectionList,ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import {Container, Content, Card, Button} from 'native-base'
@@ -10,7 +10,10 @@ import BookList from './components/Home/BookList'
 import * as theme from '../screens/components/constants/theme';
 import Podcast from './components/Home/Podcast'
 import firebaseApi from './config/Firebase/firebaseApi'
+import {Text} from './components/categories/components';
 import {withFirebaseHOC} from '../screens/config/Firebase'
+import { withNavigation } from 'react-navigation';
+import { useDispatch } from 'react-redux';
 
 var {width, height}=Dimensions.get('window')
 const styles = StyleSheet.create({
@@ -182,8 +185,8 @@ class HomeScreen extends React.Component {
         headerPodcasts : [],
         podcasts : [],
         //allPodcasts : [],
-        limit : 4,
-        initialLimit : 20,
+        limit : 8,
+        initialLimit : 40,
         lastVisibleID:null,
         loading: false,
         refreshing: false,
@@ -210,31 +213,39 @@ class HomeScreen extends React.Component {
         this.setState({
           loading: true,
         });
-        console.log('Retrieving Data');
+
+        //const dispatch = useDispatch();
+
+        //dispatch({type:"ADD_NAVIGATION",payload:this.props.navigation});
+
+        console.log("[HomeScreen] Retrieving Data");
         const  userid = this.props.firebase._getUid();
+        const privateDataID = "private" + userID;
 
         //For books in section list
-        let bookDocuments = await firestore().collection('users').doc(userid).collection('privateUserData')
-        .doc('privateData').collection('bookRecommendations').get()
+        let bookDocuments =  await firestore().collection('users').doc(userid).collection('privateUserData')
+        .doc(privateDataID).collection('bookRecommendations').get()
         let bookPodcasts = bookDocuments.docs.map(document => document.data());
 
         //For podcasts in section list
         let headerpodcasts = await firestore().collection('users').doc(userid).collection('privateUserData')
-                         .doc('privateData').collection('podcastRecommendations')
+                         .doc(privateDataID).collection('podcastRecommendations')
                          .orderBy('podcastID').limit(this.state.initialLimit).get()
         
         let documentData_podcasts = headerpodcasts.docs.map(document => document.data());
         var lastVisiblePodcast = this.state.lastVisibleID;
-        lastVisiblePodcast = documentData_podcasts[documentData_podcasts.length - 1].podcastID; 
+        if(documentData_podcasts.length != 0)      
+           lastVisiblePodcast = documentData_podcasts[documentData_podcasts.length - 1].podcastID; 
 
        
         //For Flatlist podcasts
         let mainpodcasts = await firestore().collection('users').doc(userid).collection('privateUserData')
-        .doc('privateData').collection('podcastRecommendations')
+        .doc(privateDataID).collection('podcastRecommendations')
         .orderBy('podcastID').startAfter(lastVisiblePodcast).limit(this.state.limit).get()
-
+       
         let podcastsData = mainpodcasts.docs.map(document => document.data());
-        lastVisiblePodcast = podcastsData[podcastsData.length - 1].podcastID; 
+        if(podcastsData.length != 0)      
+          lastVisiblePodcast = podcastsData[podcastsData.length - 1].podcastID; 
 
       this.setState({
             books: bookPodcasts,
@@ -261,25 +272,26 @@ class HomeScreen extends React.Component {
     }
 
     retrieveMore = async () => {
-      
-      try
+     try
       {
-
-        {console.log("retrieveMoreBookPodcasts starts()")}
+        {console.log("[HomeScreen] retrieveMoreBookPodcasts starts()")}
 
       this.setState({
         refreshing: true
          }); 
 
          const  userid = this.props.firebase._getUid();
+         const privateDataID = "private" + userID;
+
          let additionalQuery = 9;
          try{
           additionalQuery = await firestore().collection('users').doc(userid).collection('privateUserData')
-          .doc('privateData').collection('podcastRecommendations')
+          .doc(privateDataID).collection('podcastRecommendations')
           .orderBy('podcastID').startAfter(this.state.lastVisibleID).limit(this.state.limit);
         
       // Cloud Firestore: Query Snapshot
-      {console.log("retrieveMorePodcasts afterQuery()")}
+      {console.log("[HomeScreen] retrieveMorePodcasts afterQuery()")}
+                
          
         }
         catch(error)
@@ -330,36 +342,7 @@ class HomeScreen extends React.Component {
       catch(error){
       console.log(error);
       }
-      //     var index = this.state.lastVisible;
-      //     var minIndex = Math.min(index+4,this.state.allPodcasts.length);
-      
-      //     let podcasts_data = this.state.allPodcasts.slice(index,minIndex);
-      //     if(podcasts_data.length != 0)
-      //     {
-      //       let lastVisibleID = podcasts_data[podcasts_data.length-1].podcastID;
-
-      //       if(this.state.lastVisibleID===lastVisibleID){
-      //         this.setState({
-      //                 refreshing:false
-      //             });
-      //           }
-      //       else
-      //       {
-      //         this.setState({
-      //         podcasts: [...this.state.podcasts, ...podcasts_data],
-      //         //chapterPodcasts: documentData_chapterPodcasts,
-      //         lastVisibleID:lastVisibleID,
-      //         lastVisible:minIndex,
-      //         refreshing:false
-      //       });
-      //       }
-      //    }
-      //     else
-      //     {
-      //       this.setState({
-      //         refreshing:false
-      //     });
-      //     }
+     
      }
 
     renderMainHeader=()=>
@@ -379,9 +362,52 @@ class HomeScreen extends React.Component {
       )
     }
    
-    renderSectionBooks=()=>
+    renderSectionBooks=(title)=>
     { 
-      return (<BookList navigation={this.props.navigation} destinations={this.state.books} />)
+       
+      switch(title) {
+        case "A":
+          return (<View>
+          
+          <View style={{backgroundColor:'white'}}>  
+          <Text h2 bold style={{paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Book Podcasts</Text>
+          <BookList navigation={this.props.navigation} destinations={this.state.books}/>
+          </View>
+          </View>)
+        case "B":
+          return (<View style={{paddingTop:30,paddingBottom:30}}>
+            
+            <View style={{backgroundColor:'#c9aa88'}}>
+            <Text h2 bold style={{paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Chapter Podcasts</Text>
+          <BookList navigation={this.props.navigation} destinations={this.state.books}/>
+          </View>
+          </View>)
+        case "C":
+          return (
+          <View style={{paddingTop:30,paddingBottom:30}}>
+            
+            <View style={{backgroundColor:'#99AFD7'}}>
+            <Text h2 bold style={{paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Chapter Podcasts</Text>
+          <BookList navigation={this.props.navigation} destinations={this.state.books}/>
+          </View>
+          </View>)
+        case "D":
+          return (<View style={{paddingTop:30,paddingBottom:30}}>
+            
+            <View style={{backgroundColor:'#C76E95'}}>
+            <Text h2 bold style={{paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Chapter Podcasts</Text>
+          <BookList navigation={this.props.navigation} destinations={this.state.books}/>
+          </View>
+          </View>)
+        case "E":
+          return (<View style={{paddingTop:30,paddingBottom:30}}>
+            
+            <View style={{backgroundColor:'#C6FC5F'}}>
+            <Text h2 bold style={{paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Chapter Podcasts</Text>
+          <BookList navigation={this.props.navigation} destinations={this.state.books}/>
+          </View>
+          </View>)
+        }
     }
 
     renderData = ({ section, index }) => {
@@ -395,13 +421,14 @@ class HomeScreen extends React.Component {
         if (i >= section.data.length) {
           break;
         }
-        items.push(<Podcast podcast={section.data[i]} index={index} navigation={this.props.navigation} />);
+        items.push(<Podcast isHomeScreen={true} podcast={section.data[i]} key={section.data[i].podcastID}  navigation={this.props.navigation}  />);
       }
       return (
         <View
           style={{
             flexDirection: "row",
-            justifyContent: "space-between"
+            justifyContent: "space-between",
+            paddingRight: width/10
           }}
         >
           {items}
@@ -411,37 +438,40 @@ class HomeScreen extends React.Component {
     
     renderHeader=()=>
     {
-      var podcasts1 = this.state.headerPodcasts.slice(0,4);
-      var podcasts2 = this.state.headerPodcasts.slice(4,8);
-      var podcasts3 = this.state.headerPodcasts.slice(8,12);
-      var podcasts4 = this.state.headerPodcasts.slice(12,16);
-      var podcasts5 = this.state.headerPodcasts.slice(16,20);
+      var podcasts1 = this.state.headerPodcasts.slice(0,8);
+      var podcasts2 = this.state.headerPodcasts.slice(8,16);
+      var podcasts3 = this.state.headerPodcasts.slice(16,24);
+      var podcasts4 = this.state.headerPodcasts.slice(24,32);
+      var podcasts5 = this.state.headerPodcasts.slice(32,40);
       return(
         // <View><Text>PODCASTS</Text></View>
-        <View style={{ paddingBottom:50, paddingRight:25, marginTop: Platform.OS == 'ios' ? 20 : 30 }}>
+        <View style={{ paddingBottom:50, marginTop: Platform.OS == 'ios' ? 20 : 30 }}>
           
         <SectionList
           showsVerticalScrollIndicator={false}
           ItemSeparatorComponent={this.FlatListItemSeparator}
           sections={[
-            { title: 'Username Starts with A', data: podcasts1 },
-            { title: 'Username Starts with B', data: podcasts2 },
-            { title: 'Username Starts with C', data: podcasts3 },
-            { title: 'Username Starts with D', data: podcasts4 },
-            { title: 'Username Starts with F', data: podcasts5 },
+            { title: 'A', data: podcasts1},
+            { title: 'B', data: podcasts2 },
+            { title: 'C', data: podcasts3 },
+            { title: 'D', data: podcasts4 },
+            { title: 'E', data: podcasts5 },
           ]}
+          keyExtractor={item => item.podcastID}
           renderSectionHeader={({ section }) => (
             <ScrollView>
-                <Text style={{fontSize: theme.sizes.font * 1.4, fontWeight: "bold",paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black',fontFamily:'sans-serif-light'}}>Record Book Podcasts
-                </Text>
-            {this.renderSectionBooks()}
-            <Text style={{fontSize: theme.sizes.font * 1.4,fontWeight: "bold", paddingLeft: 30,   textShadowColor:'black',fontFamily:'sans-serif-light'}}>Discover Podcasts
+                
+                {console.log("[HomeScreen] SECTION DATA: ",section)}
+                {console.log("[HomeScreen] SECTION TITLE: ",section.title)}
+
+            {this.renderSectionBooks(section.title)}
+            <Text h3 bold style={{paddingLeft: 30,   textShadowColor:'black'}}>Discover Podcasts
             </Text>
             </ScrollView>
           )}
           
           renderItem={this.renderData}
-          keyExtractor={(item, index) => index}
+          
         />
         
       </View>
@@ -495,17 +525,28 @@ class HomeScreen extends React.Component {
 
     render() {
       if(this.state.loading === true)
-        return <ActivityIndicator/>
+        return (
+          <View>
+            <View style={{paddingBottom: (height*5)/12}}>
+          {this.renderMainHeader()}
+              </View>
+          <ActivityIndicator/>
+          </View>      
+        ) 
+        
       else
         return (
-        <SafeAreaView style={{flex:1, backgroundColor:'#F5FCFF'}}>
+        // <SafeAreaView style={{flex:1, backgroundColor:'#F5FCFF'}}>
+        <View>
            {this.renderMainHeader()}
       <View style = {{paddingBottom:50}}>
         {this.renderPodcasts()}
         </View>
-  </SafeAreaView> 
+        </View>
+  // </SafeAreaView> 
       );
     }
   }
+
 
 export default withFirebaseHOC(HomeScreen);

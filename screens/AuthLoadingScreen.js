@@ -1,9 +1,13 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ActivityIndicator, AsyncStorage} from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator, AsyncStorage,TouchableOpacity, Dimensions} from 'react-native';
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import {createSwitchNavigator} from 'react-navigation'
 import firebaseApi from './config/Firebase/firebaseApi'
 import {withFirebaseHOC} from '../screens/config/Firebase'
+import setUserDetails from './setUserDetails';
+import Icon from 'react-native-vector-icons/FontAwesome'
+
+const {width,height} = Dimensions.get('window')
 
 class  AuthLoadingScreen extends Component {
     constructor(props)
@@ -14,19 +18,17 @@ class  AuthLoadingScreen extends Component {
             isAssetsLoadingComplete: false, 
           }
         }
-
         this.props.firebase._checkUserAuth=this.props.firebase._checkUserAuth.bind(this)
-       
         //this.loadApp();
     }
 
     componentDidMount=async()=>{
-    //  try {
-        // previously
-        //this.decideRoute()
+    
         console.log(this)
         console.log(this.props)
-     try{   await this.props.firebase._checkUserAuth(async (user)=>
+        //this.props.navigation.navigate('setPreferences')
+     try{   
+       await this.props.firebase._checkUserAuth(async (user)=>
           {
             console.log("Inside _checkUserAuth")
             console.log(this.props)
@@ -35,24 +37,33 @@ class  AuthLoadingScreen extends Component {
               console.log(user)
               try{
                 var unsubscribe = await firestore().collection('users').doc(user._user.uid).onSnapshot(
-                  async(doc)=> {
+                   (doc)=> {  
                     var source = doc.metadata.hasPendingWrites ? "Local" : "Server";
                     console.log(source, " data: ", doc.data());
+                    
                   if(doc.data()===undefined){
                     try{
                       console.log(this)
                       console.log(this.props)
-                      const addNewUser= await this.props.firebase._createNewUser(user)// 
-                       }
+                      console.log(this.state.fullName)
+                      this.props.navigation.navigate('setPreferences',{
+                        user : user, 
+                        //fullName:this.state.fullName
+                      })
+
+                      //const addNewUser= await this.props.firebase._createNewUser(user)
+                        }
                        catch(error)
                        {
                          console.log(error)
                        }
+                      // this.props.navigation.navigate('setPreferences')
                   }
                   else
                   {
-                        unsubscribe(); // unsubscribe the firestore onSnapshot listener 
-                        this.props.navigation.navigate('App');
+                        unsubscribe(); // unsubscribe the firestore onSnapshot listener
+                        this.props.navigation.navigate('setUserDetails',{user : doc.data()});
+                         
                   }
                 })
               }
@@ -64,6 +75,7 @@ class  AuthLoadingScreen extends Component {
             
           }
             else{
+             // this.props.navigation.navigate('setPreferences')
               this.props.navigation.navigate('Auth')
             }
        })
@@ -76,17 +88,6 @@ class  AuthLoadingScreen extends Component {
     
   }
 
-    /*loadLocalAsync = async () => {
-      return await Promise.all([
-        Asset.loadAsync([
-          require('../assets/flame.png'),
-          require('../assets/icon.png')
-        ]),
-        Font.loadAsync({
-          ...Icon.Ionicons.font
-        })
-      ])
-    }*/
 
     handleLoadingError = error => {
       // In this case, you might want to report the error to your error
@@ -105,13 +106,32 @@ class  AuthLoadingScreen extends Component {
     handleFinishLoading = () => {
       this.setState({ isAssetsLoadingComplete: true })
     }
+    
+    renderMainHeader=()=>
+    {
+      return(
+      <View style={styles.AppHeader}>
+         <TouchableOpacity onPress={()=>this.props.navigation.toggleDrawer()}>
+        <View style={{paddingLeft: 15,paddingRight:10 ,paddingVertical:18} }>
+          <Icon name="bars" size={22} style={{color:'white'}}/>
+        </View>
+        </TouchableOpacity>
+        <View>
+        <Text style={{fontFamily:'sans-serif-light', color:'white', paddingLeft:15, fontSize:15, paddingTop:20}}>Papyrus</Text>
+        </View>
 
+        </View>
+      )
+    }
 
     render() {
       return (
-        <View style={styles.container}>
-          <ActivityIndicator/>
-        </View>
+        <View>
+        <View style={{paddingBottom: height/3}}>
+      {this.renderMainHeader()}
+          </View>
+      <ActivityIndicator/>
+      </View>     
       );
     }
   }

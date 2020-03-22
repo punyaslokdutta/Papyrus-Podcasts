@@ -42,6 +42,28 @@ const categories = [
     image: require('../../../../assets/icons/fertilizers.png')
   },
 ];
+const products = [
+  {
+    id: 1,
+    name: "Computability theory",
+    description:
+      "Many problems in mathematics have been shown to be undecidable after these initial examples were established. Not every set of natural numbers is computable. The halting problem, which is the set of (descriptions of) Turing machines that halt on input 0, is a well-known example of a noncomputable set. The existence of many noncomputable sets follows from the facts that there are only countably many Turing machines, and thus only countably many computable sets, but according to the Cantors theorem, there are uncountably many sets of natural numbers",
+    tags: ["recursion theory", "subrecursive hierarchies", "Church–Turing thesis"],
+    images: [
+      require("../../../../assets/images/plants_1.png"),
+      require("../../../../assets/images/plants_2.png"),
+      require("../../../../assets/images/plants_3.png"),
+      // showing only 3 images, show +6 for the rest
+      require("../../../../assets/images/plants_1.png"),
+      require("../../../../assets/images/plants_2.png"),
+      require("../../../../assets/images/plants_3.png"),
+      require("../../../../assets/images/plants_1.png"),
+      require("../../../../assets/images/plants_2.png"),
+      require("../../../../assets/images/plants_3.png")
+    ]
+  }
+];
+
 
 
 
@@ -61,5 +83,5 @@ const profile = {
 
 export {
   categories,
-  profile,
+  profile,products
 }

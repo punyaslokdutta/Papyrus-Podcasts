@@ -190,14 +190,22 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-extra-dimensions-android')
+    implementation project(':react-native-video-exoplayer')
     implementation project(':react-native-svg')
+    implementation(project(":react-native-google-signin")){
+        exclude group: "com.google.android.gms" // very important
+    }
+    implementation 'com.google.android.gms:play-services-auth:16.0.0'
+    implementation 'com.google.firebase:firebase-core:16.0.1'
+   // implementation(project(":react-native-google-signin"))
+   // implementation 'com.google.firebase:firebase-storage:19.1.0'
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //implementation 'com.google.firebase:firebase-auth:19.0.0'
    // implementation 'com.google.firebase:firebase-firestore:21.1.0'
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation "com.facebook.react:react-native:+"  // From node_modules
     compile 'com.facebook.android:facebook-android-sdk:[4,5)' 
-
     if (enableHermes) {
       def hermesPath = "../../node_modules/hermesvm/android/";
       debugImplementation files(hermesPath + "hermes-debug.aar")

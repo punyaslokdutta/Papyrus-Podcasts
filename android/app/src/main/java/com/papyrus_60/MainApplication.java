@@ -6,15 +6,16 @@ import android.util.Log;
 import com.facebook.react.PackageList;
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
-import com.facebook.react.ReactApplication;
-//import com.reactnativecommunity.statusbar.RNCStatusBarPackage;
-import com.horcrux.svg.SvgPackage;
+import com.facebook.react.ReactApplication;
+import com.brentvatne.react.ReactVideoPackage;
+//import com.reactnativecommunity.statusbar.RNCStatusBarPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 //import io.invertase.firebase.auth.RNFirebaseAuthPackage;
 //import io.invertase.firebase.firestore.RNFirebaseFirestorePackage;
 import com.facebook.FacebookSdk;
+//import com.dimowner.audiorecorder.ReactNativeRecorderPackage;
 
 import java.util.List;
 
@@ -35,6 +36,8 @@ public class MainApplication extends Application implements ReactApplication {
       // packages.add(new MyReactNativePackage());
       //packages.add(new ImagePickerPackage()) ;
       //packages.add(new RNCStatusBarPackage());
+      //packages.add(new ReactNativeRecorderPackage());
+      packages.add(new ReactVideoPackage() );
       return packages;
     }
 

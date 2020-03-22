@@ -1,28 +1,27 @@
 // @flow
-import * as React from 'react';
-import { Dimensions, StyleSheet , Image, StatusBar,SafeAreaView,  TouchableOpacity , View,Text, ScrollView } from 'react-native';
-//import {
- // Video, Constants, DangerZone, GestureHandler,
-//} from 'expo';
-
+import React ,{ useState, useEffect , useRef, useCallback} from 'react';
+import { StyleSheet , Image, StatusBar,BackHandler, SafeAreaView,  TouchableNativeFeedback,TouchableOpacity , View,Text, ScrollView, Alert, Dimensions } from 'react-native';
 import Slider from "react-native-slider";
 import Moment from "moment";
+
 import { HeaderBackButton } from 'react-navigation';
 import HomeScreen from './HomeScreen'
-
-
-
-//import { type Video as VideoModel } from './videos';
+import {useSelector, useDispatch} from "react-redux"
+import ExtraDimensions from 'react-native-extra-dimensions-android';
+import { withNavigation } from 'react-navigation';
+import Animated, { Easing } from 'react-native-reanimated';
 import PodcastContent from '../screens/components/PodcastPlayer/PodcastContent';
 import PlayerControls, { PLACEHOLDER_WIDTH } from './components/PodcastPlayer/PlayerControl';
-import Animated, { Easing } from 'react-native-reanimated';
-import { PanGestureHandler, State } from 'react-native-gesture-handler';
-//const { Animated, Easing } = DangerZone;
-//const { State, PanGestureHandler } = GestureHandler;
-const { width, height } = Dimensions.get('window');
-const { statusBarHeight } = StatusBar.currentHeight
+import { PanGestureHandler, State, TouchableWithoutFeedback } from 'react-native-gesture-handler';
+var {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window');
+const height =ExtraDimensions.getRealWindowHeight();
+const width=ExtraDimensions.getRealWindowWidth();
+const STATUS_BAR_HEIGHT= ExtraDimensions.getStatusBarHeight();
+//const isNotchEnabled= SCREEN_HEIGHT+
+const SOFT_MENU_BAR_HEIGHT =  (ExtraDimensions.getSoftMenuBarHeight() === 0) ? 0 :ExtraDimensions.getSoftMenuBarHeight() ;
+
 const minHeight = height/12;
-const midBound = (height*10)/11 - height/45;
+const midBound = (height*10)/11 - (height/8 );
 const upperBound = midBound + minHeight;
 const {
   Extrapolate,
@@ -54,121 +53,104 @@ const shadow = {
 };
 
 
-
-
-const audioBookPlaylist = [
-  {
-    title: 'Hamlet - Act I',
-    author: 'William Shakespeare',
-    source: 'Librivox',
-    uri:
-      'https://ia800204.us.archive.org/11/items/hamlet_0911_librivox/hamlet_act1_shakespeare.mp3',
-    imageSource:
-      'http://www.archive.org/download/LibrivoxCdCoverArt8/hamlet_1104.jpg'
-  },
-]
-
-
-function runSpring(clock, value, dest) {
-  const state = {
-    finished: new Value(0),
-    velocity: new Value(0),
-    position: new Value(0),
-
-
-    time: new Value(0),
-  };
-
-  const config = {
-    damping: 20,
-    mass: 1,
-    stiffness: 100,
-    overshootClamping: false,
-    restSpeedThreshold: 1,
-    restDisplacementThreshold: 0.5,
-    toValue: new Value(0),
-  };
-
-  return [
-    cond(clockRunning(clock), 0, [
-      set(state.finished, 0),
-      set(state.velocity, 0),
-      set(state.position, value),
-      set(config.toValue, dest),
-      startClock(clock),
-    ]),
-    spring(clock, state, config),
-    cond(state.finished, stopClock(clock)),
-    state.position,
-  ];
-}
-
 /*type VideoModalProps = {
   video: VideoModel,
 };
 */
-export default class PodcastPlayer extends React.Component{
+const PodcastPlayer=(props)=>{
 
-  static navigationOptions = ({navigation}) => {
-    return{
-      headerLeft:(<HeaderBackButton onPress={()=>{navigation.navigate('HomeScreen')}}/>)
-   }
+
+  //const [state, changeState]=useState(0)
+  //Animation values
+   const   translationY =useRef(new Value(0)).current;
+
+  const velocityY = useRef(new Value(0)).current;
+
+  const offsetY = useRef(new Value(0)).current;
+
+  const offsetY2 = useRef(new Value(0)).current;
+
+  const gestureState = useRef(new Value(State.UNDETERMINED)).current;
+
+  function runSpring(clock, value, dest) {
+    const state = {
+      finished: new Value(0),
+      velocity: new Value(0),
+      position: new Value(0),
+      time: new Value(0),
+    };
+  
+    const config = {
+      damping: 20,
+      mass: 1,
+      stiffness: 100,
+      overshootClamping: false,
+      restSpeedThreshold: 1,
+      restDisplacementThreshold: 0.5,
+      toValue: new Value(0),
+    };
+  
+    return [
+      cond(clockRunning(clock), 0, [
+        set(state.finished, 0),
+        set(state.velocity, 0),
+        set(state.position, value),
+        set(config.toValue, dest),
+        startClock(clock),
+      ]),
+      spring(clock, state, config),
+      cond(state.finished, stopClock(clock)),
+      state.position,
+    ];
   }
-  translationY = new Value(0);
-
-  velocityY = new Value(0);
-
-  offsetY = new Value(0);
-
-  offsetY2 = new Value(0);
-
-  gestureState = new Value(State.UNDETERMINED);
+  
 
   //onGestureEvent: $Call<event>;
 
   //translateY: Value;
-
-  constructor(props) {
-    super(props);
-    this.state=
-    {
-     // title: "Book Podcast", 
-        trackLength: 300,
-        timeElapsed: "0:00",
-        timeRemaining: "5:00",
-    }
-    const {
-      translationY, velocityY, offsetY, gestureState: state, offsetY2,
-    } = this;
-    this.onGestureEvent = event(
+  
+    
+    
+    // const {
+    //   translationY, velocityY, offsetY, gestureState: state, offsetY2,
+    // } = this;
+    const onGestureEvent = (
+      event(
       [
         {
           nativeEvent: {
-            translationY,
-            velocityY,
-            state,
+            translationY,//:translationYRef.current,
+            velocityY,//:velocityYRef.current,
+            gestureState,//:gestureStateRef.current,
           },
         },
       ],
       { useNativeDriver: true },
       
-    );
-    const clockY = new Clock();
-    const finalTranslateY = add(add(translationY, offsetY), multiply(0.2, velocityY));
-    const snapPoint = cond(
+    )
+
+    
+      );
+
+
+    const clockY = useRef(new Clock()).current;
+    const finalTranslateY = useRef(add(add(translationY, offsetY), multiply(0.2, velocityY))).current;
+    const snapPoint = useRef(cond(
       lessThan(finalTranslateY, sub(offsetY, height / 4)),
       0,
-      upperBound,
-    );
-    this.translateY = cond(
-      eq(state, State.END),
+      0,
+    )).current;
+    console.log()
+
+     const translateY = useRef(cond(
+      eq(gestureState, State.END),
       [
         set(translationY, runSpring(clockY, add(translationY, offsetY), snapPoint)),
         set(offsetY, translationY),
         translationY,
       ],
       [
-        cond(eq(state, State.BEGAN), [
+        cond(eq(gestureState, State.BEGAN), [
           stopClock(clockY),
           cond(neq(offsetY2, 0), [
             set(offsetY, 0),
@@ -177,29 +159,118 @@ export default class PodcastPlayer extends React.Component{
         ]),
         add(offsetY, translationY),
       ],
-    );
-  }
-
+    )).current;
   
 
-  componentDidUpdate(prevProps) {
-    if (prevProps !== this.props) {
-      this.slideUp();
-    }
+
+
+    //BackHandler.addEventListener('hardwareBackPress', this.back_Buttton_Press);
+   const  isMiniPlayer = useSelector(state=>state.rootReducer.isMiniPlayer);
+   const navigation=useSelector(state=>state.userReducer.navigation)
+   const  dispatch=useDispatch();
+
+   //componentDidMount
+    useEffect(
+      () => {
+        console.log("Inside useEffect - componentDidMount of PodcastPlayer");
+        BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
+        return () => {
+          console.log(" back_Button_Press Unmounted");
+          BackHandler.removeEventListener("hardwareBackPress",  back_Button_Press);
+        };
+      }, [back_Button_Press])
+
+      useEffect(
+        () => {
+          console.log("Inside useEffect - componentDidUpdate of PodcastPlayer");
+          if(isMiniPlayer)
+          {
+          slideUp();
+          }
+          
+        }, [props.podcast])
+    
+      
+    //componentDidUpdate
+  function slideDown()
+  {
+    if(!isMiniPlayer)
+    {
+      dispatch({type:"TOGGLE_MINI_PLAYER"})
+      
+      timing(offsetY, {
+        toValue: upperBound,
+        duration: 800,
+        easing: Easing.inOut(Easing.ease),
+        useNativeDriver: true
+      }).start();
+
+     // dispatch({type:"TOGGLE_MINI_PLAYER"})
+
+      
+      //return true;
+      //dispatch({type:"TOGGLE_MINI_PLAYER"})
+      
   }
+  else
+  {
+    //dispatch({type:"TOGGLE_MINI_PLAYER"})
+    slideUp();
+  }
+    
+  }
+  function back_Button_Press()
+  {
+    console.log("Inside BackButton Press");
+    if(!isMiniPlayer)
+    {
+      dispatch({type:"TOGGLE_MINI_PLAYER"})
+      
+      timing(offsetY, {
+        toValue: upperBound,
+        duration: 1000,
+        easing: Easing.inOut(Easing.ease),
+        useNativeDriver: true
+      }).start();
 
-  slideUp = () => timing(this.offsetY2, {
+     // dispatch({type:"TOGGLE_MINI_PLAYER"})
+
+      
+      return true;
+      //dispatch({type:"TOGGLE_MINI_PLAYER"})
+      
+  }
+  return false;
+ 
+
+
+    //BackHandler.removeEventListener('hardwareBackPress', this.back_Buttton_Press);
+
+   
+
+ 
+  }
+ 
+  function slideUp(){
+    dispatch({type:"TOGGLE_MINI_PLAYER"})
+    timing(offsetY, {
     toValue: -upperBound,
-    duration: 300,
+    duration: 1000,
     easing: Easing.inOut(Easing.ease),
+    useNativeDriver: true
   }).start();
+  
 
-  render() {
-    const {
-      onGestureEvent, translateY: y, offsetY2,
-    } = this;
-    const translateY = add(y, offsetY2);
-    const { podcast } = this.props;
+
+
+}
+
+
+    //const  onGestureEvent, translateY, offsetY2 ;
+     //const translateY = add(y, offsetY2);
+    // const { podcast } = this.props;
+ 
+   
     const tY = interpolate(translateY, {
       inputRange: [0, midBound],
       outputRange: [0, midBound],
@@ -227,7 +298,12 @@ export default class PodcastPlayer extends React.Component{
     });
     const videoHeight = interpolate(translateY, {
       inputRange: [0, midBound, upperBound],
-      outputRange: [height*15/24, minHeight * 1.3, minHeight],
+      outputRange: [height*12/24, minHeight * 1.3, minHeight],
+      extrapolate: Extrapolate.CLAMP,
+    });
+    const videoBorderRadius = interpolate(translateY, {
+      inputRange: [0, midBound, upperBound],
+      outputRange: [0, 10, 2],
       extrapolate: Extrapolate.CLAMP,
     });
     
@@ -241,46 +317,42 @@ export default class PodcastPlayer extends React.Component{
       outputRange: [0, 1],
       extrapolate: Extrapolate.CLAMP,
     });
+    console.log("In THIS of PodcastPlayer : ",this);
     return (
     
       <Animated.View
       style={{
         transform: [{ translateY: tY }],
-        ...shadow,
+        //...shadow,
       }}
     >
-        <PanGestureHandler
-          onHandlerStateChange={onGestureEvent}
-          activeOffsetY={[-10, 10]}
-          {...{ onGestureEvent }}
-        >
-          
+          <TouchableNativeFeedback onPress={slideDown}>
             <Animated.View style={{ backgroundColor: 'white', width: videoContainerWidth }}>
               <Animated.View style={{ ...StyleSheet.absoluteFillObject, opacity: playerControlOpaciy }}>
-                <PlayerControls title={this.props.podcast.Podcast_Name} onPress={this.slideUp} />
+                <PlayerControls title={props.podcast.Podcast_Name} onPress={slideUp}      />
               </Animated.View>
               <Animated.Image
-                source={{uri:this.props.podcast.Podcast_Pictures[0]}}
-                style={{ width: videoWidth, height: videoHeight }}
+                source={{uri:props.podcast.Podcast_Pictures[0]}}
+                style={{ width: videoWidth, height: videoHeight, borderColor:'black' }}
               />
+
                </Animated.View>
-               </PanGestureHandler>
-               <ScrollView  scrollEventThrottle={16} >
+               </TouchableNativeFeedback>
+               
+               <View>
               
             
             <Animated.View style={{ backgroundColor: 'white', width: videoContainerWidth, height: containerHeight }}>
               <Animated.View style={{ opacity }}>
-                <PodcastContent trackLength={this.state.trackLength} podcast={this.props.podcast} />
+              <PodcastContent userID={props.userID} podcast={props.podcast} navigation={navigation} slideDown={slideDown} />
               </Animated.View>
             </Animated.View>
-            </ScrollView> 
+            </View> 
 
 
-            </Animated.View>
-         
-       
-        
-      
+            </Animated.View>    
     );
-  }
+  
 }
+
+export default PodcastPlayer;

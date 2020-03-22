@@ -1,13 +1,12 @@
 
-import React, {Component, useState, useEffect, useContext} from 'react';
+import React, {Component, useState, useEffect, useContext, useRef} from 'react';
 import { StyleSheet, Text, View, Image, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
-import FontAwesome, { Icons } from 'react-native-fontawesome';
-import Octicons from 'react-native-vector-icons/Octicons';
 import * as theme from '../constants/theme'
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import PodcastPlayer from '../../PodcastPlayer'
-import PlayerContext from '../PodcastPlayer/PlayerContext'
+import InnerPodcast from './InnerPodcast'
+import {useDispatch} from "react-redux"
+import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
 
 
 var {width, height}=Dimensions.get('window')
@@ -125,27 +124,49 @@ const styles = StyleSheet.create({
       },
   });
 
- const areEqual = (prevProps, nextProps) => true;
+
+
+
+ /* useContext doesn't let you subscribe to a part of the context value (or some memoized selector) without fully re-rendering.*/
+ //const areEqual = (prevProps, nextProps) => true;
+ const areEqual = (prevProps, nextProps) => true
  const Podcast= React.memo((props)=> {
-  
-  console.log("IN PODCAST ");
-    console.log(props.podcast);
-   const context = useContext(PlayerContext)
+  console.log("Inside Podcast")
+  console.log(props);
+
+  const dispatch=useDispatch();
+
+ const _menu = useRef(null);
+ 
+  setMenuRef = ref => {
+    _menu = ref;
+  };
+ 
+  hideMenu = () => {
+    _menu.hide();
+  };
+ 
+  showMenu = () => {
+    _menu.show();
+  };
+
   /*useEffect(() => {
     //setPodcastState(props);
   }, []);*/
-  setPlayerContext=()=>
-  {
-    context.setPodcast(props.podcast)
-  }
- 
-        return (   
+        return ( 
           <View style={[
             styles.flex, styles.column, styles.recommendation, styles.shadow, 
             {marginLeft: theme.sizes.margin },
           ]} key ={props.index}>
            <View style={[styles.flex, styles.recommendationHeader]}>
-           <TouchableOpacity  onPress={this.setPlayerContext}>
+           <TouchableOpacity  onPress={(()=>{
+             dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
+             dispatch({type:"SET_PODCAST", payload: props.podcast}) 
+             dispatch({type:"SET_NUM_LIKES", payload: props.podcast.numUsersLiked})
+             if(props.isHomeScreen)
+                dispatch({type:"SET_IS_HOME_SCREEN", payload: props.isHomeScreen})
+
+            })}>
            <Image style={[styles.recommendationImage]} source={ {uri: props.podcast.Podcast_Pictures["0"]}} />
 
            </TouchableOpacity>
@@ -165,16 +186,18 @@ const styles = StyleSheet.create({
                 { alignItems: 'center', justifyContent: 'space-between'}
               ]}>
                 
-                <Text style={{  fontSize: theme.sizes.font * 0.9, fontStyle: 'italic',color: theme.colors.gray_green }}>
+                <Text style={{  fontSize: theme.sizes.font * 0.9,color: theme.colors.gray_green }}>
                   {props.podcast.Timestamp}
                 </Text>
                 <View style={{alignItems: 'flex-end',paddingRight:5}}>
             <Icon
-              name={props.podcast.saved ? 'bookmark' : 'bookmark-o'}
+              name="ellipsis-v"
               color={theme.colors.black}
               size={theme.sizes.font * 1.25}
             />
           </View>
+
+          
               </View>
               <View>
               <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
@@ -184,7 +207,9 @@ const styles = StyleSheet.create({
             </View>
           </View>
           
+          
           );
+        
     
   }, areEqual);
 

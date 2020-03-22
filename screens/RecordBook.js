@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import firestore from '@react-native-firebase/firestore';
-import ActivityIndicator from 'react-native';
 import { Text, StyleSheet, View, Animated, Image, Dimensions, ScrollView, TouchableOpacity } from 'react-native'
 import {Card, CardItem,  Body} from 'native-base'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import SelectScreen from '../screens/SelectScreen'
 import PodcastPlayer from '../screens/PodcastPlayer'
 import AddModal from '../screens/components/Record/AddModal'
+import { withNavigation } from 'react-navigation';
 //import Animated, { Easing } from 'react-native-reanimated';
 
 import * as theme from './components/constants/theme';
@@ -67,8 +66,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     padding: theme.sizes.padding,
     backgroundColor: theme.colors.white,
-    borderTopLeftRadius: theme.sizes.radius,
-    borderTopRightRadius: theme.sizes.radius,
+    borderTopLeftRadius: theme.sizes.radius*4,
+    borderTopRightRadius: theme.sizes.radius*4,
     marginTop: -theme.sizes.padding / 2,
   },
   avatar: {
@@ -299,8 +298,8 @@ class RecordBook extends Component {
             <TouchableOpacity onPress={()=>this.props.navigation.navigate('SelectScreen')}>
               <Card style={{borderRadius: 5  ,width:((width*4)/5 ) , height:(height)/8 , paddingTop :10}}>
               <CardItem style={{flexDirection:'column', alignItems:'center'}}>
-            <FontAwesome name="microphone" color={theme.colors.black} size={theme.sizes.font * 2} />
-            <Text>Record your Views</Text>
+             <FontAwesome name="microphone" color={theme.colors.black} size={theme.sizes.font * 2} />
+            <Text>Record</Text>
             </CardItem>
             </Card>
           </TouchableOpacity>
@@ -342,4 +341,4 @@ class RecordBook extends Component {
   }
 }
 
-export default RecordBook;
+export default withNavigation(RecordBook);
