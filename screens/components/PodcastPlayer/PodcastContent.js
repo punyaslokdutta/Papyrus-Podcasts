@@ -99,6 +99,11 @@ async function updatePodcastsLiked(props){
   
   console.log("[PodcastContent] In function updatePodcastsLiked, numUsers = ",numUsers);
 
+  // const numlikedUsers = await firestore().collection('Books').doc(props.podcast.BookID).collection('Podcasts').doc(props.podcast.PodcastID)
+  //                                 .update({
+  //   numUsersLiked : firestore.FieldValue.increment(1)
+  // },{merge:true})
+  
   const numlikedUsers = await firestore().collection('Books').doc(props.podcast.BookID).collection('Podcasts').doc(props.podcast.PodcastID)
                                   .set({
     numUsersLiked : numUsers
