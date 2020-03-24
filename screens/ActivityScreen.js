@@ -51,18 +51,27 @@ class ActivityScreen  extends React.Component {
       const privateDataID = "private" + userid;
 
       let activityQuery = await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).collection('Activities')
-                                .orderBy('creationTimestamp','desc').limit(this.state.limit).get();
-      let documentActivities = activityQuery._docs.map(document => document._data);
-      console.log("Document Activities: ",documentActivities);
+                                .orderBy('creationTimestamp','desc').limit(this.state.limit).onSnapshot(
+                                  (querySnapshot) =>
+                                  {
+                                    var documentActivities = [];
 
-      var lastVisible = this.state.lastVisibleActivity;
-      lastVisible = documentActivities[documentActivities.length - 1].creationTimestamp;
-
-      this.setState({
-        activities: documentActivities,
-        lastVisibleActivity: lastVisible,
-        loading: false
-      });
+                                    querySnapshot.forEach(function(doc) {
+                                      documentActivities.push(doc.data());
+                                  });
+                                    //let documentActivities = docs.map(document => document._data);
+                                    console.log("Document Activities: ",documentActivities);
+                              
+                                    //var lastVisible = this.state.lastVisibleActivity;
+                                    var lastVisible = documentActivities[documentActivities.length - 1].creationTimestamp;
+                              
+                                    this.setState({
+                                      activities: documentActivities,
+                                      lastVisibleActivity: lastVisible,
+                                      loading: false
+                                    });
+                                   }
+                                ); 
     }
     catch (error) {
       console.log(error);
@@ -81,7 +90,7 @@ class ActivityScreen  extends React.Component {
 
         //const  userid = this.props.firebase._getUid();
         const  userid = this.props.firebase._getUid();
-        const privateDataID = "private" + userID;
+        const privateDataID = "private" + userid;
         let additionalQuery = 9;
         try{
           additionalQuery = await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).collection('Activities')

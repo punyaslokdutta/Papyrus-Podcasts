@@ -12,6 +12,7 @@ import { withFirebaseHOC } from '../config/Firebase';
 import firestore from '@react-native-firebase/firestore';
 import {useDispatch,useSelector} from "react-redux"; 
 import { firebase } from '@react-native-firebase/functions';
+import moment from 'moment';
 
 //const admin = require('firebase-admin')
 
@@ -44,7 +45,7 @@ async function retrieveData(message,userid,item,userDisplayPictureURL,name,userI
                try 
                {          
                  await instance({ // change in podcast docs created by  user
-                   timestamp : Date.now(),
+                   timestamp : moment().format(),
                    photoURL : userDisplayPictureURL,
                    PodcastID : null,
                    userID : item.id,

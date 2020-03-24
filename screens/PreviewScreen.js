@@ -13,6 +13,7 @@ import ImageResizer from 'react-native-image-resizer';
 import * as Progress from 'react-native-progress';
 import Toast from 'react-native-simple-toast';
 import HomeScreen from './HomeScreen';
+import moment from 'moment';
 
 const { width, height } = Dimensions.get('window');
 const options = {
@@ -33,6 +34,7 @@ const PreviewScreen = (props) => {
   const BookName=useSelector(state=>state.recorderReducer.BookName)
   const AuthorName=useSelector(state=>state.recorderReducer.AuthorName)
   const LanguageSelected=useSelector(state=>state.recorderReducer.LanguageSelected)
+  const bookId=useSelector(state=>state.recorderReducer.bookId)
  
   //BOOK_ID to be returned from recorderReducer which will be dispatched by Algolia 
   //For Now, Books which are not present in our database is handled. 
@@ -79,10 +81,10 @@ const PreviewScreen = (props) => {
 
         dispatch({type:"ADD_NUM_CREATED_BOOK_PODCASTS", payload: incrementedValue}) &&
 
-        firestore().collection('Books').doc('7gGB4CjIiGRgB8yYD8N3').collection('Podcasts')
+        firestore().collection('Books').doc(bookId).collection('Podcasts')
       .add({
         AudioFileLink: podcastAudioDownloadURL,
-        BookID: '7gGB4CjIiGRgB8yYD8N3', 
+        BookID: bookId, 
         ChapterName: "",
         Book_Name: BookName, 
         Duration: Duration,
@@ -90,7 +92,7 @@ const PreviewScreen = (props) => {
         Language: LanguageSelected,
         Podcast_Name: PodcastName,
         Podcast_Pictures: [podcastImageDownloadURL],
-        Timestamp: "20/5/2019",
+        Timestamp: moment().format(),
         description: Description,
         Tags_Array : Tags.tagsArray,
         podcasterID: userID,
@@ -99,7 +101,7 @@ const PreviewScreen = (props) => {
     })
     .then(function(docRef, props) {
         console.log("Document written with ID: ", docRef.id);
-        firestore().collection('Books').doc('7gGB4CjIiGRgB8yYD8N3').collection('Podcasts')
+        firestore().collection('Books').doc(bookId).collection('Podcasts')
                 .doc(docRef.id).set({
                     PodcastID: docRef.id
                 },{merge:true})
@@ -201,7 +203,7 @@ const PreviewScreen = (props) => {
         },
         error => {
           //unsubscribe();
-          console.log("image upload error: " + error.toString()); 
+          console.log("File upload error: " + error.toString()); 
         },
         () => {
           storageRef.getDownloadURL()
@@ -299,6 +301,7 @@ const PreviewScreen = (props) => {
       
       <View style={{ paddingLeft: width / 8, paddingBottom: 10 }}>
         <TextInput
+          value={BookName}
           style={styles.TextInputStyleClass2}
           underlineColorAndroid="transparent"
           placeholder={"Book Name" }

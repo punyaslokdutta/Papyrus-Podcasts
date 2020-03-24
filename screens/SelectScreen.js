@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect, useCallback} from 'react';
-import { TouchableOpacity,StyleSheet, Text, View, SafeAreaView, Dimensions, NativeModules,NativeEventEmitter} from 'react-native';
+import { TouchableOpacity,StyleSheet, Text, Image,View, SafeAreaView, Dimensions, NativeModules,NativeEventEmitter} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import AddModal from '../screens/components/Record/AddModal'
 import AddChapterModal from '../screens/components/Record/AddChapterModal'
@@ -9,22 +9,37 @@ import PreviewScreen from '../screens/PreviewScreen'
 import {useSelector, useDispatch} from 'react-redux'
 import { withFirebaseHOC } from './config/Firebase';
 import { duration } from 'moment';
+import SearchTabNavigator from './navigation/SearchTabNavigator'
+
 
 const { width, height } = Dimensions.get('window');
 
 const SelectScreen =(props)=> {
+
+  var bookSelected = null;
+  if(props.navigation.state.params !== undefined)
+     bookSelected = props.navigation.state.params.bookItem;
+  console.log("[SelectScreen] Book Selected: ",bookSelected);
+
   const [categoryClicked, setcategoryClicked]=useState(null);
-  const [BookName, setBookName]=useState(null);
+  const [BookName, setBookName]=useState();
   const [ChapterName, setChapterName]=useState(null);
   const [AuthorName, setAuthorName]=useState(null);
   const [LanguageSelected, setLanguageSelected]=useState(null);
+  const [bookId, setBookId]=useState(null);
+
+  
+  // if(bookSelected != null)
+  // {
+  //   setBookName(bookSelected.title);
+  // }
   //const [recordedFilePath, setRecordedFilePath]=useState(null);
   //const eventEmitter=useRef(new NativeEventEmitter(NativeModules.ReactNativeRecorder)).current;
   const addModal=React.createRef(null);
   const addChapterModal=React.createRef(null);
   const tagSelected=React.createRef(null);
-
-  //const podcast=useSelector(state=>state.rootReducer.podcast)
+  
+  
   const dispatch=useDispatch();
 
 
@@ -35,6 +50,17 @@ const SelectScreen =(props)=> {
     }, [tagSelected]
   )
  
+  useEffect(
+    () =>
+    {
+      if(bookSelected != null)
+      {
+        setBookName(bookSelected.title);
+        setBookId(bookSelected.bookID);
+        setAuthorName(bookSelected.authors[0])
+      }
+    },[bookSelected]
+  )
 
   // useEffect(
   //   () => {
@@ -124,26 +150,14 @@ const SelectScreen =(props)=> {
         </TouchableOpacity>
 
         </View>
-        <View style={{paddingVertical:height/24, alignItems:'center'} }>
-      <View style={{paddingBottom:20, alignItems:'center'}}>
-      <Text style={{fontFamily:'sans-serif-light', color:'white',  fontSize:10}}>{BookName}</Text>
-      <Text style={{fontFamily:'sans-serif-light', color:'white',  fontSize:10}}>{AuthorName}</Text>
-      <Text style={{fontFamily:'sans-serif-light', color:'white',  fontSize:10}}>{LanguageSelected}</Text>
-       </View>   
-          <Text style={{fontFamily:'sans-serif-light', color:'white',  fontSize:14}}>Select the category you want</Text>
-          <Text style={{fontFamily:'sans-serif-light', color:'white', fontSize:14}}>to record/upload</Text>
-          
-        </View>
 
-         <View style={{paddingVertical:height/20, flexDirection:'row', paddingLeft:width/4} }>
-         <View>
+         {/* <View style={{paddingVertical:30, paddingBottom: height/10, flexDirection:'column', paddingLeft:width/8, paddingRight:width/8} }> */}
+         {/* <View>
          <TouchableOpacity onPress={onPressAdd}  >
          <Icon name="book" size={50} style={{color:'white'}}/>
          </TouchableOpacity>
          <Text style={{fontFamily:'sans-serif-light', color:'white', fontSize:14, paddingTop:5}}>Book</Text>
          </View>
-         
-        
 
 
          <View style={{paddingLeft:width/4}}>
@@ -152,20 +166,49 @@ const SelectScreen =(props)=> {
          </TouchableOpacity>
          <Text style={{fontFamily:'sans-serif-light', color:'white', fontSize:14, paddingTop:5}}>Chapter</Text>
          
-         </View>
+         </View> */}
 
+        <View style={{paddingVertical:30, paddingBottom: height/20, flexDirection:'column', paddingLeft:width/8, paddingRight:width/8} }>
+          <TouchableOpacity onPress={()=>{props.navigation.navigate('SearchTabNavigator')}}>
+        <View style={{flexDirection:'row',height:height/12, backgroundColor: '#101010', paddingRight: 13, paddingVertical:10, width:((width*7)/8)-10 }}>
+        
+            <Text style={{ flex:1, fontWeight:'500',borderRadius:20,backgroundColor:'white',fontSize:15,borderColor:'white', 
+              paddingTop: 7, paddingHorizontal: 10 }}>
+            
+              <Icon style={{paddingHorizontal:10,paddingTop:20 }} name="search" size={20} />
+              
+
+              {"  "}Search Content, Books, Chapters
+               </Text> 
+
+        </View>
+        </TouchableOpacity>
+        </View> 
+      
+        <View style={{height:height*2/13,paddingLeft:width/5,paddingRight:width/5}}>
+        
+          {
+            (bookSelected != null) ? 
+            <View style={{flexDirection:'row'}}>
+            <View>
+            <Image style={{width:width/4,height:height*2/13}} source={{uri: bookSelected.bookPictures[0]}}/>
+            </View>
+            <View style={{paddingLeft:5,flexDirection:'column'}}>
+            <Text style={{fontSize:15,color:'white'}}>{bookSelected.title}</Text>
+            <Text style={{color:'white'}}>{bookSelected.authors[0]}</Text>
+            </View>
+             </View>
+             :
+            <Text>No book/chapter selected</Text>
+          }  
+         
+        
+        </View>
+    
+    
          
          
-        </View>
-        <View style={{paddingVertical:height/24, alignItems:'center'} }>
-          <Text style={{fontFamily:'sans-serif-light', color:'white',  fontSize:14}}>Select the Language you want</Text>
-          <Text style={{fontFamily:'sans-serif-light', color:'white', fontSize:14}}>to record/upload with </Text>
-          
-        </View>
-        <View>
-
-
-          </View>
+        
 
         <View style={{paddingVertical:height/40, paddingLeft:width/11}}>
         <TagSelect itemStyle={styles.item}
@@ -206,15 +249,19 @@ const SelectScreen =(props)=> {
         <View>
             <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/20, width:(width*7)/24, borderRadius:15, borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }} 
             onPress={() => {
-                         if (BookName === null || AuthorName === null || LanguageSelected === null) {
-                            alert("You must choose Category and Language of your Podcast");
+              console.log("[SelectScreen] BookName : ",BookName);
+
+                         if (BookName === null || AuthorName===null|| LanguageSelected ===null) {
+
+                            alert("You must choose Category and Language of your Podcast",BookName);
                             return;
                         }  
-
+                        dispatch({type:'CHANGE_BOOK_ID', payload:bookSelected.bookID})
                         dispatch({type:'CHANGE_BOOK',payload:BookName})
                         dispatch({type:'CHANGE_CHAPTER',payload:ChapterName}) 
                         dispatch({type:'CHANGE_AUTHOR',payload:AuthorName}) 
                         dispatch({type:'CHANGE_LANGUAGE',payload:LanguageSelected}) 
+
                         NativeModules.ReactNativeRecorder.uploadActivity()
  
                          }
@@ -230,6 +277,7 @@ const SelectScreen =(props)=> {
                             alert("You must choose Category and Language of your Podcast");
                             return;
                         } 
+                        dispatch({type:'CHANGE_BOOK_ID', payload:bookSelected.bookID})
                         dispatch({type:'CHANGE_BOOK',payload:BookName})
                         dispatch({type:'CHANGE_CHAPTER',payload:ChapterName}) 
                         dispatch({type:'CHANGE_AUTHOR',payload:AuthorName}) 

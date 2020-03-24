@@ -193,7 +193,7 @@ class Explore extends React.Component {
           <TouchableOpacity onPress={() => this.props.navigation.navigate('SearchTabNavigator')}>
         <View style={{flexDirection:'row',height:this.startHeaderHeight, backgroundColor: 'white', paddingRight: 13, paddingVertical:10}}>
         
-            <Text style={{ flex:1, fontWeight:'700',borderRadius:2,backgroundColor:'#dddd',fontSize:15,
+            <Text style={{ flex:1, fontWeight:'400',borderRadius:2,backgroundColor:'#dddd',fontSize:15,
               paddingTop: 7, paddingHorizontal: 10 }}>
             
               <Icon style={{paddingHorizontal:10,paddingTop:20 }} name="search" size={20} />

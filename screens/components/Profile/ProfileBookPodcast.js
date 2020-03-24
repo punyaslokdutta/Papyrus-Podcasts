@@ -52,24 +52,26 @@ class ProfileBookPodcast extends React.Component {
         console.log('Retrieving Data');
         // Cloud Firestore: Query
         const  userid = this.props.firebase._getUid();
-        let query3 = await firestore().collectionGroup('Podcasts').where('podcasterID','==',userid);    
-        let documentPodcasts = await query3.where('ChapterName','==',"").orderBy('PodcastID').limit(this.state.limit).get();
-       // let documentChapterPodcasts = await query3.where('isChapterPodcast','==',true).limit(this.state.limit).get();
-        let documentData_podcasts = documentPodcasts.docs.map(document => document.data());
-        //let documentData_chapterPodcasts = documentChapterPodcasts.docs.map(document => document.data());
-        var lastVisibleBook = this.state.lastVisibleBookPodcast;
-        //var lastVisibleChapter = this.state.lastVisibleChapterPodcast;
+        let query3 = await firestore().collectionGroup('Podcasts').where('podcasterID','==',userid).   
+                      where('ChapterName','==',"").orderBy('Timestamp','desc').limit(this.state.limit)
+                       .onSnapshot((querySnapshot) =>
+                        {
+                          var documentData_podcasts = [];
 
-        lastVisibleBook = documentData_podcasts[documentData_podcasts.length - 1].PodcastID;        
-        //lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].PodcastID;
-         
-        this.setState({
-        bookPodcasts: documentData_podcasts,
-       // chapterPodcasts: documentData_chapterPodcasts,
-        lastVisibleBookPodcast:lastVisibleBook,
-        //lastVisibleChapterPodcast: lastVisibleChapter,
-        loading:false
-        });
+                          querySnapshot.forEach(function(doc) {
+                            documentData_podcasts.push(doc.data());
+                        });
+                          var lastVisibleBook = this.state.lastVisibleBookPodcast;
+                          lastVisibleBook = documentData_podcasts[documentData_podcasts.length - 1].PodcastID;        
+                          
+                          this.setState({
+                          bookPodcasts: documentData_podcasts,
+                          lastVisibleBookPodcast:lastVisibleBook,
+                          loading:false
+                          });
+                        }
+        )
+        
       }
       catch (error) {
         console.log(error);
@@ -91,7 +93,7 @@ class ProfileBookPodcast extends React.Component {
          try{
            additionalQuery = await firestore().collectionGroup('Podcasts')
                             .where('podcasterID','==',userid).where('ChapterName','==',"")
-                            .orderBy('PodcastID')
+                            .orderBy('Timestamp','desc')
                             .startAfter(this.state.lastVisibleBookPodcast)
                             .limit(this.state.limit);
         

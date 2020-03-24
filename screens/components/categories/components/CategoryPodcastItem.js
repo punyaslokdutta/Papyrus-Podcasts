@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
 
         return (
           <TouchableOpacity  onPress={(()=>dispatch({type:"SET_PODCAST", payload: props.podcast}))}>
-             <View style={{flex:1,flexDirection:"row",paddingLeft:width/64,width:width,height:height/6}}>
+             <View style={{flex:1,flexDirection:"row",paddingLeft:width/64,width:width,height:height/5}}>
                
                <View style={[styles.flex, styles.column, styles.shadow, { width:(width)/2,padding: theme.sizes.padding / 4 }]}>
                  <View style={{height:(height)/16}}>
