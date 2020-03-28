@@ -18,7 +18,10 @@ const INITIAL_STATE = {
     totalMinutesRecorded : 0,
     navigation:null,
     website:null,
-    algoliaQuery: ""
+    algoliaQuery: "Papyrus",
+    algoliaBookQuery: "",
+    selectedOnlyBookItem: null,
+    numNotifications: 0
   };
   
   function userReducer(state = INITIAL_STATE, action)  {
@@ -27,10 +30,16 @@ const INITIAL_STATE = {
             return {...state,userItem:action.payload}
         case "ADD_NAVIGATION":
             return {...state,navigation:action.payload}
+        case "ADD_NUM_NOTIFICATIONS":
+            return {...state,numNotifications:action.payload}
         case "CHANGE_EMAIL":
             return {...state,email:action.payload}
         case "SET_ALGOLIA_QUERY":
             return {...state,algoliaQuery:action.payload}
+        case "SET_ALGOLIA_BOOK_QUERY":
+            return {...state,algoliaBookQuery:action.payload}
+        case "SELECT_ONLY_BOOK_ITEM":
+            return {...state,selectedOnlyBookItem:action.payload}
         case "CHANGE_NAME":
             return {...state, name:action.payload}
         case "CHANGE_WEBSITE":

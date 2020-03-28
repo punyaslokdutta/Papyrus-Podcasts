@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import { StyleSheet, View,SafeAreaView, TextInput, Platform, StatusBar,TouchableOpacity, ScrollView, Image,Dimensions, Animated,SectionList,ActivityIndicator } from 'react-native';
+import { StyleSheet, View,SafeAreaView, TextInput, Platform, StatusBar,NativeModules,TouchableOpacity, ScrollView, Image,Dimensions, Animated,SectionList,ActivityIndicator , NativeEventEmitter} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import {Container, Content, Card, Button} from 'native-base'
@@ -190,7 +190,9 @@ class HomeScreen extends React.Component {
         lastVisibleID:null,
         loading: false,
         refreshing: false,
+        //eventListener:null, 
       };
+
     }
   }
 
@@ -200,6 +202,8 @@ class HomeScreen extends React.Component {
   });
 
     componentDidMount = async () => {
+
+      
       try {
         this.retrieveData();
       }
@@ -207,6 +211,12 @@ class HomeScreen extends React.Component {
         console.log(error);
       }
     };
+    
+    
+
+  
+
+
 
     retrieveData = async () => {
       try {
@@ -516,7 +526,7 @@ class HomeScreen extends React.Component {
         ListHeaderComponent={this.renderHeader}
          ListFooterComponent={this.renderFooter}
         onEndReached={this.onEndReached}
-        onEndReachedThreshold={0.01}
+        onEndReachedThreshold={0.5}
         refreshing={this.state.refreshing}
         onMomentumScrollBegin={() => { this.onEndReachedCalledDuringMomentum = false; }}
       />   

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, useState,useEffect, useRef, createRef} from 'react';
 import SearchScreen from './components/Explore/SearchScreen'
 import * as theme from '../screens/components/constants/theme';
 import firestore from '@react-native-firebase/firestore';
@@ -14,284 +14,246 @@ import Podcast from './components/Home/Podcast'
 import ExploreBook from './components/Explore/ExploreBook'
 import searchIcon from '../assets/searchIcon.png';
 import PreviewScreen from './PreviewScreen';
+import { Badge } from 'react-native-elements'
+import {useSelector, useDispatch} from "react-redux"
+import { ActionSheet } from 'native-base';
 
 const {width,height} = Dimensions.get('window')
 
-class Explore extends React.Component {
+const Explore = (props) => {
 
-  constructor(props)
+  var [storytellers,setStorytellers] = useState([]);
+  var [podcasts,setPodcasts] = useState([]);
+  var [books,setBooks] = useState([]);
+  var [chapters,setChapters] = useState([]);
+  var [loading,setLoading] = useState(false);
+  const dispatch=useDispatch();
+  //const eventEmitter=useRef(new NativeEventEmitter(NativeModules.ReactNativeRecorder));
+ 
+  var startHeaderHeight  = 60;
+
+  var numNotifications = useSelector(state=>state.userReducer.numNotifications);
+
+  if(Platform.OS == 'Android')
   {
+    startHeaderHeight = StatusBar.currentHeight;
+  }
 
+  async function fetchExploreItems()
+  {
+    console.log('[Explore] useEffect in Explore Screen[componentDidMount]');
+    setLoading(true);
+    let userQuery = await firestore().collectionGroup('privateUserData').where('isTopStoryTeller','==',true).get();
+    let podcastQuery = await firestore().collectionGroup('Podcasts').where('isTrendingPodcast','==',true).get();
+    let bookQuery = await firestore().collectionGroup('Podcasts').where('isShortStory','==',true).get();
+    let chapterQuery = await firestore().collectionGroup('Podcasts').where('isClassicNovel','==',true).get();
    
-    super(props)
+    let documentUsers = userQuery._docs.map(document => document.data());
+    let documentPodcasts = podcastQuery.docs.map(document => document.data());
+    let documentBooks = bookQuery.docs.map(document => document.data());
+    let documentChapters = chapterQuery.docs.map(document => document.data());
+
+    setStorytellers(documentUsers);
+    setPodcasts(documentPodcasts);
+    setBooks(documentBooks);
+    setChapters(documentChapters);
+
+    setLoading(false);
+  }
+
+      useEffect(
+        () => {
+          fetchExploreItems();
+         
+          //const eventEmitter=new NativeEventEmitter(NativeModules.ReactNativeRecorder);
+      },[])
+
+    function renderStoryTellers()
     {
-      //this.renderHeader = this.renderHeader.bind(this);
-      this.state={
-        storytellers : [],
-        podcasts : [],
-        books : [],
-        chapters : [],
-        loading : false
-      };
-    }
-    //const ref = firestore().collection('Books');
-  
-  }
-
-   
-
-  componentDidUpdate=(props)=>
-  {
-    const eventEmitter=new NativeEventEmitter(NativeModules.ReactNativeRecorder);
-    console.log("Inside useEffect - componentDidUpdate of ExploreScreen");
-      const fileType=".m4a"
-      const filePath="/storage/emulated/0/AudioRecorder/"
-      var audioFilePath=null;
-      eventEmitter.addListener('RecordFile', (event) => {
-           audioFilePath=filePath.concat(event.eventName,fileType)
-          console.log(props)
-          console.log("RecordedFilePath :" +audioFilePath)
-          console.log("timeduration :" , +event.eventDuration)
-         props.navigation.navigate('PreviewScreen', {  
-          recordedFilePath: audioFilePath, 
-          duration:event.eventDuration})
-    })
-
-  }
-   
-      componentDidMount = () => {
-        try {
-          this.startHeaderHeight = 60
-          if(Platform.OS=='Android')
-          {
-              this.startHeaderHeight= StatusBar.currentHeight
-          }
-          // Cloud Firestore: Initial Query
-          this.retrieveData();
-        }
-        catch (error) {
-          console.log(error);
-        }
-      };
-
-    retrieveData = async () => {
-      try {
-        // Set State: Loading
-        this.setState({
-          loading: true,
-        });
-        console.log('Retrieving Data in Explore Screen');
-        
-        let userQuery = await firestore().collectionGroup('privateUserData').where('isTopStoryTeller','==',true).get();
-        let podcastQuery = await firestore().collectionGroup('Podcasts').where('isTrendingPodcast','==',true).get();
-        let bookQuery = await firestore().collectionGroup('Podcasts').where('isShortStory','==',true).get();
-        let chapterQuery = await firestore().collectionGroup('Podcasts').where('isClassicNovel','==',true).get();
-        
-        let documentUsers = userQuery._docs.map(document => document.data());
-        let documentPodcasts = podcastQuery.docs.map(document => document.data());
-        let documentBooks = bookQuery.docs.map(document => document.data());
-        let documentChapters = chapterQuery.docs.map(document => document.data());
-        
-        this.setState({
-          storytellers: documentUsers,
-          podcasts: documentPodcasts,
-          books: documentBooks,
-          chapters: documentChapters,
-          // IMP lastVisible: lastVisible,
-          loading: false,
-        });
-      }
-      catch (error) {
-        console.log(error);
-      }
+      return storytellers.map((item, index)=>
+      {
+        return(<Story item={item} index={index} key ={index} navigation={props.navigation}/>)
+      })
     };
 
-    renderStoryTellers = () =>
-    {
-      return this.state.storytellers.map((item, index)=>
-      {
-        return(<Story item={item} index={index} key ={index} navigation={this.props.navigation}/>)
-      }) 
-    }
-
-    renderSectionStoryTellers = () =>
+    function renderSectionStoryTellers()
     {
       return (
         <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
-        <View style={{flexDirection:'row' , flexWrap:'wrap',paddingBottom:10}}>{this.renderStoryTellers()}</View>
+        <View style={{flexDirection:'row' , flexWrap:'wrap',paddingBottom:10}}>{renderStoryTellers()}</View>
         </View>
-        
       )
     }
 
-    renderPodcasts=()=>
+    function renderPodcasts()
     {
-       return this.state.podcasts.map((item, index)=>
+       return podcasts.map((item, index)=>
       {
-        return(<TrendingPodcast item={item} index={index} key ={index} navigation={this.props.navigation}/>)
-      }) 
+        return(<TrendingPodcast item={item} index={index} key ={index} navigation={props.navigation}/>)
+      })
 
     }
 
-    renderSectionPodcasts=()=>
+    function renderSectionPodcasts()
     {
-      
         return (
           <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
-          <View style={{flexDirection:'row' , flexWrap:'wrap',paddingBottom:10}}>{this.renderPodcasts()}</View>
+          <View style={{flexDirection:'row' , flexWrap:'wrap',paddingBottom:10}}>{renderPodcasts()}</View>
           </View>
-          
+         
         )
     }
-    renderChapters=()=>
+    function renderChapters()
     {
-       return this.state.chapters.map((item, index)=>
+       return chapters.map((item, index)=>
       {
-        return(<TopChapters item={item} index={index} key ={index} navigation={this.props.navigation}/>)
-      }) 
+        return(<TopChapters item={item} index={index} key ={index} navigation={props.navigation}/>)
+      })
 
     }
 
-    renderSectionChapters=()=>
+    function renderSectionChapters()
     {
       return (
         <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
-        <View style={{flexDirection:'row' , flexWrap:'wrap',paddingBottom:10}}>{this.renderChapters()}</View>
+        <View style={{flexDirection:'row' , flexWrap:'wrap',paddingBottom:10}}>{renderChapters()}</View>
         </View>
-        
+       
       )
     }
-    renderBooks=()=>
+
+    function renderBooks()
     {
-       return this.state.books.map((item, index)=>
+       return books.map((item, index)=>
       {
-        return(<ExploreBook item={item} index={index} key ={index} navigation={this.props.navigation}/>)
-      }) 
+        return(<ExploreBook item={item} index={index} key ={index} navigation={props.navigation}/>)
+      })
 
     }
 
-    renderSectionBooks=()=>
+    function renderSectionBooks()
     {
       return (
         <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
-        <View style={{flexDirection:'row' , flexWrap:'wrap',paddingBottom:10}}>{this.renderBooks()}</View>
+        <View style={{flexDirection:'row' , flexWrap:'wrap',paddingBottom:10}}>{renderBooks()}</View>
         </View>
-        
+       
       )
     }
-  
-    renderMainHeader = () => 
+ 
+    function renderMainHeader() 
     {
       return (
       <View style={styles.AppHeader}>
-        <TouchableOpacity onPress={()=>this.props.navigation.toggleDrawer()}>
+        <TouchableOpacity onPress={()=>props.navigation.toggleDrawer()}>
         <View style={{paddingLeft: 15,paddingRight:10 ,paddingVertical:26} }>
+         
+          {
+            (numNotifications == 0)
+            ?
+            <View style={{flowDirection:'row'}}>
           <Icon name="bars" size={22}/>
+            </View>
+            :
+            <View style={{flowDirection:'row'}}>
+          <Icon name="bars" size={22}/>
+            <Badge
+            value={numNotifications}
+            status="error"
+            containerStyle={styles.badgeStyle}
+            />
+            </View>
+          }
         </View>
         </TouchableOpacity>
         <View style={{flex:1, paddingVertical:10}}>
-          <TouchableOpacity onPress={() => this.props.navigation.navigate('SearchTabNavigator')}>
-        <View style={{flexDirection:'row',height:this.startHeaderHeight, backgroundColor: 'white', paddingRight: 13, paddingVertical:10}}>
-        
+          <TouchableOpacity onPress={() => {
+            dispatch({type:"SET_ALGOLIA_QUERY", payload:"papyrus"})
+            props.navigation.navigate('SearchTabNavigator')}}>
+        <View style={{flexDirection:'row',height:startHeaderHeight, backgroundColor: 'white', paddingRight: 13, paddingVertical:10}}>
+       
             <Text style={{ flex:1, fontWeight:'400',borderRadius:2,backgroundColor:'#dddd',fontSize:15,
               paddingTop: 7, paddingHorizontal: 10 }}>
-            
+           
               <Icon style={{paddingHorizontal:10,paddingTop:20 }} name="search" size={20} />
-              
+             
 
               {"  "}Search Books, Chapters, Authors
-               </Text> 
+               </Text>
 
         </View>
         </TouchableOpacity>
-        </View> 
+        </View>
         </View>
       )
     }
-
-    render() {
-      
-      if(this.state.books.length == 0)
-      return (
-        <View>
-        <View style={{paddingBottom: (height*5)/12}}>
-      {this.renderMainHeader()}
-          </View>
-      <ActivityIndicator/>
-      </View>     
-      );
+     
+      if(loading == true)
+      {
+        return (
+          <View>
+          <View style={{paddingBottom: (height*5)/12}}>
+        {renderMainHeader()}
+            </View>
+        <ActivityIndicator/>
+        </View>    
+        )
+      }
       else
-      return (
-    
-        <SafeAreaView style={{flex:1, backgroundColor:'white'}}>
-        {this.renderMainHeader()}
-        <ScrollView  scrollEventThrottle={16}>
-        <View style={{height:120}}>
-        <View style={{flex:1}}>
-        <Text style={{fontSize:20, fontWeight:'200', paddingHorizontal: 20, textShadowColor:'black',fontFamily:'sans-serif-light'}}>
-                        Top StoryTellers
-                    </Text>
-        </View>
-        <View style={{flex:3,paddingTop:10}}>
-        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-        
-        {this.renderSectionStoryTellers()}
-        </ScrollView>
-        </View>
-        
-        </View>
-            
-            <View style={{flex:1 , backgroundColor:'white', paddingTop:10}}>
-                    <Text style={{fontSize:20, fontWeight:'normal', paddingHorizontal: 20, textShadowColor:'black',fontFamily:'sans-serif-light'}}>
-                        Trending Podcasts
-                    </Text>
-            </View>   
-                <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{paddingTop:10}}>
-                    {/* this.state.podcasts.map((item,key) =>
-                    <TrendingPodcast ImageUri={item}/>                        
-                    ) */}
-                    {this.renderSectionPodcasts()}
-                    
-                    
-                    {/* <TrendingPodcast ImageUri={require('../assets/davincicode.jpg')}/>
-                    <TrendingPodcast ImageUri={require('../assets/chaos.jpg')}/>
-                    <TrendingPodcast ImageUri={require('../assets/harrypotter.jpeg')}/>
-                    <TrendingPodcast ImageUri={require('../assets/Westeros.jpg')}/> */}
-                </ScrollView>
-                <View style={{flex:1 , backgroundColor:'white', paddingTop:10}}>
-                <Text style={{fontSize:20, fontWeight:'normal', paddingHorizontal: 20, textShadowColor:'black', fontFamily:'sans-serif-light'}}>
-                        Short Stories
-                    </Text>
-            </View> 
-            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{paddingTop:10}}>
-            {this.renderSectionBooks()}
+      {
+        return (
+     
+          <SafeAreaView style={{flex:1, backgroundColor:'white'}}>
+          {renderMainHeader()}
+          <ScrollView  scrollEventThrottle={16}>
+          <View style={{height:120}}>
+          <View style={{flex:1}}>
+          <Text style={{fontSize:20, fontWeight:'200', paddingHorizontal: 20, textShadowColor:'black',fontFamily:'sans-serif-light'}}>
+                          Top StoryTellers
+                      </Text>
+          </View>
+          <View style={{flex:3,paddingTop:10}}>
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+         
+          {renderSectionStoryTellers()}
+          </ScrollView>
+          </View>
+         
+          </View>
+             
+              <View style={{flex:1 , backgroundColor:'white', paddingTop:10}}>
+                      <Text style={{fontSize:20, fontWeight:'normal', paddingHorizontal: 20, textShadowColor:'black',fontFamily:'sans-serif-light'}}>
+                          Trending Podcasts
+                      </Text>
+              </View>  
+                  <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{paddingTop:10}}>
+                     
+                      {renderSectionPodcasts()}
+                  </ScrollView>
+                  <View style={{flex:1 , backgroundColor:'white', paddingTop:10}}>
+                  <Text style={{fontSize:20, fontWeight:'normal', paddingHorizontal: 20, textShadowColor:'black', fontFamily:'sans-serif-light'}}>
+                          Short Stories
+                      </Text>
+              </View>
+              <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{paddingTop:10}}>
+              {renderSectionBooks()}
                    
-                </ScrollView>
-                {/* <TouchableOpacity onPress={()=>this.openCategoryScreen()}>
-                <View>
-                <Text style={{fontSize:10, fontWeight:'200', paddingHorizontal: 100,paddingTop: 5, textShadowColor:'black',fontFamily:'sans-serif-light'}}>View All</Text>
-                </View>
-                </TouchableOpacity> */}
-
-                <View style={{flex:1 , backgroundColor:'white', paddingTop:10}}>
-                <Text style={{fontSize:20, fontWeight:'normal', paddingHorizontal: 20,  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
-                        Classic Novels
-                    </Text>
-                    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{paddingTop:10}}>
-                    {this.renderSectionChapters()}                 
-                    {/* <TopChapters ImageUri={require('../assets/boggart.jpg')}/>
-                    <TopChapters ImageUri={require('../assets/hungergames.jpeg')}/> */}
-                    
-                </ScrollView>
-            </View> 
-            
-                
-            </ScrollView>
-
-        
-        </SafeAreaView>
-      );
-    }
+                  </ScrollView>
+                  <View style={{flex:1 , backgroundColor:'white', paddingTop:10}}>
+                  <Text style={{fontSize:20, fontWeight:'normal', paddingHorizontal: 20,  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
+                          Classic Novels
+                      </Text>
+                      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{paddingTop:10}}>
+                      {renderSectionChapters()}                
+                     
+                  </ScrollView>
+              </View>
+             
+                 
+              </ScrollView>
+          </SafeAreaView>
+        )
+      }
   }
 
 export default Explore;
@@ -326,6 +288,11 @@ const styles = StyleSheet.create({
     marginLeft: 7,
     borderWidth: 1,
     borderColor: '#dddddd',
+},
+badgeStyle: {
+  position: 'absolute',
+  top: -4,
+  right: -4
 }
 });
 

@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import {View,FlatList,ActivityIndicator,BackHandler,StyleSheet,  SafeAreaView,Image,  TextInput, Dimensions, TouchableOpacity} from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome'
+import firestore from '@react-native-firebase/firestore';
+import storage, { firebase } from '@react-native-firebase/storage'
+import Toast from 'react-native-simple-toast';
 
 import SearchResults from './SearchResults';
 import { InstantSearch, Index ,  Configure} from "react-instantsearch/dom";
 //import algoliasearch from 'algoliasearch/lite';
 import ItemSeperator from "./ItemSeperator";
 import algoliasearch from "algoliasearch";
+import {withFirebaseHOC} from '../../config/Firebase'
+import TagInput from 'react-native-tags-input';
 
 import Text from '../categories/components/Text'
 import ImagePicker from 'react-native-image-picker'
@@ -15,6 +21,7 @@ import {useSelector,useDispatch} from 'react-redux';
 import { createIconSetFromFontello } from 'react-native-vector-icons';
 import SearchBookItem from './SearchBookItem';
 import { ScrollView } from 'react-native-gesture-handler';
+import { FirebaseStorageTypes } from '@react-native-firebase/storage';
 
 const options = {
   title: 'Select Podcast Cover',
@@ -22,8 +29,8 @@ const options = {
 };
 
 const searchClient = algoliasearch(
-  'BJ2O4N6NAY',
-  '8dd4ee7d486981d0b1f375d6c81b9fda'
+  'GL4BSOR8T3',
+  '015571974bee040ecf4f58bf3276f8b3'
 );
 const index = searchClient.initIndex('Books');
 
@@ -31,6 +38,12 @@ var {width, height}=Dimensions.get('window')
 const SearchBookScreen=(props)=>
 {
     const dispatch=useDispatch();
+    const userID = props.firebase._getUid();
+
+    const initialAuthors  ={
+      tag: '',
+      tagsArray: []
+    }
 
     const searchQuery = useSelector(state=>state.userReducer.algoliaQuery)
     console.log("Search Query: ",searchQuery);
@@ -40,12 +53,13 @@ const SearchBookScreen=(props)=>
     const [refreshing,setRefreshing] = useState(false);
     const [bookImage, setBookImage]=useState(null);
     const [BookImageDownloadURL, setBookImageDownloadURL]=useState(null);
+    const [uploadBookSuccess, setUploadBookSuccess]=useState(false)
+    const [bookID,setBookID] = useState(null);
+    var [bookNameState, setBookNameState] = useState(null);
+    const [authors, setAuthors]=useState(initialAuthors);
 
     const [onEndReachedCalledDuringMomentum,setOnEndReachedCalledDuringMomentum] = useState(true);
     const numHits = 10;
-
-
-
 
 
     async function uploadImage() {
@@ -104,7 +118,7 @@ const SearchBookScreen=(props)=>
         {
             setLoading(true);
             console.log("Inside useEffect of SearchBookScreen")
- 
+             setBookNameState(searchQuery);
             if(searchQuery == "" || searchQuery == null)
             {
                 setBooks(null)
@@ -151,6 +165,17 @@ const SearchBookScreen=(props)=>
         }, [lastPage]
     )
 
+    useEffect(() => {
+      const article = {
+        title : bookNameState,
+        bookPictures : [BookImageDownloadURL],
+        bookID : bookID,
+        authors : authors.tagsArray
+      }
+
+      uploadBookSuccess && props.navigation.navigate('SelectScreen',{bookItem:article});
+    },[uploadBookSuccess])
+
     // useEffect(
     //     () => {
     //       console.log("Inside useEffect - componentDidMount of SearchBookScreen");
@@ -162,6 +187,10 @@ const SearchBookScreen=(props)=>
   
     //       };
     //     }, [back_Button_Press])
+
+    function updateAuthorState(state){
+      setAuthors(state);
+    };
 
     function back_Button_Press()
     {
@@ -199,8 +228,24 @@ const SearchBookScreen=(props)=>
               <ActivityIndicator/>
             )
           }
-          else {
-            return null;
+          else 
+          {
+            return (
+              <View style={{paddingBottom:height/96}}>
+                <View style={[styles.seperator]} />
+            
+              <View style={{alignItems:'center'}}>
+                <Text>{"\n"}Couldn't find your book?  </Text>
+                <TouchableOpacity onPress={()=> {
+            
+                  // setBooks([]);
+                }}>
+                    
+                <Text style={{textDecorationLine: 'underline',color:'rgb(218,165,32)'}}>Click Here to add book</Text>
+                </TouchableOpacity>
+                </View>
+                </View>
+            );
           }
         }
         catch (error) {
@@ -233,22 +278,18 @@ const SearchBookScreen=(props)=>
        
       </View>
             <View  style={{
-                        height: 40,
-                        width:width/2, 
-                        borderBottomColor: 'gray',
-                  
-                        marginTop: 20,
-                        marginBottom: 10,
-                        borderBottomWidth: 1,
-                        
-                        
+                        paddingTop: 30,
+                        paddingBottom: 10,
+                        paddingLeft: width/7,
+                        paddingRight:width/7
                     }} >
             <TextInput
                    
-                    style={styles.textInput}          
-                    onChangeText={(text) => {} }
+                   style={styles.TextInputStyleClass2}
+                   value={bookNameState}         
+                    onChangeText={(text) => {setBookNameState(text)} }
                     placeholder="Book"
-                    placeholderTextColor='white'
+                    //placeholderTextColor='white'
                    // value={}                 
                 />
               </View>
@@ -257,34 +298,71 @@ const SearchBookScreen=(props)=>
                   
                   
               
-           <View  style={{
-                        width:width/2, 
-                        borderBottomColor: 'gray',
-                        marginBottom: 10,
-                        marginRight: 30,
-                        borderBottomWidth: 1,
-                        //textColor:'white'
-                       // placeholderTextColor='white', 
-                        
+              <View  style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                paddingTop: 30,
+                paddingBottom: 10,
+                //paddingLeft: width/7,
+                //paddingRight:width/7
                     }} >
-            <TextInput
-                             
+          <TagInput
+          updateState={updateAuthorState}
+          tags={authors}
+          placeholder="Author(s)" 
+          //placeholderTextColor='white'
+          label='Press comma to add a tag'
+          labelStyle={{color: 'white'}}
+          //leftElement={<Icon name={'tag'}  color={'white'}/>}
+          //leftElementContainerStyle={{marginLeft: 3}}
+          containerStyle={{width:(width * 3) / 4}}
+          inputContainerStyle={styles.textInput}
+          tagStyle={styles.tag}
+          tagTextStyle={styles.tagText}
+          inputStyle={styles.TextInputStyleClass2}
+          keysForTag={','}
+          autoCorrect={false}
+
+          />
+
+
+            {/* <TextInput   
                     onChangeText={(text) => {}}
                     placeholder="Author(s)"
                     placeholderTextColor='white'
                     style={styles.textInput}
                     //value={}                 
-                />
+                /> */}
                 </View>
                 <View style={{paddingTop:width/8 ,alignItems: 'center',}}>
 
-              <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/20, width:(width*7)/24, borderRadius:15, backgroundColor:'rgba(0, 0, 0, 0.7)', borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }}>
+              <TouchableOpacity onPress={()=>{
+                firestore().collection('Books').add({
+                  title : bookNameState,
+                  authors : authors.tagsArray,
+                  bookPictures : [BookImageDownloadURL],
+                  reviewPending : true
+                })
+                .then(function(docRef){
+                  firestore().collection('Books').doc(docRef.id).set({
+                    bookID : docRef.id
+                  },{merge:true})
+
+                  Toast.show("Book Successfully uploaded")
+                  setBookID(docRef.id);
+                  setUploadBookSuccess(true);
+
+                })
+                .catch(function(error) {
+                  console.error("Error adding Book Document: ", error);
+                  Toast.show("Error: Please try again.")
+              });
+              }} 
+              style={{ alignItems: 'center', justifyContent:'center', height:height/20, width:(width*7)/24, borderRadius:15, backgroundColor:'rgba(0, 0, 0, 0.7)', borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }}>
               <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Add Book</Text>
               </TouchableOpacity>
               </View> 
-  
-          
-
 </ScrollView>
           </SafeAreaView>
           
@@ -308,21 +386,51 @@ const SearchBookScreen=(props)=>
           refreshing={refreshing}
           onMomentumScrollBegin={() => { setOnEndReachedCalledDuringMomentum(false) }}
         /> 
-          
-         
-    
-        
-
         )
-      
-    
 }
 }
 
-export default SearchBookScreen;
+export default withFirebaseHOC(SearchBookScreen);
 
 const styles = StyleSheet.create({
   textInput: {
-   color: 'white',
+    height: 40,
+    borderColor: 'white',
+    //borderWidth: 1,
+    marginTop: 8,
+    borderRadius: 5,
+    //padding: 3,
+  }, 
+  TextStyle: {
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    textDecorationLine: 'underline'
   },
+  tag: {
+    backgroundColor: 'grey'
+  }, 
+  tagText: {
+    color: 'black'
+  },
+  seperator: {
+    borderBottomColor: '#d1d0d4',
+    borderBottomWidth: 1
+  },
+  TextInputStyleClass2: {
+
+    //textAlign: 'center',
+    fontFamily: 'san-serif-light',
+    fontStyle: 'italic',
+    color: 'black',
+    borderWidth: 1,
+    borderColor: '#9E9E9E',
+    borderRadius: 10,
+    backgroundColor: "white",
+    width: (width * 3) / 4,
+    //paddingTop: 15,
+    paddingLeft: 10,
+    height: height / 18,
+    paddingRight: 10,
+
+  }
  });

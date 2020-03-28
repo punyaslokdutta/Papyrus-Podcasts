@@ -123,7 +123,13 @@ const firebaseApi={
             );
         });
     },
+     _getNumNotifications:async()=>{
 
+        
+       const privateDoc = await firestore().collection('users').doc(userID)
+               .collection('privateUserData').doc(privateDataID).get();
+        return privateDoc._data.numNotifications;
+     },
     _getFirestore:()=> {
         return firebase.firestore();
     },

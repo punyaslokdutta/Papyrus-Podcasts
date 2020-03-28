@@ -31,7 +31,7 @@ async function retrieveDataPrivate(dispatch, userid)
       doc._data.numCreatedBookPodcasts && dispatch({type:'ADD_NUM_CREATED_BOOK_PODCASTS',payload: doc._data.numCreatedBookPodcasts})
       doc._data.numCreatedChapterPodcasts && dispatch({type:'ADD_NUM_CREATED_CHAPTER_PODCASTS',payload: doc._data.numCreatedChapterPodcasts})
       doc._data.totalMinutesRecorded && dispatch({type:'ADD_TOTAL_MINUTES_RECORDED',payload: doc._data.totalMinutesRecorded})
-      
+      doc._data.numNotifications && dispatch({type:'ADD_NUM_NOTIFICATIONS',payload: doc._data.numNotifications});
       console.log("WEBSITE: ",doc._data.website);
   }
   catch(error)

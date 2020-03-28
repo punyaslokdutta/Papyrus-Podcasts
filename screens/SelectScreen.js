@@ -26,7 +26,7 @@ const SelectScreen =(props)=> {
   const [ChapterName, setChapterName]=useState(null);
   const [AuthorName, setAuthorName]=useState(null);
   const [LanguageSelected, setLanguageSelected]=useState(null);
-  const [bookId, setBookId]=useState(null);
+  const [bookId, setBookId]=useState(props.navigation.getParam('bookItem'));
 
   
   // if(bookSelected != null)
@@ -141,32 +141,15 @@ const SelectScreen =(props)=> {
         <SafeAreaView style={{flex:1, backgroundColor:'#101010'}}>
 
         <View style={styles.AppHeader}>
-        <TouchableOpacity onPress={()=>props.navigation.goBack(null)}>
         <View style={{paddingLeft: width/12 ,paddingVertical:height/20, flexDirection:'row'} }>
+
+        <TouchableOpacity onPress={()=>props.navigation.goBack(null)}>
           <Icon name="times" size={20} style={{color:'white'}}/>
+          </TouchableOpacity>
+
           <Text style={{fontFamily:'san-serif-light', color:'white', paddingLeft:(width*7)/24, fontSize:20}}>Select</Text>
         </View>
-
-        </TouchableOpacity>
-
         </View>
-
-         {/* <View style={{paddingVertical:30, paddingBottom: height/10, flexDirection:'column', paddingLeft:width/8, paddingRight:width/8} }> */}
-         {/* <View>
-         <TouchableOpacity onPress={onPressAdd}  >
-         <Icon name="book" size={50} style={{color:'white'}}/>
-         </TouchableOpacity>
-         <Text style={{fontFamily:'sans-serif-light', color:'white', fontSize:14, paddingTop:5}}>Book</Text>
-         </View>
-
-
-         <View style={{paddingLeft:width/4}}>
-         <TouchableOpacity onPress={onPressAdd2}>
-         <Icon name="newspaper-o" size={50} style={{color:'white'}}/>
-         </TouchableOpacity>
-         <Text style={{fontFamily:'sans-serif-light', color:'white', fontSize:14, paddingTop:5}}>Chapter</Text>
-         
-         </View> */}
 
         <View style={{paddingVertical:30, paddingBottom: height/20, flexDirection:'column', paddingLeft:width/8, paddingRight:width/8} }>
           <TouchableOpacity onPress={()=>{props.navigation.navigate('SearchTabNavigator')}}>
@@ -261,6 +244,7 @@ const SelectScreen =(props)=> {
                         dispatch({type:'CHANGE_CHAPTER',payload:ChapterName}) 
                         dispatch({type:'CHANGE_AUTHOR',payload:AuthorName}) 
                         dispatch({type:'CHANGE_LANGUAGE',payload:LanguageSelected}) 
+                        dispatch({type:"SET_PODCAST", payload: null})
 
                         NativeModules.ReactNativeRecorder.uploadActivity()
  
@@ -281,7 +265,9 @@ const SelectScreen =(props)=> {
                         dispatch({type:'CHANGE_BOOK',payload:BookName})
                         dispatch({type:'CHANGE_CHAPTER',payload:ChapterName}) 
                         dispatch({type:'CHANGE_AUTHOR',payload:AuthorName}) 
-                        dispatch({type:'CHANGE_LANGUAGE',payload:LanguageSelected})      
+                        dispatch({type:'CHANGE_LANGUAGE',payload:LanguageSelected})
+                        dispatch({type:"SET_PODCAST", payload: null})
+      
                         NativeModules.ReactNativeRecorder.sampleMethod()
                          }
             }>

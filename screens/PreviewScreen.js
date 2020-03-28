@@ -14,6 +14,8 @@ import * as Progress from 'react-native-progress';
 import Toast from 'react-native-simple-toast';
 import HomeScreen from './HomeScreen';
 import moment from 'moment';
+//import { firebase } from '@react-native-firebase/functions';
+
 
 const { width, height } = Dimensions.get('window');
 const options = {
@@ -60,6 +62,7 @@ const PreviewScreen = (props) => {
   const [indeterminate, setIndeterminate]=useState(true)
   const [toggleIndicator, setToggleIndicator]=useState(false)
   const [uploadPodcastSuccess, setUploadPodcastSuccess]=useState(false)
+  const [PodcastID,setPodcastID] = useState(null);
   const [warningMessage, setWarningMessage]=useState(false)
 
   const numCreatedBookPodcasts = useSelector(state=>state.userReducer.numCreatedBookPodcasts);
@@ -69,13 +72,12 @@ const PreviewScreen = (props) => {
   const userName = useSelector(state=>state.userReducer.name);
   const userID = props.firebase._getUid();
   const privateDataID = "private" + userID;
+  
   useEffect(
-    () => {
-
-               
+    () => {       
         podcastAudioDownloadURL && 
-        
-        firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).set({
+        firestore().collection('users').doc(userID).collection('privateUserData').
+                        doc(privateDataID).set({
               numCreatedBookPodcasts : incrementedValue
                 },{merge:true}) && 
 
@@ -97,19 +99,18 @@ const PreviewScreen = (props) => {
         Tags_Array : Tags.tagsArray,
         podcasterID: userID,
         podcasterName: userName,
-        numUsersLiked : 0
+        numUsersLiked : 0,
+        AuthorName:AuthorName
     })
-    .then(function(docRef, props) {
+    .then(async function(docRef, props) {
         console.log("Document written with ID: ", docRef.id);
         firestore().collection('Books').doc(bookId).collection('Podcasts')
                 .doc(docRef.id).set({
                     PodcastID: docRef.id
                 },{merge:true})
-
-                Toast.show("Successfully uploaded")
-
-        
-                setUploadPodcastSuccess(true);
+         Toast.show("Successfully uploaded")
+         setPodcastID(docRef.id)
+         setUploadPodcastSuccess(true);
     })
     .catch(function(error) {
         console.error("Error adding document: ", error);
@@ -119,10 +120,37 @@ const PreviewScreen = (props) => {
           
     },[podcastAudioDownloadURL])
 
-    
+    async function indexPodcast(){
+      const instance = firebase.app().functions("asia-northeast1").httpsCallable('AddToPodcastsIndex');
+        if(uploadPodcastSuccess == true)
+        {
+          try 
+          {          
+            await instance({ // change in podcast docs created by  user
+              Timestamp : moment().format(),
+              PodcastID : PodcastID,
+              Podcast_Picture : podcastImageDownloadURL,
+              Book_Name : BookName,
+              Podcast_Name : PodcastName,
+              Language : LanguageSelected,
+              PodcasterName : userName, 
+              AuthorName:AuthorName
+
+            });
+          }
+          catch (e) 
+          {
+            console.log(e);
+          }
+          
+          props.navigation.navigate('HomeScreen');
+        }
+    }
+
     useEffect(
       () => {
-        uploadPodcastSuccess && props.navigation.navigate('HomeScreen');
+        indexPodcast();
+        
       },[uploadPodcastSuccess]
     )
 
@@ -131,6 +159,10 @@ const PreviewScreen = (props) => {
       () => {
         console.log("Inside useEffect - componentDidMount of PreviewScreen");
         BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
+        //if(props.navigation.state.params.Book_Name != null)
+        //  dispatch({type:"CHANGE_BOOK",payload:props.navigation.state.params.Book_Name})
+        //if(props.navigation.state.params.BookID != null)
+        //  dispatch({type:"CHANGE_BOOK_ID",payload:props.navigation.state.params.BookID})
         return () => {
           console.log(" back_Button_Press Unmounted");
           BackHandler.removeEventListener("hardwareBackPress",  back_Button_Press);
