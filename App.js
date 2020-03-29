@@ -363,7 +363,9 @@ const AppStackNavigator= createStackNavigator(
    PreviewScreen: {screen:PreviewScreen,navigationOptions:{
     header : null
 }},
-  
+SearchScreen: {screen:SearchScreen,navigationOptions:{
+  header : null
+}},
    SearchTabNavigator: {screen: SearchTabNavigator,navigationOptions:{
          //header : null
    }}

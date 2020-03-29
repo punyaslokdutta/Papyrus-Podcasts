@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ActivityIndicator, AsyncStorage,TouchableOpacity, Dimensions} from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator, NativeEventEmitter, AsyncStorage,NativeModules,TouchableOpacity, Dimensions} from 'react-native';
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import {createSwitchNavigator} from 'react-navigation'
 import firebaseApi from './config/Firebase/firebaseApi'
@@ -21,6 +21,8 @@ class  AuthLoadingScreen extends Component {
         this.props.firebase._checkUserAuth=this.props.firebase._checkUserAuth.bind(this)
         //this.loadApp();
     }
+
+    
 
     componentDidMount=async()=>{
     
@@ -63,7 +65,9 @@ class  AuthLoadingScreen extends Component {
                   {
                         unsubscribe(); // unsubscribe the firestore onSnapshot listener
                         this.props.navigation.navigate('setUserDetails',{user : doc.data()});
-                         
+                        this.props.navigation.navigate('CategoryScreen');
+                        this.props.navigation.navigate('Explore');
+
                   }
                 })
               }

@@ -4,7 +4,7 @@ import {
   View, StyleSheet, Text, Image, ScrollView,TouchableOpacity, TouchableWithoutFeedback,Dimensions, 
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
-import Moment from "moment";
+import moment from "moment";
 import HomeScreen from '../../HomeScreen'
 import Explore from '../../Explore'
 import {useSelector, useDispatch} from "react-redux"
@@ -116,7 +116,7 @@ async function updatePodcastsLiked(props){
   try 
   {          
     await instance({ // change in podcast docs created by  user
-      timestamp : Date.now(),
+      timestamp : moment().format(),
       photoURL : userDisplayPictureURL,
       PodcastID : props.podcast.PodcastID,
       userID : props.podcast.podcasterID,
@@ -135,9 +135,9 @@ async function updatePodcastsLiked(props){
   {
     await firestore().collection('users').doc(userID).collection('privateUserData')
                 .doc(privateDataID).collection('podcastRecommendations')
-                .doc(props.podcast.podcastID).set({
-                  numUsersLiked : numUsers
-                },{merge:true})
+                .doc(props.podcast.podcastID).update({
+                  numUsersLiked : firestore.FieldValue.increment(1)
+                })
   }
 } 
 

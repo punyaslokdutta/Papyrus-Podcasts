@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import { StyleSheet, View,SafeAreaView, TextInput, Platform, StatusBar,TouchableOpacity, ScrollView, Image,Dimensions, Animated,SectionList,ActivityIndicator } from 'react-native';
+import { StyleSheet, View,SafeAreaView, TextInput, Platform, StatusBar,NativeModules,TouchableOpacity, ScrollView, Image,Dimensions, Animated,SectionList,ActivityIndicator , NativeEventEmitter} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import {Container, Content, Card, Button} from 'native-base'
@@ -190,7 +190,9 @@ class HomeScreen extends React.Component {
         lastVisibleID:null,
         loading: false,
         refreshing: false,
+        //eventListener:null, 
       };
+
     }
   }
 
@@ -200,6 +202,8 @@ class HomeScreen extends React.Component {
   });
 
     componentDidMount = async () => {
+
+      
       try {
         this.retrieveData();
       }
@@ -207,6 +211,12 @@ class HomeScreen extends React.Component {
         console.log(error);
       }
     };
+    
+    
+
+  
+
+
 
     retrieveData = async () => {
       try {
@@ -516,7 +526,7 @@ class HomeScreen extends React.Component {
         ListHeaderComponent={this.renderHeader}
          ListFooterComponent={this.renderFooter}
         onEndReached={this.onEndReached}
-        onEndReachedThreshold={0.01}
+        onEndReachedThreshold={0.5}
         refreshing={this.state.refreshing}
         onMomentumScrollBegin={() => { this.onEndReachedCalledDuringMomentum = false; }}
       />   
@@ -526,12 +536,17 @@ class HomeScreen extends React.Component {
     render() {
       if(this.state.loading === true)
         return (
-          <View>
-            <View style={{paddingBottom: (height*5)/12}}>
+          <View >
+            <View style={{paddingBottom: (height*4)/12}}>
           {this.renderMainHeader()}
               </View>
-          <ActivityIndicator/>
-          </View>      
+              <View style={{alignItems:'center'}}>
+              
+          <Image 
+          source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/HomeScreen/WhatsApp%20Image%202020-03-29%20at%206.17.51%20PM.jpeg"}}
+          style={{height: height/3,width: width/3}}/>
+          </View>  
+          </View>    
         ) 
         
       else

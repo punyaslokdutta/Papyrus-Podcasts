@@ -5,12 +5,16 @@ const INITIAL_STATE = {
     BookName:null,
     ChapterName:null,
     AuthorName:null,
-    LanguageSelected:null
+    LanguageSelected:null,
+    bookId:null
   
   };
   
   function recorderReducer(state = INITIAL_STATE, action)  {
     switch (action.type) {
+      case "CHANGE_BOOK_ID":
+          console.log("CHANGE_BOOK_ID"+" " +action.payload)
+            return {...state, bookId:action.payload}
         case "CHANGE_BOOK":
           console.log("CHANGE_BOOK"+" " +action.payload)
             return {...state, BookName:action.payload}

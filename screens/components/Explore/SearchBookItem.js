@@ -127,8 +127,10 @@ const styles = StyleSheet.create({
  const areEqual = (prevProps, nextProps) => true
  const SearchBookItem = React.memo((props)=> {
   console.log("Inside SearchBookItem");
-  console.log(props);
-
+   console.log(props.book);
+  // var bookName = "";
+  // if(props.book.Book_Name !== null && props.book.Book_Name !== undefined)
+  //   bookName = props.book.Book_Name.slice(0,40);
         return (
           <TouchableOpacity onPress={() => {
               //retrieveBookDocument(props.book.BookID);
@@ -138,7 +140,7 @@ const styles = StyleSheet.create({
              <View style={{flex:1,flexDirection:"row",paddingLeft:width/64,width:width,height:height/6}}>
              
              <View style={{flexDirection: 'row', justifyContent: 'flex-end',paddingTop:height/48,paddingLeft:width/8}}>
-              <Image style={{width:width/4,height:height/8}} source={ {uri: props.book.Book_Pictures_Array}} />
+              <Image style={{width:width/4,height:height/8}} source={ {uri: props.book.Book_cover}} />
             </View>
 
                <View style={[styles.flex, styles.column, styles.shadow, { width:(width)/2,padding: theme.sizes.padding / 4 }]}>

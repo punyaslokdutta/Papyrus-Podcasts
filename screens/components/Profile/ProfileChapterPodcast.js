@@ -208,7 +208,7 @@ class ProfileChapterPodcast extends React.Component {
           </View>
         ) 
       }
-      else
+      else if(this.state.chapterPodcasts.length != 0)
       {
         return (
         
@@ -231,6 +231,18 @@ class ProfileChapterPodcast extends React.Component {
           </View>
         
         );
+      }
+      else
+      {
+        return(
+          <View style={{alignItems:'center',paddingTop:height/5}}>
+              
+          <Image 
+          source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/HomeScreen/WhatsApp%20Image%202020-03-29%20at%206.17.51%20PM.jpeg"}}
+          style={{height: height/4,width: width/4}}/>
+          </View>
+        );
+        
       }
     }
   }

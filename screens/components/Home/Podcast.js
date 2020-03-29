@@ -7,7 +7,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import InnerPodcast from './InnerPodcast'
 import {useDispatch} from "react-redux"
 import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
-
+import moment from 'moment';
 
 var {width, height}=Dimensions.get('window')
 
@@ -134,6 +134,14 @@ const styles = StyleSheet.create({
   console.log("Inside Podcast")
   console.log(props);
 
+  var duration = parseInt((props.podcast.Duration)/60);
+
+  if(duration == 0)
+    duration = 1;
+  var currentDateTime = moment().format();
+  var timeDiff = currentDateTime;//moment(currentDateTime).fromNow();
+  if(props.podcast.Timestamp)
+    timeDiff = moment(props.podcast.Timestamp).fromNow();
   const dispatch=useDispatch();
 
  const _menu = useRef(null);
@@ -187,7 +195,7 @@ const styles = StyleSheet.create({
               ]}>
                 
                 <Text style={{  fontSize: theme.sizes.font * 0.9,color: theme.colors.gray_green }}>
-                  {props.podcast.Timestamp}
+                  {timeDiff}
                 </Text>
                 <View style={{alignItems: 'flex-end',paddingRight:5}}>
             <Icon
@@ -201,7 +209,7 @@ const styles = StyleSheet.create({
               </View>
               <View>
               <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
-                  {props.podcast.Duration}
+                  {duration} mins
                 </Text>
                 </View>
             </View>

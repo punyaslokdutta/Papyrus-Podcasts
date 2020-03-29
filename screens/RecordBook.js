@@ -163,12 +163,14 @@ class RecordBook extends Component {
       console.log(this.props);
       //const { navigation } = this.props;
       const bookid = this.props.navigation.state.params;
-      let book_data = await firestore().collection('Books').where('BookID','==', bookid.book).get();
+      console.log(bookid)
+      let book_data = await firestore().collection('Books').doc(bookid.book).get();
       // let data = await book_data.get();
-      console.log(book_data.docs[0])
+      console.log(book_data)
+      console.log(book_data._data)
      // let data = book_data.map(document => document.data());
       this.setState({
-        article : book_data.docs[0]._data
+        article : book_data._data
        // loading: false
       });
     }
@@ -187,7 +189,7 @@ class RecordBook extends Component {
 
     return (
       <View style={[ styles.flex, styles.row, styles.dotsContainer ]}>
-        {this.state.article.Book_Pictures_Array.map((item, index) => {
+        {this.state.article.bookPictures && this.state.article.bookPictures.map((item, index) => {
           const opacity = dotPosition.interpolate({
             inputRange: [index - 1, index, index + 1],
             outputRange: [0.5, 1, 0.5],
@@ -240,10 +242,10 @@ class RecordBook extends Component {
             showsHorizontalScrollIndicator={false}
             decelerationRate={0.998}
             scrollEventThrottle={16}
-            onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX } } }])}
+            //onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX } } }])}
           >
             {
-              this.state.article.Book_Pictures_Array.map((img, index) => 
+               this.state.article.bookPictures && this.state.article.bookPictures.map((img, index) => 
                 <Image
                   key={`${index}-${img}`}
                   source={{ uri: img }}
@@ -295,7 +297,7 @@ class RecordBook extends Component {
             </Card>
             </View>
             <View>
-            <TouchableOpacity onPress={()=>this.props.navigation.navigate('SelectScreen')}>
+            <TouchableOpacity onPress={()=>this.props.navigation.navigate('SelectScreen',{bookItem:this.state.article})}>
               <Card style={{borderRadius: 5  ,width:((width*4)/5 ) , height:(height)/8 , paddingTop :10}}>
               <CardItem style={{flexDirection:'column', alignItems:'center'}}>
              <FontAwesome name="microphone" color={theme.colors.black} size={theme.sizes.font * 2} />
@@ -309,7 +311,7 @@ class RecordBook extends Component {
             <TouchableOpacity>
               <Text style={{fontSize:20, paddingBottom:10, fontFamily:'san-serif-light'}}>Description</Text>
               <Text style={{fontSize:15}}>
-                {this.state.article.bookDescription.split('').slice(0, 180)}..
+                {this.state.article.bookDescription && this.state.article.bookDescription.split('').slice(0, 180)}..
                 <Text style={{color: theme.colors.active}}> Read more</Text>
               </Text>
             </TouchableOpacity>
@@ -320,7 +322,7 @@ class RecordBook extends Component {
             <TouchableOpacity>
               <Text style={{fontSize:20, paddingBottom:10, fontFamily:'san-serif-light'}}>About the Author(s)</Text>
               <Text style={{fontSize:15}}>
-                {this.state.article.About_the_Author.split('').slice(0, 180)}..
+                {this.state.article.About_the_Author && this.state.article.About_the_Author.split('').slice(0, 180)}..
                 <Text style={{color: theme.colors.active}}> Read more</Text>
               </Text>
             </TouchableOpacity>

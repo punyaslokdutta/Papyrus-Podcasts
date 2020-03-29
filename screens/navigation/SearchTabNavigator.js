@@ -12,7 +12,7 @@ import CustomUserHeader from './CustomUserHeader';
 import CustomSearchHeader from './CustomSearchHeader'
 import SearchBookScreen from '../components/Explore/SearchBookScreen'
 import SearchChapterScreen from '../components/Explore/SearchChapterScreen'
-
+import SearchPodcastScreen from '../components/Explore/SearchPodcastScreen'
 
 
 var {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
@@ -34,6 +34,12 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
         tabBarLabel:'Chapters',
         tabBarIcon:({tintColor})=>(
           <Icon name="newspaper-o" color={tintColor} size={20}/>
+        )
+      }},
+      SearchPodcastScreen : { screen: props => <SearchPodcastScreen  {...props}/>,navigationOptions:{
+        tabBarLabel:'Podcasts',
+        tabBarIcon:({tintColor})=>(
+          <Icon name="book" color={tintColor} size={20}/>
         )
       }}
     },

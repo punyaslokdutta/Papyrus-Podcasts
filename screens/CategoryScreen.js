@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import firestore from '@react-native-firebase/firestore';
 import {withFirebaseHOC} from './config/Firebase'
 
-import { Dimensions, Image, ActivityIndicator,StyleSheet, ScrollView, TouchableOpacity,View } from 'react-native';
+import { Dimensions, Image,NativeEventEmitter, NativeModules,ActivityIndicator,StyleSheet, ScrollView, TouchableOpacity,View } from 'react-native';
 import CategoryPodcast from './components/categories/CategoryPodcast';
 import { Card, Badge, Block, Text } from './components/categories/components';
 import { theme, mocks } from './components/categories/constants';
@@ -23,6 +23,26 @@ class CategoryScreen extends Component {
     }
 
   }
+
+  componentDidUpdate=(props)=>
+  {
+    const eventEmitter=new NativeEventEmitter(NativeModules.ReactNativeRecorder);
+    console.log("Inside useEffect - componentDidUpdate of ExploreScreen");
+      const fileType=".m4a"
+      const filePath="/storage/emulated/0/AudioRecorder/"
+      var audioFilePath=null;
+      this.eventListener=eventEmitter.addListener('RecordFile', (event) => {
+           audioFilePath=filePath.concat(event.eventName,fileType)
+          console.log(props)
+          console.log("RecordedFilePath :" +audioFilePath)
+          console.log("timeduration :" , +event.eventDuration)
+         props.navigation.navigate('PreviewScreen', {  
+          recordedFilePath: audioFilePath, 
+          duration:event.eventDuration})
+    })
+
+  }
+  
 
   componentDidMount = () => {
     try {

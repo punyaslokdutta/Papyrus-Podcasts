@@ -13,6 +13,9 @@ import ImageResizer from 'react-native-image-resizer';
 import * as Progress from 'react-native-progress';
 import Toast from 'react-native-simple-toast';
 import HomeScreen from './HomeScreen';
+import moment from 'moment';
+//import { firebase } from '@react-native-firebase/functions';
+
 
 const { width, height } = Dimensions.get('window');
 const options = {
@@ -33,6 +36,7 @@ const PreviewScreen = (props) => {
   const BookName=useSelector(state=>state.recorderReducer.BookName)
   const AuthorName=useSelector(state=>state.recorderReducer.AuthorName)
   const LanguageSelected=useSelector(state=>state.recorderReducer.LanguageSelected)
+  const bookId=useSelector(state=>state.recorderReducer.bookId)
  
   //BOOK_ID to be returned from recorderReducer which will be dispatched by Algolia 
   //For Now, Books which are not present in our database is handled. 
@@ -58,6 +62,7 @@ const PreviewScreen = (props) => {
   const [indeterminate, setIndeterminate]=useState(true)
   const [toggleIndicator, setToggleIndicator]=useState(false)
   const [uploadPodcastSuccess, setUploadPodcastSuccess]=useState(false)
+  const [PodcastID,setPodcastID] = useState(null);
   const [warningMessage, setWarningMessage]=useState(false)
 
   const numCreatedBookPodcasts = useSelector(state=>state.userReducer.numCreatedBookPodcasts);
@@ -67,22 +72,21 @@ const PreviewScreen = (props) => {
   const userName = useSelector(state=>state.userReducer.name);
   const userID = props.firebase._getUid();
   const privateDataID = "private" + userID;
-  useEffect(
-    () => {
 
-               
+  useEffect(
+    () => {       
         podcastAudioDownloadURL && 
-        
-        firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).set({
+        firestore().collection('users').doc(userID).collection('privateUserData').
+                        doc(privateDataID).set({
               numCreatedBookPodcasts : incrementedValue
                 },{merge:true}) && 
 
         dispatch({type:"ADD_NUM_CREATED_BOOK_PODCASTS", payload: incrementedValue}) &&
 
-        firestore().collection('Books').doc('7gGB4CjIiGRgB8yYD8N3').collection('Podcasts')
+        firestore().collection('Books').doc(bookId).collection('Podcasts')
       .add({
         AudioFileLink: podcastAudioDownloadURL,
-        BookID: '7gGB4CjIiGRgB8yYD8N3', 
+        BookID: bookId, 
         ChapterName: "",
         Book_Name: BookName, 
         Duration: Duration,
@@ -90,24 +94,23 @@ const PreviewScreen = (props) => {
         Language: LanguageSelected,
         Podcast_Name: PodcastName,
         Podcast_Pictures: [podcastImageDownloadURL],
-        Timestamp: "20/5/2019",
+        Timestamp: moment().format(),
         description: Description,
         Tags_Array : Tags.tagsArray,
         podcasterID: userID,
         podcasterName: userName,
-        numUsersLiked : 0
+        numUsersLiked : 0,
+        AuthorName:AuthorName
     })
-    .then(function(docRef, props) {
+    .then(async function(docRef, props) {
         console.log("Document written with ID: ", docRef.id);
-        firestore().collection('Books').doc('7gGB4CjIiGRgB8yYD8N3').collection('Podcasts')
+        firestore().collection('Books').doc(bookId).collection('Podcasts')
                 .doc(docRef.id).set({
                     PodcastID: docRef.id
                 },{merge:true})
-
-                Toast.show("Successfully uploaded")
-
-        
-                setUploadPodcastSuccess(true);
+         Toast.show("Successfully uploaded")
+         setPodcastID(docRef.id)
+         setUploadPodcastSuccess(true);
     })
     .catch(function(error) {
         console.error("Error adding document: ", error);
@@ -117,10 +120,37 @@ const PreviewScreen = (props) => {
           
     },[podcastAudioDownloadURL])
 
-    
+    async function indexPodcast(){
+      const instance = firebase.app().functions("asia-northeast1").httpsCallable('AddToPodcastsIndex');
+        if(uploadPodcastSuccess == true)
+        {
+          try 
+          {          
+            await instance({ // change in podcast docs created by  user
+              Timestamp : moment().format(),
+              PodcastID : PodcastID,
+              Podcast_Picture : podcastImageDownloadURL,
+              Book_Name : BookName,
+              Podcast_Name : PodcastName,
+              Language : LanguageSelected,
+              PodcasterName : userName, 
+              AuthorName:AuthorName
+
+            });
+          }
+          catch (e) 
+          {
+            console.log(e);
+          }
+          
+          props.navigation.navigate('HomeScreen');
+        }
+    }
+
     useEffect(
       () => {
-        uploadPodcastSuccess && props.navigation.navigate('HomeScreen');
+        indexPodcast();
+        
       },[uploadPodcastSuccess]
     )
 
@@ -129,6 +159,10 @@ const PreviewScreen = (props) => {
       () => {
         console.log("Inside useEffect - componentDidMount of PreviewScreen");
         BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
+        //if(props.navigation.state.params.Book_Name != null)
+        //  dispatch({type:"CHANGE_BOOK",payload:props.navigation.state.params.Book_Name})
+        //if(props.navigation.state.params.BookID != null)
+        //  dispatch({type:"CHANGE_BOOK_ID",payload:props.navigation.state.params.BookID})
         return () => {
           console.log(" back_Button_Press Unmounted");
           BackHandler.removeEventListener("hardwareBackPress",  back_Button_Press);
@@ -201,7 +235,7 @@ const PreviewScreen = (props) => {
         },
         error => {
           //unsubscribe();
-          console.log("image upload error: " + error.toString()); 
+          console.log("File upload error: " + error.toString()); 
         },
         () => {
           storageRef.getDownloadURL()
@@ -299,11 +333,12 @@ const PreviewScreen = (props) => {
       
       <View style={{ paddingLeft: width / 8, paddingBottom: 10 }}>
         <TextInput
+          value={BookName}
           style={styles.TextInputStyleClass2}
           underlineColorAndroid="transparent"
           placeholder={"Book Name" }
           placeholderTextColor={"black"}
-          onChangeText={(text) => setPodcastName(text)}
+          //onChangeText={(text) => setPodcastName(text)}
           numberOfLines={1}
           multiline={false}
         />
@@ -371,7 +406,7 @@ const PreviewScreen = (props) => {
         <TouchableOpacity onPress={() => {uploadPodcast(recordedFilePath)
         }} style={{ alignItems: 'center', justifyContent: 'center', height: height / 16, width: height / 6, borderRadius: 15, borderColor:rgb(218,165,32), borderWidth: 1 }}
         >
-          <Text style={{ alignItems: 'center', fontFamily: 'sans-serif-light', color:rgb(218,165,32),  justifyContent: 'center' }} >Share</Text>
+          <Text style={{ alignItems: 'center', fontFamily: 'sans-serif-light', color:rgb(218,165,32),  justifyContent: 'center' }} >Publish</Text>
         </TouchableOpacity>
       </View>
 }

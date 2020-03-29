@@ -98,7 +98,7 @@ const SignUpScreen=(props)=>{
       initialValues={{ fullName: '', email: '', password: '',confirmPassword:'' }}
       onSubmit={(values, actions) => {
          // alert(JSON.stringify(values));
-         dispatch({type:"SET_FULL_NAME", payload: values.fullName})
+         dispatch({type:"CHANGE_NAME", payload: values.fullName})
          _signupWithEmail( values.email, values.password, values.fullName)
           actions.setSubmitting(false);
       }}

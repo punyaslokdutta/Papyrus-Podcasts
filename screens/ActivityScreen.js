@@ -1,6 +1,6 @@
 
 
-import React, {Component} from 'react';
+import React, {Component, useState,useEffect} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import { StyleSheet, Text, View,ActivityIndicator,Dimensions} from 'react-native';
 
@@ -9,88 +9,88 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import {withFirebaseHOC} from '../screens/config/Firebase'
 import ActivityItem from './ActivityItem'
+import { useDispatch } from 'react-redux';
 
 var {width, height}=Dimensions.get('window')
 
-class ActivityScreen  extends React.Component {
+const ActivityScreen = (props) => {
    
-  constructor(props)
+  const dispatch = useDispatch();
+  var [activities,setActivities] = useState([]);
+  const limit = 10;
+  var [lastVisibleActivity,setLastVisibleActivity] = useState(null);
+  var [loading,setLoading] = useState(false);
+  var [refreshing,setRefreshing] = useState(false);
+  var [onEndReachedCalledDuringMomentum,setOnEndReachedCalledDuringMomentum] = useState(true);
+
+
+
+  async function fetchActivities()
   {
-    super(props)
-    {
-      this.state={
-        activities : [],
-        limit : 8,
-        lastVisibleActivity : null,
-        loading: false,
-        refreshing: false,
-        onEndReachedCalledDuringMomentum : true
-      };
-    }
+    setLoading(true);
+       try {       
+        console.log('Retrieving Data in Activity Screen');
+        
+        const  userid = props.firebase._getUid();
+        const privateDataID = "private" + userid;
+  
+         await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).collection('Activities')
+                      .orderBy('creationTimestamp','desc').limit(limit).onSnapshot(
+                        (querySnapshot) =>
+                        {
+                          var documentActivities = [];
+
+                          querySnapshot.forEach(function(doc) {
+                            documentActivities.push(doc.data());
+                        });
+                          console.log("Document Activities: ",documentActivities);
+                          var lastVisible = null;
+                          if(documentActivities.length != 0)
+                            lastVisible = documentActivities[documentActivities.length - 1].creationTimestamp;
+                    
+                          setActivities(documentActivities);
+                          setLastVisibleActivity(lastVisible);
+                            
+                          }
+                      ); 
+
+        await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({
+          numNotifications : 0
+        },{merge:true})
+
+        dispatch({type:'ADD_NUM_NOTIFICATIONS',payload: 0})
+      }
+      catch (error) {
+        console.log(error);
+      }
+
+       setLoading(false);
+
   }
+  useEffect(
+    () => {
+      fetchActivities()
+       
+    },[])
 
+  async function retrieveMoreActivities(){
+    
+    setRefreshing(true);
 
-  componentDidMount = () => {
-    try {
-      this.retrieveData();
-    }
-    catch (error) {
-      console.log(error);
-    }
-  };
-
-  retrieveData = async () => {
-    try {
-      // Set State: Loading
-      this.setState({
-        loading: true,
-      });
-      console.log('Retrieving Data in Activity Screen');
-      
-      const  userid = this.props.firebase._getUid();
-      const privateDataID = "private" + userid;
-
-      let activityQuery = await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).collection('Activities')
-                                .orderBy('creationTimestamp','desc').limit(this.state.limit).get();
-      let documentActivities = activityQuery._docs.map(document => document._data);
-      console.log("Document Activities: ",documentActivities);
-
-      var lastVisible = this.state.lastVisibleActivity;
-      lastVisible = documentActivities[documentActivities.length - 1].creationTimestamp;
-
-      this.setState({
-        activities: documentActivities,
-        lastVisibleActivity: lastVisible,
-        loading: false
-      });
-    }
-    catch (error) {
-      console.log(error);
-    }
-  };
-
-  retrieveMoreActivities = async () => {
     try
      {
-
        {console.log("retrieveMoreActivities starts()")}
-
-     this.setState({
-       refreshing: true
-        }); 
-
-        //const  userid = this.props.firebase._getUid();
-        const  userid = this.props.firebase._getUid();
-        const privateDataID = "private" + userID;
+        const  userid = props.firebase._getUid();
+        const privateDataID = "private" + userid;
         let additionalQuery = 9;
         try{
           additionalQuery = await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).collection('Activities')
                            .orderBy('creationTimestamp','desc')
-                           .startAfter(this.state.lastVisibleActivity)
-                           .limit(this.state.limit);
+                           .startAfter(lastVisibleActivity)
+                           .limit(limit);
        
-     // Cloud Firestore: Query Snapshot
-     {console.log("retrieveMoreActivities afterQuery()")}
+     
+      {console.log("retrieveMoreActivities afterQuery()")}
         
        }
        catch(error)
@@ -106,50 +106,41 @@ class ActivityScreen  extends React.Component {
            console.log(error);
        }
        
-     // Cloud Firestore: Document Data
      let documentData = documentSnapshots.docs.map(document => document.data());
-     // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
      if(documentData.length != 0)
      {
-        let lastVisibleActivity = documentData[documentData.length - 1].creationTimestamp;
+        let lastVisible = documentData[documentData.length - 1].creationTimestamp;
           
-        if(this.state.lastVisibleActivity == lastVisibleActivity){
-            this.setState({
-                    refreshing:false
-                });
+        if(lastVisibleActivity == lastVisible){
+          setRefreshing(false);
         }
         else
         {
-          this.setState({
-              activities: [...this.state.activities, ...documentData],
-              //chapterPodcasts: documentData_chapterPodcasts,
-              lastVisibleActivity : lastVisibleActivity,
-              refreshing:false
-            });
+          setActivities([...activities, ...documentData]);
+          setLastVisibleActivity(lastVisible);
+          setRefreshing(false);
         }
      }
      else
      {
-       this.setState({
-         refreshing:false
-     });
+        setRefreshing(false);
      }
      }
      catch(error){
-     console.log(error);
+        console.log(error);
      }
    }
 
-   renderData=({item,index})=>
+   function renderData({item,index})
     {
        return(
          <View>
-        <ActivityItem activity={item} index={index} navigation={this.props.navigation}/>
+        <ActivityItem activity={item} index={index} navigation={props.navigation}/>
         </View>
        )
     }
    
-   renderHeader = () => {
+   function renderHeader() {
      return
      (
       <View>
@@ -158,9 +149,9 @@ class ActivityScreen  extends React.Component {
      )
    }
 
-   renderFooter = () => {
+   function renderFooter() {
     try {
-      if (this.state.refreshing===true) {
+      if (refreshing == true) {
         return (
           <ActivityIndicator />
         )
@@ -174,41 +165,48 @@ class ActivityScreen  extends React.Component {
     }
   }
 
-  onEndReached = ({ distanceFromEnd }) => {
-    if(this.state.activities.length > 7)
+  function onEndReached({ distanceFromEnd }){
+    if(activities.length >=10 && activities.length < 40)
     {
-      if(!this.onEndReachedCalledDuringMomentum){
-        this.retrieveMoreActivities()
-        this.onEndReachedCalledDuringMomentum = true;
+      if(!onEndReachedCalledDuringMomentum){
+        retrieveMoreActivities()
+        setOnEndReachedCalledDuringMomentum(true);
     }
     }
     
   }
 
-  separator = () => <View style={[styles.separator]} />;
+  function separator(){
+    return(
+      <View style={[styles.separator]} />
+    );
+  } 
 
-  render() {  
+  if(loading == true)
+  {
     return (
-    
-
+      <ActivityIndicator />
+    )
+  }
+  else
+  {
+    return ( 
       <FlatList 
             nestedScrollEnabled={true}
-            data={this.state.activities}
-            renderItem={this.renderData}
+            data={activities}
+            renderItem={renderData}
             showsVerticalScrollIndicator={false}
             keyExtractor={item => item.creationTimestamp}
-            ListHeaderComponent={this.renderFooter}
-            ItemSeparatorComponent={this.separator}
-            //ListFooterComponent={this.renderFooter}
-            onEndReached={this.onEndReached}
+            ListHeaderComponent={renderFooter}
+            ItemSeparatorComponent={separator}
+            onEndReached={onEndReached}
             onEndReachedThreshold={0.01}
-            refreshing={this.state.refreshing}
-            onMomentumScrollBegin={() => { this.onEndReachedCalledDuringMomentum = false; }}
-     />
-      
-   
+            refreshing={refreshing}
+            onMomentumScrollBegin={() => { setOnEndReachedCalledDuringMomentum(false) }}
+     />   
    );
   }
+
   }
 
 export default withFirebaseHOC(ActivityScreen);

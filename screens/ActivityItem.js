@@ -5,9 +5,9 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import * as theme from './components/constants/theme'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import {useDispatch} from "react-redux"
-import ExploreTabNavigator from './navigation/ExploreTabNavigator';
 import firestore from '@react-native-firebase/firestore';
-
+import { withFirebaseHOC } from './config/Firebase';
+import moment from 'moment';
 var {width, height}=Dimensions.get('window')
 
 const styles = StyleSheet.create({
@@ -128,8 +128,14 @@ const styles = StyleSheet.create({
  const areEqual = (prevProps, nextProps) => true
  const ActivityItem = React.memo((props)=> {
 
+  const realUserID = props.firebase._getUid();
   const dispatch = useDispatch();
+  var currentDateTime = moment().format();
   
+  var timeDiff = currentDateTime;//moment(currentDateTime).fromNow();
+  if(props.activity.creationTimestamp)
+    timeDiff = moment(props.activity.creationTimestamp).fromNow();
+
   async function retrievePodcast(podcastID)
   {
     const podcastCollection = await firestore().collectionGroup('Podcasts').where('PodcastID','==',podcastID).get();
@@ -149,7 +155,12 @@ const styles = StyleSheet.create({
     const userDocumentData = userDocument.data();
     console.log("[ActivityItem] userDocumentData : ", userDocumentData);
     
+    const isUserSame = (userID == realUserID);
+    isUserSame ?
+    props.navigation.navigate('ProfileTabNavigator')
+    :
     props.navigation.navigate('ExploreTabNavigator', {userData:userDocumentData})
+
   }
 
 
@@ -160,7 +171,7 @@ const styles = StyleSheet.create({
   <Text style={{fontWeight:"bold"}}>{props.activity.podcastName}.</Text>
   </Text>
   if(props.activity.type == "follow")
-    activityText = <Text>{props.activity.actorName} started following you.</Text>
+activityText = <Text>{props.activity.actorName} started following you.</Text>
    
         return (
           
@@ -179,6 +190,7 @@ const styles = StyleSheet.create({
             <View style={{width:width/2,paddingLeft:width/25}}>
         
             {activityText}
+            <Text style={{color:'gray'}}>{timeDiff}</Text>
             </View>
             <TouchableOpacity onPress={() => {
               console.log("podcastClicked")
@@ -196,4 +208,4 @@ const styles = StyleSheet.create({
       
   }, areEqual);
 
-export default ActivityItem;
+export default withFirebaseHOC(ActivityItem);

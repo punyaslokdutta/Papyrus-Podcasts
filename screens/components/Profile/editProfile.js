@@ -300,9 +300,6 @@ const editProfile = (props) => {
                 <Icon name="times" size={20} style={{ color: 'black' }} />
               </TouchableOpacity>
               <Text style={{ fontFamily: 'san-serif-light', color: 'black', paddingLeft: (width * 7) / 35, paddingRight: (width * 7) / 30, fontSize: 20 }}>Edit Profile</Text>
-              <TouchableOpacity >
-                <Icon name="check" size={20} style={{ color: 'black' }} />
-              </TouchableOpacity>
             </View>
 
           </View>

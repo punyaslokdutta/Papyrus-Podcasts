@@ -21,15 +21,26 @@ import {useSelector,useDispatch} from 'react-redux'
 // });
 const SearchBox=(props)=>{
 
- const dispatch=useDispatch();
-
-     const [Query, setQuery]=useState(null);
-
-
-   
-
-
-  return(
+  const dispatch=useDispatch();
+  const [Query, setQuery]=useState(null);
+  console.log("[SearchBox] props.path = ",props.path)
+  if(props.path == "searchOnlyBook")
+  {
+    return(
+      <TextInput
+        style={styles.textBox}
+        //value={value}
+        returnKeyType='search'
+        onChangeText={(text)=>{setQuery(text)}}
+        onSubmitEditing={()=>{  dispatch({type:"SET_ALGOLIA_BOOK_QUERY", payload: Query})}}
+        placeholder="Search Book"
+        placeholderTextColor={'black'}
+      />
+    );
+  }
+  else
+  {
+    return(
       <TextInput
         style={styles.textBox}
         //value={value}
@@ -40,6 +51,8 @@ const SearchBox=(props)=>{
         placeholderTextColor={'black'}
       />
     );
+  }
+  
   }
 
 
