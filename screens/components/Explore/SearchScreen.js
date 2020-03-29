@@ -10,8 +10,8 @@ import { InstantSearch, Index ,  Configure} from "react-instantsearch/dom";
 import algoliasearch from "algoliasearch";
 
 const searchClient = algoliasearch(
-  'BJ2O4N6NAY',
-  '8dd4ee7d486981d0b1f375d6c81b9fda'
+  'GL4BSOR8T3',
+  '015571974bee040ecf4f58bf3276f8b3'
 );
 
 
