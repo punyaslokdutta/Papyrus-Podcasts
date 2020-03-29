@@ -11,24 +11,27 @@ const styles=StyleSheet.create({
       fontSize: 20,
       fontWeight: "bold",
       color: "#333"
-    },textBox: {
+    },
+    textBox: {
       height: 40,
       borderWidth: 1,
       borderColor: "#333",
       padding: 10,
       margin: 10,
       flex: 1,
-      fontWeight:'200',
+      fontWeight:'400',
       borderRadius:2,
       backgroundColor:'#dddd',
       fontSize:12,
+      fontFamily:'sans-serif-light',
       paddingTop: 7,
       paddingBottom:7,
       paddingHorizontal: 10 }
     ,
     searchBoxContainer: {
       width: "100%",
-      flexDirection: "row"
+      flexDirection: "row",
+      fontFamily:'sans-serif-light'
     },
     repoContainer: {
       flexDirection: "row",

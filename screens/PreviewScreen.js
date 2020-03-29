@@ -72,7 +72,7 @@ const PreviewScreen = (props) => {
   const userName = useSelector(state=>state.userReducer.name);
   const userID = props.firebase._getUid();
   const privateDataID = "private" + userID;
-  
+
   useEffect(
     () => {       
         podcastAudioDownloadURL && 
@@ -338,7 +338,7 @@ const PreviewScreen = (props) => {
           underlineColorAndroid="transparent"
           placeholder={"Book Name" }
           placeholderTextColor={"black"}
-          onChangeText={(text) => setPodcastName(text)}
+          //onChangeText={(text) => setPodcastName(text)}
           numberOfLines={1}
           multiline={false}
         />
@@ -406,7 +406,7 @@ const PreviewScreen = (props) => {
         <TouchableOpacity onPress={() => {uploadPodcast(recordedFilePath)
         }} style={{ alignItems: 'center', justifyContent: 'center', height: height / 16, width: height / 6, borderRadius: 15, borderColor:rgb(218,165,32), borderWidth: 1 }}
         >
-          <Text style={{ alignItems: 'center', fontFamily: 'sans-serif-light', color:rgb(218,165,32),  justifyContent: 'center' }} >Share</Text>
+          <Text style={{ alignItems: 'center', fontFamily: 'sans-serif-light', color:rgb(218,165,32),  justifyContent: 'center' }} >Publish</Text>
         </TouchableOpacity>
       </View>
 }

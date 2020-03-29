@@ -11,7 +11,7 @@ const { width, height } = Dimensions.get('window');
 const setPreferences =(props)=> {
 const [bookPreferences, setbookPreferences]=useState({});
 const bookTagSelected=React.createRef(null);
-const fullName=useSelector(state=>state.authReducer.fullName)
+const fullName=useSelector(state=>state.userReducer.name)
 //const user = props.navigation.getParam('user');
 //const podcast=useSelector(state=>state.rootReducer.podcast)
 //const dispatch=useDispatch();
@@ -25,8 +25,8 @@ async function createUser(props, fullName)
   console.log(user);
   const uId=user._user.uid;
   console.log(uId);
-  
   const userName= fullName+"_" + uId.substring(3,9)
+  
   const addNewUser= await props.firebase._createNewUser(user,fullName, userName);
   console.log("User Document created in Firestore from setPreferences");
   }

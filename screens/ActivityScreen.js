@@ -44,7 +44,9 @@ const ActivityScreen = (props) => {
                             documentActivities.push(doc.data());
                         });
                           console.log("Document Activities: ",documentActivities);
-                          var lastVisible = documentActivities[documentActivities.length - 1].creationTimestamp;
+                          var lastVisible = null;
+                          if(documentActivities.length != 0)
+                            lastVisible = documentActivities[documentActivities.length - 1].creationTimestamp;
                     
                           setActivities(documentActivities);
                           setLastVisibleActivity(lastVisible);

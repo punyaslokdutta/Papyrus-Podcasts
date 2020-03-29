@@ -134,6 +134,10 @@ const styles = StyleSheet.create({
   console.log("Inside Podcast")
   console.log(props);
 
+  var duration = parseInt((props.podcast.Duration)/60);
+
+  if(duration == 0)
+    duration = 1;
   var currentDateTime = moment().format();
   var timeDiff = currentDateTime;//moment(currentDateTime).fromNow();
   if(props.podcast.Timestamp)
@@ -205,7 +209,7 @@ const styles = StyleSheet.create({
               </View>
               <View>
               <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
-                  {props.podcast.Duration}
+                  {duration} mins
                 </Text>
                 </View>
             </View>

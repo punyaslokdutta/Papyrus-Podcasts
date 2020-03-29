@@ -536,12 +536,17 @@ class HomeScreen extends React.Component {
     render() {
       if(this.state.loading === true)
         return (
-          <View>
-            <View style={{paddingBottom: (height*5)/12}}>
+          <View >
+            <View style={{paddingBottom: (height*4)/12}}>
           {this.renderMainHeader()}
               </View>
-          <ActivityIndicator/>
-          </View>      
+              <View style={{alignItems:'center'}}>
+              
+          <Image 
+          source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/HomeScreen/WhatsApp%20Image%202020-03-29%20at%206.17.51%20PM.jpeg"}}
+          style={{height: height/3,width: width/3}}/>
+          </View>  
+          </View>    
         ) 
         
       else

@@ -62,7 +62,8 @@ class ProfileBookPodcast extends React.Component {
                             documentData_podcasts.push(doc.data());
                         });
                           var lastVisibleBook = this.state.lastVisibleBookPodcast;
-                          lastVisibleBook = documentData_podcasts[documentData_podcasts.length - 1].PodcastID;        
+                          if(documentData_podcasts.length != 0)
+                            lastVisibleBook = documentData_podcasts[documentData_podcasts.length - 1].PodcastID;        
                           
                           this.setState({
                           bookPodcasts: documentData_podcasts,
@@ -194,7 +195,7 @@ class ProfileBookPodcast extends React.Component {
         )
         
       }
-      else
+      else if(this.state.bookPodcasts.length != 0)
       {
         return (
        
@@ -217,7 +218,18 @@ class ProfileBookPodcast extends React.Component {
        
        );
       }
-     
+      else
+      {
+        return(
+          <View style={{alignItems:'center',paddingTop:height/5}}>
+              
+          <Image 
+          source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/HomeScreen/WhatsApp%20Image%202020-03-29%20at%206.17.51%20PM.jpeg"}}
+          style={{height: height/4,width: width/4}}/>
+          </View>
+        );
+        
+      }
     }
   }
   

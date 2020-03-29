@@ -2,14 +2,9 @@
 import React, { useState, useRef, useEffect, useCallback} from 'react';
 import { TouchableOpacity,StyleSheet, Text, Image,View, SafeAreaView, Dimensions, NativeModules,NativeEventEmitter} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
-import AddModal from '../screens/components/Record/AddModal'
-import AddChapterModal from '../screens/components/Record/AddChapterModal'
 import { TagSelect } from 'react-native-tag-select'
-import PreviewScreen from '../screens/PreviewScreen'
-import {useSelector, useDispatch} from 'react-redux'
-import { withFirebaseHOC } from './config/Firebase';
-import { duration } from 'moment';
-import SearchTabNavigator from './navigation/SearchTabNavigator'
+import { useDispatch} from 'react-redux'
+
 
 
 const { width, height } = Dimensions.get('window');
@@ -28,20 +23,12 @@ const SelectScreen =(props)=> {
   const [LanguageSelected, setLanguageSelected]=useState(null);
   const [bookId, setBookId]=useState(props.navigation.getParam('bookItem'));
 
-  
-  // if(bookSelected != null)
-  // {
-  //   setBookName(bookSelected.title);
-  // }
-  //const [recordedFilePath, setRecordedFilePath]=useState(null);
-  //const eventEmitter=useRef(new NativeEventEmitter(NativeModules.ReactNativeRecorder)).current;
   const addModal=React.createRef(null);
   const addChapterModal=React.createRef(null);
   const tagSelected=React.createRef(null);
   
   
   const dispatch=useDispatch();
-
 
   useEffect(
     ()=>
@@ -61,27 +48,7 @@ const SelectScreen =(props)=> {
       }
     },[bookSelected]
   )
-
-  // useEffect(
-  //   () => {
-      
-  //     console.log("Inside useEffect - componentDidUpdate of SelectScreen");
-  //     const fileType=".m4a"
-  //     const filePath="/storage/emulated/0/AudioRecorder/"
-  //     var audioFilePath=null;
-  //     eventEmitter.addListener('RecordFile', (event) => {
-  //          audioFilePath=filePath.concat(event.eventName,fileType)
-  //         console.log(props)
-  //         console.log("RecordedFilePath :" +audioFilePath)
-  //         console.log("timeduration :" , +event.eventDuration)
-  //        props.navigation.navigate('PreviewScreen', {  
-  //         recordedFilePath: audioFilePath, 
-  //         duration:event.eventDuration})
-  //   })
-       
-  //   }, [])
   
-
     function onPressAdd2()
     {
         addChapterModal.current.showAddModal();  
@@ -152,7 +119,10 @@ const SelectScreen =(props)=> {
         </View>
 
         <View style={{paddingVertical:30, paddingBottom: height/20, flexDirection:'column', paddingLeft:width/8, paddingRight:width/8} }>
-          <TouchableOpacity onPress={()=>{props.navigation.navigate('SearchTabNavigator')}}>
+          <TouchableOpacity onPress={()=>{
+            dispatch({type:"SET_EXPLORE_SCREEN_AS_PREVIOUS_SCREEN", payload:false})
+            props.navigation.navigate('SearchTabNavigator')
+            }}>
         <View style={{flexDirection:'row',height:height/12, backgroundColor: '#101010', paddingRight: 13, paddingVertical:10, width:((width*7)/8)-10 }}>
         
             <Text style={{ flex:1, fontWeight:'500',borderRadius:20,backgroundColor:'white',fontSize:15,borderColor:'white', 
@@ -182,7 +152,7 @@ const SelectScreen =(props)=> {
             </View>
              </View>
              :
-            <Text>No book/chapter selected</Text>
+            <View></View>
           }  
          
         
@@ -233,11 +203,25 @@ const SelectScreen =(props)=> {
             <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/20, width:(width*7)/24, borderRadius:15, borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }} 
             onPress={() => {
               console.log("[SelectScreen] BookName : ",BookName);
-
-                         if (BookName === null || AuthorName===null|| LanguageSelected ===null) {
-
-                            alert("You must choose Category and Language of your Podcast",BookName);
+                         
+                         if (BookName === null || AuthorName===null|| LanguageSelected ===null) 
+                         {
+                          if(LanguageSelected == null && BookName!=null)
+                          {
+                            alert("You must choose Language of your Podcast");
                             return;
+                          }
+                          if(LanguageSelected == null && BookName==null)
+                          {
+                            alert("You must select Book/Chapter and Language of your Podcast");
+                            return;
+                          }
+                          if(LanguageSelected != null && BookName==null)  
+                          {
+                            alert("You must select Book/Chapter of your Podcast");
+                            return;
+                          }
+
                         }  
                         dispatch({type:'CHANGE_BOOK_ID', payload:bookSelected.bookID})
                         dispatch({type:'CHANGE_BOOK',payload:BookName})
@@ -257,9 +241,25 @@ const SelectScreen =(props)=> {
 
                 <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/20, width:(width*7)/24, borderRadius:15, backgroundColor:'rgba(0, 0, 0, 0.7)', borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }} 
                  onPress={() => {
-                         if (BookName === null || AuthorName === null || LanguageSelected ===null) {
-                            alert("You must choose Category and Language of your Podcast");
+
+                         
+                         if (BookName === null || AuthorName === null || LanguageSelected ===null) 
+                         {
+                          if(LanguageSelected == null && BookName!=null)
+                          {
+                            alert("You must choose Language of your Podcast");
                             return;
+                          }
+                          if(LanguageSelected == null && BookName==null)
+                          {
+                            alert("You must select Book/Chapter and Language of your Podcast");
+                            return;
+                          }
+                          if(LanguageSelected != null && BookName==null)  
+                          {
+                            alert("You must select Book/Chapter of your Podcast");
+                            return;
+                          }
                         } 
                         dispatch({type:'CHANGE_BOOK_ID', payload:bookSelected.bookID})
                         dispatch({type:'CHANGE_BOOK',payload:BookName})
@@ -272,17 +272,9 @@ const SelectScreen =(props)=> {
                          }
             }>
             <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Record</Text>
-          
-
                 </TouchableOpacity>
         </View>     
         </View>
-<AddModal ref={addModal} navigation={props.navigation} parentCallback = {callbackFunction} >
-</AddModal>
-
-<AddChapterModal ref={addChapterModal} navigation={props.navigation} parentCallback = {callbackFunction} >
-    
-    </AddChapterModal>
         </SafeAreaView> 
         
       );

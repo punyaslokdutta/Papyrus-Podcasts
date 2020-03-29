@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState , useRef} from 'react';
 import {View,FlatList,ActivityIndicator,BackHandler,StyleSheet,  SafeAreaView,Image,  TextInput, Dimensions, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import firestore from '@react-native-firebase/firestore';
 import storage, { firebase } from '@react-native-firebase/storage'
 import Toast from 'react-native-simple-toast';
+import AddBook from '../Explore/AddBook';
 
+import RBSheet from "react-native-raw-bottom-sheet";
 import SearchResults from './SearchResults';
 import { InstantSearch, Index ,  Configure} from "react-instantsearch/dom";
 //import algoliasearch from 'algoliasearch/lite';
@@ -38,6 +40,7 @@ var {width, height}=Dimensions.get('window')
 const SearchBookScreen=(props)=>
 {
     const dispatch=useDispatch();
+    const refRBSheet = useRef();
     const userID = props.firebase._getUid();
 
     const initialAuthors  ={
@@ -45,80 +48,24 @@ const SearchBookScreen=(props)=>
       tagsArray: []
     }
 
+    const bookAdded = useSelector(state=>state.userReducer.bookAdded)
     const searchQuery = useSelector(state=>state.userReducer.algoliaQuery)
+    const fromExploreScreen = useSelector(state=>state.userReducer.isExplorePreviousScreen)
+
     console.log("Search Query: ",searchQuery);
+    console.log("fromExploreScreen : ",fromExploreScreen);
     const [books,setBooks] = useState(null);
     const [lastPage,setLastPage] = useState(0);
     const [loading,setLoading] = useState(false);
     const [refreshing,setRefreshing] = useState(false);
-    const [bookImage, setBookImage]=useState(null);
-    const [BookImageDownloadURL, setBookImageDownloadURL]=useState(null);
-    const [uploadBookSuccess, setUploadBookSuccess]=useState(false)
-    const [bookID,setBookID] = useState(null);
-    var [bookNameState, setBookNameState] = useState(null);
-    const [authors, setAuthors]=useState(initialAuthors);
 
     const [onEndReachedCalledDuringMomentum,setOnEndReachedCalledDuringMomentum] = useState(true);
     const numHits = 10;
-
-
-    async function uploadImage() {
-      ImagePicker.showImagePicker(options, async (response) => {
-        console.log('Response URI = ', response.uri);
-        console.log('Response PATH = ', response.path);
-  
-        if (response.didCancel) {
-          console.log('User cancelled image picker');
-        } else if (response.error) {
-          console.log('ImagePicker Error: ', response.error);
-        } else if (response.customButton) {
-          console.log('User tapped custom button: ', response.customButton);
-        } else {
-          const source = { uri: response.uri };
-          console.log("Before storageRef.putFile");
-          setBookImage(source)
-          var refPath = "Books/images/" + userID + "_" + Date.now() + ".jpg";
-          var storageRef = storage().ref(refPath);
-          console.log("Before storageRef.putFile");
-  
-          ImageResizer.createResizedImage(response.path, 720, 720, 'JPEG',100)
-        .then(({path}) => {
-  
-          const unsubscribe=storageRef.putFile(path)//: 'content://com.miui.gallery.open/raw/storage/emulated/DCIM/Camera/IMG_20200214_134628_1.jpg')
-            .on(
-              firebase.storage.TaskEvent.STATE_CHANGED,
-              snapshot => {
-                //setIndeterminate(false);
-                console.log("snapshot: " + snapshot.state);
-                console.log("progress: " + (snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                //setProgress((snapshot.bytesTransferred / snapshot.totalBytes));
-                if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
-                  console.log("Success");
-                }
-              },
-              error => {
-                unsubscribe();
-                console.log("image upload error: " + error.toString());
-              },
-              () => {
-                storageRef.getDownloadURL()
-                  .then((downloadUrl) => {
-                    console.log("File available at: " + downloadUrl);
-                    setBookImageDownloadURL(downloadUrl);
-                  })
-              }
-            )
-            });
-          }
-      });
-    }
-
 
     useEffect( ()=>
         {
             setLoading(true);
             console.log("Inside useEffect of SearchBookScreen")
-             setBookNameState(searchQuery);
             if(searchQuery == "" || searchQuery == null)
             {
                 setBooks(null)
@@ -166,39 +113,31 @@ const SearchBookScreen=(props)=>
     )
 
     useEffect(() => {
-      const article = {
-        title : bookNameState,
-        bookPictures : [BookImageDownloadURL],
-        bookID : bookID,
-        authors : authors.tagsArray
-      }
+      (bookAdded !== null) && props.navigation.navigate('SelectScreen',{bookItem:bookAdded})
+      && dispatch({type:"ADD_BOOK",payload:null})//refRBSheet.current.close()
+    },[bookAdded])
 
-      uploadBookSuccess && props.navigation.navigate('SelectScreen',{bookItem:article});
-    },[uploadBookSuccess])
+    useEffect(
+        () => {
+          //console.log("Inside useEffect - componentDidMount of SearchBookScreen");
+          //BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
+          return () => {
+            console.log(" back_Button_Press Unmounted");
+            //BackHandler.removeEventListener("hardwareBackPress",  back_Button_Press);
+            //props.navigation.navigate('Explore');
+            dispatch({type:"SET_ALGOLIA_QUERY",payload:"papyrus"})
+          };
+        }, [])
 
-    // useEffect(
-    //     () => {
-    //       console.log("Inside useEffect - componentDidMount of SearchBookScreen");
-    //       BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
-    //       return () => {
-    //         console.log(" back_Button_Press Unmounted");
-    //         BackHandler.removeEventListener("hardwareBackPress",  back_Button_Press);
-    //         props.navigation.navigate('Explore');
-  
-    //       };
-    //     }, [back_Button_Press])
+   
 
-    function updateAuthorState(state){
-      setAuthors(state);
-    };
-
-    function back_Button_Press()
-    {
-        console.log("Inside BackButton Press");
-        dispatch({type:"SET_ALGOLIA_QUERY", payload: null})
-        return false;
-        //BackHandler.removeEventListener('hardwareBackPress', this.back_Buttton_Press);
-    }
+    // function back_Button_Press()
+    // {
+    //     console.log("Inside BackButton Press");
+    //     dispatch({type:"SET_ALGOLIA_QUERY", payload: null})
+    //     return false;
+    //     //BackHandler.removeEventListener('hardwareBackPress', this.back_Buttton_Press);
+    // }
     
 
     function renderDatas({item,index})
@@ -220,15 +159,17 @@ const SearchBookScreen=(props)=>
         
       }
 
+      
     function renderFooter() {
-        try {
-          // Check If Loading
+
           if (refreshing == true) {
             return (
               <ActivityIndicator/>
             )
           }
-          else 
+          else
+          {
+            if(fromExploreScreen == false)
           {
             return (
               <View style={{paddingBottom:height/96}}>
@@ -236,10 +177,32 @@ const SearchBookScreen=(props)=>
             
               <View style={{alignItems:'center'}}>
                 <Text>{"\n"}Couldn't find your book?  </Text>
-                <TouchableOpacity onPress={()=> {
-            
-                  // setBooks([]);
-                }}>
+                <TouchableOpacity onPress={() => {refRBSheet.current.open()
+                                                  }}>
+                <RBSheet
+                  ref={refRBSheet}
+                  animationType={"slide"}
+                  closeOnDragDown={true}
+                  closeOnPressMask={true}
+                  duration={50}
+                  customStyles={{
+                    container:{
+                      backgroundColor: "#dddd",
+                      height:(height*5)/8,
+                      borderRadius:40
+                    },
+                    wrapper: {
+                      backgroundColor: "transparent"
+                    },
+                    draggableIcon: {
+                      backgroundColor: "#000"
+                    }
+                  }}
+                >
+
+        <AddBook refRb ={refRBSheet.current}/>
+         
+      </RBSheet>
                     
                 <Text style={{textDecorationLine: 'underline',color:'rgb(218,165,32)'}}>Click Here to add book</Text>
                 </TouchableOpacity>
@@ -247,12 +210,26 @@ const SearchBookScreen=(props)=>
                 </View>
             );
           }
-        }
-        catch (error) {
-          console.log(error);
-        }
+          else //if(fromExploreScreen === true)
+          {
+            return (
+              <TouchableOpacity onPress={() =>{
+                props.navigation.navigate('SelectScreen');
+              }}>
+            
+            <View style={{alignItems:'center'}}>
+            <Text style={{textDecorationLine: 'underline',color:'rgb(218,165,32)'}}>
+              Proceed to Record Screen to {"\n"}add book for your podcast</Text>
+              </View>
+              </TouchableOpacity>
+            );
+          }
+          } 
+        
+        
       }
 
+      
       if(loading == true)
       {
         return (
@@ -260,113 +237,6 @@ const SearchBookScreen=(props)=>
             <ActivityIndicator/>
             </View>
           )
-      }
-      else if(books && books.length===0 )
-      {
-        return (
-          
-          <SafeAreaView style={{flex:1, backgroundColor:'#101010', alignItems:'center'}}>
-           <ScrollView>
-            <View style={{ alignItems: 'center' , paddingTop:height/8}}>
-        <View style={{ paddingTop: 30, flexDirection: 'column' , paddingBottom:5}}>
-          <TouchableOpacity onPress={uploadImage}>
-          <View>
-            <Image source={bookImage} style={{ width: height / 3, height: height / 6, borderRadius: 20, borderColor: 'white', borderWidth: 1 }} />
-          </View>
-          </TouchableOpacity>
-        </View>
-       
-      </View>
-            <View  style={{
-                        paddingTop: 30,
-                        paddingBottom: 10,
-                        paddingLeft: width/7,
-                        paddingRight:width/7
-                    }} >
-            <TextInput
-                   
-                   style={styles.TextInputStyleClass2}
-                   value={bookNameState}         
-                    onChangeText={(text) => {setBookNameState(text)} }
-                    placeholder="Book"
-                    //placeholderTextColor='white'
-                   // value={}                 
-                />
-              </View>
-
-
-                  
-                  
-              
-              <View  style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-                paddingTop: 30,
-                paddingBottom: 10,
-                //paddingLeft: width/7,
-                //paddingRight:width/7
-                    }} >
-          <TagInput
-          updateState={updateAuthorState}
-          tags={authors}
-          placeholder="Author(s)" 
-          //placeholderTextColor='white'
-          label='Press comma to add a tag'
-          labelStyle={{color: 'white'}}
-          //leftElement={<Icon name={'tag'}  color={'white'}/>}
-          //leftElementContainerStyle={{marginLeft: 3}}
-          containerStyle={{width:(width * 3) / 4}}
-          inputContainerStyle={styles.textInput}
-          tagStyle={styles.tag}
-          tagTextStyle={styles.tagText}
-          inputStyle={styles.TextInputStyleClass2}
-          keysForTag={','}
-          autoCorrect={false}
-
-          />
-
-
-            {/* <TextInput   
-                    onChangeText={(text) => {}}
-                    placeholder="Author(s)"
-                    placeholderTextColor='white'
-                    style={styles.textInput}
-                    //value={}                 
-                /> */}
-                </View>
-                <View style={{paddingTop:width/8 ,alignItems: 'center',}}>
-
-              <TouchableOpacity onPress={()=>{
-                firestore().collection('Books').add({
-                  title : bookNameState,
-                  authors : authors.tagsArray,
-                  bookPictures : [BookImageDownloadURL],
-                  reviewPending : true
-                })
-                .then(function(docRef){
-                  firestore().collection('Books').doc(docRef.id).set({
-                    bookID : docRef.id
-                  },{merge:true})
-
-                  Toast.show("Book Successfully uploaded")
-                  setBookID(docRef.id);
-                  setUploadBookSuccess(true);
-
-                })
-                .catch(function(error) {
-                  console.error("Error adding Book Document: ", error);
-                  Toast.show("Error: Please try again.")
-              });
-              }} 
-              style={{ alignItems: 'center', justifyContent:'center', height:height/20, width:(width*7)/24, borderRadius:15, backgroundColor:'rgba(0, 0, 0, 0.7)', borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }}>
-              <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Add Book</Text>
-              </TouchableOpacity>
-              </View> 
-</ScrollView>
-          </SafeAreaView>
-          
-      );
       }
       else
       {

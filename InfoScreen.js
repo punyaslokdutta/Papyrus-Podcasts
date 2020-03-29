@@ -86,28 +86,6 @@ const { width, height } = Dimensions.get("window");
 
           <Divider margin={[theme.sizes.padding * 0.9, 0]} />
          
-          <Block>
-            <Text semibold>Related</Text>
-            <Block row margin={[theme.sizes.padding * 0.9, 0]}>
-              {product.images.slice(1, 3).map((image, index) => (
-                <Image
-                  key={`gallery-${index}`}
-                  source={image}
-                  style={styles.image}
-                />
-              ))}
-              <Block
-                flex={false}
-                card
-                center
-                middle
-                color="rgba(197,204,214,0.20)"
-                style={styles.more}
-              >
-                <Text gray>+{product.images.slice(3).length}</Text>
-              </Block>
-            </Block>
-          </Block>
         </Block>
       </ScrollView>
     );

@@ -222,7 +222,8 @@ const SearchChapterScreen=(props)=>
         console.log(item)
        return(
            <View>
-         <SearchBookItem book={item} index={index} navigation={props.navigation}/>
+               <Text>sdfgh</Text>
+         {/* <SearchBookItem book={item} index={index} navigation={props.navigation}/> */}
           </View>
        )
     }

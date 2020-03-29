@@ -295,7 +295,7 @@ class BookList extends Component {
           style={{ overflow:'visible', height: 280 }}
           data={this.props.destinations}
           keyExtractor={(item, index) => `${item.BookID}`}
-          onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX }} }])}
+          //onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX }} }])}
           renderItem={({ item }) => this.renderBook(item)}
         />
         {this.renderDots()}

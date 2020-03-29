@@ -242,7 +242,7 @@ class RecordBook extends Component {
             showsHorizontalScrollIndicator={false}
             decelerationRate={0.998}
             scrollEventThrottle={16}
-            onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX } } }])}
+            //onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX } } }])}
           >
             {
                this.state.article.bookPictures && this.state.article.bookPictures.map((img, index) => 

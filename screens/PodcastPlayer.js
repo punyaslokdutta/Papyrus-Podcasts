@@ -234,21 +234,11 @@ const PodcastPlayer=(props)=>{
       }).start();
 
      // dispatch({type:"TOGGLE_MINI_PLAYER"})
-
-      
       return true;
-      //dispatch({type:"TOGGLE_MINI_PLAYER"})
-      
+      //dispatch({type:"TOGGLE_MINI_PLAYER"})   
   }
   return false;
- 
-
-
     //BackHandler.removeEventListener('hardwareBackPress', this.back_Buttton_Press);
-
-   
-
- 
   }
  
   function slideUp(){
@@ -259,10 +249,6 @@ const PodcastPlayer=(props)=>{
     easing: Easing.inOut(Easing.ease),
     useNativeDriver: true
   }).start();
-  
-
-
-
 }
 
 

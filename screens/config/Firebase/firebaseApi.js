@@ -32,10 +32,15 @@ const firebaseApi={
         console.log("createNewUser QQUUEERRYY");
         console.log(userName);
         var name = null;
+        var pictureURL = user._user.photoURL;
         if(fullName == null)
             name = user._user.displayName;
         else
             name = fullName;
+
+        if(pictureURL === null)
+            pictureURL = "https://storage.googleapis.com/papyrus-fa45c.appspot.com/users/DefaultProfilePictures/WhatsApp%20Image%202020-03-29%20at%205.51.24%20PM.jpeg";
+
         const user1 = await firestore().collection('users').doc(`${user._user.uid}`)
         
         let documentSnapshots = await user1.get();
@@ -44,7 +49,7 @@ const firebaseApi={
                             id: user._user.uid,
                             phoneNumber: user._user.phoneNumber,
                             name: name,
-                            displayPicture: user._user.photoURL,
+                            displayPicture: pictureURL,
                             email: user._user.email,
                             introduction: "",
                             account_creation_time: Date.now(),
