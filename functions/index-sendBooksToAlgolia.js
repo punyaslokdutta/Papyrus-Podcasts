@@ -26,7 +26,7 @@ exports.sendBooksToAlgolia = functions
         const record = {
             objectID: doc.id,
             Book_Name: (document.title===undefined)?null:document.title,
-			      Author_Name: (document.authors===undefined)? null:document.authors[0],
+			authors: (document.authors===undefined)? null:document.authors,
             Language: (document.language===undefined)?null:document.language,
             Book_cover:(document.bookPictures===undefined)?null:document.bookPictures[0],
         };

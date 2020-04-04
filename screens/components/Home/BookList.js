@@ -308,7 +308,7 @@ class BookList extends Component {
     console.log("dwdeeedee")
     console.log(item)     
     return (
-      <TouchableOpacity activeOpacity={0.8} onPress={() => this.props.navigation.navigate('RecordBook', { book : item.BookID })}>
+      <TouchableOpacity activeOpacity={0.8} onPress={() => this.props.navigation.navigate('RecordBook', { book : item.bookID })}>
         <ImageBackground
           style={[styles.flex, styles.destination,styles.shadow]}
           imageStyle={{ borderRadius: theme.sizes.radius }}
@@ -316,11 +316,12 @@ class BookList extends Component {
         >
           <View style={[styles.row, { justifyContent: 'space-between' }]}>
           <View style={[styles.column, { flex: 1, paddingHorizontal: theme.sizes.padding / 10 }]}>
-              <Text style={{ color: theme.colors.white, fontWeight: 'bold' }}>{item.Author_Name}</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Image source={{ uri: item.Author_DP_Link }} style={styles.avatar} />
-            </View>
+          {
+                    props.book.authors.map((item) => (
+                      <Text style={{ color: theme.colors.gray_green }}>{item}</Text>
+                    ))
+          }
+          </View>
             
             <View style={{ flex: 2, justifyContent: 'center', alignItems: 'flex-end', }}>
               <Text style={styles.rating}>{item.Book_Rating}</Text>

@@ -259,7 +259,6 @@ class RecordBook extends Component {
         </View>
         <View style={[styles.flex, styles.content]}>
           <View style={[styles.flex, styles.contentHeader]}>
-            <Image style={[styles.avatar, styles.shadow]} source={{ uri: this.state.article.Author_DP_Link }} />
             <Text style={styles.title}>{this.state.article.Book_Name}</Text>
             <View style={[
               styles.row,
@@ -322,7 +321,7 @@ class RecordBook extends Component {
             <TouchableOpacity>
               <Text style={{fontSize:20, paddingBottom:10, fontFamily:'san-serif-light'}}>About the Author(s)</Text>
               <Text style={{fontSize:15}}>
-                {this.state.article.About_the_Author && this.state.article.About_the_Author.split('').slice(0, 180)}..
+                {this.state.article.aboutTheAuthors && this.state.article.aboutTheAuthors.split('').slice(0, 180)}..
                 <Text style={{color: theme.colors.active}}> Read more</Text>
               </Text>
             </TouchableOpacity>

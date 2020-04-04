@@ -318,7 +318,7 @@ const editProfile = (props) => {
 
           </View>
           <Block style={styles.inputs}>
-            <Block row space="between" margin={[10, 0]} style={styles.inputRow}>
+              <Block row space="between" margin={[10, 0]} style={styles.inputRow}>
               <Block>
                 <Text gray2 style={{ marginBottom: 10 }}>Website</Text>
                 {renderEdit('website')}

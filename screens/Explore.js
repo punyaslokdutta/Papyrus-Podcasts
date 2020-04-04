@@ -170,7 +170,7 @@ const Explore = (props) => {
           <TouchableOpacity onPress={() => {
             dispatch({type:"SET_ALGOLIA_QUERY", payload:"papyrus"})
             dispatch({type:"SET_EXPLORE_SCREEN_AS_PREVIOUS_SCREEN", payload:true})
-            props.navigation.navigate('SearchTabNavigator')}}>
+            props.navigation.navigate('SearchTabNavigator',{fromExplore:true})}}>
         <View style={{flexDirection:'row',height:startHeaderHeight, backgroundColor: 'white', paddingRight: 13, paddingVertical:10}}>
        
             <Text style={{ flex:1, fontWeight:'400',borderRadius:2,backgroundColor:'#dddd',fontSize:15,

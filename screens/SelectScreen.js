@@ -121,7 +121,7 @@ const SelectScreen =(props)=> {
         <View style={{paddingVertical:30, paddingBottom: height/20, flexDirection:'column', paddingLeft:width/8, paddingRight:width/8} }>
           <TouchableOpacity onPress={()=>{
             dispatch({type:"SET_EXPLORE_SCREEN_AS_PREVIOUS_SCREEN", payload:false})
-            props.navigation.navigate('SearchTabNavigator')
+            props.navigation.navigate('SearchTabNavigator',{fromExplore:false})
             }}>
         <View style={{flexDirection:'row',height:height/12, backgroundColor: '#101010', paddingRight: 13, paddingVertical:10, width:((width*7)/8)-10 }}>
         

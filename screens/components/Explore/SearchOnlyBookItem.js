@@ -156,7 +156,11 @@ const styles = StyleSheet.create({
                        {(props.book.Book_Name.length > 40) ? ".." : ""}</Text> 
                  </View>
                <View style ={{height:(height)/20}}>
-                  <Text style={{ color: theme.colors.gray_green }}>{props.book.Author_Name}</Text>
+                  {
+                    props.book.authors.map((item) => (
+                      <Text style={{ color: theme.colors.gray_green }}>{item}</Text>
+                    ))
+                 }
                </View>
           
               <View style={[
