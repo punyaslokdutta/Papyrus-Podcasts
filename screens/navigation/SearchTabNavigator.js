@@ -25,7 +25,7 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
   const SearchTabNavigator = createMaterialTopTabNavigator(
     {
       SearchBookScreen : { screen: props => <SearchBookScreen  {...props}/>,navigationOptions:{
-        tabBarLabel:'Books',
+        tabBarLabel:'books',
         tabBarIcon:({tintColor})=>(
           <Icon name="book" color={tintColor} size={20}/>
         )

@@ -136,7 +136,7 @@ const InnerPodcast=React.memo((props)=>
           
             <View style={[styles.flex, styles.column, styles.shadow, { justifyContent: 'space-evenly', padding: theme.sizes.padding / 2 }]}>
               <Text style={{ fontSize: theme.sizes.font * 1.25, fontWeight: '500', paddingBottom: theme.sizes.padding / 4.5, }}>{props.podcast.Podcast_Name}</Text>
-              <Text style={{ color: theme.colors.caption }}>{props.podcast.Language}</Text>
+              <Text style={{ color: theme.colors.caption }}>{props.podcast.language}</Text>
               <View style={[
                 styles.row,
                 { alignItems: 'center', justifyContent: 'space-between', marginTop: theme.sizes.margin }

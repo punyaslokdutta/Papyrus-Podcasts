@@ -32,7 +32,7 @@ exports.changeUserNameInPodcastsAsiaEast = functions.region("asia-northeast1").h
         doc._fieldsProto.BookID !== null)
         {
           console.log("PodcastID : ",doc._fieldsProto.PodcastID.stringValue);
-          const docRef = db.collection('Books').doc(doc._fieldsProto.BookID.stringValue).collection('Podcasts')
+          const docRef = db.collection('books').doc(doc._fieldsProto.BookID.stringValue).collection('Podcasts')
                                         .doc(doc._fieldsProto.PodcastID.stringValue);
           batch.update(docRef, {podcasterName : nameSetInSettingsScreen}) 
         }

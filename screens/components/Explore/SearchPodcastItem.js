@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
               </View>
               <View>
               <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
-                  {props.podcast.Book_Name}
+                  {props.podcast.bookName}
                 </Text>
                 </View>
             </View>

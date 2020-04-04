@@ -252,7 +252,7 @@ class BookList extends Component {
           });
           return (
             <Animated.View
-              key={`step-${item.BookID}`}
+              key={`step-${item.bookID}`}
               style={[styles.dots, styles.activeDot, { borderWidth: borderWidth } ]}
             />
           )
@@ -294,7 +294,7 @@ class BookList extends Component {
           snapToAlignment={"center"}
           style={{ overflow:'visible', height: 280 }}
           data={this.props.destinations}
-          keyExtractor={(item, index) => `${item.BookID}`}
+          keyExtractor={(item, index) => `${item.bookID}`}
           //onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX }} }])}
           renderItem={({ item }) => this.renderBook(item)}
         />
@@ -312,7 +312,7 @@ class BookList extends Component {
         <ImageBackground
           style={[styles.flex, styles.destination,styles.shadow]}
           imageStyle={{ borderRadius: theme.sizes.radius }}
-          source={{ uri: item.Book_Pictures_Array['0'] }}
+          source={{ uri: item.bookPictures['0'] }}
         >
           <View style={[styles.row, { justifyContent: 'space-between' }]}>
           <View style={[styles.column, { flex: 1, paddingHorizontal: theme.sizes.padding / 10 }]}>
@@ -324,13 +324,13 @@ class BookList extends Component {
           </View>
             
             <View style={{ flex: 2, justifyContent: 'center', alignItems: 'flex-end', }}>
-              <Text style={styles.rating}>{item.Book_Rating}</Text>
+              <Text style={styles.rating}>{item.bookRating}</Text>
             </View>
           </View>
         </ImageBackground>
           <View style={[styles.column, styles.destinationInfo, styles.shadow]}>
             <Text style={{ fontSize: theme.sizes.font * 1.25, fontWeight: '500', paddingBottom: 8, }}>
-              {item.Book_Name}
+              {item.bookName}
             </Text>
             <View style={[ styles.row, { justifyContent: 'space-between', alignItems: 'flex-end', }]}>
               <Text style={{ color: theme.colors.caption }}>

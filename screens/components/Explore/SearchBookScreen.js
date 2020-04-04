@@ -34,7 +34,7 @@ const searchClient = algoliasearch(
   'GL4BSOR8T3',
   '015571974bee040ecf4f58bf3276f8b3'
 );
-const index = searchClient.initIndex('Books');
+const index = searchClient.initIndex('books');
 
 var {width, height}=Dimensions.get('window')
 const SearchBookScreen=(props)=>
@@ -247,7 +247,7 @@ const SearchBookScreen=(props)=>
           renderItem={renderDatas}
           //numColumns={2}
           showsVerticalScrollIndicator={false}
-          keyExtractor={item => item.Book_Name}
+          keyExtractor={item => item.bookName}
           ItemSeparatorComponent={ItemSeperator}
           //ListHeaderComponent={this.renderHeader}
           ListFooterComponent={renderFooter}

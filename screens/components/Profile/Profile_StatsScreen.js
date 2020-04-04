@@ -90,7 +90,7 @@ renderRewards = (numCreatedBookPodcasts,numCreatedChapterPodcasts,totalMinutesRe
       <Block row>
         <Block center flex={0.8}>
   <Text size={20} spacing={1} primary>{numCreatedBookPodcasts}</Text>
-          <Text spacing={0.7}>Books</Text>
+          <Text spacing={0.7}>books</Text>
         </Block>
         
         <Block center flex={0.8}>

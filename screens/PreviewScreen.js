@@ -39,14 +39,14 @@ const PreviewScreen = (props) => {
   const bookId=useSelector(state=>state.recorderReducer.bookId)
  
   //BOOK_ID to be returned from recorderReducer which will be dispatched by Algolia 
-  //For Now, Books which are not present in our database is handled. 
+  //For Now, books which are not present in our database is handled. 
   // 1. Create a Book Document , Get the Doc RefId . Make Podcast Collection and Document. 
-  // 2. Add a Review : "Pending" to these Books .
+  // 2. Add a Review : "Pending" to these books .
   // 3. Cloud Function for Image Resizing 
-  // 4. Cloud Function for indexing the podcast , Pending Books are not indexed.
+  // 4. Cloud Function for indexing the podcast , Pending books are not indexed.
   // 5. OverAll PodcastCountUpdate 
   // 6. Build a unique path in Google storage for podcasts and images while uploading
-  // 7. 50K Books 2lac podcasts 50K users (3 lac documents) [Algolia Indexing]
+  // 7. 50K books 2lac podcasts 50K users (3 lac documents) [Algolia Indexing]
   // 8. 
 
   const [recordedFilePath, setrecordedFilePath] = useState(props.navigation.getParam('recordedFilePath'));
@@ -83,15 +83,15 @@ const PreviewScreen = (props) => {
 
         dispatch({type:"ADD_NUM_CREATED_BOOK_PODCASTS", payload: incrementedValue}) &&
 
-        firestore().collection('Books').doc(bookId).collection('Podcasts')
+        firestore().collection('books').doc(bookId).collection('Podcasts')
       .add({
         AudioFileLink: podcastAudioDownloadURL,
         BookID: bookId, 
         ChapterName: "",
-        Book_Name: BookName, 
+        bookName: BookName, 
         Duration: Duration,
-        Genres: ["Non-Fiction","Science & Technology"],
-        Language: LanguageSelected,
+        genres: ["Non-Fiction","Science & Technology"],
+        language: LanguageSelected,
         Podcast_Name: PodcastName,
         Podcast_Pictures: [podcastImageDownloadURL],
         Timestamp: moment().format(),
@@ -104,7 +104,7 @@ const PreviewScreen = (props) => {
     })
     .then(async function(docRef, props) {
         console.log("Document written with ID: ", docRef.id);
-        firestore().collection('Books').doc(bookId).collection('Podcasts')
+        firestore().collection('books').doc(bookId).collection('Podcasts')
                 .doc(docRef.id).set({
                     PodcastID: docRef.id
                 },{merge:true})
@@ -130,9 +130,9 @@ const PreviewScreen = (props) => {
               Timestamp : moment().format(),
               PodcastID : PodcastID,
               Podcast_Picture : podcastImageDownloadURL,
-              Book_Name : BookName,
+              bookName : BookName,
               Podcast_Name : PodcastName,
-              Language : LanguageSelected,
+              language : LanguageSelected,
               PodcasterName : userName, 
               AuthorName:AuthorName
 
@@ -159,8 +159,8 @@ const PreviewScreen = (props) => {
       () => {
         console.log("Inside useEffect - componentDidMount of PreviewScreen");
         BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
-        //if(props.navigation.state.params.Book_Name != null)
-        //  dispatch({type:"CHANGE_BOOK",payload:props.navigation.state.params.Book_Name})
+        //if(props.navigation.state.params.bookName != null)
+        //  dispatch({type:"CHANGE_BOOK",payload:props.navigation.state.params.bookName})
         //if(props.navigation.state.params.BookID != null)
         //  dispatch({type:"CHANGE_BOOK_ID",payload:props.navigation.state.params.BookID})
         return () => {

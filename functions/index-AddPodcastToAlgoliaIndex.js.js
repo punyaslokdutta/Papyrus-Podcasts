@@ -5,7 +5,7 @@ const algoliasearch=require('algoliasearch');
 
 //const ALGOLIA_APP_ID = "BJ2O4N6NAY"
 //const ALGOLIA_ADMIN_KEY="c169c60de08aa43d881bf81c223dda06"
-//const ALGOLIA_INDEX_NAME='Books'
+//const ALGOLIA_INDEX_NAME='books'
 
 const algoliaRecords = [];
 
@@ -19,23 +19,23 @@ exports.AddToPodcastsIndex = functions.region("asia-northeast1").https.onCall((d
  
 
   const Podcast_Name=data.Podcast_Name;
-  const Book_Name=data.Book_Name;
+  const bookName=data.bookName;
   const Podcast_Picture= data.Podcast_Picture;
   const PodcastID=data.PodcastID;
   const PodcasterName=data.PodcasterName
   const Timestamp=data.Timestamp
-  const Language =data.Language
+  const language =data.language
   const AuthorName=data.AuthorName
 
   console.log("AddToPodcastsIndex cloud function");
 
   console.log("Podcast_Name: ",Podcast_Name);
-  console.log("Book_Name: ",Book_Name);
+  console.log("bookName: ",bookName);
   console.log("Podcast_Picture:" , Podcast_Picture)
   console.log("PodcastID: ",PodcastID);
   console.log("PodcasterName: ",PodcasterName);
   console.log("Timestamp: ",Timestamp);
-  console.log("Language: ",Language);
+  console.log("language: ",language);
 
   console.log("context.auth = ",context.auth);
 
@@ -43,10 +43,10 @@ exports.AddToPodcastsIndex = functions.region("asia-northeast1").https.onCall((d
     objectID: PodcastID,
     Podcast_Name:Podcast_Name, 
     Podcast_Picture:Podcast_Picture,
-    Book_Name:Book_Name, 
+    bookName:bookName, 
     PodcasterName:PodcasterName, 
     Timestamp:Timestamp, 
-    Language :Language,
+    language :language,
     AuthorName: AuthorName,
 };
 

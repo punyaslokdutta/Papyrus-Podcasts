@@ -42,7 +42,7 @@ const SelectScreen =(props)=> {
     {
       if(bookSelected != null)
       {
-        setBookName(bookSelected.title);
+        setBookName(bookSelected.bookName);
         setBookId(bookSelected.bookID);
         setAuthorName(bookSelected.authors[0])
       }
@@ -131,7 +131,7 @@ const SelectScreen =(props)=> {
               <Icon style={{paddingHorizontal:10,paddingTop:20 }} name="search" size={20} />
               
 
-              {"  "}Search Content, Books, Chapters
+              {"  "}Search Content, books, Chapters
                </Text> 
 
         </View>
@@ -147,7 +147,7 @@ const SelectScreen =(props)=> {
             <Image style={{width:width/4,height:height*2/13}} source={{uri: bookSelected.bookPictures[0]}}/>
             </View>
             <View style={{paddingLeft:5,flexDirection:'column'}}>
-            <Text style={{fontSize:15,color:'white'}}>{bookSelected.title}</Text>
+            <Text style={{fontSize:15,color:'white'}}>{bookSelected.bookName}</Text>
             <Text style={{color:'white'}}>{bookSelected.authors[0]}</Text>
             </View>
              </View>
@@ -208,12 +208,12 @@ const SelectScreen =(props)=> {
                          {
                           if(LanguageSelected == null && BookName!=null)
                           {
-                            alert("You must choose Language of your Podcast");
+                            alert("You must choose language of your Podcast");
                             return;
                           }
                           if(LanguageSelected == null && BookName==null)
                           {
-                            alert("You must select Book/Chapter and Language of your Podcast");
+                            alert("You must select Book/Chapter and language of your Podcast");
                             return;
                           }
                           if(LanguageSelected != null && BookName==null)  
@@ -247,12 +247,12 @@ const SelectScreen =(props)=> {
                          {
                           if(LanguageSelected == null && BookName!=null)
                           {
-                            alert("You must choose Language of your Podcast");
+                            alert("You must choose language of your Podcast");
                             return;
                           }
                           if(LanguageSelected == null && BookName==null)
                           {
-                            alert("You must select Book/Chapter and Language of your Podcast");
+                            alert("You must select Book/Chapter and language of your Podcast");
                             return;
                           }
                           if(LanguageSelected != null && BookName==null)  

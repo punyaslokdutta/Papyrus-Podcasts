@@ -18,7 +18,7 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
 const ProfileTabNavigator =createMaterialTopTabNavigator(
     {
        ProfileBookPodcast:{ screen: ProfileBookPodcast,navigationOptions:{
-        tabBarLabel:'Books',
+        tabBarLabel:'books',
         tabBarIcon:({tintColor})=>(
           <Icon name="book" color={tintColor} size={20}/>
         )

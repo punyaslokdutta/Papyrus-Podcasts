@@ -133,7 +133,7 @@ class RecordBook extends Component {
         article: null
       };
     }
-    //const ref = firestore().collection('Books');
+    //const ref = firestore().collection('books');
   }
   scrollX = new Animated.Value(0);
 
@@ -164,7 +164,7 @@ class RecordBook extends Component {
       //const { navigation } = this.props;
       const bookid = this.props.navigation.state.params;
       console.log(bookid)
-      let book_data = await firestore().collection('Books').doc(bookid.book).get();
+      let book_data = await firestore().collection('books').doc(bookid.book).get();
       // let data = await book_data.get();
       console.log(book_data)
       console.log(book_data._data)
@@ -259,14 +259,14 @@ class RecordBook extends Component {
         </View>
         <View style={[styles.flex, styles.content]}>
           <View style={[styles.flex, styles.contentHeader]}>
-            <Text style={styles.title}>{this.state.article.Book_Name}</Text>
+            <Text style={styles.title}>{this.state.article.bookName}</Text>
             <View style={[
               styles.row,
               { alignItems: 'center', marginVertical: theme.sizes.margin / 2, flexDirection:'row' }
             ]}>
-              {this.renderRatings(this.state.article.Book_Rating)}
+              {this.renderRatings(this.state.article.bookRating)}
               <Text style={{ color: theme.colors.active }}>
-                {this.state.article.Book_Rating} 
+                {this.state.article.bookRating} 
               </Text>
               <View style={{paddingLeft:10}}>
               
