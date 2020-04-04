@@ -63,7 +63,7 @@ class ProfileFollowerScreen extends React.Component {
                                                     //var lastVisibleChapter = this.state.lastVisibleChapterPodcast;
                                             
                                                     lastVisibleFollower = FollowerData[FollowerData.length - 1].id;        
-                                                    //lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].PodcastID;
+                                                    //lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].podcastID;
                                                      
                                                     this.setState({
                                                         Followers: FollowerData,

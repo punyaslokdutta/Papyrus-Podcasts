@@ -64,7 +64,7 @@ class UserChapterPodcast extends React.Component {
   
         var lastVisibleChapter = this.state.lastVisibleChapterPodcast;  
         if(documentData_chapterPodcasts.length != 0)      
-          lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].PodcastID;
+          lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].podcastID;
         
           this.setState({
             chapterPodcasts: documentData_chapterPodcasts,
@@ -90,7 +90,7 @@ class UserChapterPodcast extends React.Component {
           try{
             additionalQuery = await firestore().collectionGroup('Podcasts')
                              .where('podcasterID','==',userid).where('isChapterPodcast','==',true)
-                             .orderBy('PodcastID')
+                             .orderBy('podcastID')
                              .startAfter(this.state.lastVisibleChapterPodcast)
                              .limit(this.state.limit);
          }
@@ -110,7 +110,7 @@ class UserChapterPodcast extends React.Component {
        let documentData = documentSnapshots.docs.map(document => document.data());
        if(documentData.length != 0)
        {
-            let lastVisibleChapter = documentData[documentData.length - 1].PodcastID;
+            let lastVisibleChapter = documentData[documentData.length - 1].podcastID;
           if(this.state.lastVisibleChapter === lastVisibleChapter)
           {
               this.setState({
@@ -202,7 +202,7 @@ class UserChapterPodcast extends React.Component {
           renderItem={this.renderData}
           numColumns={2}
           showsVerticalScrollIndicator={false}
-          keyExtractor={item => item.PodcastID}
+          keyExtractor={item => item.podcastID}
           ListFooterComponent={this.renderFooter}
           onEndReached={this.onEndReached}
           onEndReachedThreshold={0.5}

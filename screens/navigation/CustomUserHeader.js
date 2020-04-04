@@ -47,7 +47,7 @@ async function retrieveData(message,userid,item,userDisplayPictureURL,name,userI
                  await instance({ // change in podcast docs created by  user
                    timestamp : moment().format(),
                    photoURL : userDisplayPictureURL,
-                   PodcastID : null,
+                   podcastID : null,
                    userID : item.id,
                    podcastImageURL : null,
                    type : "follow",

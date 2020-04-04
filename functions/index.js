@@ -27,13 +27,13 @@ exports.changeUserNameInPodcastsAsiaEast = functions.region("asia-northeast1").h
    console.log("Response DOCS : ",response.docs);
    response.docs.forEach((doc) => {
        console.log("Full Doc : ",doc);
-       //console.log("BookID : ",doc._fieldsProto.BookID.stringValue);
-       if(doc._fieldsProto.BookID !== undefined && 
-        doc._fieldsProto.BookID !== null)
+       //console.log("bookID : ",doc._fieldsProto.bookID.stringValue);
+       if(doc._fieldsProto.bookID !== undefined && 
+        doc._fieldsProto.bookID !== null)
         {
-          console.log("PodcastID : ",doc._fieldsProto.PodcastID.stringValue);
-          const docRef = db.collection('books').doc(doc._fieldsProto.BookID.stringValue).collection('Podcasts')
-                                        .doc(doc._fieldsProto.PodcastID.stringValue);
+          console.log("podcastID : ",doc._fieldsProto.podcastID.stringValue);
+          const docRef = db.collection('books').doc(doc._fieldsProto.bookID.stringValue).collection('Podcasts')
+                                        .doc(doc._fieldsProto.podcastID.stringValue);
           batch.update(docRef, {podcasterName : nameSetInSettingsScreen}) 
         }
        

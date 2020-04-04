@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
 
   async function retrievePodcast(podcastID)
   {
-    const podcastCollection = await firestore().collectionGroup('Podcasts').where('PodcastID','==',podcastID).get();
+    const podcastCollection = await firestore().collectionGroup('Podcasts').where('podcastID','==',podcastID).get();
     console.log("[ActivityItem] podcastCollection : ", podcastCollection);
     const podcastDocumentData = podcastCollection.docs[0]._data;
     console.log("[ActivityItem] podcastDocumentData : ", podcastDocumentData);

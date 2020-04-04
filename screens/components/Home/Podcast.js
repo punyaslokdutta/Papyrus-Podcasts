@@ -134,14 +134,14 @@ const styles = StyleSheet.create({
   console.log("Inside Podcast")
   console.log(props);
 
-  var duration = parseInt((props.podcast.Duration)/60);
+  var duration = parseInt((props.podcast.duration)/60);
 
   if(duration == 0)
     duration = 1;
   var currentDateTime = moment().format();
   var timeDiff = currentDateTime;//moment(currentDateTime).fromNow();
-  if(props.podcast.Timestamp)
-    timeDiff = moment(props.podcast.Timestamp).fromNow();
+  if(props.podcast.timestamp)
+    timeDiff = moment(props.podcast.timestamp).fromNow();
   const dispatch=useDispatch();
 
  const _menu = useRef(null);
@@ -175,15 +175,15 @@ const styles = StyleSheet.create({
                 dispatch({type:"SET_IS_HOME_SCREEN", payload: props.isHomeScreen})
 
             })}>
-           <Image style={[styles.recommendationImage]} source={ {uri: props.podcast.Podcast_Pictures["0"]}} />
+           <Image style={[styles.recommendationImage]} source={ {uri: props.podcast.podcastPictures["0"]}} />
 
            </TouchableOpacity>
           
         </View>
             <View style={[styles.flex, styles.column, styles.shadow, { padding: theme.sizes.padding / 4 }]}>
               <View style={{height:(height)/16}}>
-              <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.podcast.Podcast_Name.slice(0,25)}
-                {(props.podcast.Podcast_Name.length > 25) ? ".." : ""}</Text> 
+              <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.podcast.podcastName.slice(0,25)}
+                {(props.podcast.podcastName.length > 25) ? ".." : ""}</Text> 
               </View>
               <View style ={{height:(height)/20}}>
               <Text style={{ color: theme.colors.gray_green }}>{props.podcast.podcasterName}</Text>

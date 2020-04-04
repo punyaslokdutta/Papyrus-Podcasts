@@ -128,15 +128,15 @@ const styles = StyleSheet.create({
   console.log("props.podcast : ",props.podcast);
   const dispatch = useDispatch();
   
-  var timestamp = moment(props.podcast.Timestamp).fromNow();
+  var timestamp = moment(props.podcast.timestamp).fromNow();
 
   if(timestamp === null)
-    timestamp = props.podcast.Timestamp.slice(0,10);
+    timestamp = props.podcast.timestamp.slice(0,10);
 
   async function retrievePodcastDocument()
   {
     const podcastCollection = await firestore().collectionGroup('Podcasts')
-             .where('PodcastID','==',props.podcast.objectID).get();
+             .where('podcastID','==',props.podcast.objectID).get();
     const podcastDocumentData = podcastCollection.docs[0]._data;
     console.log("[SearchPodcastItem] podcastDocumentData : ", podcastDocumentData);
     dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
@@ -155,8 +155,8 @@ const styles = StyleSheet.create({
 
                <View style={[styles.flex, styles.column, styles.shadow, { width:(width)/2,padding: theme.sizes.padding / 4 }]}>
                  <View style={{height:(height)/16}}>
-                  <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.podcast.Podcast_Name.slice(0,40)}
-                       {(props.podcast.Podcast_Name.length > 40) ? ".." : ""}</Text> 
+                  <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.podcast.podcastName.slice(0,40)}
+                       {(props.podcast.podcastName.length > 40) ? ".." : ""}</Text> 
                  </View>
                <View style ={{height:(height)/20}}>
                   <Text style={{ color: theme.colors.gray_green }}>{props.podcast.PodcasterName}</Text>

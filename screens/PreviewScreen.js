@@ -32,9 +32,9 @@ const PreviewScreen = (props) => {
 
   const dispatch = useDispatch();
   const [PodcastImage, setPodcastImage] = useState(null);
-  const ChapterName=useSelector(state=>state.recorderReducer.ChapterName)
+  const chapterName=useSelector(state=>state.recorderReducer.chapterName)
   const BookName=useSelector(state=>state.recorderReducer.BookName)
-  const AuthorName=useSelector(state=>state.recorderReducer.AuthorName)
+  const authors=useSelector(state=>state.recorderReducer.authors)
   const LanguageSelected=useSelector(state=>state.recorderReducer.LanguageSelected)
   const bookId=useSelector(state=>state.recorderReducer.bookId)
  
@@ -57,12 +57,12 @@ const PreviewScreen = (props) => {
   const [tagsText, settagsText]=useState('#fff');
   const [podcastImageDownloadURL,setPodcastImageDownloadURL] = useState(null);
   const [podcastAudioDownloadURL,setPodcastAudioDownloadURL] = useState(null);
-  const [Duration , setDuration]=useState(props.navigation.getParam('duration'))
+  const [duration , setDuration]=useState(props.navigation.getParam('duration'))
   const [progress, setProgress]=useState(0)
   const [indeterminate, setIndeterminate]=useState(true)
   const [toggleIndicator, setToggleIndicator]=useState(false)
   const [uploadPodcastSuccess, setUploadPodcastSuccess]=useState(false)
-  const [PodcastID,setPodcastID] = useState(null);
+  const [podcastID,setPodcastID] = useState(null);
   const [warningMessage, setWarningMessage]=useState(false)
 
   const numCreatedBookPodcasts = useSelector(state=>state.userReducer.numCreatedBookPodcasts);
@@ -85,28 +85,29 @@ const PreviewScreen = (props) => {
 
         firestore().collection('books').doc(bookId).collection('Podcasts')
       .add({
-        AudioFileLink: podcastAudioDownloadURL,
-        BookID: bookId, 
-        ChapterName: "",
+        audioFileLink: podcastAudioDownloadURL,
+        bookID: bookId, 
+        chapterName: "",
+        isChapterPodcast: false,
         bookName: BookName, 
-        Duration: Duration,
+        duration: duration,
         genres: ["Non-Fiction","Science & Technology"],
         language: LanguageSelected,
-        Podcast_Name: PodcastName,
-        Podcast_Pictures: [podcastImageDownloadURL],
-        Timestamp: moment().format(),
+        podcastName: PodcastName,
+        podcastPictures: [podcastImageDownloadURL],
+        timestamp: moment().format(),
         description: Description,
-        Tags_Array : Tags.tagsArray,
+        tags : Tags.tagsArray,
         podcasterID: userID,
         podcasterName: userName,
         numUsersLiked : 0,
-        AuthorName:AuthorName
+        authors:authors
     })
     .then(async function(docRef, props) {
         console.log("Document written with ID: ", docRef.id);
         firestore().collection('books').doc(bookId).collection('Podcasts')
                 .doc(docRef.id).set({
-                    PodcastID: docRef.id
+                    podcastID: docRef.id
                 },{merge:true})
          Toast.show("Successfully uploaded")
          setPodcastID(docRef.id)
@@ -127,14 +128,14 @@ const PreviewScreen = (props) => {
           try 
           {          
             await instance({ // change in podcast docs created by  user
-              Timestamp : moment().format(),
-              PodcastID : PodcastID,
+              timestamp : moment().format(),
+              podcastID : podcastID,
               Podcast_Picture : podcastImageDownloadURL,
               bookName : BookName,
-              Podcast_Name : PodcastName,
+              podcastName : PodcastName,
               language : LanguageSelected,
               PodcasterName : userName, 
-              AuthorName:AuthorName
+              authors:authors
 
             });
           }
@@ -161,8 +162,8 @@ const PreviewScreen = (props) => {
         BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
         //if(props.navigation.state.params.bookName != null)
         //  dispatch({type:"CHANGE_BOOK",payload:props.navigation.state.params.bookName})
-        //if(props.navigation.state.params.BookID != null)
-        //  dispatch({type:"CHANGE_BOOK_ID",payload:props.navigation.state.params.BookID})
+        //if(props.navigation.state.params.bookID != null)
+        //  dispatch({type:"CHANGE_BOOK_ID",payload:props.navigation.state.params.bookID})
         return () => {
           console.log(" back_Button_Press Unmounted");
           BackHandler.removeEventListener("hardwareBackPress",  back_Button_Press);

@@ -315,10 +315,10 @@ const PodcastPlayer=(props)=>{
           <TouchableNativeFeedback onPress={slideDown}>
             <Animated.View style={{ backgroundColor: 'white', width: videoContainerWidth }}>
               <Animated.View style={{ ...StyleSheet.absoluteFillObject, opacity: playerControlOpaciy }}>
-                <PlayerControls title={props.podcast.Podcast_Name} onPress={slideUp}      />
+                <PlayerControls title={props.podcast.podcastName} onPress={slideUp}      />
               </Animated.View>
               <Animated.Image
-                source={{uri:props.podcast.Podcast_Pictures[0]}}
+                source={{uri:props.podcast.podcastPictures[0]}}
                 style={{ width: videoWidth, height: videoHeight, borderColor:'black' }}
               />
 

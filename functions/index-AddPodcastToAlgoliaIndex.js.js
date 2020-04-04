@@ -18,36 +18,36 @@ const collectionIndex = algoliaClient.initIndex(collectionIndexName);
 exports.AddToPodcastsIndex = functions.region("asia-northeast1").https.onCall((data, context) => {
  
 
-  const Podcast_Name=data.Podcast_Name;
+  const podcastName=data.podcastName;
   const bookName=data.bookName;
   const Podcast_Picture= data.Podcast_Picture;
-  const PodcastID=data.PodcastID;
+  const podcastID=data.podcastID;
   const PodcasterName=data.PodcasterName
-  const Timestamp=data.Timestamp
+  const timestamp=data.timestamp
   const language =data.language
-  const AuthorName=data.AuthorName
+  const authors=data.authors
 
   console.log("AddToPodcastsIndex cloud function");
 
-  console.log("Podcast_Name: ",Podcast_Name);
+  console.log("podcastName: ",podcastName);
   console.log("bookName: ",bookName);
   console.log("Podcast_Picture:" , Podcast_Picture)
-  console.log("PodcastID: ",PodcastID);
+  console.log("podcastID: ",podcastID);
   console.log("PodcasterName: ",PodcasterName);
-  console.log("Timestamp: ",Timestamp);
+  console.log("timestamp: ",timestamp);
   console.log("language: ",language);
 
   console.log("context.auth = ",context.auth);
 
   const record = {
-    objectID: PodcastID,
-    Podcast_Name:Podcast_Name, 
+    objectID: podcastID,
+    podcastName:podcastName, 
     Podcast_Picture:Podcast_Picture,
     bookName:bookName, 
     PodcasterName:PodcasterName, 
-    Timestamp:Timestamp, 
+    timestamp:timestamp, 
     language :language,
-    AuthorName: AuthorName,
+    authors: authors,
 };
 
 

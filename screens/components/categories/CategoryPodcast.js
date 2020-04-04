@@ -51,12 +51,12 @@ class CategoryPodcast extends React.Component {
         // Cloud Firestore: Query
         const genre = this.props.navigation.state.params;
         let query3 = await firestore().collectionGroup('Podcasts').where('genres','array-contains',genre.category);    
-        let documentPodcasts = await query3.orderBy('PodcastID').limit(this.state.limit).get();
+        let documentPodcasts = await query3.orderBy('podcastID').limit(this.state.limit).get();
         let documentDataPodcasts = documentPodcasts.docs.map(document => document.data());
 
         var lastVisible = this.state.lastVisiblePodcast;
-        lastVisible = documentDataPodcasts[documentDataPodcasts.length - 1].PodcastID;        
-        //lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].PodcastID;
+        lastVisible = documentDataPodcasts[documentDataPodcasts.length - 1].podcastID;        
+        //lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].podcastID;
          
         this.setState({
         podcasts: documentDataPodcasts,
@@ -83,7 +83,7 @@ class CategoryPodcast extends React.Component {
          let additionalQuery = 9;
          try{
            additionalQuery = await firestore().collectionGroup('Podcasts').where('genres','array-contains',genre.category)
-                            .orderBy('PodcastID')
+                            .orderBy('podcastID')
                             .startAfter(this.state.lastVisiblePodcast)
                             .limit(this.state.limit);
         
@@ -109,7 +109,7 @@ class CategoryPodcast extends React.Component {
       // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
       if(documentData.length != 0)
       {
-      let lastVisible = documentData[documentData.length - 1].PodcastID;
+      let lastVisible = documentData[documentData.length - 1].podcastID;
        
       if(this.state.lastVisiblePodcast===lastVisible){
           this.setState({

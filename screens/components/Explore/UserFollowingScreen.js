@@ -62,7 +62,7 @@ class UserFollowingScreen extends React.Component {
         //var lastVisibleChapter = this.state.lastVisibleChapterPodcast;
 
         lastVisibleFollowing = followingData[followingData.length - 1].id;        
-        //lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].PodcastID;
+        //lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].podcastID;
          
         this.setState({
             Followings: followingData,

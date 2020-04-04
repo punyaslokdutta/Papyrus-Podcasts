@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
   //   bookName = props.book.bookName.slice(0,40);
         return (
           <TouchableOpacity onPress={() => {
-              //retrieveBookDocument(props.book.BookID);
+              //retrieveBookDocument(props.book.bookID);
             props.navigation.navigate('RecordBook', {book : props.book.objectID })
           }
           }>

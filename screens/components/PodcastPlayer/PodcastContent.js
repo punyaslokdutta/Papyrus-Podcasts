@@ -37,7 +37,7 @@ const { width,height } = Dimensions.get('window');
   //const isBuffering=useSelector(state=>state.rootReducer.isBuffering);
   const paused=useSelector(state=>state.rootReducer.paused);
   const volume=useSelector(state=>state.rootReducer.volume);
-  const liked = useSelector(state=>state.userReducer.isPodcastLiked[props.podcast.PodcastID]);
+  const liked = useSelector(state=>state.userReducer.isPodcastLiked[props.podcast.podcastID]);
   const userDisplayPictureURL = useSelector(state=>state.userReducer.displayPictureURL);
   const name = useSelector(state=>state.userReducer.name);
   
@@ -55,7 +55,7 @@ const { width,height } = Dimensions.get('window');
   }
 
   function onLoadEnd(data) {
-    dispatch({type:"SET_DURATION", payload: props.podcast.Duration})
+    dispatch({type:"SET_DURATION", payload: props.podcast.duration})
     dispatch({type:"RESET_TO_INITIAL"})
   }
 
@@ -88,18 +88,18 @@ function parentSlideDown(){
 async function updatePodcastsLiked(props){
 
   //setLikedState(true);
-  dispatch({type:'ADD_TO_PODCASTS_LIKED',payload:props.podcast.PodcastID})
+  dispatch({type:'ADD_TO_PODCASTS_LIKED',payload:props.podcast.podcastID})
   const numUsers = props.podcast.numUsersLiked + 1;
 
   dispatch({type:'SET_NUM_LIKES',payload:numUsers})
 
   const likedPodcasts = await firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).set({
-        podcastsLiked : firestore.FieldValue.arrayUnion(props.podcast.PodcastID)
+        podcastsLiked : firestore.FieldValue.arrayUnion(props.podcast.podcastID)
   },{merge:true})
   
   console.log("[PodcastContent] In function updatePodcastsLiked, numUsers = ",numUsers);
 
-  const numlikedUsers = await firestore().collection('books').doc(props.podcast.bookID).collection('Podcasts').doc(props.podcast.PodcastID)
+  const numlikedUsers = await firestore().collection('books').doc(props.podcast.bookID).collection('Podcasts').doc(props.podcast.podcastID)
                                   .update({
     numUsersLiked : firestore.FieldValue.increment(1)
   })
@@ -113,12 +113,12 @@ async function updatePodcastsLiked(props){
     await instance({ // change in podcast docs created by  user
       timestamp : moment().format(),
       photoURL : userDisplayPictureURL,
-      PodcastID : props.podcast.PodcastID,
+      podcastID : props.podcast.podcastID,
       userID : props.podcast.podcasterID,
-      podcastImageURL : props.podcast.Podcast_Pictures[0],
+      podcastImageURL : props.podcast.podcastPictures[0],
       type : "like",
       Name : name,
-      podcastName : props.podcast.Podcast_Name 
+      podcastName : props.podcast.podcastName 
     });
   }
   catch (e) 
@@ -141,7 +141,7 @@ async function updatePodcastsLiked(props){
         <View style={styles.content}>
         <View style={{ alignItems: "center"}}>
         <View style={{ alignItems: "center", marginTop: 8}}>
-        <Text style={[styles.textDark, { fontSize: 16, fontWeight: "500" }]}>{props.podcast.Podcast_Name}</Text>
+        <Text style={[styles.textDark, { fontSize: 16, fontWeight: "500" }]}>{props.podcast.podcastName}</Text>
     
                     </View>
                     <View style={{ alignItems: "center", marginTop: 2}}>
@@ -179,7 +179,7 @@ async function updatePodcastsLiked(props){
             <Video
             ref={video}
             /* For ExoPlayer */
-             source={{ uri: props.podcast.AudioFileLink }} 
+             source={{ uri: props.podcast.audioFileLink }} 
             //source={require('../../../assets/images/testvideo.mp4')}
             style={styles.fullScreen}
             audioOnly={true}
@@ -208,7 +208,7 @@ async function updatePodcastsLiked(props){
  
           <View> 
           <ProgressBar
-                duration={props.podcast.Duration}
+                duration={props.podcast.duration}
                 onSlideStart={handlePlayPause}
                 onSlideComplete={handlePlayPause}
                 onSlideCapture={onSeek}

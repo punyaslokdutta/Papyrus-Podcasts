@@ -18,8 +18,8 @@ const SelectScreen =(props)=> {
 
   const [categoryClicked, setcategoryClicked]=useState(null);
   const [BookName, setBookName]=useState();
-  const [ChapterName, setChapterName]=useState(null);
-  const [AuthorName, setAuthorName]=useState(null);
+  const [chapterName, setChapterName]=useState(null);
+  const [authors, setAuthorName]=useState(null);
   const [LanguageSelected, setLanguageSelected]=useState(null);
   const [bookId, setBookId]=useState(props.navigation.getParam('bookItem'));
 
@@ -204,7 +204,7 @@ const SelectScreen =(props)=> {
             onPress={() => {
               console.log("[SelectScreen] BookName : ",BookName);
                          
-                         if (BookName === null || AuthorName===null|| LanguageSelected ===null) 
+                         if (BookName === null || authors===null|| LanguageSelected ===null) 
                          {
                           if(LanguageSelected == null && BookName!=null)
                           {
@@ -225,8 +225,8 @@ const SelectScreen =(props)=> {
                         }  
                         dispatch({type:'CHANGE_BOOK_ID', payload:bookSelected.bookID})
                         dispatch({type:'CHANGE_BOOK',payload:BookName})
-                        dispatch({type:'CHANGE_CHAPTER',payload:ChapterName}) 
-                        dispatch({type:'CHANGE_AUTHOR',payload:AuthorName}) 
+                        dispatch({type:'CHANGE_CHAPTER',payload:chapterName}) 
+                        dispatch({type:'CHANGE_AUTHOR',payload:authors}) 
                         dispatch({type:'CHANGE_LANGUAGE',payload:LanguageSelected}) 
                         dispatch({type:"SET_PODCAST", payload: null})
 
@@ -243,7 +243,7 @@ const SelectScreen =(props)=> {
                  onPress={() => {
 
                          
-                         if (BookName === null || AuthorName === null || LanguageSelected ===null) 
+                         if (BookName === null || authors === null || LanguageSelected ===null) 
                          {
                           if(LanguageSelected == null && BookName!=null)
                           {
@@ -263,8 +263,8 @@ const SelectScreen =(props)=> {
                         } 
                         dispatch({type:'CHANGE_BOOK_ID', payload:bookSelected.bookID})
                         dispatch({type:'CHANGE_BOOK',payload:BookName})
-                        dispatch({type:'CHANGE_CHAPTER',payload:ChapterName}) 
-                        dispatch({type:'CHANGE_AUTHOR',payload:AuthorName}) 
+                        dispatch({type:'CHANGE_CHAPTER',payload:chapterName}) 
+                        dispatch({type:'CHANGE_AUTHOR',payload:authors}) 
                         dispatch({type:'CHANGE_LANGUAGE',payload:LanguageSelected})
                         dispatch({type:"SET_PODCAST", payload: null})
       

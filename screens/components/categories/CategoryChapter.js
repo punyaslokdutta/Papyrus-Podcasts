@@ -83,7 +83,7 @@ class CategoryChapter extends React.Component {
          let additionalQuery = 9;
          try{
            additionalQuery = await firestore().collection('books').where('genres','array-contains',genre.category)
-                            .orderBy('BookID')
+                            .orderBy('bookID')
                             .startAfter(this.state.lastVisibleBook)
                             .limit(this.state.limit);
         
@@ -109,7 +109,7 @@ class CategoryChapter extends React.Component {
       // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
       if(documentData.length != 0)
       {
-      let lastVisibleBook = documentData[documentData.length - 1].BookID;
+      let lastVisibleBook = documentData[documentData.length - 1].bookID;
        
       if(this.state.lastVisibleBook===lastVisibleBook){
           this.setState({
@@ -189,7 +189,7 @@ class CategoryChapter extends React.Component {
         renderItem={this.renderData}
         //numColumns={2}
         showsVerticalScrollIndicator={false}
-        keyExtractor={item => item.BookID}
+        keyExtractor={item => item.bookID}
        // ListHeaderComponent={this.renderHeader}
        ItemSeparatorComponent={this.separator}
          ListFooterComponent={this.renderFooter}

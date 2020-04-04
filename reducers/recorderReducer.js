@@ -3,8 +3,8 @@
 
 const INITIAL_STATE = {
     BookName:null,
-    ChapterName:null,
-    AuthorName:null,
+    chapterName:null,
+    authors:null,
     LanguageSelected:null,
     bookId:null
   
@@ -20,10 +20,10 @@ const INITIAL_STATE = {
             return {...state, BookName:action.payload}
         case "CHANGE_CHAPTER":
           console.log("CHANGE_CHAPTER"+" " +action.payload)
-            return {...state, ChapterName:action.payload}
+            return {...state, chapterName:action.payload}
         case "CHANGE_AUTHOR":
             console.log("CHANGE_AUTHOR"+" " +action.payload)
-            return {...state, AuthorName:action.payload}
+            return {...state, authors:action.payload}
         case "CHANGE_LANGUAGE":
           console.log("CHANGE_LANGUAGE"+" " +action.payload)
             return {...state,LanguageSelected:action.payload} 
