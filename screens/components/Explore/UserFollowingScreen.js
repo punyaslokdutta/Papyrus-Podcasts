@@ -55,7 +55,7 @@ class UserFollowingScreen extends React.Component {
         console.log(wholestring);
 
         
-        let followingQuery =  await firestore().collection('users').where('followers_list','array-contains',userid).orderBy('id')
+        let followingQuery =  await firestore().collection('users').where('followersList','array-contains',userid).orderBy('id')
                                                 .limit(this.state.limit).get();
         let followingData = followingQuery.docs.map(document=>document.data());
         var lastVisibleFollowing = this.state.lastVisibleFollowing;
@@ -94,7 +94,7 @@ class UserFollowingScreen extends React.Component {
          
          let additionalQuery = 9;
          try{
-           additionalQuery = await firestore().collection('users').where('followers_list','array-contains',userid).orderBy('id')
+           additionalQuery = await firestore().collection('users').where('followersList','array-contains',userid).orderBy('id')
                             .startAfter(this.state.lastVisibleFollowing)
                             .limit(this.state.limit);
         

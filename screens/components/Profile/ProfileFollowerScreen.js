@@ -55,7 +55,7 @@ class ProfileFollowerScreen extends React.Component {
         console.log(wholestring);
 
   
-        let FollowerQuery =  await firestore().collectionGroup('privateUserData').where('following_list','array-contains',userid).orderBy('id')
+        let FollowerQuery =  await firestore().collectionGroup('privateUserData').where('followingList','array-contains',userid).orderBy('id')
                                                 .limit(this.state.limit).onSnapshot(
                                                   async(docs) => {
                                                     let FollowerData = docs.docs.map(document=>document.data());
@@ -98,7 +98,7 @@ class ProfileFollowerScreen extends React.Component {
          
          let additionalQuery = 9;
          try{
-           additionalQuery = await firestore().collectionGroup('privateUserData').where('following_list','array-contains',userid).orderBy('id')
+           additionalQuery = await firestore().collectionGroup('privateUserData').where('followingList','array-contains',userid).orderBy('id')
                             .startAfter(this.state.lastVisibleFollower)
                             .limit(this.state.limit);
         

@@ -29,10 +29,10 @@ const INITIAL_STATE = {
         case "CHANGE_DISPLAY_PICTURE":
             return {...state, displayPictureURL: action.payload}
         case "ADD_ALL_TO_FOLLOWING_MAP":
-            let following_list = action.payload;
-            let length_list = following_list.length;
+            let followingList = action.payload;
+            let length_list = followingList.length;
             for (i = 0; i < length_list; i++) {
-                state.isUserFollowing[following_list[i]] = true;
+                state.isUserFollowing[followingList[i]] = true;
               }
               state.numFollowing = length_list;
             return state;

@@ -33,11 +33,11 @@ async function retrieveData(message,userid,item,userDisplayPictureURL,name)
     if(message === 'FOLLOW')
     {
         let addQuery1 = await firestore().collection('users').doc(item.id).set({
-                   followers_list : firestore.FieldValue.arrayUnion(userid),
+                   followersList : firestore.FieldValue.arrayUnion(userid),
                    isUserFollower : {[val] : true},
                },{ merge:true })
         let addQuery2 = await firestore().collection('users').doc(userid).set({
-                   following_list : firestore.FieldValue.arrayUnion(item.id)
+                   followingList : firestore.FieldValue.arrayUnion(item.id)
                },{ merge:true })
       
         const instance = firebase.app().functions("asia-northeast1").httpsCallable('addActivity');
@@ -65,12 +65,12 @@ async function retrieveData(message,userid,item,userDisplayPictureURL,name)
     else if(message === 'FOLLOWING')
      {
       let removeQuery1 = await firestore().collection('users').doc(item.id).set({
-        followers_list : firestore.FieldValue.arrayRemove(userid),
+        followersList : firestore.FieldValue.arrayRemove(userid),
         isUserFollower : {[val] : false},
     },{ merge:true })
       
     let removeQuery2 = await firestore().collection('users').doc(userid).set({
-      following_list : firestore.FieldValue.arrayRemove(item.id)
+      followingList : firestore.FieldValue.arrayRemove(item.id)
   },{ merge:true })
 
     

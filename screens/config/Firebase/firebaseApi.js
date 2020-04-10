@@ -43,7 +43,6 @@ const firebaseApi={
 
         const user1 = await firestore().collection('users').doc(`${user._user.uid}`)
         
-        let documentSnapshots = await user1.get();
         const privateDataID = "private" + user._user.uid;
         const doc1 = await user1.collection('privateUserData').doc(privateDataID).set({
                             id: user._user.uid,
@@ -52,29 +51,29 @@ const firebaseApi={
                             displayPicture: pictureURL,
                             email: user._user.email,
                             introduction: "",
-                            account_creation_time: Date.now(),
+                            accountCreationTime: Date.now(),
                             userName:userName,
-                            following_count: 0,
-                            following_list: [],
-                            lastSignIn_time: Date.now(),//have to set it in Explore useEffect()
-                            following_posts: [],
+                            followingCount: 0,
+                            followingList: [],
+                            lastSeenTime: Date.now(),//have to set it in Explore useEffect()
                             podcastsLiked: [],
                             numCreatedBookPodcasts: 0, // On podcast upload
                             numCreatedChapterPodcasts: 0,// On podcast upload
-                            languages_comfortable_talking: [],// In setPreferences
-                            listened_book_podcasts_count: 0,
-                            listened_chapter_podcasts_count: 0,
-                            timespent_by_user_listening: 0,
+                            numNotifications: 0,    
+                            languagesComfortableTalking: [],// In setPreferences ******
+                            listenedBookPodcastsCount: 0,
+                            listenedChapterPodcastsCount: 0,
+                            timespentByUserListening: 0,
                             website : null        
         });
 
         const documentRef = await firestore().collection('users').doc(`${user._user.uid}`).set({
             id: user._user.uid,
-            follower_count: 0,
-            followers_list: [],
-            timespent_total_by_listeners_listening: 0,
+            followerCount: 0,
+            followersList: [],
+            timespentTotalByUsersListening: 0,
             name: name,
-            displayPicture: user._user.photoURL
+            displayPicture: pictureURL
             });
         console.log("Firestore mei Data ADD HO GAYA")
     console.log(doc1);
