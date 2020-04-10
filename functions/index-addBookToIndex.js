@@ -27,11 +27,13 @@ exports.addBookToIndex = functions.region("asia-northeast1").https.onCall((data,
   const publicationYear = data.publicationYear;
   const bookID = data.bookID;
 
-  console.log("addBookToIndex cloud function");
+  console.log("AddToPodcastsIndex cloud function");
 
  
   console.log("bookName: ",bookName);
   console.log("bookPicture:" , bookCover)
+  console.log("podcastID: ",podcastID);
+  console.log("podcasterName: ",podcasterName);
   console.log("timestamp: ",timestamp);
   console.log("language: ",language);
 
