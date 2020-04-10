@@ -44,14 +44,17 @@ const Explore = (props) => {
     console.log('[Explore] useEffect in Explore Screen[componentDidMount]');
     setLoading(true);
     let userQuery = await firestore().collectionGroup('privateUserData').where('isTopStoryTeller','==',true).get();
-    let podcastQuery = await firestore().collectionGroup('Podcasts').where('isTrendingPodcast','==',true).get();
-    let bookQuery = await firestore().collectionGroup('Podcasts').where('isShortStory','==',true).get();
-    let chapterQuery = await firestore().collectionGroup('Podcasts').where('isClassicNovel','==',true).get();
+    let podcastQuery = await firestore().collectionGroup('podcasts').where('isTrendingPodcast','==',true).get();
+    let bookQuery = await firestore().collectionGroup('podcasts').where('isShortStory','==',true).get();
+    let chapterQuery = await firestore().collectionGroup('podcasts').where('isClassicNovel','==',true).get();
    
+
     let documentUsers = userQuery._docs.map(document => document.data());
     let documentPodcasts = podcastQuery.docs.map(document => document.data());
     let documentBooks = bookQuery.docs.map(document => document.data());
     let documentChapters = chapterQuery.docs.map(document => document.data());
+
+    console.log("documentUsers: ",documentUsers);
 
     setStorytellers(documentUsers);
     setPodcasts(documentPodcasts);
@@ -70,6 +73,8 @@ const Explore = (props) => {
 
     function renderStoryTellers()
     {
+      console.log("storytellers: ",storytellers);
+
       return storytellers.map((item, index)=>
       {
         return(<Story item={item} index={index} key ={index} navigation={props.navigation}/>)

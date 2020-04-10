@@ -30,8 +30,10 @@ const initialTags  ={
 }
 const PreviewScreen = (props) => {
 
+  console.log("In PreviewScreen");
+
   const dispatch = useDispatch();
-  const [PodcastImage, setPodcastImage] = useState(null);
+  const [PodcastImage, setPodcastImage] = useState("https://storage.googleapis.com/papyrus-fa45c.appspot.com/podcasts/Waves.jpg");
   const chapterName=useSelector(state=>state.recorderReducer.chapterName)
   const BookName=useSelector(state=>state.recorderReducer.BookName)
   const authors=useSelector(state=>state.recorderReducer.authors)
@@ -55,7 +57,7 @@ const PreviewScreen = (props) => {
   const [Tags, setTags]=useState(initialTags);
   const [tagsColor, settagsColor]=useState('#3ca897');
   const [tagsText, settagsText]=useState('#fff');
-  const [podcastImageDownloadURL,setPodcastImageDownloadURL] = useState(null);
+  const [podcastImageDownloadURL,setPodcastImageDownloadURL] = useState("https://storage.googleapis.com/papyrus-fa45c.appspot.com/podcasts/Waves.jpg");
   const [podcastAudioDownloadURL,setPodcastAudioDownloadURL] = useState(null);
   const [duration , setDuration]=useState(props.navigation.getParam('duration'))
   const [progress, setProgress]=useState(0)
@@ -73,6 +75,7 @@ const PreviewScreen = (props) => {
   const userID = props.firebase._getUid();
   const privateDataID = "private" + userID;
 
+  console.log("PREVIEW SCREEN")
   useEffect(
     () => {       
         podcastAudioDownloadURL && 
@@ -83,7 +86,7 @@ const PreviewScreen = (props) => {
 
         dispatch({type:"ADD_NUM_CREATED_BOOK_PODCASTS", payload: incrementedValue}) &&
 
-        firestore().collection('books').doc(bookId).collection('Podcasts')
+        firestore().collection('books').doc(bookId).collection('podcasts')
       .add({
         audioFileLink: podcastAudioDownloadURL,
         bookID: bookId, 
@@ -105,7 +108,7 @@ const PreviewScreen = (props) => {
     })
     .then(async function(docRef, props) {
         console.log("Document written with ID: ", docRef.id);
-        firestore().collection('books').doc(bookId).collection('Podcasts')
+        firestore().collection('books').doc(bookId).collection('podcasts')
                 .doc(docRef.id).set({
                     podcastID: docRef.id
                 },{merge:true})
@@ -130,11 +133,11 @@ const PreviewScreen = (props) => {
             await instance({ // change in podcast docs created by  user
               timestamp : moment().format(),
               podcastID : podcastID,
-              Podcast_Picture : podcastImageDownloadURL,
+              podcastPicture : podcastImageDownloadURL,
               bookName : BookName,
               podcastName : PodcastName,
               language : LanguageSelected,
-              PodcasterName : userName, 
+              podcasterName : userName, 
               authors:authors
 
             });
@@ -303,11 +306,12 @@ const PreviewScreen = (props) => {
 
   return (
     
-    <ScrollView style={{ flex: 1, backgroundColor: '#101010' }}>
+    // <Text>fghj</Text>
+     <ScrollView style={{ flex: 1, backgroundColor: '#101010' }}>
       
     <SafeAreaView style={{ flex: 1, backgroundColor: '#101010' }}>
     
-     
+     <View>
       <View style={styles.AppHeader}>
         <TouchableOpacity onPress={() => props.navigation.goBack(null)}>
           <View style={{ paddingLeft: width / 12, paddingVertical: height / 20, flexDirection: 'row' }}>
@@ -326,14 +330,14 @@ const PreviewScreen = (props) => {
           </TouchableOpacity>
         </View>
        
-      </View>
+     </View>
     
-      
+     
       
       
       
       <View style={{ paddingLeft: width / 8, paddingBottom: 10 }}>
-        <TextInput
+         <TextInput
           value={BookName}
           style={styles.TextInputStyleClass2}
           underlineColorAndroid="transparent"
@@ -355,7 +359,7 @@ const PreviewScreen = (props) => {
           multiline={false}
         />
       </View>
-      
+
       
       
       <View style={{ paddingLeft: width / 8 }}>
@@ -369,24 +373,28 @@ const PreviewScreen = (props) => {
           multiline={true}
         />
       </View>
+      
+
       <View style={styles.tagcontainer}>
-        <TagInput
-          updateState={updateTagState}
+      <Text>dfghjkl</Text>
+         <TagInput
+         updateState={updateTagState}
           tags={Tags}
           placeholder="Tags.." 
           label='Press comma to add a tag'
-          labelStyle={{color: '#fff'}}
-          leftElement={<Icon name={'tag'}  color={'#000000'}/>}
-          leftElementContainerStyle={{marginLeft: 3}}
-          containerStyle={{width:(width * 3) / 4}}
+         labelStyle={{color: '#fff'}}
+         leftElement={<Icon name={'tag'}  color={'#000000'}/>}
+         leftElementContainerStyle={{marginLeft: 3}}
+         containerStyle={{width:(width * 3) / 4}}
           inputContainerStyle={[styles.textInput, {backgroundColor: 'white'}]}
-          tagStyle={styles.tag}
+         tagStyle={styles.tag}
           tagTextStyle={styles.tagText}
           keysForTag={','}
           autoCorrect={false}
           />
       </View>
 
+      
      { 
 
      toggleIndicator && 
@@ -401,7 +409,8 @@ const PreviewScreen = (props) => {
       </View>
      }
       
-      {!toggleIndicator && 
+      {
+        !toggleIndicator && 
        <View style={{ paddingTop: height / 8, alignItems: 'center' }}>
 
         <TouchableOpacity onPress={() => {uploadPodcast(recordedFilePath)
@@ -410,12 +419,8 @@ const PreviewScreen = (props) => {
           <Text style={{ alignItems: 'center', fontFamily: 'sans-serif-light', color:rgb(218,165,32),  justifyContent: 'center' }} >Publish</Text>
         </TouchableOpacity>
       </View>
-}
-
-
-
-      
-    
+      }
+    </View>
     </SafeAreaView>
     
     </ScrollView>

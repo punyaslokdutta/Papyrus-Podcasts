@@ -9,13 +9,20 @@ import { useDispatch} from 'react-redux'
 
 const { width, height } = Dimensions.get('window');
 
-const SelectScreen =(props)=> {
+const SelectScreen = (props)=> {
 
   var bookSelected = null;
+  var bookPictureURL = null;
   if(props.navigation.state.params !== undefined)
-     bookSelected = props.navigation.state.params.bookItem;
-  console.log("[SelectScreen] Book Selected: ",bookSelected);
+  {
+    bookSelected = props.navigation.state.params.bookItem;
+    bookPictureURL = bookSelected.bookPictures[0];
+    if(bookPictureURL === null || bookPictureURL === undefined)
+      bookPictureURL = "https://previews.123rf.com/images/pavelstasevich/pavelstasevich1902/pavelstasevich190200120/124934975-no-image-available-icon-vector-flat.jpg";
 
+  }
+  console.log("[SelectScreen] Book Selected: ",bookSelected);
+  
   const [categoryClicked, setcategoryClicked]=useState(null);
   const [BookName, setBookName]=useState();
   const [chapterName, setChapterName]=useState(null);
@@ -142,13 +149,25 @@ const SelectScreen =(props)=> {
         
           {
             (bookSelected != null) ? 
-            <View style={{flexDirection:'row'}}>
+            <View style={{flexDirection:'row',paddingRight:width/15,height:height*2/13}}>
             <View>
-            <Image style={{width:width/4,height:height*2/13}} source={{uri: bookSelected.bookPictures[0]}}/>
+            <Image style={{width:width/4,height:height*2/13}} source={{uri: bookPictureURL}}/>
             </View>
-            <View style={{paddingLeft:5,flexDirection:'column'}}>
-            <Text style={{fontSize:15,color:'white'}}>{bookSelected.bookName}</Text>
-            <Text style={{color:'white'}}>{bookSelected.authors[0]}</Text>
+            <View style={{paddingLeft:5,flexDirection:'column',height:height*2/13}}>
+            <Text style={{fontSize:15,color:'white'}}>
+              {bookSelected.bookName.slice(0,70)} 
+              {(bookSelected.bookName.length > 70) ? "..." : ""}
+            </Text>
+
+            {
+              bookSelected.authors.map((item,index) => (
+                (index<=2) &&
+                <Text style={{color:'white',fontSize:10}}>
+                          {item}
+                          </Text>
+              ))
+            }
+            
             </View>
              </View>
              :

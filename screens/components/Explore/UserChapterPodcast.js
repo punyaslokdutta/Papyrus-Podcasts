@@ -44,10 +44,10 @@ class UserChapterPodcast extends React.Component {
         });
         console.log("[UserChapterPodcast] retrieveData");
         const  userid = this.props.navigation.state.params.userData.id;
-        let query3 = await firestore().collectionGroup('Podcasts').where('podcasterID','==',userid);    
+        let query3 = await firestore().collectionGroup('podcasts').where('podcasterID','==',userid);    
         let documentChapterPodcasts = 90;
         try{
-         documentChapterPodcasts = await query3.where('isChapterPodcast','==',true).limit(this.state.limit).get();
+         documentChapterPodcasts = await query3.where('isChapterPodcast','==',true).orderBy('timestamp','desc').limit(this.state.limit).get();
         }
         catch(error)
         {
@@ -88,9 +88,9 @@ class UserChapterPodcast extends React.Component {
           const  userid = this.props.navigation.state.params.userData.id;
           let additionalQuery = 9;
           try{
-            additionalQuery = await firestore().collectionGroup('Podcasts')
+            additionalQuery = await firestore().collectionGroup('podcasts')
                              .where('podcasterID','==',userid).where('isChapterPodcast','==',true)
-                             .orderBy('podcastID')
+                             .orderBy('timestamp','desc')
                              .startAfter(this.state.lastVisibleChapterPodcast)
                              .limit(this.state.limit);
          }

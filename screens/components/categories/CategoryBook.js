@@ -51,7 +51,7 @@ class CategoryBook extends React.Component {
         // Cloud Firestore: Query
         const genre = this.props.navigation.state.params;
         let query3 = await firestore().collection('books').where("genres","array-contains",genre.category);    
-        let documentBooks = await query3.orderBy('bookID').limit(this.state.limit).get();
+        let documentBooks = await query3.orderBy('timestamp','desc').limit(this.state.limit).get();
         let documentDataBooks = documentBooks.docs.map(document => document.data());
 
         var lastVisible = this.state.lastVisibleBook;
@@ -83,7 +83,7 @@ class CategoryBook extends React.Component {
          let additionalQuery = 9;
          try{
            additionalQuery = await firestore().collection('books').where('genres','array-contains',genre.category)
-                            .orderBy('bookID')
+                            .orderBy('timestamp','desc')
                             .startAfter(this.state.lastVisibleBook)
                             .limit(this.state.limit);
         

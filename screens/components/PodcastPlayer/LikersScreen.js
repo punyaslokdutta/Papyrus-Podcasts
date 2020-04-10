@@ -180,7 +180,7 @@ class LikersScreen extends React.Component {
       
   }
 
-  separator = () => <View style={[styles.separator,{paddingTop:height/96}]} />;
+  separator = () => <View style={[styles.separator]} />;
     
  
   render() {
@@ -235,4 +235,8 @@ const styles = StyleSheet.create({
  flexDirection:'row',
  backgroundColor: 'white'
   },
+  separator: {
+    borderBottomColor: '#d1d0d4',
+    borderBottomWidth: 1
+  }
 });

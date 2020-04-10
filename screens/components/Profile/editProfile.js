@@ -108,6 +108,9 @@ const editProfile = (props) => {
 
   function renderEdit(name) {
     var defaultText = null;
+    var defaultValue = null;
+    var defaultMultilineValue = null;
+
     console.log("Inside renderEdit --> ");
     console.log("website in REDUX : ",website);
     console.log("introduction in REDUX : ",introduction);
@@ -116,15 +119,23 @@ const editProfile = (props) => {
     switch (name) {
       case 'website':
         defaultText = website;
+        defaultValue = "Enter your website";
+        defaultMultilineValue = false;
         break;
       case 'introduction':
         defaultText = introduction;
+        defaultValue = "Enter your introduction";
+        defaultMultilineValue = true;
     }
 
     if (editing === name) {
 
       return (
         <TextInput
+          placeholder={defaultValue}
+          multiline={defaultMultilineValue}
+          autoFocus={true}
+          //style={{borderColor:"black",borderWidth:1, borderRadius:3}}
           defaultValue={defaultText}
           onChangeText={text => handleEdit(name, text)}
         />
@@ -132,7 +143,7 @@ const editProfile = (props) => {
     }
     else 
     {
-      return <Text bold>{defaultText}</Text>
+      return <Text bold style={{paddingBottom:5}}>{defaultText}</Text>
     }
   }
 
@@ -299,7 +310,7 @@ const editProfile = (props) => {
               <TouchableOpacity onPress={() => props.navigation.goBack(null)}>
                 <Icon name="times" size={20} style={{ color: 'black' }} />
               </TouchableOpacity>
-              <Text style={{ fontFamily: 'san-serif-light', color: 'black', paddingLeft: (width * 7) / 35, paddingRight: (width * 7) / 30, fontSize: 20 }}>Edit Profile</Text>
+              <Text style={{ fontFamily: 'san-serif-light', color: 'black', paddingLeft: (width * 7) / 27, paddingRight: (width * 7) / 30, fontSize: 20 }}>Edit Profile</Text>
             </View>
 
           </View>
@@ -318,9 +329,15 @@ const editProfile = (props) => {
 
           </View>
           <Block style={styles.inputs}>
-              <Block row space="between" margin={[10, 0]} style={styles.inputRow}>
+          <Block>
+              <Text>
+            {"\n"}
+            </Text>
+            </Block>
+              <Block row space="between"  style={{ flex:1, fontWeight:'400',borderRadius:10,borderColor:"black",borderWidth:1, backgroundColor:'#dddd',fontSize:15,
+              paddingTop: 10, paddingHorizontal: 10 }}>
               <Block>
-                <Text gray2 style={{ marginBottom: 10 }}>Website</Text>
+                <Text style={{ marginBottom: 0 }}>Website</Text>
                 {renderEdit('website')}
               </Block>
               <TouchableOpacity onPress={() => toggleEdit('website')}>
@@ -335,9 +352,15 @@ const editProfile = (props) => {
               </View>
               </TouchableOpacity>
             </Block>
-            <Block row space="between" margin={[10, 0]} style={styles.inputRow}>
+            <Block>
+              <Text>
+            {"\n"}
+            </Text>
+            </Block>
+            <Block row space="between" margin={[10, 0]} style={{ flex:1, fontWeight:'400',borderRadius:10,borderColor:"black",borderWidth:1, backgroundColor:'#dddd',fontSize:15,
+              paddingTop: 10, paddingHorizontal: 10 }}>
               <Block>
-                <Text gray2 style={{ marginBottom: 10 }}>introduction</Text>
+                <Text>Introduction</Text>
                 {renderEdit('introduction')}
               </Block>
               <TouchableOpacity onPress={() => toggleEdit('introduction')}>

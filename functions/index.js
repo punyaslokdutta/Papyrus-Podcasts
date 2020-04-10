@@ -3,60 +3,64 @@ const admin=require('firebase-admin');
 const algoliasearch=require('algoliasearch');
 
 
-const functions         = require("firebase-functions");
-const admin = require('firebase-admin');
-const serviceAccount = require('./serviceAccount.json');//this one
+//const ALGOLIA_APP_ID = "BJ2O4N6NAY"
+//const ALGOLIA_ADMIN_KEY="c169c60de08aa43d881bf81c223dda06"
+//const ALGOLIA_INDEX_NAME='books'
 
+const algoliaRecords = [];
 
- admin.initializeApp({
-   credential: admin.credential.cert(serviceAccount)//not required for uploading json to firestore
- });
+admin.initializeApp();
+const db = admin.firestore();
+const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
+const collectionIndexName='podcasts';
+const collectionIndex = algoliaClient.initIndex(collectionIndexName);
 
-exports.changeUserNameInPodcastsAsiaEast = functions.region("asia-northeast1").https.onCall((data, context) => {
-
- const nameSetInSettingsScreen = data.changedName;
- const uid = context.auth.uid;
- console.log("User ID: ",uid);
- console.log("data variable: ",data);
-
+exports.AddToPodcastsIndex = functions.region("asia-northeast1").https.onCall((data, context) => {
  
- 
- const db = admin.firestore();
- db.collectionGroup('Podcasts').where('podcasterID','==',uid).get().then(response => {
-   let batch = db.batch()
-   console.log("Response DOCS : ",response.docs);
-   response.docs.forEach((doc) => {
-       console.log("Full Doc : ",doc);
-       //console.log("bookID : ",doc._fieldsProto.bookID.stringValue);
-       if(doc._fieldsProto.bookID !== undefined && 
-        doc._fieldsProto.bookID !== null)
-        {
-          console.log("podcastID : ",doc._fieldsProto.podcastID.stringValue);
-          const docRef = db.collection('books').doc(doc._fieldsProto.bookID.stringValue).collection('Podcasts')
-                                        .doc(doc._fieldsProto.podcastID.stringValue);
-          batch.update(docRef, {podcasterName : nameSetInSettingsScreen}) 
-        }
-       
-   })
-   return batch.commit().then(() => {
-       console.log('updated all documents of podcasterID - 123456789');
-       return true;
-   })
-}).catch(err => console.log(err));
 
-     return true;
- });
+  const podcastName=data.podcastName;
+  const bookName=data.bookName;
+  const podcastPicture= data.podcastPicture;
+  const podcastID=data.podcastID;
+  const podcasterName=data.podcasterName
+  const timestamp=data.timestamp
+  const language =data.language
+  const authors=data.authors
+
+  console.log("AddToPodcastsIndex cloud function");
+
+  console.log("podcastName: ",podcastName);
+  console.log("bookName: ",bookName);
+  console.log("podcastPicture:" , podcastPicture)
+  console.log("podcastID: ",podcastID);
+  console.log("podcasterName: ",podcasterName);
+  console.log("timestamp: ",timestamp);
+  console.log("language: ",language);
+
+  console.log("context.auth = ",context.auth);
+
+  const record = {
+    objectID: podcastID,
+    podcastName:podcastName, 
+    podcastPicture:podcastPicture,
+    bookName:bookName, 
+    podcasterName:podcasterName, 
+    timestamp:timestamp, 
+    language :language,
+    authors: authors,
+};
 
 
-//     console.log(`Just resized ${newImgName} at size ${size}`);
 
-//     return bucket.upload(imgPath, {
-//       destination: join(bucketDir, newImgName)
-//     });
 
-//   });
+algoliaRecords.push(record);
 
-//   await Promise.all(uploadPromises);
-//   await fs.emptyDir(workingDir)
-//   await fs.remove(workingDir)
+collectionIndex.saveObjects(algoliaRecords, (_error, content) => {
+  console.log("content : ",content);
+  console.log("ERROR LOG : ",_error);
 
+  if(_error === null || _error === undefined)
+    console.log("The uploaded podcast has been indexed in algolia.");
+
+});
+});

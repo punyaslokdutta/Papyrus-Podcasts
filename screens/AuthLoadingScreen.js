@@ -33,10 +33,21 @@ class  AuthLoadingScreen extends Component {
        await this.props.firebase._checkUserAuth(async (user)=>
           {
             console.log("Inside _checkUserAuth")
-            console.log(this.props)
+            //console.log(this.props)
+            
             if(user)
             {
               console.log(user)
+              if (user.emailVerified == false) {
+                user.sendEmailVerification().then(function() {
+                   console.log("Email sent.");
+                  }, function(error) {
+                   console.log(error)
+                  });
+              }
+              else {
+                console.log('User email is verified');
+              }
               try{
                 var unsubscribe = await firestore().collection('users').doc(user._user.uid).onSnapshot(
                    (doc)=> {  

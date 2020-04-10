@@ -392,7 +392,7 @@ const AppDrawerNavigator=createDrawerNavigator(
     Drafts: {screen:StatisticsScreen, 
       navigationOptions: {
         drawerIcon: () => (<TouchableOpacity onPress={()=>{NativeModules.ReactNativeRecorder.sampleMethodTwo()}}>
-          <Icon name="line-chart" size={22} style={{ color: 'white' }} />
+          <Icon name="hdd-o" size={22} style={{ color: 'white' }} />
           </TouchableOpacity>),
       }}, 
     Activity: {screen:ActivityScreen, 

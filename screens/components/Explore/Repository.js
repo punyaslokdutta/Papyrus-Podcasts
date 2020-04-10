@@ -42,7 +42,7 @@ const Repository = ({ repo }) => {
         numberOfLines={2}
         style={styles.repoDescription}
       >
-        {repo.bookName}
+        {repo.title}
       </Text>
     </View>
   </View>)

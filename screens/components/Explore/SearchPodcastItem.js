@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
 
   async function retrievePodcastDocument()
   {
-    const podcastCollection = await firestore().collectionGroup('Podcasts')
+    const podcastCollection = await firestore().collectionGroup('podcasts')
              .where('podcastID','==',props.podcast.objectID).get();
     const podcastDocumentData = podcastCollection.docs[0]._data;
     console.log("[SearchPodcastItem] podcastDocumentData : ", podcastDocumentData);
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
              <View style={{flex:1,flexDirection:"row",paddingLeft:width/64,width:width,height:height/6}}>
              
              <View style={{flexDirection: 'row', justifyContent: 'flex-end',paddingTop:height/48,paddingLeft:width/8}}>
-              <Image style={{width:width/4,height:height/8}} source={ {uri: props.podcast.Podcast_Picture}} />
+              <Image style={{width:width/4,height:height/8}} source={ {uri: props.podcast.podcastPicture}} />
             </View>
 
                <View style={[styles.flex, styles.column, styles.shadow, { width:(width)/2,padding: theme.sizes.padding / 4 }]}>
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
                        {(props.podcast.podcastName.length > 40) ? ".." : ""}</Text> 
                  </View>
                <View style ={{height:(height)/20}}>
-                  <Text style={{ color: theme.colors.gray_green }}>{props.podcast.PodcasterName}</Text>
+                  <Text style={{ color: theme.colors.gray_green }}>{props.podcast.podcasterName}</Text>
                </View>
           
               <View style={[

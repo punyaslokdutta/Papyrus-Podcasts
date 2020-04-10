@@ -53,11 +53,11 @@ class ProfileChapterPodcast extends React.Component {
         console.log('Retrieving Data');
         // Cloud Firestore: Query
         const  userid = this.props.firebase._getUid();
-        let query3 = await firestore().collectionGroup('Podcasts').where('podcasterID','==',userid);    
+        let query3 = await firestore().collectionGroup('podcasts').where('podcasterID','==',userid);    
         //let documentPodcasts = await query3.where('chapterName','==',"").orderBy('podcastID').limit(this.state.limit).get();
         let documentChapterPodcasts = 90;
         try{
-         documentChapterPodcasts = await query3.where('isChapterPodcast','==',true).limit(this.state.limit).get();
+         documentChapterPodcasts = await query3.where('isChapterPodcast','==',true).orderBy('timestamp','desc').limit(this.state.limit).get();
         //let documentData_podcasts = documentPodcasts.docs.map(document => document.data());
         }
         catch(error)
@@ -99,9 +99,9 @@ class ProfileChapterPodcast extends React.Component {
           let additionalQuery = 9;
           try{
            // let documentChapterPodcasts = await query3.where('isChapterPodcast','==',true).limit(this.state.limit).get();
-            additionalQuery = await firestore().collectionGroup('Podcasts')
+            additionalQuery = await firestore().collectionGroup('podcasts')
                              .where('podcasterID','==',userid).where('isChapterPodcast','==',true)
-                             .orderBy('podcastID')
+                             .orderBy('timestamp','desc')
                              .startAfter(this.state.lastVisibleChapterPodcast)
                              .limit(this.state.limit);
          

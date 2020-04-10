@@ -12,7 +12,7 @@ const algoliaRecords = [];
 admin.initializeApp();
 const db = admin.firestore();
 const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
-const collectionIndexName='Podcasts';
+const collectionIndexName='podcasts';
 const collectionIndex = algoliaClient.initIndex(collectionIndexName);
 
 exports.AddToPodcastsIndex = functions.region("asia-northeast1").https.onCall((data, context) => {
@@ -20,9 +20,9 @@ exports.AddToPodcastsIndex = functions.region("asia-northeast1").https.onCall((d
 
   const podcastName=data.podcastName;
   const bookName=data.bookName;
-  const Podcast_Picture= data.Podcast_Picture;
+  const podcastPicture= data.podcastPicture;
   const podcastID=data.podcastID;
-  const PodcasterName=data.PodcasterName
+  const podcasterName=data.podcasterName
   const timestamp=data.timestamp
   const language =data.language
   const authors=data.authors
@@ -31,9 +31,9 @@ exports.AddToPodcastsIndex = functions.region("asia-northeast1").https.onCall((d
 
   console.log("podcastName: ",podcastName);
   console.log("bookName: ",bookName);
-  console.log("Podcast_Picture:" , Podcast_Picture)
+  console.log("podcastPicture:" , podcastPicture)
   console.log("podcastID: ",podcastID);
-  console.log("PodcasterName: ",PodcasterName);
+  console.log("podcasterName: ",podcasterName);
   console.log("timestamp: ",timestamp);
   console.log("language: ",language);
 
@@ -42,9 +42,9 @@ exports.AddToPodcastsIndex = functions.region("asia-northeast1").https.onCall((d
   const record = {
     objectID: podcastID,
     podcastName:podcastName, 
-    Podcast_Picture:Podcast_Picture,
+    podcastPicture:podcastPicture,
     bookName:bookName, 
-    PodcasterName:PodcasterName, 
+    podcasterName:podcasterName, 
     timestamp:timestamp, 
     language :language,
     authors: authors,

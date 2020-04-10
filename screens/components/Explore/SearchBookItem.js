@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
              <View style={{flex:1,flexDirection:"row",paddingLeft:width/64,width:width,height:height/6}}>
              
              <View style={{flexDirection: 'row', justifyContent: 'flex-end',paddingTop:height/48,paddingLeft:width/8}}>
-              <Image style={{width:width/4,height:height/8}} source={ {uri: props.book.Book_cover}} />
+              <Image style={{width:width/4,height:height/8}} source={ {uri: props.book.bookCover}} />
             </View>
 
                <View style={[styles.flex, styles.column, styles.shadow, { width:(width)/2,padding: theme.sizes.padding / 4 }]}>
@@ -150,7 +150,8 @@ const styles = StyleSheet.create({
                  </View>
                <View style ={{height:(height)/20}}>
                {
-                    props.book.authors.map((item) => (
+                    props.book.authors.map((item,index) => (
+                      (index<=1) &&
                       <Text style={{ color: theme.colors.gray_green }}>{item}</Text>
                     ))
                }

@@ -259,6 +259,8 @@ class RecordBook extends Component {
         </View>
         <View style={[styles.flex, styles.content]}>
           <View style={[styles.flex, styles.contentHeader]}>
+            <View style={{flexDirection:'row'}}>
+              <View>
             <Text style={styles.title}>{this.state.article.bookName}</Text>
             <View style={[
               styles.row,
@@ -269,61 +271,46 @@ class RecordBook extends Component {
                 {this.state.article.bookRating} 
               </Text>
               <View style={{paddingLeft:10}}>
-              
-              <FontAwesome name="book" color={theme.colors.black} size={theme.sizes.font * 1}  />
+          
               </View>
-              
+              </View>
+              </View>
+               
             </View>
 
-            <View  style={{flexDirection:'row'}}>
-            <Card style={{ borderRadius:10,  paddingTop :5,  paddingBottom:5, flexDirection:'row', width:((width)/2) }}>
-            <CardItem style={{flexDirection:'column' }}>
-                <Text>42</Text>
-                <Text style={{fontSize:12}}>Listens</Text>
-
-            </CardItem>
-            <CardItem style={{flexDirection:'column' }}>
-               <Text>45</Text>
-                <Text style={{fontSize:12}}>Podcasts</Text>
-                
-            </CardItem>
-          </Card>
-          <Card style={{ borderRadius:10,  paddingTop :5,paddingLeft:0 , paddingBottom:5, width:((width*4)/15) }}>
-          <CardItem style={{flexDirection:'column' }}><TouchableOpacity>
-            <FontAwesome name="share" color={'rgb(22, 33, 25)'} size={theme.sizes.font * 2} />
-          </TouchableOpacity>
-          <Text style={{fontSize:12}}>Challenge</Text></CardItem>
-            </Card>
-            </View>
-            <View>
+            
+            <View style={{paddingTop:20,paddingBottom:20, paddingLeft:10}}>
             <TouchableOpacity onPress={()=>this.props.navigation.navigate('SelectScreen',{bookItem:this.state.article})}>
-              <Card style={{borderRadius: 5  ,width:((width*4)/5 ) , height:(height)/8 , paddingTop :10}}>
-              <CardItem style={{flexDirection:'column', alignItems:'center'}}>
-             <FontAwesome name="microphone" color={theme.colors.black} size={theme.sizes.font * 2} />
-            <Text>Record</Text>
-            </CardItem>
-            </Card>
-          </TouchableOpacity>
+            <View style={{alignItems:'center'}}>  
+             <FontAwesome name="microphone" color={theme.colors.black} size={theme.sizes.font * 1.5} />
+            <Text style={{fontSize:12}}>Record</Text>
             </View>
-            <Card style={{borderRadius: 10 ,width:((width*4)/5 ) , height:(height*3)/8 -50 , paddingTop :5}}>
+          </TouchableOpacity>
+            </View> 
+
+            <Card style={{borderRadius: 10 ,width:((width*4)/5 ), paddingTop :5}}>
               <CardItem>
             <TouchableOpacity>
               <Text style={{fontSize:20, paddingBottom:10, fontFamily:'san-serif-light'}}>Description</Text>
               <Text style={{fontSize:15}}>
-                {this.state.article.bookDescription && this.state.article.bookDescription.split('').slice(0, 180)}..
-                <Text style={{color: theme.colors.active}}> Read more</Text>
+                {this.state.article.bookDescription}
               </Text>
             </TouchableOpacity>
             </CardItem>
             </Card>
-            <Card style={{borderRadius: 10 ,width:((width*4)/5 ) , height:(height*3)/8 -50 , paddingTop :5}}>
+            <Card style={{borderRadius: 10 ,width:((width*4)/5 ), paddingTop :5}}>
               <CardItem>
             <TouchableOpacity>
-              <Text style={{fontSize:20, paddingBottom:10, fontFamily:'san-serif-light'}}>About the Author(s)</Text>
-              <Text style={{fontSize:15}}>
-                {this.state.article.aboutTheAuthors && this.state.article.aboutTheAuthors.split('').slice(0, 180)}..
-                <Text style={{color: theme.colors.active}}> Read more</Text>
-              </Text>
+              <Text style={{fontSize:20, paddingBottom:10, fontFamily:'san-serif-light'}}>Author(s)</Text>
+                {
+                  this.state.article.authors.map(item => (
+                    <Text style={{fontSize:15}}>
+                    {item}
+                    </Text>
+                   ))
+                }
+                
+              
             </TouchableOpacity>
             </CardItem>
             </Card>

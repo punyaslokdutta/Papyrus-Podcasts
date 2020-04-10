@@ -3,7 +3,7 @@ import firestore from '@react-native-firebase/firestore';
 import { StyleSheet, Text, View, Image, TouchableOpacity,FlatList,  Dimensions,SafeAreaView, ScrollView,ActivityIndicator} from 'react-native';
 import Podcast from '../Home/Podcast'
 import {withFirebaseHOC} from '../../config/Firebase'
-import FollowingItem from '../Explore/FollowingItem';
+import FollowerItem from '../Explore/FollowerItem';
 var {width, height}=Dimensions.get('window')
 
 class ProfileFollowingScreen extends React.Component {
@@ -155,7 +155,7 @@ class ProfileFollowingScreen extends React.Component {
     {
        return(
          <View>
-        <FollowingItem item={item} index={index} navigation={this.props.navigation}/>
+        <FollowerItem item={item} index={index} navigation={this.props.navigation}/>
         </View>
        )
     }

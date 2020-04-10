@@ -21,8 +21,8 @@ var {width, height}=Dimensions.get('window')
         super(props);
         this.state={
             totalListenCount: this.props.navigation.state.params.item.listened_book_podcasts_count + this.props.navigation.state.params.item.listened_chapter_podcasts_count, 
-            bookPodcastListenCount: this.props.navigation.state.params.item.listened_book_podcasts_count, 
-            chapterPodcastListenCount: this.props.navigation.state.params.item.listened_chapter_podcasts_count, 
+            numCreatedBookPodcasts: this.props.navigation.state.params.item.numCreatedBookPodcasts, 
+            numCreatedChapterPodcasts: this.props.navigation.state.params.item.numCreatedChapterPodcasts, 
             totalListeningTime: this.props.navigation.state.params.item.timespentByUserListening, 
             imageURL: this.props.navigation.state.params.item.displayPicture,
             name: this.props.navigation.state.params.item.name,
@@ -70,23 +70,21 @@ var {width, height}=Dimensions.get('window')
         <Block>
           <Block center>
     <Text h1 primary spacing={1.7}>{this.state.totalListeningTime}</Text>
-            <Text spacing={0.7}>Total Listening Time (mins)</Text>
+            <Text spacing={0.7}>Minutes Recorded</Text>
           </Block>
 
           {/* <Block color="gray3" style={styles.hLine} /> */}
           <Text>{"\n"}</Text>
           <Block row>
             <Block center>
-    <Text size={20} spacing={0.6} primary style={{ marginBottom: 3 }}>{this.state.bookPodcastListenCount}</Text>
-              <Text body spacing={0.7}>Number of </Text>
+    <Text size={20} spacing={0.6} primary style={{ marginBottom: 3 }}>{this.state.numCreatedBookPodcasts}</Text>
               <Text body spacing={0.7}>Book Podcasts</Text>
             </Block>
 
             <Block flex={false} color="gray3" style={styles.vLine} />
 
             <Block center>
-              <Text size={20} spacing={0.6} primary style={{ marginBottom: 3 }}>{this.state.chapterPodcastListenCount}</Text>
-              <Text body spacing={0.7}>Number of </Text>
+              <Text size={20} spacing={0.6} primary style={{ marginBottom: 3 }}>{this.state.numCreatedChapterPodcasts}</Text>
               <Text body spacing={0.7}>Chapter Podcasts</Text>
             </Block>
           </Block>
@@ -102,9 +100,23 @@ var {width, height}=Dimensions.get('window')
       <ScrollView style={styles.rewards} showsVerticalScrollIndicator={false}>
         <View>
   
-        <View>
-        <View style={{flexDirection:'row'}}>
-        <View>
+        <View style={{paddingTop:50}}>
+        <View style={{alignItems:'center', justifyContent:'center', flex:3, paddingTop:height/50}}>
+              <Image source={{uri:this.state.imageURL}}  style={{width:200, height:200, borderRadius:10 }}/>
+            </View>
+        
+        </View>
+       
+        <View style={{ alignItems:'center',flex:1,paddingTop:50}}>
+       <Text  style={{ fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light', alignItems:'center', justifyContent:'center'}}>{this.state.name}</Text>
+        </View>
+
+        <View style={{justifyContent:'center',alignItems:'center'}}>
+    <Text style={{ fontSize:14, fontWeight:"100",  textShadowColor:'black', fontFamily:'American Typewriter', alignItems:'center', justifyContent:'center', padding:20}}>{this.state.introduction}</Text>
+        </View>
+
+        <View style={{flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
+        <View style={{alignItems:'center'}}>
           <Text style={{paddingTop:height/20, paddingHorizontal:width/10, fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
           {this.state.followingCount}
           </Text>
@@ -112,10 +124,8 @@ var {width, height}=Dimensions.get('window')
           </TouchableOpacity>
           </View>
     
-            <View style={{alignItems:'center', justifyContent:'center', flex:3, paddingTop:height/50}}>
-              <Image source={{uri:this.state.imageURL}}  style={{width:100, height:100, borderRadius:50 }}/>
-            </View>
-            <View>
+            
+            <View style={{alignItems:'center'}}>
             <Text style={{paddingTop:height/20 , paddingHorizontal:width/10,  fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
             {this.state.followersCount}
           </Text>                                             
@@ -123,24 +133,14 @@ var {width, height}=Dimensions.get('window')
           </View>
 
         </View>
-        </View>
-        <View style={{ alignItems:'center',flex:1,marginTop:20}}>
-       
-    <Text style={{ fontSize:24, fontWeight:"200",  textShadowColor:'black', fontFamily:'sans-serif-light', alignItems:'center', justifyContent:'center'}}>{this.state.name}</Text>
-       
-
-        </View>
-       
-        <View>
-    <Text style={{ fontSize:14, fontWeight:"100",  textShadowColor:'black', fontFamily:'sans-serif-light', alignItems:'center', justifyContent:'center', padding:20}}>{this.state.introduction}</Text>
-        </View>
 
         </View>
        <Block flex={false} row center style={styles.header}>
        
-          <Text h3 bold>Listening Statistics</Text>
+          <Text h3 bold>Podcast Statistics</Text>
         </Block>
         {this.renderMonthly()}
+        <Text>{"\n\n"}</Text>
       </ScrollView>
     )
   }

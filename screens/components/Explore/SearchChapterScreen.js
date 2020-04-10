@@ -30,9 +30,10 @@ const options = {
 };
 
 const searchClient = algoliasearch(
-  'GL4BSOR8T3',
-  '015571974bee040ecf4f58bf3276f8b3'
+  'BMHKOL10SE',
+  '8ab33c27b3ed311ee783cf9d91fee1c6'
 );
+
 const index = searchClient.initIndex('Chapters');
 
 var {width, height}=Dimensions.get('window')

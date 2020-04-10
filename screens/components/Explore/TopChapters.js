@@ -43,7 +43,7 @@ const TopChapters = React.memo((props)=> {
           dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
           dispatch({type:"SET_NUM_LIKES", payload: props.item.numUsersLiked})
         })}>
-       <Image style={{width:width/3 - 10, height:height/4, resizeMode:'cover',  overflow:'hidden',borderRadius:5, paddingRight:10}} source={{ uri: item.podcastPictures["0"] }} />
+       <Image style={{width:width/3 - 10, height:height/4, resizeMode:'cover',  overflow:'hidden',borderRadius:5, paddingRight:10}} source={{ uri: ((item === null || item === undefined)  ? null : item.podcastPictures[0])}} />
  
        </TouchableOpacity>
        </View>

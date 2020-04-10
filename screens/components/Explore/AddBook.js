@@ -15,14 +15,15 @@ const options = {
     chooseFromLibraryButtonTitle: 'Select from Library'
   };
 
-const initialAuthors = {
-    tag: '',
-    tagsArray: []
-  }
+
 
 var {width, height}=Dimensions.get('window')
 const AddBook=(props)=>{
 
+  const initialAuthors = {
+    tag: '',
+    tagsArray: []
+  }
     const userID = props.firebase._getUid();
     const searchQuery = useSelector(state=>state.userReducer.algoliaQuery)
 

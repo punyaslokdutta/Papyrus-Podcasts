@@ -23,21 +23,25 @@ exports.sendBooksToAlgolia = functions
 		const document = doc.data();
         // Essentially, you want your records to contain any information that facilitates search, 
         // display, filtering, or relevance. Otherwise, you can leave it out.
+
         const record = {
-            objectID: doc.id,
+            objectID: document.bookID,
             bookName: (document.bookName===undefined)?null:document.bookName,
 			authors: (document.authors===undefined)? null:document.authors,
             language: (document.language===undefined)?null:document.language,
-            Book_cover:(document.bookPictures===undefined)?null:document.bookPictures[0],
+            bookCover:(document.bookPictures===undefined)?null:document.bookPictures[0],
+            publicationYear: (document.publicationYear===undefined || document.publicationYear===null) ? null : document.publicationYear
         };
 
-        if((document.bookName!==undefined))
+        if((document.bookName !== undefined))
         {
             algoliaRecords.push(record);
         }
     });
 	
 	collectionIndex.saveObjects(algoliaRecords, (_error, content) => {
+        
+        console.log("_error : ",_error);
         res.status(200).send("books was indexed to Algolia successfully.");
     });
 	

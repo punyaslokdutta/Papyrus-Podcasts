@@ -46,8 +46,8 @@ class UserBookPodcast extends React.Component {
         console.log("[UserBookPodcast] this.props.navigation.state.params = ",this.props.navigation.state.params);
         const  userid = this.props.navigation.state.params.userData.id;
         
-        let query3 = await firestore().collectionGroup('Podcasts').where('podcasterID','==',userid);    
-        let documentPodcasts = await query3.where('chapterName','==',"").orderBy('podcastID').limit(this.state.limit).get();
+        let query3 = await firestore().collectionGroup('podcasts').where('podcasterID','==',userid);    
+        let documentPodcasts = await query3.where('isChapterPodcast','==',false).orderBy('timestamp','desc').limit(this.state.limit).get();
         let documentData_podcasts = documentPodcasts.docs.map(document => document.data());
         var lastVisibleBook = this.state.lastVisibleBookPodcast;
         lastVisibleBook = documentData_podcasts[documentData_podcasts.length - 1].podcastID;        
@@ -76,9 +76,9 @@ class UserBookPodcast extends React.Component {
          const  userid = this.props.navigation.state.params.userData.id;
          let additionalQuery = 9;
          try{
-           additionalQuery = await firestore().collectionGroup('Podcasts')
-                            .where('podcasterID','==',userid).where('chapterName','==',"")
-                            .orderBy('podcastID')
+           additionalQuery = await firestore().collectionGroup('podcasts')
+                            .where('podcasterID','==',userid).where('isChapterPodcast','==',false)
+                            .orderBy('timestamp','desc')
                             .startAfter(this.state.lastVisibleBookPodcast)
                             .limit(this.state.limit);
         
