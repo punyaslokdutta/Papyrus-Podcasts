@@ -9,6 +9,8 @@ import {withFirebaseHOC} from './config/Firebase'
 import { theme, mocks } from '../screens/components/categories/constants/';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { firebase } from '@react-native-firebase/functions';
+
+
 import {useSelector,useDispatch} from 'react-redux'
 
 const SettingsScreen = (props) => {
@@ -94,7 +96,6 @@ const SettingsScreen = (props) => {
   }
 
   function renderEdit(name) {
-   // const { profile, editing } = this.state;
     var val = 9;
     switch(name)
     {
@@ -194,7 +195,6 @@ const SettingsScreen = (props) => {
               <Text gray>Push Notifications</Text>
               <Switch
                 value={notifications}
-                //onValueChange={value => this.setState({ notifications: value })}
               />
             </Block>
             
@@ -230,7 +230,7 @@ const SettingsScreen = (props) => {
           <Block style={styles.toggles}>
             <Block row center space="between" >
               <Text black>Follow us on Instagram</Text>
-              <TouchableOpacity >
+              <TouchableOpacity onPress={() => props.navigation.navigate('InstagramPage')}>
         <View style={{paddingLeft: 15,paddingRight:10 } }>
           <Icon name="chevron-right" size={20} style={{color:'#101010'}}/>
         </View>
@@ -276,7 +276,7 @@ const SettingsScreen = (props) => {
           <Block style={styles.toggles}>
             <Block row center space="between" >
               <Text black>Terms of Service</Text>
-              <TouchableOpacity >
+              <TouchableOpacity onPress={() => props.navigation.navigate('TermsandConditions')}>
         <View style={{paddingLeft: 15,paddingRight:10 } }>
           <Icon name="chevron-right" size={20} style={{color:'#101010'}}/>
         </View>
@@ -288,14 +288,22 @@ const SettingsScreen = (props) => {
           <Block style={styles.toggles}>
             <Block row center space="between" >
               <Text black>Privacy Policies</Text>
-              <TouchableOpacity >
-        <View style={{paddingLeft: 15,paddingRight:10 } }>
-          <Icon name="chevron-right" size={20} style={{color:'#101010'}}/>
-        </View>
-        </TouchableOpacity>  
+              <TouchableOpacity onPress={() => props.navigation.navigate('PrivacyPolicy')}>
+              <View style={{paddingLeft: 15,paddingRight:10 } }>
+              <Icon name="chevron-right" size={20} style={{color:'#101010'}}/>
+              </View>
+              </TouchableOpacity>  
             </Block> 
           </Block>
-          <Divider />
+          <Divider  margin={[ theme.sizes.base * 2]}/>
+          <Block style={[styles.toggles]}>
+            <Block row center space="between" >
+          <TouchableOpacity onPress={() => props.firebase._signOutUser()}>
+          <Text> Logout </Text>
+          </TouchableOpacity>
+          </Block> 
+          </Block>
+          <Divider/>
               </Block>
         </ScrollView>
       </Block>

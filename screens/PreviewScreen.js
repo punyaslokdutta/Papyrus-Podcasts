@@ -354,7 +354,9 @@ const PreviewScreen = (props) => {
           underlineColorAndroid="transparent"
           placeholder={"Podcast Title" }
           placeholderTextColor={"black"}
-          onChangeText={(text) => setPodcastName(text)}
+          onChangeText={(text) => {
+            (text.length >= 6) && (text.length <= 50) && setPodcastName(text)
+          }}
           numberOfLines={1}
           multiline={false}
         />

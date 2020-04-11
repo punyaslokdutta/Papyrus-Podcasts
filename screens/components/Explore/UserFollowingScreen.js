@@ -17,14 +17,11 @@ class UserFollowingScreen extends React.Component {
      {
       this.state={
         Followings:[], 
-        //chapterPodcasts:[],
-        limit:6,
+        limit:12,
         lastVisibleFollowing:null,
-        //lastVisibleChapterPodcast:null,
         refreshing:false,
         loading:false,
         onEndReachedCalledDuringMomentum : true,
-        // navigation: this.props.navigation,
       }
       }
     
@@ -32,7 +29,6 @@ class UserFollowingScreen extends React.Component {
    
      componentDidMount = () => {
       try {
-        // Cloud Firestore: Initial Query
         this.retrieveData();
       }
       catch (error) {
@@ -41,33 +37,26 @@ class UserFollowingScreen extends React.Component {
     };
     
 
-     //retrieve data
      retrieveData = async () => {
       try {
-        // Set State: Loading
         this.setState({
           loading: true,
         });
         console.log('IN USER FOLLOWING SCREEN');
-        // Cloud Firestore: Query
-        const userid = this.props.navigation.state.params.id;// props.firebase._getUid();
+        const userid = this.props.navigation.state.params.id;
         var wholestring = "isUserFollower." + userid;
         console.log(wholestring);
 
-        
         let followingQuery =  await firestore().collection('users').where('followersList','array-contains',userid).orderBy('id')
                                                 .limit(this.state.limit).get();
         let followingData = followingQuery.docs.map(document=>document.data());
         var lastVisibleFollowing = this.state.lastVisibleFollowing;
-        //var lastVisibleChapter = this.state.lastVisibleChapterPodcast;
-
         lastVisibleFollowing = followingData[followingData.length - 1].id;        
-        //lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].podcastID;
          
         this.setState({
             Followings: followingData,
-       lastVisibleFollowing:lastVisibleFollowing,
-        loading:false
+            lastVisibleFollowing: lastVisibleFollowing,
+            loading:false
         });
       }
       catch (error) {
@@ -78,9 +67,7 @@ class UserFollowingScreen extends React.Component {
     retrieveMoreFollowings = async () => {
      try
       {
-
-        {console.log("retrieveMoreBookPodcasts starts()")}
-
+      console.log("retrieveMoreBookPodcasts starts()")
       this.setState({
         refreshing: true
          }); 
@@ -89,40 +76,32 @@ class UserFollowingScreen extends React.Component {
          var wholestring = "isUserFollower." + userid;
          console.log(wholestring);
   
-        //  let followingQuery = await firestore().collection('users').where(wholestring,'==',true).get();
-        //  let followingData = followingQuery.docs.map(document=>document.data());
-         
-         let additionalQuery = 9;
+         let additionalQuery = null;
          try{
            additionalQuery = await firestore().collection('users').where('followersList','array-contains',userid).orderBy('id')
                             .startAfter(this.state.lastVisibleFollowing)
                             .limit(this.state.limit);
         
-      // Cloud Firestore: Query Snapshot
-      {console.log("retrieveMoreUserFollowings afterQuery()")}
-         
-        }
-        catch(error)
-        {
-          console.log(error);
-        }
-        let documentSnapshots=9;
-        try{
-         documentSnapshots = await additionalQuery.get();
-        }
-        catch(error)
-        {
+            console.log("retrieveMoreUserFollowings afterQuery()")
+          }
+          catch(error)
+          {
             console.log(error);
-        }
+          }
+          let documentSnapshots=9;
+          try{
+          documentSnapshots = await additionalQuery.get();
+          }
+          catch(error)
+          {
+              console.log(error);
+          }
         
-      // Cloud Firestore: Document Data
       let documentData = documentSnapshots.docs.map(document => document.data());
-      // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
       if(documentData.length != 0)
       {
       let lastVisibleFollowing = documentData[documentData.length - 1].id;
-       
-      if(this.state.lastVisibleBookPodcast===lastVisibleBook){
+      if(this.state.lastVisibleFollowing === lastVisibleFollowing){
           this.setState({
                   refreshing:false
               });
@@ -131,7 +110,6 @@ class UserFollowingScreen extends React.Component {
       {
         this.setState({
             Followings: [...this.state.Followings, ...documentData],
-            //chapterPodcasts: documentData_chapterPodcasts,
             lastVisibleFollowing : lastVisibleFollowing,
             refreshing:false
           });
@@ -178,15 +156,16 @@ class UserFollowingScreen extends React.Component {
     }
 
     onEndReached = ({ distanceFromEnd }) => {
-      if(this.state.Followings.length>5)
-      if(!this.onEndReachedCalledDuringMomentum){
+      if(this.state.Followings.length > (this.state.limit - 1))
+      {
+        if(!this.onEndReachedCalledDuringMomentum){
           this.retrieveMoreFollowings();
           this.onEndReachedCalledDuringMomentum = true;
-      }
-      
+        }
+      }   
   }
 
-  separator = () => <View style={[styles.separator,{paddingTop:height/96}]} />;
+  separator = () => <View style={[styles.separator]} />;
     
  
   render() {
@@ -243,4 +222,8 @@ const styles = StyleSheet.create({
  flexDirection:'row',
  backgroundColor: 'white'
   },
+  separator: {
+    borderBottomColor: '#d1d0d4',
+    borderBottomWidth: 1
+  }
 });

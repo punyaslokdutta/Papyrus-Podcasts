@@ -55,6 +55,9 @@ import UserFollowerScreen from './screens/components/Explore/UserFollowerScreen'
 import InfoScreen from './InfoScreen'
 import CustomUserHeader from './screens/navigation/CustomUserHeader'
 import SearchTabNavigator from './screens/navigation/SearchTabNavigator'
+import PrivacyPolicy from './screens/PrivacyPolicy'
+import TermsandConditions from './screens/TermsandConditions'
+import InstagramPage from './screens/InstagramPage'
 
 const  {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
 const IS_IPHONE_X = SCREEN_HEIGHT === 812 || SCREEN_HEIGHT=== 896;
@@ -368,8 +371,16 @@ SearchScreen: {screen:SearchScreen,navigationOptions:{
 }},
    SearchTabNavigator: {screen: SearchTabNavigator,navigationOptions:{
          //header : null
-   }}
-   
+   }},
+   PrivacyPolicy: {screen:PrivacyPolicy,navigationOptions:{
+     header:null
+   }},
+   TermsandConditions: {screen:TermsandConditions,navigationOptions:{
+    header:null
+  }},
+  InstagramPage: {screen:InstagramPage,navigationOptions:{
+    header:null
+  }},
   }, 
   {
     
@@ -394,7 +405,9 @@ const AppDrawerNavigator=createDrawerNavigator(
         drawerIcon: () => (<TouchableOpacity onPress={()=>{NativeModules.ReactNativeRecorder.sampleMethodTwo()}}>
           <Icon name="hdd-o" size={22} style={{ color: 'white' }} />
           </TouchableOpacity>),
-      }}, 
+      },
+     
+    }, 
     Activity: {screen:ActivityScreen, 
       navigationOptions: {
         drawerIcon: () => (<Icon name="bell" size={22} style={{ color: 'white' }} />),
@@ -415,7 +428,8 @@ const AppDrawerNavigator=createDrawerNavigator(
     drawerToggleRoute:'DrawerToggle', 
     contentComponent: CustomDrawerContentComponent,
     contentOptions: {
-      
+      activeTintColor: '#dddd',
+      inactiveTintColor: '#dddd'
     }, 
     
 

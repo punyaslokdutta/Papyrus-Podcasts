@@ -9,8 +9,6 @@ const firebaseApi={
     
       _signOutUser : async () => {
         try {
-            //await AsyncStorage.clear();
-    //this.props.navigation.navigate('Auth');
             await firebase.auth().signOut();
             navigate('Auth');
         } catch (e) {
@@ -21,6 +19,7 @@ const firebaseApi={
     _checkUserAuth: async( user) => {
         return firebase.auth().onAuthStateChanged(user)
       },
+
       _passwordReset: async(email)  => {
         return firebase.auth().sendPasswordResetEmail(email)
       },

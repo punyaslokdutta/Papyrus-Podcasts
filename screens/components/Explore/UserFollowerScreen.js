@@ -18,14 +18,11 @@ class UserFollowerScreen extends React.Component {
 
       this.state={
         Followers:[], 
-        //chapterPodcasts:[],
-        limit:6,
+        limit:12,
         lastVisibleFollower:null,
-        //lastVisibleChapterPodcast:null,
         refreshing:false,
         loading:false,
         onEndReachedCalledDuringMomentum : true,
-        // navigation: this.props.navigation,
       }
       }
     
@@ -60,16 +57,12 @@ class UserFollowerScreen extends React.Component {
                                                 .limit(this.state.limit).onSnapshot(
                                                   async(docs) => {
                                                     let FollowerData = docs.docs.map(document=>document.data());
-                                                    var lastVisibleFollower = this.state.lastVisibleFollower;
-                                                    //var lastVisibleChapter = this.state.lastVisibleChapterPodcast;
-                                            
+                                                    var lastVisibleFollower = this.state.lastVisibleFollower;                                     
                                                     lastVisibleFollower = FollowerData[FollowerData.length - 1].id;        
-                                                    //lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].podcastID;
-                                                     
                                                     this.setState({
                                                         Followers: FollowerData,
-                                                   lastVisibleFollower:lastVisibleFollower,
-                                                    loading:false
+                                                        lastVisibleFollower:lastVisibleFollower,
+                                                        loading:false
                                                     });
                                                   }
                                                 );
@@ -97,21 +90,19 @@ class UserFollowerScreen extends React.Component {
         //  let FollowerQuery = await firestore().collection('users').where(wholestring,'==',true).get();
         //  let FollowerData = FollowerQuery.docs.map(document=>document.data());
          
-         let additionalQuery = 9;
+         let additionalQuery = null;
          try{
            additionalQuery = await firestore().collectionGroup('privateUserData').where('followingList','array-contains',userid).orderBy('id')
                             .startAfter(this.state.lastVisibleFollower)
                             .limit(this.state.limit);
         
-      // Cloud Firestore: Query Snapshot
-      {console.log("retrieveMoreUserFollowers afterQuery()")}
-         
+          console.log("retrieveMoreUserFollowers afterQuery()") 
         }
-        catch(error)
-        {
+        catch(error) {
           console.log(error);
         }
-        let documentSnapshots=9;
+
+        let documentSnapshots=null;
         try{
          documentSnapshots = await additionalQuery.get();
         }
@@ -127,7 +118,7 @@ class UserFollowerScreen extends React.Component {
       {
       let lastVisibleFollower = documentData[documentData.length - 1].id;
        
-      if(this.state.lastVisibleBookPodcast===lastVisibleBook){
+      if(this.state.lastVisibleFollower === lastVisibleFollower){
           this.setState({
                   refreshing:false
               });
@@ -136,7 +127,6 @@ class UserFollowerScreen extends React.Component {
       {
         this.setState({
             Followers: [...this.state.Followers, ...documentData],
-            //chapterPodcasts: documentData_chapterPodcasts,
             lastVisibleFollower : lastVisibleFollower,
             refreshing:false
           });
@@ -168,7 +158,7 @@ class UserFollowerScreen extends React.Component {
 
     renderFooter = () => {
       try {
-        if (this.state.refreshing===true) {
+        if (this.state.refreshing === true) {
           return (
             <ActivityIndicator />
           )
@@ -183,15 +173,16 @@ class UserFollowerScreen extends React.Component {
     }
 
     onEndReached = ({ distanceFromEnd }) => {
-      if(this.state.Followers.length>5)
-      if(!this.onEndReachedCalledDuringMomentum){
+      if(this.state.Followers.length > (this.state.limit - 1))
+      {
+        if(!this.onEndReachedCalledDuringMomentum){
           this.retrieveMoreFollowers()
           this.onEndReachedCalledDuringMomentum = true;
       }
-      
+      } 
   }
 
-  separator = () => <View style={[styles.separator,{paddingTop:height/96}]} />;
+  separator = () => <View style={[styles.separator]} />;
     
  
   render() {
@@ -248,4 +239,8 @@ const styles = StyleSheet.create({
  flexDirection:'row',
  backgroundColor: 'white'
   },
+  separator: {
+    borderBottomColor: '#d1d0d4',
+    borderBottomWidth: 1
+  }
 });

@@ -163,6 +163,10 @@ const Explore = (props) => {
             <View style={{flowDirection:'row'}}>
           <Icon name="bars" size={22}/>
             <Badge
+            //style={{scaleX: 0.2, scaleY: 0.2}}
+            //style={{ width:30,backgroundColor: 'black' }}
+            width={5}
+            textStyle={{fontSize:8}}
             value={numNotifications}
             status="error"
             containerStyle={styles.badgeStyle}
