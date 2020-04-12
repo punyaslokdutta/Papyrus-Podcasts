@@ -5,49 +5,49 @@ const algoliasearch=require('algoliasearch');
 
 //const ALGOLIA_APP_ID = "BJ2O4N6NAY"
 //const ALGOLIA_ADMIN_KEY="c169c60de08aa43d881bf81c223dda06"
-//const ALGOLIA_INDEX_NAME='Books'
+//const ALGOLIA_INDEX_NAME='books'
 
 const algoliaRecords = [];
 
 admin.initializeApp();
 const db = admin.firestore();
 const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
-const collectionIndexName='Podcasts';
+const collectionIndexName='podcasts';
 const collectionIndex = algoliaClient.initIndex(collectionIndexName);
 
 exports.AddToPodcastsIndex = functions.region("asia-northeast1").https.onCall((data, context) => {
  
 
-  const Podcast_Name=data.Podcast_Name;
-  const Book_Name=data.Book_Name;
-  const Podcast_Picture= data.Podcast_Picture;
-  const PodcastID=data.PodcastID;
-  const PodcasterName=data.PodcasterName
-  const Timestamp=data.Timestamp
-  const Language =data.Language
-  const AuthorName=data.AuthorName
+  const podcastName=data.podcastName;
+  const bookName=data.bookName;
+  const podcastPicture= data.podcastPicture;
+  const podcastID=data.podcastID;
+  const podcasterName=data.podcasterName
+  const timestamp=data.timestamp
+  const language =data.language
+  const authors=data.authors
 
   console.log("AddToPodcastsIndex cloud function");
 
-  console.log("Podcast_Name: ",Podcast_Name);
-  console.log("Book_Name: ",Book_Name);
-  console.log("Podcast_Picture:" , Podcast_Picture)
-  console.log("PodcastID: ",PodcastID);
-  console.log("PodcasterName: ",PodcasterName);
-  console.log("Timestamp: ",Timestamp);
-  console.log("Language: ",Language);
+  console.log("podcastName: ",podcastName);
+  console.log("bookName: ",bookName);
+  console.log("podcastPicture:" , podcastPicture)
+  console.log("podcastID: ",podcastID);
+  console.log("podcasterName: ",podcasterName);
+  console.log("timestamp: ",timestamp);
+  console.log("language: ",language);
 
   console.log("context.auth = ",context.auth);
 
   const record = {
-    objectID: PodcastID,
-    Podcast_Name:Podcast_Name, 
-    Podcast_Picture:Podcast_Picture,
-    Book_Name:Book_Name, 
-    PodcasterName:PodcasterName, 
-    Timestamp:Timestamp, 
-    Language :Language,
-    AuthorName: AuthorName,
+    objectID: podcastID,
+    podcastName:podcastName, 
+    podcastPicture:podcastPicture,
+    bookName:bookName, 
+    podcasterName:podcasterName, 
+    timestamp:timestamp, 
+    language :language,
+    authors: authors,
 };
 
 

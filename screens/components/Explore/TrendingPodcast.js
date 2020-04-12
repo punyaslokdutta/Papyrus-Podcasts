@@ -64,7 +64,7 @@ const TrendingPodcast= React.memo((props)=> {
           dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
           dispatch({type:"SET_NUM_LIKES", payload: props.item.numUsersLiked})
         })}> 
-      <Image style={[{width:width/2 - 10, height:height/5,borderRadius:5, resizeMode:'cover',  overflow:'hidden'}]} source={{ uri: item.Podcast_Pictures["0"] }} />
+      <Image style={[{width:width/2 - 10, height:height/5,borderRadius:5, resizeMode:'cover',  overflow:'hidden'}]} source={{ uri:  ((item === null || item === undefined)  ? null : ( (item.podcastPictures.length != 0) && item.podcastPictures[0]))}} />
 
       </TouchableOpacity>
       </View>

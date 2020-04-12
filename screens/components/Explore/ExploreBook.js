@@ -30,7 +30,7 @@ const areEqual = (prevProps, nextProps) => true
               dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
               dispatch({type:"SET_NUM_LIKES", payload: props.item.numUsersLiked})
             })}>
-           <Image style={[{width:(width*5)/12, height:height/7, resizeMode:'cover',borderRadius:5,overflow:'hidden', paddingRight:10}]} source={{ uri: item.Podcast_Pictures["0"] }} />
+           <Image style={[{width:(width*5)/12, height:height/7, resizeMode:'cover',borderRadius:5,overflow:'hidden', paddingRight:10}]} source={{ uri: ((item === null || item === undefined)  ? null : item.podcastPictures[0]) }} />
 
            </TouchableOpacity>
            </View>

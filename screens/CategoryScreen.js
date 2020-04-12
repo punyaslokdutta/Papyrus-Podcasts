@@ -16,7 +16,7 @@ class CategoryScreen extends Component {
     super(props)
     {
       this.state = {
-        active: 'Books',
+        active: 'books',
         categories: [],
       }
 
@@ -82,7 +82,7 @@ class CategoryScreen extends Component {
   
   render() {
     const { categories } = this.state;
-    const tabs = ['Books', 'Podcasts'];
+    const tabs = ['books', 'Podcasts'];
     
     if(this.state.loading)
      {
@@ -121,7 +121,7 @@ class CategoryScreen extends Component {
                      <View style={{alignItems:'center',justifyContent:'center'}}>
                     <Text style={{textAlign:'center'}} medium height={20}>{category.categoryName}</Text>
                     <Text gray caption>{category.numPodcasts} Podcasts </Text>
-                    <Text gray caption>{category.numBooks} Books </Text>
+                    <Text gray caption>{category.numBooks} books </Text>
                     </View>
                   </Card>
                 </TouchableOpacity>

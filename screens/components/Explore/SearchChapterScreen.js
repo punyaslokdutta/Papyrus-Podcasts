@@ -30,9 +30,10 @@ const options = {
 };
 
 const searchClient = algoliasearch(
-  'GL4BSOR8T3',
-  '015571974bee040ecf4f58bf3276f8b3'
+  'BMHKOL10SE',
+  '8ab33c27b3ed311ee783cf9d91fee1c6'
 );
+
 const index = searchClient.initIndex('Chapters');
 
 var {width, height}=Dimensions.get('window')
@@ -183,7 +184,7 @@ const SearchChapterScreen=(props)=>
 
     useEffect(() => {
       const article = {
-        title : chapterNameState,
+        bookName : chapterNameState,
         chapterPictures : [ChapterImageDownloadURL],
         chapterID : chapterID,
         authors : authors.tagsArray
@@ -306,7 +307,7 @@ const SearchChapterScreen=(props)=>
                 <Image style={{width:width/4,height:height*2/13}} source={{uri: onlyBookSelected.bookPictures[0]}}/>
                 </View>
                 <View style={{paddingLeft:5,flexDirection:'column'}}>
-                <Text style={{fontSize:15,color:'white'}}>{onlyBookSelected.title}</Text>
+                <Text style={{fontSize:15,color:'white'}}>{onlyBookSelected.bookName}</Text>
                 <Text style={{color:'white'}}>{onlyBookSelected.authors['0']}</Text>
                 </View>
                 </View>
@@ -387,14 +388,14 @@ const SearchChapterScreen=(props)=>
                 <View style={{paddingTop:width/8 ,alignItems: 'center',}}>
 
               <TouchableOpacity onPress={()=>{
-                firestore().collection('Books').add({
-                  title : bookNameState,
+                firestore().collection('books').add({
+                  bookName : bookNameState,
                   authors : authors.tagsArray,
                   bookPictures : [BookImageDownloadURL],
                   reviewPending : true
                 })
                 .then(function(docRef){
-                  firestore().collection('Books').doc(docRef.id).set({
+                  firestore().collection('books').doc(docRef.id).set({
                     bookID : docRef.id
                   },{merge:true})
 

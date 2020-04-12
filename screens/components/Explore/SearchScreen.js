@@ -26,7 +26,7 @@ const SearchScreen=(props)=> {
   const [loading,setLoading] = useState(false);
   const [refreshing,setRefreshing] = useState(false);
 
-  const index = searchClient.initIndex('Books');
+  const index = searchClient.initIndex('books');
   
   const numHits = 10;
 
@@ -122,7 +122,7 @@ const SearchScreen=(props)=> {
         renderItem={renderDatas}
         //numColumns={2}
         showsVerticalScrollIndicator={false}
-        keyExtractor={item => item.Book_Name}
+        keyExtractor={item => item.bookName}
         ItemSeparatorComponent={ItemSeperator}
         ListHeaderComponent={renderHeader}
         ListFooterComponent={renderFooter}

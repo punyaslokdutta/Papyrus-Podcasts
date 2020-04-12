@@ -3,17 +3,15 @@ import { StyleSheet, Text, View, ActivityIndicator, AsyncStorage} from 'react-na
 import {withFirebaseHOC} from './config/Firebase'
 import {useSelector,useDispatch} from 'react-redux'
 import firestore from '@react-native-firebase/firestore';
-
-
-
+import moment from 'moment';
 
 
 async function retrieveDataPrivate(dispatch, userid)
 {
-
-
   let doc = 9;
   const privateDataID = "private" + userid;
+  const currentTime = moment().format();
+
   try{
    doc = await firestore().collection('users').doc(userid).collection("privateUserData").doc(privateDataID).get();          
       console.log("Inside Private QUERY");
@@ -25,7 +23,7 @@ async function retrieveDataPrivate(dispatch, userid)
       doc._data.name && dispatch({type:'CHANGE_NAME',payload:doc._data.name})
       doc._data.userName && dispatch({type:'CHANGE_USER_NAME',payload:doc._data.userName})
       doc._data.displayPicture && dispatch({type:'CHANGE_DISPLAY_PICTURE',payload:doc._data.displayPicture})
-      doc._data.following_list.length && dispatch({type:'ADD_ALL_TO_FOLLOWING_MAP',payload:doc._data.following_list})
+      doc._data.followingList.length && dispatch({type:'ADD_ALL_TO_FOLLOWING_MAP',payload:doc._data.followingList})
       doc._data.website && dispatch({type:'CHANGE_WEBSITE',payload:doc._data.website})
       doc._data.introduction && dispatch({type:'ADD_INTRODUCTION',payload: doc._data.introduction})
       doc._data.numCreatedBookPodcasts && dispatch({type:'ADD_NUM_CREATED_BOOK_PODCASTS',payload: doc._data.numCreatedBookPodcasts})
@@ -40,25 +38,39 @@ async function retrieveDataPrivate(dispatch, userid)
       console.log(error)
   }
 
+  try{
+    await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({
+      lastSeenTime : currentTime 
+    },{merge:true});
+  } 
+  catch(error)
+  {
+    console.log("[setUserDetails] lastSeenTime setting in firestore error");
+  }
+
 }
 
   async function retrieveDataPublic(dispatch,userid){
 
     let doc = 9;
+    let doc2 = null;
     try{
      doc = await firestore().collection('users').doc(userid).get();
                    
         console.log("Inside PUBLIC QUERY");
         console.log(doc);
-        const numFollowers = doc._data.followers_list.length;
+        const numFollowers = doc._data.followersList.length;
         numFollowers && dispatch({type:'ADD_NUM_FOLLOWERS',payload:numFollowers})
-    
+        
     }
     catch(error)
     {
         console.log("ERROR IN SET USER DETAILS\n\n");
         console.log(error)
     }
+
+    
+    
   }
 
 

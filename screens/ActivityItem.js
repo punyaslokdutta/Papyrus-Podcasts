@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
 
   async function retrievePodcast(podcastID)
   {
-    const podcastCollection = await firestore().collectionGroup('Podcasts').where('PodcastID','==',podcastID).get();
+    const podcastCollection = await firestore().collectionGroup('podcasts').where('podcastID','==',podcastID).get();
     console.log("[ActivityItem] podcastCollection : ", podcastCollection);
     const podcastDocumentData = podcastCollection.docs[0]._data;
     console.log("[ActivityItem] podcastDocumentData : ", podcastDocumentData);
@@ -198,8 +198,8 @@ activityText = <Text>{props.activity.actorName} started following you.</Text>
                 retrievePodcast(props.activity.podcastID);
               }}>
               
-              <View>
-              <Image style={{borderRadius:60,width:height/16,height:height/16}} source={{uri: props.activity.podcastPicture}} />
+              <View style={{paddingLeft:20}}>
+              <Image style={{borderRadius:10,width:height/16,height:height/16}} source={{uri: props.activity.podcastPicture}} />
               </View>
               </TouchableOpacity>
           </View>

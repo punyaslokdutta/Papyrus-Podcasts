@@ -120,12 +120,15 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 holder.view.setBackgroundResource(android.R.color.transparent);
             }
 
-            holder.upload.setOnClickListener(new View.OnClickListener() {
+
+            //TODO later implement for upload from draft
+        /*    holder.upload.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     onUploadListener.uploadFileFromDraft(holder.name.getText().toString(),holder.description.getText().toString());
                 }
-            });
+            });*/
+
             holder.btnMore.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -389,7 +392,7 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         TextView name;
         TextView description;
         TextView created;
-        ImageButton upload;
+  //      ImageButton upload;
         ImageButton btnMore;
         SimpleWaveformView waveformView;
         View view;
@@ -400,7 +403,7 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             name = itemView.findViewById(R.id.list_item_name);
             description = itemView.findViewById(R.id.description_item_list);
             created = itemView.findViewById(R.id.list_item_date);
-            upload = itemView.findViewById(R.id.list_item_upload);
+//            upload = itemView.findViewById(R.id.list_item_upload);
             waveformView = itemView.findViewById(R.id.list_item_waveform);
             btnMore = itemView.findViewById(R.id.list_item_more);
         }

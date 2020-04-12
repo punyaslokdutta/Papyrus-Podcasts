@@ -252,7 +252,7 @@ class BookList extends Component {
           });
           return (
             <Animated.View
-              key={`step-${item.BookID}`}
+              key={`step-${item.bookID}`}
               style={[styles.dots, styles.activeDot, { borderWidth: borderWidth } ]}
             />
           )
@@ -294,7 +294,7 @@ class BookList extends Component {
           snapToAlignment={"center"}
           style={{ overflow:'visible', height: 280 }}
           data={this.props.destinations}
-          keyExtractor={(item, index) => `${item.BookID}`}
+          keyExtractor={(item, index) => `${item.bookID}`}
           //onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX }} }])}
           renderItem={({ item }) => this.renderBook(item)}
         />
@@ -308,28 +308,29 @@ class BookList extends Component {
     console.log("dwdeeedee")
     console.log(item)     
     return (
-      <TouchableOpacity activeOpacity={0.8} onPress={() => this.props.navigation.navigate('RecordBook', { book : item.BookID })}>
+      <TouchableOpacity activeOpacity={0.8} onPress={() => this.props.navigation.navigate('RecordBook', { book : item.bookID })}>
         <ImageBackground
           style={[styles.flex, styles.destination,styles.shadow]}
           imageStyle={{ borderRadius: theme.sizes.radius }}
-          source={{ uri: item.Book_Pictures_Array['0'] }}
+          source={{ uri: item.bookPictures['0'] }}
         >
           <View style={[styles.row, { justifyContent: 'space-between' }]}>
           <View style={[styles.column, { flex: 1, paddingHorizontal: theme.sizes.padding / 10 }]}>
-              <Text style={{ color: theme.colors.white, fontWeight: 'bold' }}>{item.Author_Name}</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Image source={{ uri: item.Author_DP_Link }} style={styles.avatar} />
-            </View>
+          {
+                    props.book.authors.map((item) => (
+                      <Text style={{ color: theme.colors.gray_green }}>{item}</Text>
+                    ))
+          }
+          </View>
             
             <View style={{ flex: 2, justifyContent: 'center', alignItems: 'flex-end', }}>
-              <Text style={styles.rating}>{item.Book_Rating}</Text>
+              <Text style={styles.rating}>{item.bookRating}</Text>
             </View>
           </View>
         </ImageBackground>
           <View style={[styles.column, styles.destinationInfo, styles.shadow]}>
             <Text style={{ fontSize: theme.sizes.font * 1.25, fontWeight: '500', paddingBottom: 8, }}>
-              {item.Book_Name}
+              {item.bookName}
             </Text>
             <View style={[ styles.row, { justifyContent: 'space-between', alignItems: 'flex-end', }]}>
               <Text style={{ color: theme.colors.caption }}>

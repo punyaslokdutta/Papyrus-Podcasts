@@ -13,7 +13,7 @@ exports.addActivity = functions.region("asia-northeast1").https.onCall((data, co
   const creationTimestamp = data.timestamp;
   const likerOrFollowerID = context.auth.uid;
   const likerOrFollowerImage = data.photoURL;
-  const podcastID = data.PodcastID;
+  const podcastID = data.podcastID;
   const userID = data.userID;
   const podcastPicture = data.podcastImageURL;
   const type = data.type;
@@ -78,15 +78,22 @@ exports.addActivity = functions.region("asia-northeast1").https.onCall((data, co
                     activityID: docRef.id
                 },{merge:true})
     
-    })
-    .catch(function(error) {
-        console.error("Error adding document: ", error);
-    });
+      })
+      .catch(function(error) {
+          console.error("Error adding document: ", error);
+      });
     }  
   
     db.collection('users').doc(userID).collection('privateUserData').doc(privateDataID).set({
-      numNotifications: admin.firestore.FieldValue.increment(1)     
-    },{merge:true})
+        numNotifications: admin.firestore.FieldValue.increment(1)
+    },{merge:true}).then(
+      () => {
+        console.log("Added 1 to numNotifications in privateData");
+        return true;
+      })
+      .catch(function(error) {
+        console.error("Error adding 1 to numNotifications to user's private document: ", error);
+    });
   
   
       return true;

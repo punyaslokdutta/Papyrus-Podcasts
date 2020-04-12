@@ -113,7 +113,7 @@ useEffect(()=>
         />
         </View> 
         <View>
-          <Text style={{fontFamily:'sans-serif-light', color:'white', fontSize:14, paddingLeft:(width*9)/24}}>Select Books</Text>
+          <Text style={{fontFamily:'sans-serif-light', color:'white', fontSize:14, paddingLeft:(width*9)/24}}>Select books</Text>
         </View>
         <View style={{paddingVertical:height/40, paddingLeft:width/11}}>
         <TagSelect itemStyle={styles.item}

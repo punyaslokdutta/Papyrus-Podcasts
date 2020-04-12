@@ -60,7 +60,7 @@
 					android:paddingEnd="@dimen/spacing_normal"
 					android:paddingRight="@dimen/spacing_normal"
 					android:textColor="@color/text_primary_light"
-					android:text="@string/records"
+					android:text="Draft"
 					/>
 			<TextView
 					style="@style/Text"
@@ -109,7 +109,7 @@
 			android:drawableTop="@drawable/ic_audiotrack_64"
 			android:textSize="@dimen/text_large"
 			android:textColor="@color/text_primary_light"
-			android:text="@string/no_records"
+			android:text="Draft is Empty"
 			tools:text="@string/app_name"
 			android:visibility="gone"
 			tools:visibility="visible"

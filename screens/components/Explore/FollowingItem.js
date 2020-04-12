@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
           props.navigation.navigate('ProfileTabNavigator');
         }}>
         <View style={[styles.shadow,{marginLeft: 15}]}>
-            <Image source={{ uri: props.item.displayPicture }} style={{width:width/4,height:height/8}}/>
+            <Image source={{ uri: props.item.displayPicture }} style={{width:width/8,height:width/8}}/>
             <Text style={styles.username}>{props.item.name}</Text>
             </View>
             {/* </TouchableOpacity> */}

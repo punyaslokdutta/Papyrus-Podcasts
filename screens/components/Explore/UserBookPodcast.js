@@ -46,11 +46,11 @@ class UserBookPodcast extends React.Component {
         console.log("[UserBookPodcast] this.props.navigation.state.params = ",this.props.navigation.state.params);
         const  userid = this.props.navigation.state.params.userData.id;
         
-        let query3 = await firestore().collectionGroup('Podcasts').where('podcasterID','==',userid);    
-        let documentPodcasts = await query3.where('ChapterName','==',"").orderBy('PodcastID').limit(this.state.limit).get();
+        let query3 = await firestore().collectionGroup('podcasts').where('podcasterID','==',userid);    
+        let documentPodcasts = await query3.where('isChapterPodcast','==',false).orderBy('timestamp','desc').limit(this.state.limit).get();
         let documentData_podcasts = documentPodcasts.docs.map(document => document.data());
         var lastVisibleBook = this.state.lastVisibleBookPodcast;
-        lastVisibleBook = documentData_podcasts[documentData_podcasts.length - 1].PodcastID;        
+        lastVisibleBook = documentData_podcasts[documentData_podcasts.length - 1].podcastID;        
          
         this.setState({
         bookPodcasts: documentData_podcasts,
@@ -76,9 +76,9 @@ class UserBookPodcast extends React.Component {
          const  userid = this.props.navigation.state.params.userData.id;
          let additionalQuery = 9;
          try{
-           additionalQuery = await firestore().collectionGroup('Podcasts')
-                            .where('podcasterID','==',userid).where('ChapterName','==',"")
-                            .orderBy('PodcastID')
+           additionalQuery = await firestore().collectionGroup('podcasts')
+                            .where('podcasterID','==',userid).where('isChapterPodcast','==',false)
+                            .orderBy('timestamp','desc')
                             .startAfter(this.state.lastVisibleBookPodcast)
                             .limit(this.state.limit);
         
@@ -100,7 +100,7 @@ class UserBookPodcast extends React.Component {
       let documentData = documentSnapshots.docs.map(document => document.data());
       if(documentData.length != 0)
       {
-      let lastVisibleBook = documentData[documentData.length - 1].PodcastID;
+      let lastVisibleBook = documentData[documentData.length - 1].podcastID;
        
       if(this.state.lastVisibleBookPodcast===lastVisibleBook){
           this.setState({
@@ -189,7 +189,7 @@ class UserBookPodcast extends React.Component {
           renderItem={this.renderData}
           numColumns={2}
           showsVerticalScrollIndicator={false}
-          keyExtractor={item => item.PodcastID}
+          keyExtractor={item => item.podcastID}
           ListFooterComponent={this.renderFooter}
           onEndReached={this.onEndReached}
           onEndReachedThreshold={0.5}

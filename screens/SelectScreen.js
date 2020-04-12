@@ -9,17 +9,24 @@ import { useDispatch} from 'react-redux'
 
 const { width, height } = Dimensions.get('window');
 
-const SelectScreen =(props)=> {
+const SelectScreen = (props)=> {
 
   var bookSelected = null;
+  var bookPictureURL = null;
   if(props.navigation.state.params !== undefined)
-     bookSelected = props.navigation.state.params.bookItem;
-  console.log("[SelectScreen] Book Selected: ",bookSelected);
+  {
+    bookSelected = props.navigation.state.params.bookItem;
+    bookPictureURL = bookSelected.bookPictures[0];
+    if(bookPictureURL === null || bookPictureURL === undefined)
+      bookPictureURL = "https://previews.123rf.com/images/pavelstasevich/pavelstasevich1902/pavelstasevich190200120/124934975-no-image-available-icon-vector-flat.jpg";
 
+  }
+  console.log("[SelectScreen] Book Selected: ",bookSelected);
+  
   const [categoryClicked, setcategoryClicked]=useState(null);
   const [BookName, setBookName]=useState();
-  const [ChapterName, setChapterName]=useState(null);
-  const [AuthorName, setAuthorName]=useState(null);
+  const [chapterName, setChapterName]=useState(null);
+  const [authors, setAuthorName]=useState(null);
   const [LanguageSelected, setLanguageSelected]=useState(null);
   const [bookId, setBookId]=useState(props.navigation.getParam('bookItem'));
 
@@ -42,7 +49,7 @@ const SelectScreen =(props)=> {
     {
       if(bookSelected != null)
       {
-        setBookName(bookSelected.title);
+        setBookName(bookSelected.bookName);
         setBookId(bookSelected.bookID);
         setAuthorName(bookSelected.authors[0])
       }
@@ -121,7 +128,7 @@ const SelectScreen =(props)=> {
         <View style={{paddingVertical:30, paddingBottom: height/20, flexDirection:'column', paddingLeft:width/8, paddingRight:width/8} }>
           <TouchableOpacity onPress={()=>{
             dispatch({type:"SET_EXPLORE_SCREEN_AS_PREVIOUS_SCREEN", payload:false})
-            props.navigation.navigate('SearchTabNavigator')
+            props.navigation.navigate('SearchTabNavigator',{fromExplore:false})
             }}>
         <View style={{flexDirection:'row',height:height/12, backgroundColor: '#101010', paddingRight: 13, paddingVertical:10, width:((width*7)/8)-10 }}>
         
@@ -131,7 +138,7 @@ const SelectScreen =(props)=> {
               <Icon style={{paddingHorizontal:10,paddingTop:20 }} name="search" size={20} />
               
 
-              {"  "}Search Content, Books, Chapters
+              {"  "}Search Content, books, Chapters
                </Text> 
 
         </View>
@@ -142,13 +149,25 @@ const SelectScreen =(props)=> {
         
           {
             (bookSelected != null) ? 
-            <View style={{flexDirection:'row'}}>
+            <View style={{flexDirection:'row',paddingRight:width/15,height:height*2/13}}>
             <View>
-            <Image style={{width:width/4,height:height*2/13}} source={{uri: bookSelected.bookPictures[0]}}/>
+            <Image style={{width:width/4,height:height*2/13}} source={{uri: bookPictureURL}}/>
             </View>
-            <View style={{paddingLeft:5,flexDirection:'column'}}>
-            <Text style={{fontSize:15,color:'white'}}>{bookSelected.title}</Text>
-            <Text style={{color:'white'}}>{bookSelected.authors[0]}</Text>
+            <View style={{paddingLeft:5,flexDirection:'column',height:height*2/13}}>
+            <Text style={{fontSize:15,color:'white'}}>
+              {bookSelected.bookName.slice(0,70)} 
+              {(bookSelected.bookName.length > 70) ? "..." : ""}
+            </Text>
+
+            {
+              bookSelected.authors.map((item,index) => (
+                (index<=2) &&
+                <Text style={{color:'white',fontSize:10}}>
+                          {item}
+                          </Text>
+              ))
+            }
+            
             </View>
              </View>
              :
@@ -204,16 +223,16 @@ const SelectScreen =(props)=> {
             onPress={() => {
               console.log("[SelectScreen] BookName : ",BookName);
                          
-                         if (BookName === null || AuthorName===null|| LanguageSelected ===null) 
+                         if (BookName === null || authors===null|| LanguageSelected ===null) 
                          {
                           if(LanguageSelected == null && BookName!=null)
                           {
-                            alert("You must choose Language of your Podcast");
+                            alert("You must choose language of your Podcast");
                             return;
                           }
                           if(LanguageSelected == null && BookName==null)
                           {
-                            alert("You must select Book/Chapter and Language of your Podcast");
+                            alert("You must select Book/Chapter and language of your Podcast");
                             return;
                           }
                           if(LanguageSelected != null && BookName==null)  
@@ -225,8 +244,8 @@ const SelectScreen =(props)=> {
                         }  
                         dispatch({type:'CHANGE_BOOK_ID', payload:bookSelected.bookID})
                         dispatch({type:'CHANGE_BOOK',payload:BookName})
-                        dispatch({type:'CHANGE_CHAPTER',payload:ChapterName}) 
-                        dispatch({type:'CHANGE_AUTHOR',payload:AuthorName}) 
+                        dispatch({type:'CHANGE_CHAPTER',payload:chapterName}) 
+                        dispatch({type:'CHANGE_AUTHOR',payload:authors}) 
                         dispatch({type:'CHANGE_LANGUAGE',payload:LanguageSelected}) 
                         dispatch({type:"SET_PODCAST", payload: null})
 
@@ -243,16 +262,16 @@ const SelectScreen =(props)=> {
                  onPress={() => {
 
                          
-                         if (BookName === null || AuthorName === null || LanguageSelected ===null) 
+                         if (BookName === null || authors === null || LanguageSelected ===null) 
                          {
                           if(LanguageSelected == null && BookName!=null)
                           {
-                            alert("You must choose Language of your Podcast");
+                            alert("You must choose language of your Podcast");
                             return;
                           }
                           if(LanguageSelected == null && BookName==null)
                           {
-                            alert("You must select Book/Chapter and Language of your Podcast");
+                            alert("You must select Book/Chapter and language of your Podcast");
                             return;
                           }
                           if(LanguageSelected != null && BookName==null)  
@@ -263,8 +282,8 @@ const SelectScreen =(props)=> {
                         } 
                         dispatch({type:'CHANGE_BOOK_ID', payload:bookSelected.bookID})
                         dispatch({type:'CHANGE_BOOK',payload:BookName})
-                        dispatch({type:'CHANGE_CHAPTER',payload:ChapterName}) 
-                        dispatch({type:'CHANGE_AUTHOR',payload:AuthorName}) 
+                        dispatch({type:'CHANGE_CHAPTER',payload:chapterName}) 
+                        dispatch({type:'CHANGE_AUTHOR',payload:authors}) 
                         dispatch({type:'CHANGE_LANGUAGE',payload:LanguageSelected})
                         dispatch({type:"SET_PODCAST", payload: null})
       

@@ -25,7 +25,7 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
   const SearchTabNavigator = createMaterialTopTabNavigator(
     {
       SearchBookScreen : { screen: props => <SearchBookScreen  {...props}/>,navigationOptions:{
-        tabBarLabel:'Books',
+        tabBarLabel:'books',
         tabBarIcon:({tintColor})=>(
           <Icon name="book" color={tintColor} size={20}/>
         )
@@ -36,16 +36,18 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
           <Icon name="newspaper-o" color={tintColor} size={20}/>
         )
       }},
-      SearchPodcastScreen : { screen: props => <SearchPodcastScreen  {...props}/>,navigationOptions:{
-        tabBarLabel:'Podcasts',
+      SearchPodcastScreen : { screen: props => props.navigation.state.params.fromExplore ? <SearchPodcastScreen  {...props}/> : null,navigationOptions: (props) => ({
+        //tabBarVisible: false,
+        //tabBarOnPress: (props) => props.navigation.state.params.fromExplore ?  <SearchPodcastScreen  {...props}/> : null,
+        tabBarLabel: props.navigation.state.params.fromExplore ? 'Podcasts' : ' ',
         tabBarIcon:({tintColor})=>(
-          <Icon name="book" color={tintColor} size={20}/>
+          props.navigation.state.params.fromExplore ? <Icon name="book" color={tintColor} size={20}/> : null
         )
-      }}
+      })}
     },
-    {tabBarOptions:{
-      showIcon: true,
-      showLabel: true,
+  {tabBarOptions:  {
+      showIcon: true,//props.navigation.state.params.fromExplore ? false : true,
+      //showLabel: props.navigation.state.params.fromExplore ? false : false,
       activeTintColor:'black',
       inactiveTintColor:'grey',
       borderTopWidth: 0,
@@ -67,9 +69,9 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
     }, 
        navigationOptions:
        {
-         tabBarVisible: true,
+         tabBarVisible: true,//props => props.navigation.state.params.fromExplore ? false : false,
          headerVisible: true,
-           header: props => <CustomSearchHeader {...props} />, 
+         header: props => <CustomSearchHeader {...props} />, 
          
        }
       }

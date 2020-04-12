@@ -15,14 +15,15 @@ const options = {
     chooseFromLibraryButtonTitle: 'Select from Library'
   };
 
-const initialAuthors = {
-    tag: '',
-    tagsArray: []
-  }
+
 
 var {width, height}=Dimensions.get('window')
 const AddBook=(props)=>{
 
+  const initialAuthors = {
+    tag: '',
+    tagsArray: []
+  }
     const userID = props.firebase._getUid();
     const searchQuery = useSelector(state=>state.userReducer.algoliaQuery)
 
@@ -38,7 +39,7 @@ const AddBook=(props)=>{
     useEffect(() => {
         
         const article = {
-          title : bookNameState,
+          bookName : bookNameState,
           bookPictures : [BookImageDownloadURL],
           bookID : bookID,
           authors : authors.tagsArray
@@ -67,7 +68,7 @@ const AddBook=(props)=>{
             const source = { uri: response.uri };
             console.log("Before storageRef.putFile");
             setBookImage(source)
-            var refPath = "Books/images/" + userID + "_" + Date.now() + ".jpg";
+            var refPath = "books/images/" + userID + "_" + Date.now() + ".jpg";
             var storageRef = storage().ref(refPath);
             console.log("Before storageRef.putFile");
     
@@ -165,15 +166,15 @@ const AddBook=(props)=>{
 
              <TouchableOpacity onPress={()=>{
                  
-               firestore().collection('Books').add({
-                 title : bookNameState,
+               firestore().collection('books').add({
+                 bookName : bookNameState,
                  authors : authors.tagsArray,
                  bookPictures : [BookImageDownloadURL],
                  reviewPending : true,
                  timestamp : moment().format()
                })
                .then(function(docRef){
-                 firestore().collection('Books').doc(docRef.id).set({
+                 firestore().collection('books').doc(docRef.id).set({
                    bookID : docRef.id
                  },{merge:true})
 

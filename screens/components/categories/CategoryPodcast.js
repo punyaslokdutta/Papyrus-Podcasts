@@ -50,13 +50,13 @@ class CategoryPodcast extends React.Component {
         console.log('Retrieving Data');
         // Cloud Firestore: Query
         const genre = this.props.navigation.state.params;
-        let query3 = await firestore().collectionGroup('Podcasts').where('Genres','array-contains',genre.category);    
-        let documentPodcasts = await query3.orderBy('PodcastID').limit(this.state.limit).get();
+        let query3 = await firestore().collectionGroup('podcasts').where('genres','array-contains',genre.category);    
+        let documentPodcasts = await query3.orderBy('timestamp','desc').limit(this.state.limit).get();
         let documentDataPodcasts = documentPodcasts.docs.map(document => document.data());
 
         var lastVisible = this.state.lastVisiblePodcast;
-        lastVisible = documentDataPodcasts[documentDataPodcasts.length - 1].PodcastID;        
-        //lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].PodcastID;
+        lastVisible = documentDataPodcasts[documentDataPodcasts.length - 1].podcastID;        
+        //lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].podcastID;
          
         this.setState({
         podcasts: documentDataPodcasts,
@@ -82,8 +82,8 @@ class CategoryPodcast extends React.Component {
          const genre = this.props.navigation.state.params;
          let additionalQuery = 9;
          try{
-           additionalQuery = await firestore().collectionGroup('Podcasts').where('Genres','array-contains',genre.category)
-                            .orderBy('PodcastID')
+           additionalQuery = await firestore().collectionGroup('podcasts').where('genres','array-contains',genre.category)
+                            .orderBy('timestamp','desc')
                             .startAfter(this.state.lastVisiblePodcast)
                             .limit(this.state.limit);
         
@@ -109,7 +109,7 @@ class CategoryPodcast extends React.Component {
       // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
       if(documentData.length != 0)
       {
-      let lastVisible = documentData[documentData.length - 1].PodcastID;
+      let lastVisible = documentData[documentData.length - 1].podcastID;
        
       if(this.state.lastVisiblePodcast===lastVisible){
           this.setState({

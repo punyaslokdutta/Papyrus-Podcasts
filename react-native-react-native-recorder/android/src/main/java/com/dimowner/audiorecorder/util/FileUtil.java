@@ -76,7 +76,7 @@ public class FileUtil {
 //	}
 
 	public static String generateRecordNameCounted(long counter) {
-		return AppConstants.BASE_RECORD_NAME + counter;
+		return AppConstants.BASE_RECORD_NAME;
 	}
 
 	public static String generateRecordNameDate() {

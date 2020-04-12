@@ -19,7 +19,7 @@ const { width, height } = Dimensions.get("window");
  InfoScreen=(props)=> {
   const podcast=useState(props.navigation.state.params.podcast)
   const numUsersLiked=useSelector(state=>state.rootReducer.numLikes)
-  //console.log(podcast[0].Podcast_Pictures)
+  //console.log(podcast[0].podcastPictures)
     
    const navigationOptions = ({ navigation }) => {
     return {
@@ -41,7 +41,7 @@ const { width, height } = Dimensions.get("window");
         scrollEnabled
         showsHorizontalScrollIndicator={false}
         snapToAlignment="center"
-        data={podcast[0].Podcast_Pictures}
+        data={podcast[0].podcastPictures}
         keyExtractor={(item, index) => `${index}`}
         renderItem={( {item} ) => (
           <Image
@@ -62,11 +62,11 @@ const { width, height } = Dimensions.get("window");
 
         <Block style={styles.product}>
           <Text h2 bold>
-            {podcast[0].Podcast_Name}
+            {podcast[0].podcastName}
           </Text>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
           <Block flex={false} row margin={[theme.sizes.base, 0]}>
-            { podcast[0].Tags_Array && podcast[0].Tags_Array.map(tag => (
+            { podcast[0].tags && podcast[0].tags.map(tag => (
               <Text key={`tag-${tag}`} caption gray style={styles.tag}>
                 {tag}
               </Text>
@@ -78,7 +78,7 @@ const { width, height } = Dimensions.get("window");
           </Text>
 
           <TouchableOpacity onPress={() => {props.navigation.navigate('LikersScreen',
-              {podcastID:podcast[0].PodcastID})}}>
+              {podcastID:podcast[0].podcastID})}}>
           <View>
             <Text>{"\n"}{numUsersLiked} Likes</Text>
           </View>

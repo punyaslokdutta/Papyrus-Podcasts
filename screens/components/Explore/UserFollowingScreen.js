@@ -3,7 +3,7 @@ import firestore from '@react-native-firebase/firestore';
 import { StyleSheet, Text, View, Image, TouchableOpacity,FlatList,  Dimensions,SafeAreaView, ScrollView,ActivityIndicator} from 'react-native';
 import Podcast from '../Home/Podcast'
 import {withFirebaseHOC} from '../../config/Firebase'
-import FollowingItem from './FollowingItem';
+import FollowerItem from '../Explore/FollowerItem';
 var {width, height}=Dimensions.get('window')
 
 class UserFollowingScreen extends React.Component {
@@ -55,14 +55,14 @@ class UserFollowingScreen extends React.Component {
         console.log(wholestring);
 
         
-        let followingQuery =  await firestore().collection('users').where('followers_list','array-contains',userid).orderBy('id')
+        let followingQuery =  await firestore().collection('users').where('followersList','array-contains',userid).orderBy('id')
                                                 .limit(this.state.limit).get();
         let followingData = followingQuery.docs.map(document=>document.data());
         var lastVisibleFollowing = this.state.lastVisibleFollowing;
         //var lastVisibleChapter = this.state.lastVisibleChapterPodcast;
 
         lastVisibleFollowing = followingData[followingData.length - 1].id;        
-        //lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].PodcastID;
+        //lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].podcastID;
          
         this.setState({
             Followings: followingData,
@@ -94,7 +94,7 @@ class UserFollowingScreen extends React.Component {
          
          let additionalQuery = 9;
          try{
-           additionalQuery = await firestore().collection('users').where('followers_list','array-contains',userid).orderBy('id')
+           additionalQuery = await firestore().collection('users').where('followersList','array-contains',userid).orderBy('id')
                             .startAfter(this.state.lastVisibleFollowing)
                             .limit(this.state.limit);
         
@@ -154,7 +154,7 @@ class UserFollowingScreen extends React.Component {
     {
        return(
          <View>
-        <FollowingItem item={item} index={index} navigation={this.props.navigation}/>
+        <FollowerItem item={item} index={index} navigation={this.props.navigation}/>
         </View>
        )
     }

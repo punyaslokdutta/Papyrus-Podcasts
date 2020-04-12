@@ -77,6 +77,7 @@
 				android:layout_height="15dp"
 				android:layout_gravity="bottom|end"
 				android:adjustViewBounds="true"
+				android:visibility="gone"
 				android:background="?android:selectableItemBackgroundBorderless"
 				android:contentDescription="@null"
 				android:scaleType="center"

@@ -33,12 +33,12 @@ async function retrieveData(message,userid,item,userDisplayPictureURL,name,userI
     if(message === 'FOLLOW')
     {
         let addQuery1 = await firestore().collection('users').doc(item.id).set({
-                   followers_list : firestore.FieldValue.arrayUnion(userid),
-                   follower_count : firestore.FieldValue.increment(1)
+                   followersList : firestore.FieldValue.arrayUnion(userid),
+                   followerCount : firestore.FieldValue.increment(1)
                },{ merge:true })
         let addQuery2 = await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({
-                   following_list : firestore.FieldValue.arrayUnion(item.id),
-                   following_count : firestore.FieldValue.increment(1)
+                   followingList : firestore.FieldValue.arrayUnion(item.id),
+                   followingCount : firestore.FieldValue.increment(1)
                },{ merge:true })
       
                const instance = firebase.app().functions("asia-northeast1").httpsCallable('addActivity');
@@ -47,7 +47,7 @@ async function retrieveData(message,userid,item,userDisplayPictureURL,name,userI
                  await instance({ // change in podcast docs created by  user
                    timestamp : moment().format(),
                    photoURL : userDisplayPictureURL,
-                   PodcastID : null,
+                   podcastID : null,
                    userID : item.id,
                    podcastImageURL : null,
                    type : "follow",
@@ -68,13 +68,13 @@ async function retrieveData(message,userid,item,userDisplayPictureURL,name,userI
     else if(message === 'FOLLOWING')
      {
       let removeQuery1 = await firestore().collection('users').doc(item.id).set({
-        followers_list : firestore.FieldValue.arrayRemove(userid),
-        follower_count : firestore.FieldValue.increment(-1) 
+        followersList : firestore.FieldValue.arrayRemove(userid),
+        followerCount : firestore.FieldValue.increment(-1) 
     },{ merge:true })
       
     let removeQuery2 = await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({
-      following_list : firestore.FieldValue.arrayRemove(item.id),
-      following_count : firestore.FieldValue.increment(-1) 
+      followingList : firestore.FieldValue.arrayRemove(item.id),
+      followingCount : firestore.FieldValue.increment(-1) 
 
   },{ merge:true })
 

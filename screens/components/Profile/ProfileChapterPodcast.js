@@ -53,11 +53,11 @@ class ProfileChapterPodcast extends React.Component {
         console.log('Retrieving Data');
         // Cloud Firestore: Query
         const  userid = this.props.firebase._getUid();
-        let query3 = await firestore().collectionGroup('Podcasts').where('podcasterID','==',userid);    
-        //let documentPodcasts = await query3.where('ChapterName','==',"").orderBy('PodcastID').limit(this.state.limit).get();
+        let query3 = await firestore().collectionGroup('podcasts').where('podcasterID','==',userid);    
+        //let documentPodcasts = await query3.where('chapterName','==',"").orderBy('podcastID').limit(this.state.limit).get();
         let documentChapterPodcasts = 90;
         try{
-         documentChapterPodcasts = await query3.where('isChapterPodcast','==',true).limit(this.state.limit).get();
+         documentChapterPodcasts = await query3.where('isChapterPodcast','==',true).orderBy('timestamp','desc').limit(this.state.limit).get();
         //let documentData_podcasts = documentPodcasts.docs.map(document => document.data());
         }
         catch(error)
@@ -69,9 +69,9 @@ class ProfileChapterPodcast extends React.Component {
   
         var lastVisibleChapter = this.state.lastVisibleChapterPodcast;
 
-        //lastVisibleBook = documentData_podcasts[documentData_podcasts.length - 1].PodcastID;  
+        //lastVisibleBook = documentData_podcasts[documentData_podcasts.length - 1].podcastID;  
         if(documentData_chapterPodcasts.length != 0)            
-          lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].PodcastID;
+          lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].podcastID;
         
           this.setState({
             //bookPodcasts: documentData_podcasts,
@@ -99,9 +99,9 @@ class ProfileChapterPodcast extends React.Component {
           let additionalQuery = 9;
           try{
            // let documentChapterPodcasts = await query3.where('isChapterPodcast','==',true).limit(this.state.limit).get();
-            additionalQuery = await firestore().collectionGroup('Podcasts')
+            additionalQuery = await firestore().collectionGroup('podcasts')
                              .where('podcasterID','==',userid).where('isChapterPodcast','==',true)
-                             .orderBy('PodcastID')
+                             .orderBy('timestamp','desc')
                              .startAfter(this.state.lastVisibleChapterPodcast)
                              .limit(this.state.limit);
          
@@ -129,7 +129,7 @@ class ProfileChapterPodcast extends React.Component {
        // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
        if(documentData.length != 0)
        {
-            let lastVisibleChapter = documentData[documentData.length - 1].PodcastID;
+            let lastVisibleChapter = documentData[documentData.length - 1].podcastID;
           if(this.state.lastVisibleChapter === lastVisibleChapter)
           {
               this.setState({
@@ -220,7 +220,7 @@ class ProfileChapterPodcast extends React.Component {
           renderItem={this.renderData}
           numColumns={2}
           showsVerticalScrollIndicator={false}
-          keyExtractor={item => item.PodcastID}
+          keyExtractor={item => item.podcastID}
           ListFooterComponent={this.renderFooter}
           onEndReached={this.onEndReached}
           onEndReachedThreshold={0.5}

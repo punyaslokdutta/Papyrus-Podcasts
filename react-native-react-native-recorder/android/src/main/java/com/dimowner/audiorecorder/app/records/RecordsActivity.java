@@ -39,6 +39,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -128,6 +130,9 @@ public class RecordsActivity extends ReactActivity implements RecordsContract.Vi
         colorMap = ARApplication.getInjector().provideColorMap();
         setTheme(colorMap.getAppThemeResource());
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_records);
 
         toolbar = findViewById(R.id.toolbar);
@@ -190,7 +195,7 @@ public class RecordsActivity extends ReactActivity implements RecordsContract.Vi
         });
 
         touchLayout = findViewById(R.id.touch_layout);
-        touchLayout.setBackgroundResource(colorMap.getPlaybackPanelBackground());
+        touchLayout.setBackgroundResource((R.color.md_black_1000));
         touchLayout.setOnThresholdListener(new TouchLayout.ThresholdListener() {
             @Override
             public void onTopThreshold() {

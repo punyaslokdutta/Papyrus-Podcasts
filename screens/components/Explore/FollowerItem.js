@@ -167,9 +167,13 @@ const styles = StyleSheet.create({
         <TouchableOpacity onPress={() => {
           props.navigation.navigate('ProfileTabNavigator');
         }}>
-        <View style={{flexDirection:'row', marginLeft: 15}}>
-        <Image source={{ uri: props.item.displayPicture }} style={{width:width/4,height:height/8}}/>
-        <Text style={styles.username}>{props.item.name}</Text>
+        <View style={{flexDirection:'row', marginLeft: 15,paddingVertical:10}}>
+          <View style={{paddingRight:20}}>
+        <Image source={{ uri: props.item.displayPicture }} style={{borderRadius:50,width:width/8,height:width/8}}/>
+        </View>
+        <View style={{alignItems:'center',justifyContent:'center'}}>
+        <Text style={{fontWeight:'bold',fontSize:18}}>{props.item.name}</Text>
+        </View>
         </View>
         {/* </TouchableOpacity> */}
       </TouchableOpacity>
@@ -189,10 +193,14 @@ const styles = StyleSheet.create({
             // [3] props.navigation.push will move us towards updated ExploreTabNavigator with updated CustomUserHeader
             props.navigation.push('ExploreTabNavigator', {userData:props.item})
           }}>
-              <View style={{flexDirection:'row', marginLeft: 15}}>
-              <Image source={{ uri: props.item.displayPicture }} style={{width:width/4,height:height/8}}/>
-              <Text style={styles.username}>{props.item.name}</Text>
-              </View>
+               <View style={{flexDirection:'row', marginLeft: 15,paddingVertical:10}}>
+          <View style={{paddingRight:20}}>
+        <Image source={{ uri: props.item.displayPicture }} style={{borderRadius:50,width:width/8,height:width/8}}/>
+        </View>
+        <View style={{alignItems:'center',justifyContent:'center'}}>
+        <Text style={{fontWeight:'bold',fontSize:18}}>{props.item.name}</Text>
+        </View>
+        </View>
               {/* </TouchableOpacity> */}
             </TouchableOpacity>
         )

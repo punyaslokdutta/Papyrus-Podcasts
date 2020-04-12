@@ -48,7 +48,7 @@ const CategoryTabNavigator = createMaterialTopTabNavigator(
         )
       }}, 
        CategoryBook:{ screen: CategoryBook,navigationOptions:{
-        tabBarLabel:'Books',
+        tabBarLabel:'books',
         tabBarIcon:({tintColor})=>(
           <Icon name="book" color={tintColor} size={20}/>
         )

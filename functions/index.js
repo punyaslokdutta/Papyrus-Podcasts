@@ -12,40 +12,42 @@ const algoliaRecords = [];
 admin.initializeApp();
 const db = admin.firestore();
 const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
-const collectionIndexName='books';
+const collectionIndexName='podcasts';
 const collectionIndex = algoliaClient.initIndex(collectionIndexName);
 
-exports.addBookToIndex = functions.region("asia-northeast1").https.onCall((data, context) => {
+exports.AddToPodcastsIndex = functions.region("asia-northeast1").https.onCall((data, context) => {
  
 
-  
+  const podcastName=data.podcastName;
   const bookName=data.bookName;
-  const bookCover= data.bookPictures[0];
-  const timestamp=data.timestamp;
-  const language =data.language;
-  const authors=data.authors;
-  const publicationYear = data.publicationYear;
-  const bookID = data.bookID;
+  const podcastPicture= data.podcastPicture;
+  const podcastID=data.podcastID;
+  const podcasterName=data.podcasterName
+  const timestamp=data.timestamp
+  const language =data.language
+  const authors=data.authors
 
-  console.log("addBookToIndex cloud function");
+  console.log("AddToPodcastsIndex cloud function");
 
- 
+  console.log("podcastName: ",podcastName);
   console.log("bookName: ",bookName);
-  console.log("bookPicture:" , bookCover)
+  console.log("podcastPicture:" , podcastPicture)
+  console.log("podcastID: ",podcastID);
+  console.log("podcasterName: ",podcasterName);
   console.log("timestamp: ",timestamp);
   console.log("language: ",language);
 
   console.log("context.auth = ",context.auth);
 
   const record = {
-    objectID: bookID,
-    bookCover:bookCover,
+    objectID: podcastID,
+    podcastName:podcastName, 
+    podcastPicture:podcastPicture,
     bookName:bookName, 
+    podcasterName:podcasterName, 
     timestamp:timestamp, 
     language :language,
     authors: authors,
-    publicationYear : publicationYear,
-    bookID : bookID
 };
 
 
@@ -58,7 +60,7 @@ collectionIndex.saveObjects(algoliaRecords, (_error, content) => {
   console.log("ERROR LOG : ",_error);
 
   if(_error === null || _error === undefined)
-    console.log("The uploaded book has been indexed in algolia.");
+    console.log("The uploaded podcast has been indexed in algolia.");
 
 });
 });

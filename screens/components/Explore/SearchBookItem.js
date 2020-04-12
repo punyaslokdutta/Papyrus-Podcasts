@@ -129,27 +129,32 @@ const styles = StyleSheet.create({
   console.log("Inside SearchBookItem");
    console.log(props.book);
   // var bookName = "";
-  // if(props.book.Book_Name !== null && props.book.Book_Name !== undefined)
-  //   bookName = props.book.Book_Name.slice(0,40);
+  // if(props.book.bookName !== null && props.book.bookName !== undefined)
+  //   bookName = props.book.bookName.slice(0,40);
         return (
           <TouchableOpacity onPress={() => {
-              //retrieveBookDocument(props.book.BookID);
+              //retrieveBookDocument(props.book.bookID);
             props.navigation.navigate('RecordBook', {book : props.book.objectID })
           }
           }>
              <View style={{flex:1,flexDirection:"row",paddingLeft:width/64,width:width,height:height/6}}>
              
              <View style={{flexDirection: 'row', justifyContent: 'flex-end',paddingTop:height/48,paddingLeft:width/8}}>
-              <Image style={{width:width/4,height:height/8}} source={ {uri: props.book.Book_cover}} />
+              <Image style={{width:width/4,height:height/8}} source={ {uri: props.book.bookCover}} />
             </View>
 
                <View style={[styles.flex, styles.column, styles.shadow, { width:(width)/2,padding: theme.sizes.padding / 4 }]}>
                  <View style={{height:(height)/16}}>
-                  <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.book.Book_Name.slice(0,40)}
-                       {(props.book.Book_Name.length > 40) ? ".." : ""}</Text> 
+                  <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.book.bookName.slice(0,40)}
+                       {(props.book.bookName.length > 40) ? ".." : ""}</Text> 
                  </View>
                <View style ={{height:(height)/20}}>
-                  <Text style={{ color: theme.colors.gray_green }}>{props.book.Author_Name}</Text>
+               {
+                    props.book.authors.map((item,index) => (
+                      (index<=1) &&
+                      <Text style={{ color: theme.colors.gray_green }}>{item}</Text>
+                    ))
+               }
                </View>
           
               <View style={[
@@ -158,7 +163,7 @@ const styles = StyleSheet.create({
               ]}>
                 
                 <Text style={{  fontSize: theme.sizes.font * 0.9,color: theme.colors.gray_green }}>
-                  Published in {props.book.publishingYear}
+                  Published in {props.book.publicationYear}
                 </Text>
                 <View style={{alignItems: 'flex-end',paddingRight:5}}>
                   <Icon
@@ -170,7 +175,7 @@ const styles = StyleSheet.create({
               </View>
               <View>
               <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
-                  {props.book.Book_Rating}
+                  {props.book.bookRating}
                 </Text>
                 </View>
             </View>

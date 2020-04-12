@@ -50,12 +50,12 @@ class CategoryChapter extends React.Component {
         console.log('Retrieving Data');
         // Cloud Firestore: Query
         const genre = this.props.navigation.state.params;
-        let query3 = await firestore().collection('Books').where("Genres","array-contains",genre.category);    
-        let documentBooks = await query3.orderBy('BookID').limit(this.state.limit).get();
+        let query3 = await firestore().collection('chapters').where("genres","array-contains",genre.category);    
+        let documentBooks = await query3.orderBy('timestamp','desc').limit(this.state.limit).get();
         let documentDataBooks = documentBooks.docs.map(document => document.data());
 
         var lastVisible = this.state.lastVisibleBook;
-        lastVisible = documentDataBooks[documentDataBooks.length - 1].BookID;        
+        lastVisible = documentDataBooks[documentDataBooks.length - 1].bookID;        
          
         this.setState({
         books: documentDataBooks,
@@ -82,8 +82,8 @@ class CategoryChapter extends React.Component {
          const genre = this.props.navigation.state.params;
          let additionalQuery = 9;
          try{
-           additionalQuery = await firestore().collection('Books').where('Genres','array-contains',genre.category)
-                            .orderBy('BookID')
+           additionalQuery = await firestore().collection('chapters').where('genres','array-contains',genre.category)
+                            .orderBy('timestamp','desc')
                             .startAfter(this.state.lastVisibleBook)
                             .limit(this.state.limit);
         
@@ -109,7 +109,7 @@ class CategoryChapter extends React.Component {
       // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
       if(documentData.length != 0)
       {
-      let lastVisibleBook = documentData[documentData.length - 1].BookID;
+      let lastVisibleBook = documentData[documentData.length - 1].bookID;
        
       if(this.state.lastVisibleBook===lastVisibleBook){
           this.setState({
@@ -189,7 +189,7 @@ class CategoryChapter extends React.Component {
         renderItem={this.renderData}
         //numColumns={2}
         showsVerticalScrollIndicator={false}
-        keyExtractor={item => item.BookID}
+        keyExtractor={item => item.bookID}
        // ListHeaderComponent={this.renderHeader}
        ItemSeparatorComponent={this.separator}
          ListFooterComponent={this.renderFooter}

@@ -133,7 +133,7 @@ class RecordBook extends Component {
         article: null
       };
     }
-    //const ref = firestore().collection('Books');
+    //const ref = firestore().collection('books');
   }
   scrollX = new Animated.Value(0);
 
@@ -164,7 +164,7 @@ class RecordBook extends Component {
       //const { navigation } = this.props;
       const bookid = this.props.navigation.state.params;
       console.log(bookid)
-      let book_data = await firestore().collection('Books').doc(bookid.book).get();
+      let book_data = await firestore().collection('books').doc(bookid.book).get();
       // let data = await book_data.get();
       console.log(book_data)
       console.log(book_data._data)
@@ -259,72 +259,58 @@ class RecordBook extends Component {
         </View>
         <View style={[styles.flex, styles.content]}>
           <View style={[styles.flex, styles.contentHeader]}>
-            <Image style={[styles.avatar, styles.shadow]} source={{ uri: this.state.article.Author_DP_Link }} />
-            <Text style={styles.title}>{this.state.article.Book_Name}</Text>
+            <View style={{flexDirection:'row'}}>
+              <View>
+            <Text style={styles.title}>{this.state.article.bookName}</Text>
             <View style={[
               styles.row,
               { alignItems: 'center', marginVertical: theme.sizes.margin / 2, flexDirection:'row' }
             ]}>
-              {this.renderRatings(this.state.article.Book_Rating)}
+              {this.renderRatings(this.state.article.bookRating)}
               <Text style={{ color: theme.colors.active }}>
-                {this.state.article.Book_Rating} 
+                {this.state.article.bookRating} 
               </Text>
               <View style={{paddingLeft:10}}>
-              
-              <FontAwesome name="book" color={theme.colors.black} size={theme.sizes.font * 1}  />
+          
               </View>
-              
+              </View>
+              </View>
+               
             </View>
 
-            <View  style={{flexDirection:'row'}}>
-            <Card style={{ borderRadius:10,  paddingTop :5,  paddingBottom:5, flexDirection:'row', width:((width)/2) }}>
-            <CardItem style={{flexDirection:'column' }}>
-                <Text>42</Text>
-                <Text style={{fontSize:12}}>Listens</Text>
-
-            </CardItem>
-            <CardItem style={{flexDirection:'column' }}>
-               <Text>45</Text>
-                <Text style={{fontSize:12}}>Podcasts</Text>
-                
-            </CardItem>
-          </Card>
-          <Card style={{ borderRadius:10,  paddingTop :5,paddingLeft:0 , paddingBottom:5, width:((width*4)/15) }}>
-          <CardItem style={{flexDirection:'column' }}><TouchableOpacity>
-            <FontAwesome name="share" color={'rgb(22, 33, 25)'} size={theme.sizes.font * 2} />
-          </TouchableOpacity>
-          <Text style={{fontSize:12}}>Challenge</Text></CardItem>
-            </Card>
-            </View>
-            <View>
+            
+            <View style={{paddingTop:20,paddingBottom:20, paddingLeft:10}}>
             <TouchableOpacity onPress={()=>this.props.navigation.navigate('SelectScreen',{bookItem:this.state.article})}>
-              <Card style={{borderRadius: 5  ,width:((width*4)/5 ) , height:(height)/8 , paddingTop :10}}>
-              <CardItem style={{flexDirection:'column', alignItems:'center'}}>
-             <FontAwesome name="microphone" color={theme.colors.black} size={theme.sizes.font * 2} />
-            <Text>Record</Text>
-            </CardItem>
-            </Card>
-          </TouchableOpacity>
+            <View style={{alignItems:'center'}}>  
+             <FontAwesome name="microphone" color={theme.colors.black} size={theme.sizes.font * 1.5} />
+            <Text style={{fontSize:12}}>Record</Text>
             </View>
-            <Card style={{borderRadius: 10 ,width:((width*4)/5 ) , height:(height*3)/8 -50 , paddingTop :5}}>
+          </TouchableOpacity>
+            </View> 
+
+            <Card style={{borderRadius: 10 ,width:((width*4)/5 ), paddingTop :5}}>
               <CardItem>
             <TouchableOpacity>
               <Text style={{fontSize:20, paddingBottom:10, fontFamily:'san-serif-light'}}>Description</Text>
               <Text style={{fontSize:15}}>
-                {this.state.article.bookDescription && this.state.article.bookDescription.split('').slice(0, 180)}..
-                <Text style={{color: theme.colors.active}}> Read more</Text>
+                {this.state.article.bookDescription}
               </Text>
             </TouchableOpacity>
             </CardItem>
             </Card>
-            <Card style={{borderRadius: 10 ,width:((width*4)/5 ) , height:(height*3)/8 -50 , paddingTop :5}}>
+            <Card style={{borderRadius: 10 ,width:((width*4)/5 ), paddingTop :5}}>
               <CardItem>
             <TouchableOpacity>
-              <Text style={{fontSize:20, paddingBottom:10, fontFamily:'san-serif-light'}}>About the Author(s)</Text>
-              <Text style={{fontSize:15}}>
-                {this.state.article.About_the_Author && this.state.article.About_the_Author.split('').slice(0, 180)}..
-                <Text style={{color: theme.colors.active}}> Read more</Text>
-              </Text>
+              <Text style={{fontSize:20, paddingBottom:10, fontFamily:'san-serif-light'}}>Author(s)</Text>
+                {
+                  this.state.article.authors.map(item => (
+                    <Text style={{fontSize:15}}>
+                    {item}
+                    </Text>
+                   ))
+                }
+                
+              
             </TouchableOpacity>
             </CardItem>
             </Card>
