@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     height: null,
     alignItems: 'center',
     paddingTop:HEIGHT/24,
-    backgroundColor:'#101010'
+    backgroundColor:'#120d02'
   },
   logo:{
     width:120,

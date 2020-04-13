@@ -61,6 +61,5 @@ collectionIndex.saveObjects(algoliaRecords, (_error, content) => {
 
   if(_error === null || _error === undefined)
     console.log("The uploaded podcast has been indexed in algolia.");
-
-});
-});
+  });
+});    

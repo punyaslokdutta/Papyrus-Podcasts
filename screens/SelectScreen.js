@@ -13,6 +13,8 @@ const SelectScreen = (props)=> {
 
   var bookSelected = null;
   var bookPictureURL = null;
+  var genres = null;
+
   if(props.navigation.state.params !== undefined)
   {
     bookSelected = props.navigation.state.params.bookItem;
@@ -98,14 +100,25 @@ const SelectScreen = (props)=> {
         { id: 1, label: 'English' },
         { id: 2, label: 'Hindi' },
         { id: 3, label: 'Bengali' },
-        { id: 4, label: 'Telugu' },
-        { id: 5, label: 'Marathi' },
+        { id: 4, label: 'Marathi' },
+        { id: 5, label: 'Telugu' },
         { id: 6, label: 'Tamil' },
-        { id: 7, label: 'Mandarin' },
-        { id: 8, label: 'Spanish' },
-        { id: 9, label: 'Assamese' },
+        { id: 7, label: 'Gujarati' },
+        { id: 8, label: 'Urdu' },
+        { id: 9, label: 'Kannada' },
         { id: 10, label: 'Odiya' },
+        { id: 11, label: 'Malayalam'},
+        { id: 12, label: 'Punjabi'},
+        { id: 13, label: 'Assamese'},
+        { id: 14, label: 'Nepali'},
 
+        { id: 15, label: 'Mandarin'},
+        { id: 16, label: 'Spanish'},
+        { id: 17, label: 'Arabic'},
+        { id: 18, label: 'Malay'},
+        { id: 19, label: 'Russian' },
+        { id: 20, label: 'Portuguese' },
+        { id: 21, label: 'French' },
       ];
       
       return (
@@ -247,6 +260,7 @@ const SelectScreen = (props)=> {
                         dispatch({type:'CHANGE_CHAPTER',payload:chapterName}) 
                         dispatch({type:'CHANGE_AUTHOR',payload:authors}) 
                         dispatch({type:'CHANGE_LANGUAGE',payload:LanguageSelected}) 
+                        dispatch({type:'SET_BOOK_GENRES',payload:genres})
                         dispatch({type:"SET_PODCAST", payload: null})
 
                         NativeModules.ReactNativeRecorder.uploadActivity()
@@ -285,6 +299,7 @@ const SelectScreen = (props)=> {
                         dispatch({type:'CHANGE_CHAPTER',payload:chapterName}) 
                         dispatch({type:'CHANGE_AUTHOR',payload:authors}) 
                         dispatch({type:'CHANGE_LANGUAGE',payload:LanguageSelected})
+                        dispatch({type:'SET_BOOK_GENRES',payload:genres})
                         dispatch({type:"SET_PODCAST", payload: null})
       
                         NativeModules.ReactNativeRecorder.sampleMethod()

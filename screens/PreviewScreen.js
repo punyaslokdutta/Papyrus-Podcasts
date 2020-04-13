@@ -39,7 +39,7 @@ const PreviewScreen = (props) => {
   const authors=useSelector(state=>state.recorderReducer.authors)
   const LanguageSelected=useSelector(state=>state.recorderReducer.LanguageSelected)
   const bookId=useSelector(state=>state.recorderReducer.bookId)
- 
+  const genres = useSelector(state=>state.recorderReducer.genres)
   //BOOK_ID to be returned from recorderReducer which will be dispatched by Algolia 
   //For Now, books which are not present in our database is handled. 
   // 1. Create a Book Document , Get the Doc RefId . Make Podcast Collection and Document. 
@@ -94,11 +94,11 @@ const PreviewScreen = (props) => {
         isChapterPodcast: false,
         bookName: BookName, 
         duration: duration,
-        genres: ["Non-Fiction","Science & Technology"],
+        genres: genres,//["Non-Fiction","Science & Technology"],
         language: LanguageSelected,
         podcastName: PodcastName,
         podcastPictures: [podcastImageDownloadURL],
-        timestamp: moment().format(),
+        createdOn: moment().format(),
         description: Description,
         tags : Tags.tagsArray,
         podcasterID: userID,

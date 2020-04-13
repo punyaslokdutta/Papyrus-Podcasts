@@ -22,7 +22,7 @@ const CustomProfileHeader = props => {
   
         <View style={{alignItems:'center',justifyContent:'center',paddingTop: 30,paddingBottom:15, flexDirection:'column'}}>
           <View style={{flexDirection:'column'}}>
-    <Text h3 >{name}'s</Text>
+    <Text h3 center>{name}'s</Text>
             <View style = {{alignItems:'center'}}>
             <Text h2 bold>Collections</Text>
             </View>

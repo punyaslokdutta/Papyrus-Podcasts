@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
  const areEqual = (prevProps, nextProps) => true
  const SearchBookItem = React.memo((props)=> {
   console.log("Inside SearchBookItem");
-   console.log(props.book);
+   console.log("Book Authors : ",props.book.authors);
   // var bookName = "";
   // if(props.book.bookName !== null && props.book.bookName !== undefined)
   //   bookName = props.book.bookName.slice(0,40);
@@ -150,11 +150,17 @@ const styles = StyleSheet.create({
                  </View>
                <View style ={{height:(height)/20}}>
                {
+                    
                     props.book.authors.map((item,index) => (
                       (index<=1) &&
                       <Text style={{ color: theme.colors.gray_green }}>{item}</Text>
+                      
                     ))
+                    
                }
+               
+               {/* <Text style={{ color: theme.colors.gray_green }}>{props.book.authors}</Text> */}
+
                </View>
           
               <View style={[
