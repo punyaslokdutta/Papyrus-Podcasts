@@ -34,7 +34,7 @@ const searchClient = algoliasearch(
   '8ab33c27b3ed311ee783cf9d91fee1c6'
 );
 
-const index = searchClient.initIndex('Chapters');
+const index = searchClient.initIndex('chapters');
 
 var {width, height}=Dimensions.get('window')
 const SearchChapterScreen=(props)=>

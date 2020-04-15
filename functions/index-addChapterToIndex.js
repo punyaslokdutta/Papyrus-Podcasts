@@ -12,42 +12,45 @@ const algoliaRecords = [];
 admin.initializeApp();
 const db = admin.firestore();
 const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
-const collectionIndexName='podcasts';
+const collectionIndexName='chapters';
 const collectionIndex = algoliaClient.initIndex(collectionIndexName);
 
-exports.AddToPodcastsIndex = functions.region("asia-northeast1").https.onCall((data, context) => {
+exports.addChapterToIndex = functions.region("asia-northeast1").https.onCall((data, context) => {
  
 
-  const podcastName=data.podcastName;
+  
   const bookName=data.bookName;
-  const podcastPicture= data.podcastPicture;
-  const podcastID=data.podcastID;
-  const podcasterName=data.podcasterName
-  const createdOn=data.createdOn
-  const language =data.language
-  const authors=data.authors
+  const chapterName=data.chapterName
+  const chapterCover= data.chapterCover;
+  const createdOn=data.createdOn;
+  const language =data.language;
+  const authors=data.authors;
+  const publicationYear = data.publicationYear;
+  const chapterID = data.objectID;
+  const bookID = data.bookID;
 
-  console.log("AddToPodcastsIndex cloud function");
+  console.log("addChapterToIndex cloud function");
 
-  console.log("podcastName: ",podcastName);
+ 
   console.log("bookName: ",bookName);
-  console.log("podcastPicture:" , podcastPicture)
-  console.log("podcastID: ",podcastID);
-  console.log("podcasterName: ",podcasterName);
-  console.log("createdOn: ",createdOn);
-  console.log("language: ",language);
+  console.log("bookID: ",bookID);
+  console.log("chapterName: ",chapterName);
+  console.log("chapterCover:" , chapterCover)
+  //console.log("podcastID: ",podcastID);
+  //console.log("podcasterName: ",podcasterName);
+ // console.log("timestamp: ",createdOn);
+  console.log("language ",language);
 
   console.log("context.auth = ",context.auth);
 
   const record = {
-    objectID: podcastID,
-    podcastName:podcastName, 
-    podcastPicture:podcastPicture,
+    objectID: chapterID,
+    bookID: bookID,
+    chapterCover:chapterCover,
     bookName:bookName, 
-    podcasterName:podcasterName, 
-    createdOn:createdOn, 
     language :language,
     authors: authors,
+    publicationYear : publicationYear,
 };
 
 
@@ -60,7 +63,7 @@ collectionIndex.saveObjects(algoliaRecords, (_error, content) => {
   console.log("ERROR LOG : ",_error);
 
   if(_error === null || _error === undefined)
-    console.log("The uploaded podcast has been indexed in algolia.");
+    console.log("The uploaded book has been indexed in algolia.");
 
 });
 });
