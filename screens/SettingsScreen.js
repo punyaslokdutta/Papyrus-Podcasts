@@ -296,13 +296,19 @@ const SettingsScreen = (props) => {
             </Block> 
           </Block>
           <Divider  margin={[ theme.sizes.base * 2]}/>
+          
           <Block style={[styles.toggles]}>
             <Block row center space="between" >
-          <TouchableOpacity onPress={() => props.firebase._signOutUser()}>
+          
           <Text> Logout </Text>
+          <TouchableOpacity onPress={() => props.firebase._signOutUser()}>
+          <View style={{paddingLeft: 15,paddingRight:10 } }>
+          <Icon name="chevron-right" size={20} style={{color:'#101010'}}/>
+          </View>
           </TouchableOpacity>
           </Block> 
           </Block>
+          
           <Divider/>
               </Block>
         </ScrollView>

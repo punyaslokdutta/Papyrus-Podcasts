@@ -1,6 +1,3 @@
-
-
-
 const INITIAL_STATE = {
     userItem: null,
     name: null,
@@ -24,7 +21,8 @@ const INITIAL_STATE = {
     numNotifications: 0,
     bookAdded: null,
     isExplorePreviousScreen: false,
-    userPreferences: []
+    userPreferences: [],
+    fromSearchChapterScreen: false
   };
   
   function userReducer(state = INITIAL_STATE, action)  {
@@ -35,6 +33,8 @@ const INITIAL_STATE = {
             return {...state,navigation:action.payload}
         case "SET_USER_PREFERENCES":
             return {...state,userPreferences:action.payload}
+        case "SET_FROM_SEARCH_CHAPTER_SCREEN":
+            return {...state,fromSearchChapterScreen:action.payload}
         case "ADD_NUM_NOTIFICATIONS":
             return {...state,numNotifications:action.payload}
         case "CHANGE_EMAIL":
@@ -96,7 +96,7 @@ const INITIAL_STATE = {
             return {...state,numCreatedBookPodcasts: action.payload};
         case "ADD_NUM_CREATED_CHAPTER_PODCASTS":
             return {...state,numCreatedChapterPodcasts: action.payload};
-        case "ADD_TOTAL_MINUTES_RECORDED":
+        case "UPDATE_TOTAL_MINUTES_RECORDED":
             return {...state,totalMinutesRecorded: action.payload};
         default:
             return state;

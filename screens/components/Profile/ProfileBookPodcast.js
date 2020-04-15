@@ -46,7 +46,7 @@ class ProfileBookPodcast extends React.Component {
         console.log('Retrieving Data');
         const  userid = this.props.firebase._getUid();
         let query3 = await firestore().collectionGroup('podcasts').where('podcasterID','==',userid).   
-                      where('isChapterPodcast','==',false).orderBy('timestamp','desc').limit(this.state.limit)
+                      where('isChapterPodcast','==',false).orderBy('createdOn','desc').limit(this.state.limit)
                        .onSnapshot((querySnapshot) =>
                         {
                           var documentData_podcasts = [];
@@ -82,11 +82,11 @@ class ProfileBookPodcast extends React.Component {
          }); 
 
          const  userid = this.props.firebase._getUid();
-         let additionalQuery = 9;
+         let additionalQuery = null;
          try{
            additionalQuery = await firestore().collectionGroup('podcasts')
                             .where('podcasterID','==',userid).where('isChapterPodcast','==',false)
-                            .orderBy('timestamp','desc')
+                            .orderBy('createdOn','desc')
                             .startAfter(this.state.lastVisibleBookPodcast)
                             .limit(this.state.limit);
         
@@ -97,7 +97,7 @@ class ProfileBookPodcast extends React.Component {
         {
           console.log(error);
         }
-        let documentSnapshots=9;
+        let documentSnapshots = null;
         try{
          documentSnapshots = await additionalQuery.get();
         }

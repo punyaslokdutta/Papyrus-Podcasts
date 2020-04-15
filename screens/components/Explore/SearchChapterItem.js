@@ -1,11 +1,9 @@
-
 import React, {Component, useState, useEffect, useContext} from 'react';
 import { StyleSheet, Text, View, Image, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
-import * as theme from '../../constants/theme'
+import * as theme from '../constants/theme'
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import {useDispatch} from "react-redux"
-import moment from 'moment'
+
 
 var {width, height}=Dimensions.get('window')
 
@@ -122,30 +120,45 @@ const styles = StyleSheet.create({
       },
   });
 
-
-
-
- /* useContext doesn't let you subscribe to a part of the context value (or some memoized selector) without fully re-rendering.*/
- //const areEqual = (prevProps, nextProps) => true;
+ 
  const areEqual = (prevProps, nextProps) => true
 
- const CategoryPodcastItem = React.memo((props)=> {
-  console.log("Inside Category Podcast")
-  console.log(props);
-
-  const dispatch=useDispatch();
-
+ const SearchChapterItem = React.memo((props)=> {
+  console.log("Inside SearchChapterItem");
+   console.log("Book Authors : ",props.chapter.authors);
+ 
         return (
-          <TouchableOpacity  onPress={(()=>dispatch({type:"SET_PODCAST", payload: props.podcast}))}>
-             <View style={{flex:1,flexDirection:"row",paddingLeft:width/64,width:width,height:height/5}}>
-               
-               <View style={[styles.flex, styles.column, styles.shadow, { width:(width)/2,padding: theme.sizes.padding / 4 }]}>
+          <TouchableOpacity onPress={() => {
+            props.navigation.navigate('RecordChapter', {chapterID : props.chapter.objectID, bookID: props.chapter.bookID })
+          }
+          }>
+             <View style={{flex:1,flexDirection:"row",width:width,height:height/6}}>
+             
+             <View style={{flexDirection: 'row', justifyContent: 'flex-end',paddingTop:height/48,paddingLeft:width/24}}>
+              <Image style={{width:width/4,height:height/8}} source={ {uri: props.chapter.chapterCover}} />
+            </View>
+
+               <View style={[styles.flex, styles.column, styles.shadow, { width:(width * 2)/3,paddingLeft:theme.sizes.padding, paddingTop: theme.sizes.padding / 4, }]}>
                  <View style={{height:(height)/16}}>
-                  <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.podcast.podcastName.slice(0,40)}
-                       {(props.podcast.podcastName.length > 40) ? ".." : ""}</Text> 
+                  <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.chapter.chapterName.slice(0,60)}
+                       {(props.chapter.bookName.length > 60) ? ".." : ""}</Text> 
+
+                  <Text style={{ fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>{props.chapter.bookName.slice(0,60)}
+                       {(props.chapter.bookName.length > 60) ? ".." : ""}</Text>   
                  </View>
-               <View style ={{height:(height)/20}}>
-                  <Text style={{ color: theme.colors.gray_green }}>{props.podcast.podcasterName}</Text>
+               <View style ={{paddingTop:5,height:(height)/20}}>
+               {
+                    
+                    props.chapter.authors.map((item,index) => (
+                      (index<=1) &&
+                      <Text style={{ fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>{item}</Text>
+                      
+                    ))
+                    
+               }
+               
+               {/* <Text style={{ color: theme.colors.gray_green }}>{props.chapter.authors}</Text> */}
+
                </View>
           
               <View style={[
@@ -153,26 +166,22 @@ const styles = StyleSheet.create({
               { alignItems: 'center', justifyContent: 'space-between'}
               ]}>
                 
-                <Text style={{  fontSize: theme.sizes.font * 0.9,color: theme.colors.gray_green }}>
-                  {moment(props.podcast.createdOn).fromNow()}
+                <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
+                  Published in {props.chapter.publicationYear}
                 </Text>
-                <View style={{alignItems: 'flex-end',paddingRight:5}}>
+                {/* <View style={{alignItems: 'flex-end',paddingRight:5}}>
                   <Icon
-                    name={props.podcast.saved ? 'bookmark' : 'bookmark-o'}
+                    name={props.chapter.saved ? 'bookmark' : 'bookmark-o'}
                     color={theme.colors.black}
                     size={theme.sizes.font * 1.25}
                   />
-                </View>
+                </View> */}
               </View>
               <View>
               <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
-                  {props.podcast.duration}
+                  {props.chapter.bookRating}
                 </Text>
                 </View>
-            </View>
-
-            <View style={{flexDirection: 'row', justifyContent: 'flex-end',paddingTop:height/48,paddingLeft:width/8}}>
-              <Image style={{width:width/4,height:height/8}} source={ {uri: props.podcast.podcastPictures["0"]}} />
             </View>
         
           </View>
@@ -181,4 +190,4 @@ const styles = StyleSheet.create({
       
   }, areEqual);
 
-export default CategoryPodcastItem;
+export default SearchChapterItem;

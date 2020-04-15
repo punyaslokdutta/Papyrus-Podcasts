@@ -45,9 +45,9 @@ class UserChapterPodcast extends React.Component {
         console.log("[UserChapterPodcast] retrieveData");
         const  userid = this.props.navigation.state.params.userData.id;
         let query3 = await firestore().collectionGroup('podcasts').where('podcasterID','==',userid);    
-        let documentChapterPodcasts = 90;
+        let documentChapterPodcasts = null;
         try{
-         documentChapterPodcasts = await query3.where('isChapterPodcast','==',true).orderBy('timestamp','desc').limit(this.state.limit).get();
+         documentChapterPodcasts = await query3.where('isChapterPodcast','==',true).orderBy('createdOn','desc').limit(this.state.limit).get();
         }
         catch(error)
         {
@@ -86,11 +86,11 @@ class UserChapterPodcast extends React.Component {
           }); 
  
           const  userid = this.props.navigation.state.params.userData.id;
-          let additionalQuery = 9;
+          let additionalQuery = null;
           try{
             additionalQuery = await firestore().collectionGroup('podcasts')
                              .where('podcasterID','==',userid).where('isChapterPodcast','==',true)
-                             .orderBy('timestamp','desc')
+                             .orderBy('createdOn','desc')
                              .startAfter(this.state.lastVisibleChapterPodcastPodcast)
                              .limit(this.state.limit);
          }
@@ -98,7 +98,7 @@ class UserChapterPodcast extends React.Component {
          {
            console.log(error);
          }
-         let documentSnapshots = 98;
+         let documentSnapshots = null;
          try{
           documentSnapshots = await additionalQuery.get();
          }

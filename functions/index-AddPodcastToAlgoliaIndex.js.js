@@ -20,34 +20,35 @@ exports.AddToPodcastsIndex = functions.region("asia-northeast1").https.onCall((d
 
   const podcastName=data.podcastName;
   const bookName=data.bookName;
+  const chapterName = data.chapterName;
   const podcastPicture= data.podcastPicture;
   const podcastID=data.podcastID;
   const podcasterName=data.podcasterName
-  const timestamp=data.timestamp
+  const createdOn=data.createdOn
   const language =data.language
-  const authors=data.authors
 
   console.log("AddToPodcastsIndex cloud function");
 
   console.log("podcastName: ",podcastName);
   console.log("bookName: ",bookName);
+  console.log("chapterName: ",chapterName);
   console.log("podcastPicture:" , podcastPicture)
   console.log("podcastID: ",podcastID);
   console.log("podcasterName: ",podcasterName);
-  console.log("timestamp: ",timestamp);
+  console.log("createdOn: ",createdOn);
   console.log("language: ",language);
-
+  
   console.log("context.auth = ",context.auth);
 
   const record = {
     objectID: podcastID,
     podcastName:podcastName, 
     podcastPicture:podcastPicture,
-    bookName:bookName, 
+    bookName: bookName,
+    chapterName: chapterName,  
     podcasterName:podcasterName, 
-    timestamp:timestamp, 
-    language :language,
-    authors: authors,
+    createdOn:createdOn, 
+    language :language
 };
 
 

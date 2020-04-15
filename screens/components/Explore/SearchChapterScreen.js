@@ -20,7 +20,7 @@ import ImageResizer from 'react-native-image-resizer';
 
 import {useSelector,useDispatch} from 'react-redux';
 import { createIconSetFromFontello } from 'react-native-vector-icons';
-import SearchBookItem from './SearchBookItem';
+import SearchChapterItem from './SearchChapterItem';
 import { ScrollView } from 'react-native-gesture-handler';
 import { FirebaseStorageTypes } from '@react-native-firebase/storage';
 
@@ -34,7 +34,8 @@ const searchClient = algoliasearch(
   '8ab33c27b3ed311ee783cf9d91fee1c6'
 );
 
-const index = searchClient.initIndex('Chapters');
+const index = searchClient.initIndex('chapters');
+const replicaIndex = searchClient.initIndex('chapters');
 
 var {width, height}=Dimensions.get('window')
 const SearchChapterScreen=(props)=>
@@ -48,9 +49,8 @@ const SearchChapterScreen=(props)=>
     }
 
     const searchQuery = useSelector(state=>state.userReducer.algoliaQuery)
-    const onlyBookSelected = useSelector(state=>state.userReducer.selectedOnlyBookItem)
+    const fromExploreScreen = useSelector(state=>state.userReducer.isExplorePreviousScreen)
 
-    console.log("[SearchChapterScreen] onlyBookSelected = ",onlyBookSelected);
     console.log("Search Query: ",searchQuery);
     const [chapters,setChapters] = useState(null);
     const [lastPage,setLastPage] = useState(0);
@@ -118,11 +118,6 @@ const SearchChapterScreen=(props)=>
       });
     }
 
-    useEffect(()=> {
-        console.log("Inside useEffect of onlyBookSelected in SearchChapterScreen")
-        console.log("onlyBookSelected : ",onlyBookSelected)
-    },[onlyBookSelected])
-
     useEffect( ()=>
         {
             setLoading(true);
@@ -134,21 +129,34 @@ const SearchChapterScreen=(props)=>
                 setLoading(false);
             }
 
-            searchQuery && index.search(searchQuery,{
-                page : 0,
-                hitsPerPage : numHits
-            }).then(({hits})=>
-            {
-                setChapters(hits);
-                setLoading(false);
-                console.log(hits);
-            }).catch(function(error) {
-                console.log("Error loading document: ", error);
-                //Toast.show("Error: Please try again.")
-                setLoading(false)
-            });
+            // searchQuery && index.search(searchQuery,{
+            //     page : 0,
+            //     hitsPerPage : numHits
+            // }).then(({hits})=>
+            // {
+            //     setChapters(hits);
+            //     setLoading(false);
+            //     console.log(hits);
+            // }).catch(function(error) {
+            //     console.log("Error loading document: ", error);
+            //     //Toast.show("Error: Please try again.")
+            //     setLoading(false)
+            // });
             
-            
+            searchQuery && replicaIndex.search(searchQuery,{
+              page : 0,
+              hitsPerPage : numHits
+          }).then(({hits})=>
+          {
+              setChapters(hits);
+              setLoading(false);
+              console.log(hits);
+          }).catch(function(error) {
+              console.log("Error loading document: ", error);
+              //Toast.show("Error: Please try again.")
+              setLoading(false)
+          });
+
         }, [searchQuery]
     )
 
@@ -223,8 +231,7 @@ const SearchChapterScreen=(props)=>
         console.log(item)
        return(
            <View>
-               <Text>sdfgh</Text>
-         {/* <SearchBookItem book={item} index={index} navigation={props.navigation}/> */}
+         <SearchChapterItem chapter={item} index={index} navigation={props.navigation}/>
           </View>
        )
     }
@@ -246,6 +253,23 @@ const SearchChapterScreen=(props)=>
               <ActivityIndicator/>
             )
           }
+          else if (fromExploreScreen == true)
+          {
+            return (
+              <View style={{paddingBottom:height/96}}>
+                <View style={[styles.seperator]} />
+              <View style={{alignItems:'center'}}>
+                <Text>{"\n"}Couldn't find your chapter?  </Text>
+                <TouchableOpacity onPress={()=> {
+                  setChapters([]);
+                  props.navigation.navigate('SelectScreen');
+                }}>
+                <Text style={{textDecorationLine: 'underline',color:'rgb(218,165,32)'}}>Proceed to Select Screen to add chapter</Text>
+                </TouchableOpacity>
+                </View>
+                </View>
+            );
+          }
           else 
           {
             return (
@@ -255,8 +279,11 @@ const SearchChapterScreen=(props)=>
                 <Text>{"\n"}Couldn't find your chapter?  </Text>
                 <TouchableOpacity onPress={()=> {
                   setChapters([]);
+                  dispatch({type:"SET_FROM_SEARCH_CHAPTER_SCREEN",payload:true});
+                  dispatch({type:"SET_ALGOLIA_QUERY",payload:"dhdbshbdchsbdch"})
+                  props.navigation.navigate('SearchBookScreen');
                 }}>
-                <Text style={{textDecorationLine: 'underline',color:'rgb(218,165,32)'}}>Click Here to add chapter</Text>
+                <Text style={{textDecorationLine: 'underline',color:'rgb(218,165,32)'}}>Proceed to SearchBookScreen to add book</Text>
                 </TouchableOpacity>
                 </View>
                 </View>
@@ -276,148 +303,6 @@ const SearchChapterScreen=(props)=>
             </View>
           )
       }
-      else if(chapters && chapters.length===0 )
-      {
-        return (
-          
-          <SafeAreaView style={{flex:1, backgroundColor:'#101010', alignItems:'center'}}>
-           <ScrollView>
-           <View style={{paddingVertical:30, paddingBottom: height/20, flexDirection:'column', paddingLeft:width/8, paddingRight:width/8} }>
-          <TouchableOpacity onPress={()=>{props.navigation.navigate('SearchScreen')}}>
-        <View style={{flexDirection:'row',height:height/12, backgroundColor: '#101010', paddingRight: 13, paddingVertical:10, width:((width*7)/8)-10 }}>
-        
-            <Text style={{ flex:1, fontWeight:'500',borderRadius:20,backgroundColor:'white',fontSize:15,borderColor:'white', 
-              paddingTop: 7, paddingHorizontal: 10 }}>
-            
-              <Icon style={{paddingHorizontal:10,paddingTop:20 }} name="search" size={20} />
-              
-
-              {"  "}Search Book
-               </Text> 
-
-        </View>
-        </TouchableOpacity>
-        </View> 
-
-        {
-            (onlyBookSelected != null) ? 
-            (
-                <View style={{flexDirection:'row'}}>
-                <View>
-                <Image style={{width:width/4,height:height*2/13}} source={{uri: onlyBookSelected.bookPictures[0]}}/>
-                </View>
-                <View style={{paddingLeft:5,flexDirection:'column'}}>
-                <Text style={{fontSize:15,color:'white'}}>{onlyBookSelected.bookName}</Text>
-                <Text style={{color:'white'}}>{onlyBookSelected.authors['0']}</Text>
-                </View>
-                </View>
-            )
-            :
-                <Text>No book selected</Text>
-          }
-
-
-            <View style={{ alignItems: 'center' , paddingTop:height/8}}>
-        <View style={{ paddingTop: 30, flexDirection: 'column' , paddingBottom:5}}>
-          <TouchableOpacity onPress={uploadImage}>
-          <View>
-            <Image source={chapterImage} style={{ width: height / 3, height: height / 6, borderRadius: 20, borderColor: 'white', borderWidth: 1 }} />
-          </View>
-          </TouchableOpacity>
-        </View>
-       
-      </View>
-            <View  style={{
-                        paddingTop: 30,
-                        paddingBottom: 10,
-                        paddingLeft: width/7,
-                        paddingRight:width/7
-                    }} >
-            <TextInput
-                   
-                   style={styles.TextInputStyleClass2}
-                   value={chapterNameState}         
-                    onChangeText={(text) => {setChapterNameState(text)} }
-                    placeholder="Chapter"
-                    //placeholderTextColor='white'
-                   // value={}                 
-                />
-              </View>
-
-
-                  
-                  
-              
-              <View  style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-                paddingTop: 30,
-                paddingBottom: 10,
-                //paddingLeft: width/7,
-                //paddingRight:width/7
-                    }} >
-          <TagInput
-          updateState={updateAuthorState}
-          tags={authors}
-          placeholder="Author(s)" 
-          //placeholderTextColor='white'
-          label='Press comma to add a tag'
-          labelStyle={{color: 'white'}}
-          //leftElement={<Icon name={'tag'}  color={'white'}/>}
-          //leftElementContainerStyle={{marginLeft: 3}}
-          containerStyle={{width:(width * 3) / 4}}
-          inputContainerStyle={styles.textInput}
-          tagStyle={styles.tag}
-          tagTextStyle={styles.tagText}
-          inputStyle={styles.TextInputStyleClass2}
-          keysForTag={','}
-          autoCorrect={false}
-
-          />
-
-
-            {/* <TextInput   
-                    onChangeText={(text) => {}}
-                    placeholder="Author(s)"
-                    placeholderTextColor='white'
-                    style={styles.textInput}
-                    //value={}                 
-                /> */}
-                </View>
-                <View style={{paddingTop:width/8 ,alignItems: 'center',}}>
-
-              <TouchableOpacity onPress={()=>{
-                firestore().collection('books').add({
-                  bookName : bookNameState,
-                  authors : authors.tagsArray,
-                  bookPictures : [BookImageDownloadURL],
-                  reviewPending : true
-                })
-                .then(function(docRef){
-                  firestore().collection('books').doc(docRef.id).set({
-                    bookID : docRef.id
-                  },{merge:true})
-
-                  Toast.show("Book Successfully uploaded")
-                  setChapterID(docRef.id);
-                  setUploadChapterSuccess(true);
-
-                })
-                .catch(function(error) {
-                  console.error("Error adding Book Document: ", error);
-                  Toast.show("Error: Please try again.")
-              });
-              }} 
-              style={{ alignItems: 'center', justifyContent:'center', height:height/20, width:(width*7)/24, borderRadius:15, backgroundColor:'rgba(0, 0, 0, 0.7)', borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }}>
-              <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Add Book</Text>
-              </TouchableOpacity>
-              </View> 
-</ScrollView>
-          </SafeAreaView>
-          
-      );
-      }
       else
       {
         return(
@@ -427,7 +312,7 @@ const SearchChapterScreen=(props)=>
           renderItem={renderDatas}
           //numColumns={2}
           showsVerticalScrollIndicator={false}
-          keyExtractor={item => item.Chapter_Name}
+          keyExtractor={item => item.objectID}
           ItemSeparatorComponent={ItemSeperator}
           //ListHeaderComponent={this.renderHeader}
           ListFooterComponent={renderFooter}

@@ -35,10 +35,11 @@ const PreviewScreen = (props) => {
   const dispatch = useDispatch();
   const [PodcastImage, setPodcastImage] = useState("https://storage.googleapis.com/papyrus-fa45c.appspot.com/podcasts/Waves.jpg");
   const chapterName=useSelector(state=>state.recorderReducer.chapterName)
-  const BookName=useSelector(state=>state.recorderReducer.BookName)
+  const bookName=useSelector(state=>state.recorderReducer.bookName)
   const authors=useSelector(state=>state.recorderReducer.authors)
-  const LanguageSelected=useSelector(state=>state.recorderReducer.LanguageSelected)
-  const bookId=useSelector(state=>state.recorderReducer.bookId)
+  const languageSelected=useSelector(state=>state.recorderReducer.languageSelected)
+  const bookID=useSelector(state=>state.recorderReducer.bookID)
+  const chapterID=useSelector(state=>state.recorderReducer.chapterID)
   const genres = useSelector(state=>state.recorderReducer.genres)
   //BOOK_ID to be returned from recorderReducer which will be dispatched by Algolia 
   //For Now, books which are not present in our database is handled. 
@@ -69,60 +70,116 @@ const PreviewScreen = (props) => {
 
   const numCreatedBookPodcasts = useSelector(state=>state.userReducer.numCreatedBookPodcasts);
   const numCreatedChapterPodcasts = useSelector(state=>state.userReducer.numCreatedChapterPodcasts);
-  const incrementedValue = numCreatedBookPodcasts + 1;
+  const totalMinutesRecorded = useSelector(state=>state.userReducer.totalMinutesRecorded);
+
+  var incrementedValue = 0;
+  
+  if(chapterID !== null && chapterID !== undefined)
+    incrementedValue = numCreatedChapterPodcasts + 1
+  else
+    incrementedValue = numCreatedBookPodcasts + 1
 
   const userName = useSelector(state=>state.userReducer.name);
   const userID = props.firebase._getUid();
   const privateDataID = "private" + userID;
 
   console.log("PREVIEW SCREEN")
-  useEffect(
-    () => {       
-        podcastAudioDownloadURL && 
-        firestore().collection('users').doc(userID).collection('privateUserData').
-                        doc(privateDataID).set({
-              numCreatedBookPodcasts : incrementedValue
-                },{merge:true}) && 
 
-        dispatch({type:"ADD_NUM_CREATED_BOOK_PODCASTS", payload: incrementedValue}) &&
+  useEffect(() => { 
 
-        firestore().collection('books').doc(bookId).collection('podcasts')
-      .add({
+    // uploading book podcast
+    if(chapterID === null || chapterID === undefined)         
+    {
+      podcastAudioDownloadURL && 
+      firestore().collection('users').doc(userID).collection('privateUserData').
+                    doc(privateDataID).set({
+          numCreatedBookPodcasts : incrementedValue
+            },{merge:true}) && 
+
+      dispatch({type:"ADD_NUM_CREATED_BOOK_PODCASTS", payload: incrementedValue}) &&
+
+      firestore().collection('books').doc(bookID).collection('podcasts').add({
         audioFileLink: podcastAudioDownloadURL,
-        bookID: bookId, 
+        bookID: bookID, 
         chapterName: "",
         isChapterPodcast: false,
-        bookName: BookName, 
+        bookName: bookName, 
         duration: duration,
         genres: genres,//["Non-Fiction","Science & Technology"],
-        language: LanguageSelected,
+        language: languageSelected,
         podcastName: PodcastName,
         podcastPictures: [podcastImageDownloadURL],
         createdOn: moment().format(),
-        description: Description,
+        podcastDescription: Description,
+        tags : Tags.tagsArray,
+        podcasterID: userID,
+        podcasterName: userName,
+        numUsersLiked : 0,
+        authors: authors
+      })
+      .then(async function(docRef, props) {
+        console.log("Document written with ID: ", docRef.id);
+        firestore().collection('books').doc(bookID).collection('podcasts')
+                .doc(docRef.id).set({
+                    podcastID: docRef.id
+                },{merge:true})
+          Toast.show("Successfully uploaded")
+          setPodcastID(docRef.id)
+          setUploadPodcastSuccess(true);
+      })
+      .catch(function(error) {
+        console.error("Error adding document: ", error);
+        Toast.show("Error: Please try again.")
+      });
+    } 
+
+    // uploading chapter podcast
+    else                                  
+    {
+      podcastAudioDownloadURL && 
+      firestore().collection('users').doc(userID).collection('privateUserData').
+                    doc(privateDataID).set({
+          numCreatedChapterPodcasts : incrementedValue
+            },{merge:true}) && 
+
+      dispatch({type:"ADD_NUM_CREATED_CHAPTER_PODCASTS", payload: incrementedValue}) &&
+
+      firestore().collection('books').doc(bookID).collection('chapters').doc(chapterID).collection('podcasts').add({
+        audioFileLink: podcastAudioDownloadURL,
+        bookID: bookID,
+        chapterID: chapterID, 
+        chapterName: chapterName,
+        isChapterPodcast: true,
+        bookName: bookName, 
+        duration: duration,
+        genres: genres,//["Non-Fiction","Science & Technology"],
+        language: languageSelected,
+        podcastName: PodcastName,
+        podcastPictures: [podcastImageDownloadURL],
+        createdOn: moment().format(),
+        podcastDescription: Description,
         tags : Tags.tagsArray,
         podcasterID: userID,
         podcasterName: userName,
         numUsersLiked : 0,
         authors:authors
-    })
-    .then(async function(docRef, props) {
+      })
+      .then(async function(docRef, props) {
         console.log("Document written with ID: ", docRef.id);
-        firestore().collection('books').doc(bookId).collection('podcasts')
+        firestore().collection('books').doc(bookID).collection('chapters').doc(chapterID).collection('podcasts')
                 .doc(docRef.id).set({
                     podcastID: docRef.id
                 },{merge:true})
-         Toast.show("Successfully uploaded")
-         setPodcastID(docRef.id)
-         setUploadPodcastSuccess(true);
-    })
-    .catch(function(error) {
+          Toast.show("Successfully uploaded")
+          setPodcastID(docRef.id)
+          setUploadPodcastSuccess(true);
+      })
+      .catch(function(error) {
         console.error("Error adding document: ", error);
         Toast.show("Error: Please try again.")
-    });
-            
-          
-    },[podcastAudioDownloadURL])
+      });
+    }          
+  },[podcastAudioDownloadURL])
 
     async function indexPodcast(){
       const instance = firebase.app().functions("asia-northeast1").httpsCallable('AddToPodcastsIndex');
@@ -131,15 +188,14 @@ const PreviewScreen = (props) => {
           try 
           {          
             await instance({ // change in podcast docs created by  user
-              timestamp : moment().format(),
+              createdOn : moment().format(),
               podcastID : podcastID,
               podcastPicture : podcastImageDownloadURL,
-              bookName : BookName,
+              chapterName : chapterName,  // have to handle it in SearchPodcastItem *******************
+              bookName : bookName,
               podcastName : PodcastName,
-              language : LanguageSelected,
-              podcasterName : userName, 
-              authors:authors
-
+              language : languageSelected,
+              podcasterName : userName
             });
           }
           catch (e) 
@@ -150,11 +206,23 @@ const PreviewScreen = (props) => {
           props.navigation.navigate('HomeScreen');
         }
     }
+    
+    async function updateTotalMinutesRecorded(updatedMinutesRecorded)
+    {
+      await firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).set({
+        totalMinutesRecorded : updatedMinutesRecorded
+      },{merge:true})
+    }
 
     useEffect(
       () => {
-        indexPodcast();
-        
+        if(uploadPodcastSuccess == true)
+        {
+          indexPodcast();
+          const updatedMinutesRecorded = totalMinutesRecorded + duration/60; 
+          dispatch({type:"UPDATE_TOTAL_MINUTES_RECORDED",payload:updatedMinutesRecorded});
+          updateTotalMinutesRecorded(updatedMinutesRecorded);
+        }
       },[uploadPodcastSuccess]
     )
 
@@ -201,20 +269,8 @@ const PreviewScreen = (props) => {
       
   }
   return false;
- 
-
-
-    //BackHandler.removeEventListener('hardwareBackPress', this.back_Buttton_Press);
-
-   
-
- 
   }
 
-
-
-
-  
 
   async function uploadAudio(FilePath) {
 
@@ -333,21 +389,34 @@ const PreviewScreen = (props) => {
      </View>
     
      
-      
-      
-      
+      {
+        chapterName !== null && chapterName !== undefined &&
+        <View style={{ paddingLeft: width / 8, paddingBottom: 10 }}>
+         <TextInput
+          value={chapterName}
+          style={styles.TextInputStyleClass2}
+          underlineColorAndroid="transparent"
+          placeholder={"Chapter Name" }
+          placeholderTextColor={"black"}
+          numberOfLines={1}
+          multiline={false}
+        />
+        </View>
+      }
+  
       <View style={{ paddingLeft: width / 8, paddingBottom: 10 }}>
          <TextInput
-          value={BookName}
+          value={bookName}
           style={styles.TextInputStyleClass2}
           underlineColorAndroid="transparent"
           placeholder={"Book Name" }
           placeholderTextColor={"black"}
-          //onChangeText={(text) => setPodcastName(text)}
           numberOfLines={1}
           multiline={false}
         />
       </View>
+
+      
       <View style={{ paddingLeft: width / 8, paddingBottom: 10 }}>
         <TextInput
           style={styles.TextInputStyleClass2}

@@ -28,7 +28,7 @@ async function retrieveDataPrivate(dispatch, userid)
       doc._data.introduction && dispatch({type:'ADD_INTRODUCTION',payload: doc._data.introduction})
       doc._data.numCreatedBookPodcasts && dispatch({type:'ADD_NUM_CREATED_BOOK_PODCASTS',payload: doc._data.numCreatedBookPodcasts})
       doc._data.numCreatedChapterPodcasts && dispatch({type:'ADD_NUM_CREATED_CHAPTER_PODCASTS',payload: doc._data.numCreatedChapterPodcasts})
-      doc._data.totalMinutesRecorded && dispatch({type:'ADD_TOTAL_MINUTES_RECORDED',payload: doc._data.totalMinutesRecorded})
+      doc._data.totalMinutesRecorded && dispatch({type:'UPDATE_TOTAL_MINUTES_RECORDED',payload: doc._data.totalMinutesRecorded})
       doc._data.numNotifications && dispatch({type:'ADD_NUM_NOTIFICATIONS',payload: doc._data.numNotifications});
       doc._data.userPreferences.length && dispatch({type:"SET_USER_PREFERENCES",payload:doc._data.userPreferences});
       console.log("WEBSITE: ",doc._data.website);

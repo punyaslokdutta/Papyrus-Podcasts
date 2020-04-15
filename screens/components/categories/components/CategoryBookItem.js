@@ -141,7 +141,8 @@ const styles = StyleSheet.create({
                  </View>
                <View style ={{height:(height)/20}}>
                  {
-                    props.book.authors.map((item) => (
+                    props.book.authors.map((item,index) => (
+                      (index<=1) &&
                       <Text style={{ color: theme.colors.gray_green }}>{item}</Text>
                     ))
                  }

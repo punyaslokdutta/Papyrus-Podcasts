@@ -18,7 +18,7 @@ const options = {
 
 
 var {width, height}=Dimensions.get('window')
-const AddBook=(props)=>{
+const AddChapter=(props)=>{
 
   const initialAuthors = {
     tag: '',
@@ -26,15 +26,17 @@ const AddBook=(props)=>{
   }
     const userID = props.firebase._getUid();
     const searchQuery = useSelector(state=>state.userReducer.algoliaQuery)
-
+    console.log(props)
+    const bookName = props.bookName;
     const dispatch = useDispatch();
 
     const [bookImage, setBookImage]=useState(null);
     const [BookImageDownloadURL, setBookImageDownloadURL]=useState(null);
     const [uploadBookSuccess, setUploadBookSuccess]=useState(false)
     const [bookID,setBookID] = useState(null);
-    var [bookNameState, setBookNameState] = useState(searchQuery);
+    var [bookNameState, setBookNameState] = useState(bookName);
     const [authors, setAuthors]=useState(initialAuthors);
+
 
     useEffect(() => {
         
@@ -129,8 +131,8 @@ const AddBook=(props)=>{
            <TextInput
                   
                   style={styles.TextInputStyleClass2}
-                  value={bookNameState}         
-                  onChangeText={(text) => {setBookNameState(text)} }
+                  value={bookName}         
+                 // onChangeText={(text) => {setBookNameState(text)} }
                    placeholder="Book"                
                />
              </View>
@@ -171,8 +173,7 @@ const AddBook=(props)=>{
                  authors : authors.tagsArray,
                  bookPictures : [BookImageDownloadURL],
                  reviewPending : true,
-                 createdOn : moment().format(),
-                 createdBy : userID
+                 createdOn : moment().format()
                })
                .then(function(docRef){
                  firestore().collection('books').doc(docRef.id).set({
@@ -189,7 +190,7 @@ const AddBook=(props)=>{
              });
              }} 
              style={{ alignItems: 'center', justifyContent:'center', height:height/20, width:(width*7)/24, borderRadius:15, backgroundColor:'rgba(0, 0, 0, 0.7)', borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }}>
-             <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Add Book</Text>
+             <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Add Chapter</Text>
              </TouchableOpacity>
              </View> 
 </ScrollView>
@@ -199,7 +200,7 @@ const AddBook=(props)=>{
 
 
 
-export default withFirebaseHOC(AddBook);
+export default withFirebaseHOC(AddChapter);
 
 
 

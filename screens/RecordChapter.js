@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   }
 });
 
-class RecordBook extends Component {
+class RecordChapter extends Component {
 
   constructor(props)
   {
@@ -158,20 +158,16 @@ class RecordBook extends Component {
   retrieveData = async () => {
     try {
       
-      console.log('Retrieving Data');
-      // Cloud Firestore: Query
+      console.log('[RecordChapter] Retrieving Data');
       console.log(this.props);
-      //const { navigation } = this.props;
-      const bookid = this.props.navigation.state.params;
-      console.log(bookid)
-      let book_data = await firestore().collection('books').doc(bookid.book).get();
-      // let data = await book_data.get();
-      console.log(book_data)
-      console.log(book_data._data)
-     // let data = book_data.map(document => document.data());
+      const chapterParams = this.props.navigation.state.params;
+      console.log(chapterParams)
+      let chapterDoc = await firestore().collection('books').doc(chapterParams.bookID).collection('chapters').doc(chapterParams.chapterID).get();
+      let chapterData = chapterDoc._data;
+      
+      console.log(chapterData)
       this.setState({
-        article : book_data._data
-       // loading: false
+        article : chapterData
       });
     }
     catch (error) {
@@ -181,15 +177,12 @@ class RecordBook extends Component {
 
 
   renderDots = () => {
-   // const { navigation } = this.props;
-    const bookid = this.props.navigation.params;
-
+   
     const dotPosition = Animated.divide(this.scrollX, width);
-
 
     return (
       <View style={[ styles.flex, styles.row, styles.dotsContainer ]}>
-        {this.state.article.bookPictures && this.state.article.bookPictures.map((item, index) => {
+        {this.state.article.chapterPictures && this.state.article.chapterPictures.map((item, index) => {
           const opacity = dotPosition.interpolate({
             inputRange: [index - 1, index, index + 1],
             outputRange: [0.5, 1, 0.5],
@@ -225,9 +218,6 @@ class RecordBook extends Component {
   }
 
   render() {
-    const { navigation } = this.props;
-    const bookid = this.props.navigation.state.params;
-  
 
     if(this.state.article) 
     { 
@@ -245,7 +235,7 @@ class RecordBook extends Component {
             //onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX } } }])}
           >
             {
-               this.state.article.bookPictures && this.state.article.bookPictures.map((img, index) => 
+               this.state.article.chapterPictures && this.state.article.chapterPictures.map((img, index) => 
                 <Image
                   key={`${index}-${img}`}
                   source={{ uri: img }}
@@ -261,7 +251,8 @@ class RecordBook extends Component {
           <View style={[styles.flex, styles.contentHeader]}>
             <View style={{flexDirection:'row'}}>
               <View>
-            <Text style={styles.title}>{this.state.article.bookName}</Text>
+            <Text style={styles.title}>{this.state.article.chapterName}</Text>
+            <Text style={{fontSize: theme.sizes.font * 1.0}}>{this.state.article.bookName}</Text>
             <View style={[
               styles.row,
               { alignItems: 'center', marginVertical: theme.sizes.margin / 2, flexDirection:'row' }
@@ -280,7 +271,7 @@ class RecordBook extends Component {
 
             
             <View style={{paddingTop:20,paddingBottom:20, paddingLeft:10}}>
-            <TouchableOpacity onPress={()=>this.props.navigation.navigate('SelectScreen',{bookItem:this.state.article,chapterItem:null})}>
+            <TouchableOpacity onPress={()=>this.props.navigation.navigate('SelectScreen',{bookItem:null,chapterItem:this.state.article})}>
             <View style={{alignItems:'center'}}>  
              <FontAwesome name="microphone" color={theme.colors.black} size={theme.sizes.font * 1.5} />
             <Text style={{fontSize:12}}>Record</Text>
@@ -293,7 +284,7 @@ class RecordBook extends Component {
             <TouchableOpacity>
               <Text style={{fontSize:20, paddingBottom:10, fontFamily:'san-serif-light'}}>Description</Text>
               <Text style={{fontSize:15}}>
-                {this.state.article.bookDescription}
+                {this.state.article.chapterDescription}
               </Text>
             </TouchableOpacity>
             </CardItem>
@@ -329,4 +320,4 @@ class RecordBook extends Component {
   }
 }
 
-export default withNavigation(RecordBook);
+export default RecordChapter;

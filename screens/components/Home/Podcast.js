@@ -140,8 +140,8 @@ const styles = StyleSheet.create({
     duration = 1;
   var currentDateTime = moment().format();
   var timeDiff = currentDateTime;//moment(currentDateTime).fromNow();
-  if(props.podcast.timestamp)
-    timeDiff = moment(props.podcast.timestamp).fromNow();
+  if(props.podcast.createdOn)
+    timeDiff = moment(props.podcast.createdOn).fromNow();
   const dispatch=useDispatch();
 
  const _menu = useRef(null);

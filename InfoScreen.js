@@ -74,7 +74,7 @@ const { width, height } = Dimensions.get("window");
           </Block>
           </ScrollView>
           <Text gray light height={22}>
-            {podcast[0].description}
+            {podcast[0].podcastDescription}
           </Text>
 
           <TouchableOpacity onPress={() => {props.navigation.navigate('LikersScreen',

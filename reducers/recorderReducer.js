@@ -2,11 +2,12 @@
 
 
 const INITIAL_STATE = {
-    BookName:null,
+    bookName:null,
     chapterName:null,
     authors:null,
-    LanguageSelected:null,
-    bookId:null,
+    languageSelected:null,
+    bookID:null,
+    chapterID:null,
     genres : []
   };
   
@@ -14,12 +15,15 @@ const INITIAL_STATE = {
     switch (action.type) {
       case "CHANGE_BOOK_ID":
           console.log("CHANGE_BOOK_ID"+" " +action.payload)
-            return {...state, bookId:action.payload}
+            return {...state, bookID:action.payload}
+      case "CHANGE_CHAPTER_ID":
+        console.log("CHANGE_CHAPTER_ID"+" " +action.payload)
+          return {...state, chapterID:action.payload}
       case "SET_BOOK_GENRES":
           return {...state,genres:action.payload}  
       case "CHANGE_BOOK":
         console.log("CHANGE_BOOK"+" " +action.payload)
-          return {...state, BookName:action.payload}
+          return {...state, bookName:action.payload}
       case "CHANGE_CHAPTER":
         console.log("CHANGE_CHAPTER"+" " +action.payload)
           return {...state, chapterName:action.payload}
@@ -28,7 +32,7 @@ const INITIAL_STATE = {
           return {...state, authors:action.payload}
       case "CHANGE_LANGUAGE":
         console.log("CHANGE_LANGUAGE"+" " +action.payload)
-          return {...state,LanguageSelected:action.payload} 
+          return {...state,languageSelected:action.payload} 
       default:
           return state;
     }

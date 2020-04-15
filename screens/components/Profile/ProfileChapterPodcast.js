@@ -42,45 +42,32 @@ class ProfileChapterPodcast extends React.Component {
     };
     
 
-     //retrieve data
      retrieveData = async () => {
       try {
-        // Set State: Loading
         this.setState({
           loading: true,
-          //refreshing:true
         });
         console.log('Retrieving Data');
-        // Cloud Firestore: Query
         const  userid = this.props.firebase._getUid();
-        let query3 = await firestore().collectionGroup('podcasts').where('podcasterID','==',userid);    
-        //let documentPodcasts = await query3.where('chapterName','==',"").orderBy('podcastID').limit(this.state.limit).get();
-        let documentChapterPodcasts = 90;
-        try{
-         documentChapterPodcasts = await query3.where('isChapterPodcast','==',true).orderBy('timestamp','desc').limit(this.state.limit).get();
-        //let documentData_podcasts = documentPodcasts.docs.map(document => document.data());
-        }
-        catch(error)
-        {
-          console.log(error);
-        }
-        let documentData_chapterPodcasts = documentChapterPodcasts.docs.map(document => document.data());
-        //var lastVisibleBook = this.state.lastVisibleBookPodcast;
-  
-        var lastVisibleChapter = this.state.lastVisibleChapterPodcast;
+        let query3 = await firestore().collectionGroup('podcasts').where('podcasterID','==',userid).   
+                      where('isChapterPodcast','==',true).orderBy('createdOn','desc').limit(this.state.limit)
+                       .onSnapshot((querySnapshot) =>
+                        {
+                          var documentData_podcasts = [];
 
-        //lastVisibleBook = documentData_podcasts[documentData_podcasts.length - 1].podcastID;  
-        if(documentData_chapterPodcasts.length != 0)            
-          lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].podcastID;
+                          querySnapshot.forEach(function(doc) {
+                            documentData_podcasts.push(doc.data());
+                        });
+                          var lastVisibleChapter = this.state.lastVisibleChapterPodcast;
+                          if(documentData_podcasts.length != 0)
+                            lastVisibleChapter = documentData_podcasts[documentData_podcasts.length - 1].podcastID;        
         
-          this.setState({
-            //bookPodcasts: documentData_podcasts,
-            chapterPodcasts: documentData_chapterPodcasts,
-            //lastVisibleBookPodcast:lastVisibleBook,
-            lastVisibleChapterPodcast: lastVisibleChapter,
-            loading:false,
-            //refreshing:false
-            });
+                        this.setState({
+                          chapterPodcasts: documentData_podcasts,
+                          lastVisibleChapterPodcast: lastVisibleChapter,
+                          loading:false
+                          });
+                       })
       }
       catch (error) {
         console.log(error);
@@ -96,12 +83,12 @@ class ProfileChapterPodcast extends React.Component {
           }); 
  
           const  userid = this.props.firebase._getUid();
-          let additionalQuery = 9;
+          let additionalQuery = null;
           try{
            // let documentChapterPodcasts = await query3.where('isChapterPodcast','==',true).limit(this.state.limit).get();
             additionalQuery = await firestore().collectionGroup('podcasts')
                              .where('podcasterID','==',userid).where('isChapterPodcast','==',true)
-                             .orderBy('timestamp','desc')
+                             .orderBy('createdOn','desc')
                              .startAfter(this.state.lastVisibleChapterPodcast)
                              .limit(this.state.limit);
          
@@ -112,7 +99,7 @@ class ProfileChapterPodcast extends React.Component {
          {
            console.log(error);
          }
-         let documentSnapshots = 98;
+         let documentSnapshots = null;
          try{
           documentSnapshots = await additionalQuery.get();
          }

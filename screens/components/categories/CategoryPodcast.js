@@ -18,7 +18,7 @@ class CategoryPodcast extends React.Component {
 
       this.state={
         podcasts:[], 
-        limit:5,
+        limit:7,
         lastVisiblePodcast:null,
         refreshing:false,
         loading:false,
@@ -51,7 +51,7 @@ class CategoryPodcast extends React.Component {
         // Cloud Firestore: Query
         const genre = this.props.navigation.state.params;
         let query3 = await firestore().collectionGroup('podcasts').where('genres','array-contains',genre.category);    
-        let documentPodcasts = await query3.orderBy('timestamp','desc').limit(this.state.limit).get();
+        let documentPodcasts = await query3.orderBy('createdOn','desc').limit(this.state.limit).get();
         let documentDataPodcasts = documentPodcasts.docs.map(document => document.data());
 
         var lastVisible = this.state.lastVisiblePodcast;
@@ -80,10 +80,10 @@ class CategoryPodcast extends React.Component {
          }); 
 
          const genre = this.props.navigation.state.params;
-         let additionalQuery = 9;
+         let additionalQuery = null;
          try{
            additionalQuery = await firestore().collectionGroup('podcasts').where('genres','array-contains',genre.category)
-                            .orderBy('timestamp','desc')
+                            .orderBy('createdOn','desc')
                             .startAfter(this.state.lastVisiblePodcast)
                             .limit(this.state.limit);
         
@@ -95,7 +95,7 @@ class CategoryPodcast extends React.Component {
         {
           console.log(error);
         }
-        let documentSnapshots=9;
+        let documentSnapshots=null;
         try{
          documentSnapshots = await additionalQuery.get();
         }
@@ -167,12 +167,14 @@ class CategoryPodcast extends React.Component {
     }
 
     onEndReached = ({ distanceFromEnd }) => {
-      //if(this.state.podcasts.length>5)
-      if(!this.onEndReachedCalledDuringMomentum){
-          this.retrieveMoreCategoryPodcasts()
+      if(this.state.podcasts.length > (this.state.limit - 1))
+      {
+        if(!this.onEndReachedCalledDuringMomentum)
+        {
+          this.retrieveMoreCategoryPodcasts();
           this.onEndReachedCalledDuringMomentum = true;
+        }
       }
-      
   }
   separator = () => <View style={[styles.separator,{paddingTop:height/96}]} />;
    

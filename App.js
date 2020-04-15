@@ -35,6 +35,7 @@ import PreviewScreen from './screens/PreviewScreen'
 import TagsScreen from './screens/TagsScreen'
 import CategoryScreen from './screens/CategoryScreen'
 import RecordBook from './screens/RecordBook'
+import RecordChapter from './screens/RecordChapter'
 import StatisticsScreen from './screens/StatisticsScreen'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { theme } from './screens/components/categories/constants';
@@ -363,6 +364,10 @@ const AppStackNavigator= createStackNavigator(
     navigationOptions:{
       header:null
    }}, 
+   RecordChapter: {screen :RecordChapter,
+    navigationOptions:{
+      header:null
+   }},
    PreviewScreen: {screen:PreviewScreen,navigationOptions:{
     header : null
 }},

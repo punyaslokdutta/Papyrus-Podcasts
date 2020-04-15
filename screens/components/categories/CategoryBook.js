@@ -51,7 +51,7 @@ class CategoryBook extends React.Component {
         // Cloud Firestore: Query
         const genre = this.props.navigation.state.params;
         let query3 = await firestore().collection('books').where("genres","array-contains",genre.category);    
-        let documentBooks = await query3.orderBy('timestamp','desc').limit(this.state.limit).get();
+        let documentBooks = await query3.orderBy('createdOn','desc').limit(this.state.limit).get();
         let documentDataBooks = documentBooks.docs.map(document => document.data());
 
         var lastVisible = this.state.lastVisibleBook;
@@ -80,10 +80,10 @@ class CategoryBook extends React.Component {
 
          //const  userid = this.props.firebase._getUid();
          const genre = this.props.navigation.state.params;
-         let additionalQuery = 9;
+         let additionalQuery = null;
          try{
            additionalQuery = await firestore().collection('books').where('genres','array-contains',genre.category)
-                            .orderBy('timestamp','desc')
+                            .orderBy('createdOn','desc')
                             .startAfter(this.state.lastVisibleBook)
                             .limit(this.state.limit);
         
@@ -95,7 +95,7 @@ class CategoryBook extends React.Component {
         {
           console.log(error);
         }
-        let documentSnapshots=9;
+        let documentSnapshots = null;
         try{
          documentSnapshots = await additionalQuery.get();
         }
