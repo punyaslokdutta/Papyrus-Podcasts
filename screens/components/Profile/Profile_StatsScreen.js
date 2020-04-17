@@ -24,7 +24,8 @@ const Profile_StatsScreen = (props) => {
      const numCreatedBookPodcasts = useSelector(state=>state.userReducer.numCreatedBookPodcasts);
      const numCreatedChapterPodcasts = useSelector(state=>state.userReducer.numCreatedChapterPodcasts);
      const totalMinutesRecorded = useSelector(state=>state.userReducer.totalMinutesRecorded);
-   
+     const totalMinutesRecordedInteger = Math.floor(totalMinutesRecorded);
+     
 	 return (
       <ScrollView style={styles.rewards} showsVerticalScrollIndicator={false}>
         <View>
@@ -88,14 +89,14 @@ const Profile_StatsScreen = (props) => {
     <Text h3 bold>{"\n"}Your Podcast Statistics</Text>
         </View>
         {/* </Block> */}
-        {renderRewards(numCreatedBookPodcasts,numCreatedChapterPodcasts,totalMinutesRecorded)}
+        {renderRewards(numCreatedBookPodcasts,numCreatedChapterPodcasts,totalMinutesRecordedInteger)}
         
       </ScrollView>
     )
 }
 
 
-renderRewards = (numCreatedBookPodcasts,numCreatedChapterPodcasts,totalMinutesRecorded) => {
+function renderRewards(numCreatedBookPodcasts,numCreatedChapterPodcasts,totalMinutesRecordedInteger){
   return (
     <Card shadow style={{ paddingBottom: theme.sizes.base*1 ,paddingVertical: theme.sizes.base * 1}}>       
      
@@ -111,7 +112,7 @@ renderRewards = (numCreatedBookPodcasts,numCreatedChapterPodcasts,totalMinutesRe
         </Block>
 
         <Block center flex={0.8}>
-  <Text size={20} spacing={0.5} primary>{totalMinutesRecorded}</Text>
+  <Text size={20} spacing={0.5} primary>{totalMinutesRecordedInteger}</Text>
           <View style={{alignItems:'center', flexDirection:'column'}}>
           <Text>Minutes</Text>
           

@@ -33,13 +33,14 @@ const PreviewScreen = (props) => {
   console.log("In PreviewScreen");
 
   const dispatch = useDispatch();
-  const [PodcastImage, setPodcastImage] = useState("https://storage.googleapis.com/papyrus-fa45c.appspot.com/podcasts/Waves.jpg");
+  const [podcastImage, setPodcastImage] = useState("https://storage.googleapis.com/papyrus-fa45c.appspot.com/podcasts/Waves.jpg");
   const chapterName=useSelector(state=>state.recorderReducer.chapterName)
-  const BookName=useSelector(state=>state.recorderReducer.BookName)
+  const bookName=useSelector(state=>state.recorderReducer.bookName)
   const authors=useSelector(state=>state.recorderReducer.authors)
-  const LanguageSelected=useSelector(state=>state.recorderReducer.LanguageSelected)
-  const bookId=useSelector(state=>state.recorderReducer.bookId)
- 
+  const languageSelected=useSelector(state=>state.recorderReducer.languageSelected)
+  const bookID=useSelector(state=>state.recorderReducer.bookID)
+  const chapterID=useSelector(state=>state.recorderReducer.chapterID)
+  const genres = useSelector(state=>state.recorderReducer.genres)
   //BOOK_ID to be returned from recorderReducer which will be dispatched by Algolia 
   //For Now, books which are not present in our database is handled. 
   // 1. Create a Book Document , Get the Doc RefId . Make Podcast Collection and Document. 
@@ -52,9 +53,9 @@ const PreviewScreen = (props) => {
   // 8. 
 
   const [recordedFilePath, setrecordedFilePath] = useState(props.navigation.getParam('recordedFilePath'));
-  const [Description, setDescription] = useState(null);
-  const [PodcastName, setPodcastName]=useState(null);
-  const [Tags, setTags]=useState(initialTags);
+  const [podcastDescription, setPodcastDescription] = useState(null);
+  const [podcastName, setPodcastName]=useState(null);
+  const [tags, setTags]=useState(initialTags);
   const [tagsColor, settagsColor]=useState('#3ca897');
   const [tagsText, settagsText]=useState('#fff');
   const [podcastImageDownloadURL,setPodcastImageDownloadURL] = useState("https://storage.googleapis.com/papyrus-fa45c.appspot.com/podcasts/Waves.jpg");
@@ -69,60 +70,116 @@ const PreviewScreen = (props) => {
 
   const numCreatedBookPodcasts = useSelector(state=>state.userReducer.numCreatedBookPodcasts);
   const numCreatedChapterPodcasts = useSelector(state=>state.userReducer.numCreatedChapterPodcasts);
-  const incrementedValue = numCreatedBookPodcasts + 1;
+  const totalMinutesRecorded = useSelector(state=>state.userReducer.totalMinutesRecorded);
+
+  var incrementedValue = 0;
+  
+  if(chapterID !== null && chapterID !== undefined)
+    incrementedValue = numCreatedChapterPodcasts + 1
+  else
+    incrementedValue = numCreatedBookPodcasts + 1
 
   const userName = useSelector(state=>state.userReducer.name);
   const userID = props.firebase._getUid();
   const privateDataID = "private" + userID;
 
   console.log("PREVIEW SCREEN")
-  useEffect(
-    () => {       
-        podcastAudioDownloadURL && 
-        firestore().collection('users').doc(userID).collection('privateUserData').
-                        doc(privateDataID).set({
-              numCreatedBookPodcasts : incrementedValue
-                },{merge:true}) && 
 
-        dispatch({type:"ADD_NUM_CREATED_BOOK_PODCASTS", payload: incrementedValue}) &&
+  useEffect(() => { 
 
-        firestore().collection('books').doc(bookId).collection('podcasts')
-      .add({
+    // uploading book podcast
+    if(chapterID === null || chapterID === undefined)         
+    {
+      podcastAudioDownloadURL && 
+      firestore().collection('users').doc(userID).collection('privateUserData').
+                    doc(privateDataID).set({
+          numCreatedBookPodcasts : incrementedValue
+            },{merge:true}) && 
+
+      dispatch({type:"ADD_NUM_CREATED_BOOK_PODCASTS", payload: incrementedValue}) &&
+
+      firestore().collection('books').doc(bookID).collection('podcasts').add({
         audioFileLink: podcastAudioDownloadURL,
-        bookID: bookId, 
+        bookID: bookID, 
         chapterName: "",
         isChapterPodcast: false,
-        bookName: BookName, 
+        bookName: bookName, 
         duration: duration,
-        genres: ["Non-Fiction","Science & Technology"],
-        language: LanguageSelected,
-        podcastName: PodcastName,
+        genres: genres,
+        language: languageSelected,
+        podcastName: podcastName,
         podcastPictures: [podcastImageDownloadURL],
-        timestamp: moment().format(),
-        description: Description,
-        tags : Tags.tagsArray,
+        createdOn: moment().format(),
+        podcastDescription: podcastDescription,
+        tags : tags.tagsArray,
+        podcasterID: userID,
+        podcasterName: userName,
+        numUsersLiked : 0,
+        authors: authors
+      })
+      .then(async function(docRef, props) {
+        console.log("Document written with ID: ", docRef.id);
+        firestore().collection('books').doc(bookID).collection('podcasts')
+                .doc(docRef.id).set({
+                    podcastID: docRef.id
+                },{merge:true})
+          Toast.show("Successfully uploaded")
+          setPodcastID(docRef.id)
+          setUploadPodcastSuccess(true);
+      })
+      .catch(function(error) {
+        console.error("Error adding document: ", error);
+        Toast.show("Error: Please try again.")
+      });
+    } 
+
+    // uploading chapter podcast
+    else                                  
+    {
+      podcastAudioDownloadURL && 
+      firestore().collection('users').doc(userID).collection('privateUserData').
+                    doc(privateDataID).set({
+          numCreatedChapterPodcasts : incrementedValue
+            },{merge:true}) && 
+
+      dispatch({type:"ADD_NUM_CREATED_CHAPTER_PODCASTS", payload: incrementedValue}) &&
+
+      firestore().collection('books').doc(bookID).collection('chapters').doc(chapterID).collection('podcasts').add({
+        audioFileLink: podcastAudioDownloadURL,
+        bookID: bookID,
+        chapterID: chapterID, 
+        chapterName: chapterName,
+        isChapterPodcast: true,
+        bookName: bookName, 
+        duration: duration,
+        genres: genres,
+        language: languageSelected,
+        podcastName: podcastName,
+        podcastPictures: [podcastImageDownloadURL],
+        createdOn: moment().format(),
+        podcastDescription: podcastDescription,
+        tags : tags.tagsArray,
         podcasterID: userID,
         podcasterName: userName,
         numUsersLiked : 0,
         authors:authors
-    })
-    .then(async function(docRef, props) {
+      })
+      .then(async function(docRef, props) {
         console.log("Document written with ID: ", docRef.id);
-        firestore().collection('books').doc(bookId).collection('podcasts')
+        firestore().collection('books').doc(bookID).collection('chapters').doc(chapterID).collection('podcasts')
                 .doc(docRef.id).set({
                     podcastID: docRef.id
                 },{merge:true})
-         Toast.show("Successfully uploaded")
-         setPodcastID(docRef.id)
-         setUploadPodcastSuccess(true);
-    })
-    .catch(function(error) {
+          Toast.show("Successfully uploaded")
+          setPodcastID(docRef.id)
+          setUploadPodcastSuccess(true);
+      })
+      .catch(function(error) {
         console.error("Error adding document: ", error);
         Toast.show("Error: Please try again.")
-    });
-            
-          
-    },[podcastAudioDownloadURL])
+      });
+    }          
+  },[podcastAudioDownloadURL])
 
     async function indexPodcast(){
       const instance = firebase.app().functions("asia-northeast1").httpsCallable('AddToPodcastsIndex');
@@ -131,15 +188,14 @@ const PreviewScreen = (props) => {
           try 
           {          
             await instance({ // change in podcast docs created by  user
-              timestamp : moment().format(),
+              createdOn : moment().format(),
               podcastID : podcastID,
               podcastPicture : podcastImageDownloadURL,
-              bookName : BookName,
-              podcastName : PodcastName,
-              language : LanguageSelected,
-              podcasterName : userName, 
-              authors:authors
-
+              chapterName : chapterName,  // have to handle it in SearchPodcastItem *******************
+              bookName : bookName,
+              podcastName : podcastName,
+              language : languageSelected,
+              podcasterName : userName
             });
           }
           catch (e) 
@@ -150,11 +206,23 @@ const PreviewScreen = (props) => {
           props.navigation.navigate('HomeScreen');
         }
     }
+    
+    async function updateTotalMinutesRecorded(updatedMinutesRecorded)
+    {
+      await firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).set({
+        totalMinutesRecorded : updatedMinutesRecorded
+      },{merge:true})
+    }
 
     useEffect(
       () => {
-        indexPodcast();
-        
+        if(uploadPodcastSuccess == true)
+        {
+          indexPodcast();
+          const updatedMinutesRecorded = totalMinutesRecorded + duration/60; 
+          dispatch({type:"UPDATE_TOTAL_MINUTES_RECORDED",payload:updatedMinutesRecorded});
+          updateTotalMinutesRecorded(updatedMinutesRecorded);
+        }
       },[uploadPodcastSuccess]
     )
 
@@ -201,20 +269,8 @@ const PreviewScreen = (props) => {
       
   }
   return false;
- 
-
-
-    //BackHandler.removeEventListener('hardwareBackPress', this.back_Buttton_Press);
-
-   
-
- 
   }
 
-
-
-
-  
 
   async function uploadAudio(FilePath) {
 
@@ -325,7 +381,13 @@ const PreviewScreen = (props) => {
         <View style={{ paddingVertical: height / 50, flexDirection: 'column' , paddingBottom:width/10}}>
           <TouchableOpacity onPress={uploadImage}>
           <View>
-            <Image source={PodcastImage} style={{ width: height / 6, height: height / 6, borderRadius: 20, borderColor: 'white', borderWidth: 1 }} />
+            {
+              podcastImage == "https://storage.googleapis.com/papyrus-fa45c.appspot.com/podcasts/Waves.jpg"
+              ?
+              <Image source={{uri:"https://uploads.scratch.mit.edu/users/avatars/39669136.png"}} style={{ width: height / 6, height: height / 6, borderRadius: 20, borderColor: 'white', borderWidth: 1 }} />
+              :
+              <Image source={podcastImage} style={{ width: height / 6, height: height / 6, borderRadius: 20, borderColor: 'white', borderWidth: 1 }} />
+            }
           </View>
           </TouchableOpacity>
         </View>
@@ -333,28 +395,51 @@ const PreviewScreen = (props) => {
      </View>
     
      
-      
-      
-      
+      {
+        chapterName !== null && chapterName !== undefined &&
+        <View style={{ paddingLeft: width / 8, paddingBottom: 10 }}>
+         <TextInput
+          value={chapterName}
+          style={styles.TextInputStyleClass2}
+          underlineColorAndroid="transparent"
+          placeholder={"Chapter Name" }
+          placeholderTextColor={"black"}
+          numberOfLines={1}
+          multiline={false}
+        />
+        </View>
+      }
+  
       <View style={{ paddingLeft: width / 8, paddingBottom: 10 }}>
          <TextInput
-          value={BookName}
+          value={bookName}
           style={styles.TextInputStyleClass2}
           underlineColorAndroid="transparent"
           placeholder={"Book Name" }
           placeholderTextColor={"black"}
-          //onChangeText={(text) => setPodcastName(text)}
           numberOfLines={1}
           multiline={false}
         />
       </View>
+
+      
       <View style={{ paddingLeft: width / 8, paddingBottom: 10 }}>
         <TextInput
           style={styles.TextInputStyleClass2}
           underlineColorAndroid="transparent"
-          placeholder={"Podcast Title" }
-          placeholderTextColor={"black"}
-          onChangeText={(text) => setPodcastName(text)}
+          placeholder={"Podcast Title (Min characters: 6)"}
+          placeholderTextColor={"gray"}
+          value={podcastName}
+          onBlur={() => {
+            if(podcastName != null && (podcastName.length < 6 || podcastName.length > 50))
+            {
+              setPodcastName(null);
+              alert('The name of the podcast should follow the given limits.\nMin characters required: 6\nMax characters allowed: 50');
+            }
+          }}
+          onChangeText={(text) => {
+            setPodcastName(text)
+          }}
           numberOfLines={1}
           multiline={false}
         />
@@ -366,9 +451,10 @@ const PreviewScreen = (props) => {
         <TextInput
           style={styles.TextInputStyleClass}
           underlineColorAndroid="transparent"
-          placeholder={"How should your listeners approach this podcast? " }
-          placeholderTextColor={"black"}
-          onChangeText={(text) => setDescription(text)}
+          placeholder={"How should your listeners approach this podcast?" }
+          placeholderTextColor={"gray"}
+
+          onChangeText={(text) => setPodcastDescription(text)}
           numberOfLines={6}
           multiline={true}
         />
@@ -376,11 +462,11 @@ const PreviewScreen = (props) => {
       
 
       <View style={styles.tagcontainer}>
-      <Text>dfghjkl</Text>
+
          <TagInput
          updateState={updateTagState}
-          tags={Tags}
-          placeholder="Tags.." 
+          tags={tags}
+          placeholder="tags.." 
           label='Press comma to add a tag'
          labelStyle={{color: '#fff'}}
          leftElement={<Icon name={'tag'}  color={'#000000'}/>}
@@ -411,10 +497,34 @@ const PreviewScreen = (props) => {
       
       {
         !toggleIndicator && 
-       <View style={{ paddingTop: height / 8, alignItems: 'center' }}>
+       <View style={{ paddingTop: height /16, alignItems: 'center', paddingBottom:10 }}>
 
-        <TouchableOpacity onPress={() => {uploadPodcast(recordedFilePath)
-        }} style={{ alignItems: 'center', justifyContent: 'center', height: height / 16, width: height / 6, borderRadius: 15, borderColor:rgb(218,165,32), borderWidth: 1 }}
+        <TouchableOpacity onPress={() => {
+          if(podcastName === null)
+          {
+            alert("Please enter the name of your podcast as per the given limits.\nMin characters required: 6\nMax characters allowed: 50");
+            return;
+          }
+          else if(!podcastName.replace(/\s/g,'').length)
+          {
+            setPodcastName(null);
+            alert("Please enter some text in Podcast Name field");
+            return;
+          }
+          else if(podcastDescription === null)
+          {
+            alert("Please enter a description of your podcast");
+            return;
+          }
+          else if(!podcastDescription.replace(/\s/g,'').length)
+          {
+            setPodcastDescription(null);
+            alert("Please enter some text in Podcast Description field");
+            return;
+          }
+          uploadPodcast(recordedFilePath)
+      }} 
+        style={{ alignItems: 'center', justifyContent: 'center', height: height / 16, width: height / 6, borderRadius: 15, borderColor:rgb(218,165,32), borderWidth: 1, }}
         >
           <Text style={{ alignItems: 'center', fontFamily: 'sans-serif-light', color:rgb(218,165,32),  justifyContent: 'center' }} >Publish</Text>
         </TouchableOpacity>

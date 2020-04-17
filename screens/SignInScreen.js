@@ -184,13 +184,11 @@ const validationSchema = yup.object().shape({
          
             </View>
 
-            <View style={{flexDirection:'row'}}>
-            <TouchableOpacity style={{paddingTop:20,paddingRight:WIDTH/8 }} onPress={()=>{onFBLoginOrRegister()}}>
+            <View style={{flexDirection:'row' ,justifyContent:'center'}}>
+            <TouchableOpacity style={{paddingTop:20 }} onPress={()=>{onFBLoginOrRegister()}}>
          <Icon name="facebook-square" size={30} style={{color:'rgba(255, 255, 255, 0.6)'}}/>
          </TouchableOpacity>
-         <TouchableOpacity style={{paddingTop:20}} onPress={()=>{ _signIn()}}>
-         <Icon name="google-plus" size={30} style={{color:'rgba(255, 255, 255, 0.6)'}}/>
-         </TouchableOpacity>
+         
             </View>
         <View style={{ paddingTop:HEIGHT/12, flexDirection:'row'}}>
           <View style={{ paddingRight:5}}>
@@ -217,7 +215,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingTop:HEIGHT/12 ,
-    backgroundColor:'#101010',
+    backgroundColor:'#120d02',
   },
   logo:{
     width:120,

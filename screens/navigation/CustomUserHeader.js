@@ -196,7 +196,7 @@ const CustomUserHeader = (props) => {
         </View>
           <View style={{alignItems:'center',justifyContent:'center', flexDirection:'column'}}>
             <View style={{flexDirection:'column'}}>
-      <Text h3 >{item.name}'s</Text>
+      <Text h3 center>{item.name}'s</Text>
               <View style = {{alignItems:'center'}}>
               <Text h2 bold>Collections</Text>
               </View>

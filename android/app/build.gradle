@@ -79,6 +79,11 @@ import com.android.build.OutputFile
 project.ext.react = [
     entryFile: "index.js",
     enableHermes: false,  // clean and rebuild if changing
+
+    // whether to bundle JS and assets in debug mode
+    //bundleInDebug: false,
+    // whether to bundle JS and assets in release mode
+    //bundleInRelease: true
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -123,6 +128,9 @@ def enableHermes = project.ext.react.get("enableHermes", false);
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
+    dexOptions {
+        javaMaxHeapSize "3g"
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -132,8 +140,8 @@ android {
         applicationId "com.papyrus_60"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName "1.0.1"
+        versionCode 3
+        versionName "1.0.2"
         multiDexEnabled true
     }
     splits {

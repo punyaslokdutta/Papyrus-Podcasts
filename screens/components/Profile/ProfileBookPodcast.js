@@ -7,7 +7,6 @@ import {withFirebaseHOC} from '../../config/Firebase'
 var {width, height}=Dimensions.get('window')
 
 class ProfileBookPodcast extends React.Component {
-    
     static navigationOptions={
         header:null
     }
@@ -18,14 +17,11 @@ class ProfileBookPodcast extends React.Component {
 
       this.state={
         bookPodcasts:[], 
-        //chapterPodcasts:[],
         limit:6,
         lastVisibleBookPodcast:null,
-        //lastVisibleChapterPodcast:null,
         refreshing:false,
         loading:false,
-        onEndReachedCalledDuringMomentum : true,
-        // navigation: this.props.navigation,
+        onEndReachedCalledDuringMomentum : true
       }
       }
     
@@ -33,7 +29,6 @@ class ProfileBookPodcast extends React.Component {
    
      componentDidMount = () => {
       try {
-        // Cloud Firestore: Initial Query
         this.retrieveData();
       }
       catch (error) {
@@ -42,18 +37,15 @@ class ProfileBookPodcast extends React.Component {
     };
     
 
-     //retrieve data
      retrieveData = async () => {
       try {
-        // Set State: Loading
         this.setState({
           loading: true,
         });
         console.log('Retrieving Data');
-        // Cloud Firestore: Query
         const  userid = this.props.firebase._getUid();
         let query3 = await firestore().collectionGroup('podcasts').where('podcasterID','==',userid).   
-                      where('isChapterPodcast','==',false).orderBy('timestamp','desc').limit(this.state.limit)
+                      where('isChapterPodcast','==',false).orderBy('createdOn','desc').limit(this.state.limit)
                        .onSnapshot((querySnapshot) =>
                         {
                           var documentData_podcasts = [];
@@ -63,16 +55,14 @@ class ProfileBookPodcast extends React.Component {
                         });
                           var lastVisibleBook = this.state.lastVisibleBookPodcast;
                           if(documentData_podcasts.length != 0)
-                            lastVisibleBook = documentData_podcasts[documentData_podcasts.length - 1].podcastID;        
+                            lastVisibleBook = documentData_podcasts[documentData_podcasts.length - 1].createdOn;        
                           
                           this.setState({
                           bookPodcasts: documentData_podcasts,
                           lastVisibleBookPodcast:lastVisibleBook,
                           loading:false
                           });
-                        }
-        )
-        
+                        })      
       }
       catch (error) {
         console.log(error);
@@ -82,31 +72,29 @@ class ProfileBookPodcast extends React.Component {
     retrieveMoreBookPodcasts = async () => {
      try
       {
-
-        {console.log("retrieveMoreBookPodcasts starts()")}
+        console.log("retrieveMoreBookPodcasts starts()")
 
       this.setState({
         refreshing: true
          }); 
 
          const  userid = this.props.firebase._getUid();
-         let additionalQuery = 9;
+         let additionalQuery = null;
          try{
            additionalQuery = await firestore().collectionGroup('podcasts')
                             .where('podcasterID','==',userid).where('isChapterPodcast','==',false)
-                            .orderBy('timestamp','desc')
+                            .orderBy('createdOn','desc')
                             .startAfter(this.state.lastVisibleBookPodcast)
                             .limit(this.state.limit);
         
-      // Cloud Firestore: Query Snapshot
-      {console.log("retrieveMoreBookPodcasts afterQuery()")}
+         console.log("retrieveMoreBookPodcasts afterQuery()")
          
         }
         catch(error)
         {
           console.log(error);
         }
-        let documentSnapshots=9;
+        let documentSnapshots = null;
         try{
          documentSnapshots = await additionalQuery.get();
         }
@@ -115,29 +103,26 @@ class ProfileBookPodcast extends React.Component {
             console.log(error);
         }
         
-      // Cloud Firestore: Document Data
       let documentData = documentSnapshots.docs.map(document => document.data());
-      // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
       if(documentData.length != 0)
       {
-      let lastVisibleBook = documentData[documentData.length - 1].podcastID;
-       
-      if(this.state.lastVisibleBookPodcast===lastVisibleBook){
+        let lastVisibleBook = documentData[documentData.length - 1].createdOn;
+        if(this.state.lastVisibleBookPodcast === lastVisibleBook)
+        {
+            this.setState({
+                    refreshing:false
+                });
+        }
+        else
+        {
           this.setState({
-                  refreshing:false
-              });
-      }
-      else
-      {
-        this.setState({
-            bookPodcasts: [...this.state.bookPodcasts, ...documentData],
-            //chapterPodcasts: documentData_chapterPodcasts,
-            lastVisibleBookPodcast : lastVisibleBook,
-            refreshing:false
-          });
+              bookPodcasts: [...this.state.bookPodcasts, ...documentData],
+              lastVisibleBookPodcast : lastVisibleBook,
+              refreshing:false
+            });
 
+        }
       }
-    }
       else
       {
         this.setState({
@@ -176,12 +161,13 @@ class ProfileBookPodcast extends React.Component {
     }
 
     onEndReached = ({ distanceFromEnd }) => {
-      if(this.state.bookPodcasts.length>5)
-      if(!this.onEndReachedCalledDuringMomentum){
+      if(this.state.bookPodcasts.length > (this.state.limit - 1))
+      {
+        if(!this.onEndReachedCalledDuringMomentum){
           this.retrieveMoreBookPodcasts()
           this.onEndReachedCalledDuringMomentum = true;
-      }
-      
+        }
+      }      
   }
  
     render() {
@@ -192,8 +178,7 @@ class ProfileBookPodcast extends React.Component {
           <View style={{paddingTop: height/3}}>
           <ActivityIndicator/>
           </View>
-        )
-        
+        )       
       }
       else if(this.state.bookPodcasts.length != 0)
       {

@@ -168,12 +168,9 @@ const SignUpScreen=(props)=>{
          </TouchableOpacity>
             </View>
 
-            <View style={{flexDirection:'row'}}>
-         <TouchableOpacity style={{paddingTop:20,paddingRight:WIDTH/8 }} onPress={()=>{onFBLoginOrRegister()}}>
+            <View style={{flexDirection:'row', justifyContent:'center'}}>
+         <TouchableOpacity style={{paddingTop:20 }} onPress={()=>{onFBLoginOrRegister()}}>
          <Icon name="facebook-square" size={30} style={{color:'rgba(255, 255, 255, 0.6)'}}/>
-         </TouchableOpacity>
-         <TouchableOpacity style={{paddingTop:20}}>
-         <Icon name="google-plus" size={30} style={{color:'rgba(255, 255, 255, 0.6)'}}/>
          </TouchableOpacity>
             </View>
         <View style={{ paddingTop:HEIGHT/8}}>
@@ -201,7 +198,7 @@ const styles = StyleSheet.create({
     height: null,
     alignItems: 'center',
     paddingTop:HEIGHT/24,
-    backgroundColor:'#101010'
+    backgroundColor:'#120d02'
   },
   logo:{
     width:120,

@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react'
-import { Image, StyleSheet, ScrollView, TextInput, TouchableOpacity , View,ActivityIndicator} from 'react-native'
+import { Image, StyleSheet, ScrollView, TextInput, TouchableOpacity , View,ActivityIndicator, Linking} from 'react-native'
 import Slider from 'react-native-slider';
 import firestore from '@react-native-firebase/firestore'
 //import { Divider, Button, Block, Text, Switch } from '../components';
@@ -9,6 +9,8 @@ import {withFirebaseHOC} from './config/Firebase'
 import { theme, mocks } from '../screens/components/categories/constants/';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { firebase } from '@react-native-firebase/functions';
+
+
 import {useSelector,useDispatch} from 'react-redux'
 
 const SettingsScreen = (props) => {
@@ -54,8 +56,20 @@ const SettingsScreen = (props) => {
       switch(name)
       {
         case 'account':
-          setLoadingAccountName(true);
+          {
+            if(accountNameState!= null && (accountNameState.length < 2 || accountNameState.length > 20))
+            {
+              alert('Min 2 characters required for account name')
+              return;
+            }
+            else if(accountNameState == null)
+            {
+              alert('Min 2 characters required for account name')
+              return;
+            }
+          }
 
+          setLoadingAccountName(true);
           dispatch({type:'CHANGE_NAME',payload:accountNameState});
           await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({  // change in actual doc
             name : accountNameState
@@ -79,6 +93,18 @@ const SettingsScreen = (props) => {
           setLoadingAccountName(false);
           break;
         case 'username':
+          {
+            if(userNameState != null && (userNameState.length < 2 || userNameState.length > 20))
+            {
+              alert('Min 2 characters required for user name')
+              return;
+            }
+            else if(userNameState == null)
+            {
+              alert('Min 2 characters required for user name')
+              return;
+            }
+          }
           setLoadingUserName(true);
           dispatch({type:'CHANGE_USER_NAME',payload:userNameState});
           await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({ // change in actual doc
@@ -93,8 +119,28 @@ const SettingsScreen = (props) => {
     setEditing(f);
   }
 
+  async function logoutFromApp() 
+  {
+      console.log("[SettingsScreen] logoutFromApp")
+
+      dispatch({type:'CLEAR_PODCASTS_LIKED',payload:null})
+      dispatch({type:'ADD_NUM_FOLLOWERS',payload:0})
+      dispatch({type:'CHANGE_EMAIL',payload:null})
+      dispatch({type:'CHANGE_NAME',payload:null})
+      dispatch({type:'CHANGE_USER_NAME',payload:null})
+      dispatch({type:'CHANGE_DISPLAY_PICTURE',payload:null})
+      dispatch({type:'CLEAR_FOLLOWING_MAP',payload:null})
+      dispatch({type:'CHANGE_WEBSITE',payload:null})
+      dispatch({type:'ADD_INTRODUCTION',payload: null})
+      dispatch({type:'ADD_NUM_CREATED_BOOK_PODCASTS',payload: 0})
+      dispatch({type:'ADD_NUM_CREATED_CHAPTER_PODCASTS',payload: 0})
+      dispatch({type:'UPDATE_TOTAL_MINUTES_RECORDED',payload: 0})
+      dispatch({type:'ADD_NUM_NOTIFICATIONS',payload: 0});
+      dispatch({type:"SET_USER_PREFERENCES",payload:[]});
+
+      props.firebase._signOutUser();
+  }
   function renderEdit(name) {
-   // const { profile, editing } = this.state;
     var val = 9;
     switch(name)
     {
@@ -113,6 +159,9 @@ const SettingsScreen = (props) => {
       return (
         <TextInput
           defaultValue={val}
+          autoFocus={true}
+          placeholder={"Min characters required: 2"}
+          placeholderTextColor={"gray"}
           onChangeText={async(text) => handleEdit(name, text)}
         />
       )
@@ -143,8 +192,8 @@ const SettingsScreen = (props) => {
 
           <Block style={styles.inputs}>
           <Block>
-                <Text h3  bold style={{ marginBottom: 10 }}>GENERAL</Text>
-              </Block>
+            <Text h3  bold style={{ marginBottom: 10 }}>GENERAL</Text>
+            </Block>
             <Block row space="between" margin={[10, 0]} style={styles.inputRow}>
               <Block>
                 <Text gray2 style={{ marginBottom: 10 }}>Account</Text>
@@ -194,7 +243,6 @@ const SettingsScreen = (props) => {
               <Text gray>Push Notifications</Text>
               <Switch
                 value={notifications}
-                //onValueChange={value => this.setState({ notifications: value })}
               />
             </Block>
             
@@ -230,7 +278,7 @@ const SettingsScreen = (props) => {
           <Block style={styles.toggles}>
             <Block row center space="between" >
               <Text black>Follow us on Instagram</Text>
-              <TouchableOpacity >
+              <TouchableOpacity onPress={() => Linking.openURL('https://www.instagram.com/papyrus_podcast/')}>
         <View style={{paddingLeft: 15,paddingRight:10 } }>
           <Icon name="chevron-right" size={20} style={{color:'#101010'}}/>
         </View>
@@ -276,7 +324,7 @@ const SettingsScreen = (props) => {
           <Block style={styles.toggles}>
             <Block row center space="between" >
               <Text black>Terms of Service</Text>
-              <TouchableOpacity >
+              <TouchableOpacity onPress={() => Linking.openURL('https://storage.googleapis.com/www.papyruspodcasts.com/Papyrus_Podcasts/Terms%20%26%20Conditions%20Final%20(1).html')}>
         <View style={{paddingLeft: 15,paddingRight:10 } }>
           <Icon name="chevron-right" size={20} style={{color:'#101010'}}/>
         </View>
@@ -288,14 +336,28 @@ const SettingsScreen = (props) => {
           <Block style={styles.toggles}>
             <Block row center space="between" >
               <Text black>Privacy Policies</Text>
-              <TouchableOpacity >
-        <View style={{paddingLeft: 15,paddingRight:10 } }>
-          <Icon name="chevron-right" size={20} style={{color:'#101010'}}/>
-        </View>
-        </TouchableOpacity>  
+              <TouchableOpacity onPress={() => Linking.openURL('https://storage.googleapis.com/www.papyruspodcasts.com/Papyrus_Podcasts/Privacy%20Policy%20for%20Papyrus%20(1).html')}>
+              <View style={{paddingLeft: 15,paddingRight:10 } }>
+              <Icon name="chevron-right" size={20} style={{color:'#101010'}}/>
+              </View>
+              </TouchableOpacity>  
             </Block> 
           </Block>
-          <Divider />
+          <Divider  margin={[ theme.sizes.base * 2]}/>
+          
+          <Block style={[styles.toggles]}>
+            <Block row center space="between" >
+          
+          <Text> Logout </Text>
+          <TouchableOpacity onPress={() => logoutFromApp()}>
+          <View style={{paddingLeft: 15,paddingRight:10 } }>
+          <Icon name="chevron-right" size={20} style={{color:'#101010'}}/>
+          </View>
+          </TouchableOpacity>
+          </Block> 
+          </Block>
+          
+          <Divider/>
               </Block>
         </ScrollView>
       </Block>

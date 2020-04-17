@@ -20,7 +20,6 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
 
 const CustomDrawerContentComponent = (props) =>
 {
-
     const name = useSelector(state=>state.userReducer.name);
     const username = useSelector(state=>state.userReducer.userName);
     const photoURL = useSelector(state=>state.userReducer.displayPictureURL);

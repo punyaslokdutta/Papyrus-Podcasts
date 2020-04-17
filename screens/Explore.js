@@ -32,7 +32,7 @@ const Explore = (props) => {
  
   var startHeaderHeight  = 60;
 
-  var numNotifications = useSelector(state=>state.userReducer.numNotifications);
+  const numNotifications = useSelector(state=>state.userReducer.numNotifications);
 
   if(Platform.OS == 'Android')
   {
@@ -163,6 +163,8 @@ const Explore = (props) => {
             <View style={{flowDirection:'row'}}>
           <Icon name="bars" size={22}/>
             <Badge
+            width={5}
+            textStyle={{fontSize:8}}
             value={numNotifications}
             status="error"
             containerStyle={styles.badgeStyle}

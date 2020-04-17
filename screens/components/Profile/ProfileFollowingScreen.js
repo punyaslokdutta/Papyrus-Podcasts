@@ -18,14 +18,11 @@ class ProfileFollowingScreen extends React.Component {
 
       this.state={
         Followings:[], 
-        //chapterPodcasts:[],
-        limit:6,
+        limit:10,
         lastVisibleFollowing:null,
-        //lastVisibleChapterPodcast:null,
         refreshing:false,
         loading:false,
-        onEndReachedCalledDuringMomentum : true,
-        // navigation: this.props.navigation,
+        onEndReachedCalledDuringMomentum : true
       }
       }
     
@@ -60,10 +57,8 @@ class ProfileFollowingScreen extends React.Component {
                                                 .limit(this.state.limit).get();
         let followingData = followingQuery.docs.map(document=>document.data());
         var lastVisibleFollowing = this.state.lastVisibleFollowing;
-        //var lastVisibleChapter = this.state.lastVisibleChapterPodcast;
 
         lastVisibleFollowing = followingData[followingData.length - 1].id;        
-        //lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].podcastID;
          
         this.setState({
             Followings: followingData,
@@ -93,7 +88,7 @@ class ProfileFollowingScreen extends React.Component {
         //  let followingQuery = await firestore().collection('users').where(wholestring,'==',true).get();
         //  let followingData = followingQuery.docs.map(document=>document.data());
          
-         let additionalQuery = 9;
+         let additionalQuery = null;
          try{
            additionalQuery = await firestore().collection('users').where('followersList','array-contains',userid).orderBy('id')
                             .startAfter(this.state.lastVisibleFollowing)
@@ -107,7 +102,7 @@ class ProfileFollowingScreen extends React.Component {
         {
           console.log(error);
         }
-        let documentSnapshots=9;
+        let documentSnapshots = null;
         try{
          documentSnapshots = await additionalQuery.get();
         }
@@ -116,14 +111,12 @@ class ProfileFollowingScreen extends React.Component {
             console.log(error);
         }
         
-      // Cloud Firestore: Document Data
       let documentData = documentSnapshots.docs.map(document => document.data());
-      // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
       if(documentData.length != 0)
       {
       let lastVisibleFollowing = documentData[documentData.length - 1].id;
        
-      if(this.state.lastVisibleBookPodcast===lastVisibleBook){
+      if(this.state.lastVisibleFollowing===lastVisibleFollowing){
           this.setState({
                   refreshing:false
               });
@@ -132,7 +125,6 @@ class ProfileFollowingScreen extends React.Component {
       {
         this.setState({
             Followings: [...this.state.Followings, ...documentData],
-            //chapterPodcasts: documentData_chapterPodcasts,
             lastVisibleFollowing : lastVisibleFollowing,
             refreshing:false
           });
@@ -179,15 +171,16 @@ class ProfileFollowingScreen extends React.Component {
     }
 
     onEndReached = ({ distanceFromEnd }) => {
-      if(this.state.Followings.length>5)
-      if(!this.onEndReachedCalledDuringMomentum){
-        this.retrieveMoreFollowings();
+      if(this.state.Followings.length > (this.state.limit - 1))
+      {
+        if(!this.onEndReachedCalledDuringMomentum){
+          this.retrieveMoreFollowings();
           this.onEndReachedCalledDuringMomentum = true;
-      }
-      
+        }
+      }      
   }
 
-  separator = () => <View style={[styles.separator,{paddingTop:height/96}]} />;
+  separator = () => <View style={[styles.separator]} />;
     
  
   render() {
@@ -195,21 +188,20 @@ class ProfileFollowingScreen extends React.Component {
     return (
      
        <View style = {{paddingBottom:20}}>
-           <View>
-               
+       <View>  
        <FlatList nestedScrollEnabled={true}
-      data={this.state.Followings}
-      renderItem={this.renderData}
-      //numColumns={2}
-      showsVerticalScrollIndicator={false}
-      keyExtractor={item => item.id}
-     // ListHeaderComponent={this.renderHeader}
-     ItemSeparatorComponent={this.separator}
-       ListFooterComponent={this.renderFooter}
-      onEndReached={this.onEndReached}
-      onEndReachedThreshold={0.5}
-      refreshing={this.state.refreshing}
-      onMomentumScrollBegin={() => { this.onEndReachedCalledDuringMomentum = false; }}
+        data={this.state.Followings}
+        renderItem={this.renderData}
+        //numColumns={2}
+        showsVerticalScrollIndicator={false}
+        keyExtractor={item => item.id}
+        //ListHeaderComponent={this.renderHeader}
+        ItemSeparatorComponent={this.separator}
+        ListFooterComponent={this.renderFooter}
+        onEndReached={this.onEndReached}
+        onEndReachedThreshold={0.5}
+        refreshing={this.state.refreshing}
+        onMomentumScrollBegin={() => { this.onEndReachedCalledDuringMomentum = false; }}
     />
     </View>
        </View>
@@ -244,4 +236,8 @@ const styles = StyleSheet.create({
  flexDirection:'row',
  backgroundColor: 'white'
   },
+  separator: {
+    borderBottomColor: '#d1d0d4',
+    borderBottomWidth: 1
+  }
 });

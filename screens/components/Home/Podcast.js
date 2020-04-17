@@ -140,8 +140,8 @@ const styles = StyleSheet.create({
     duration = 1;
   var currentDateTime = moment().format();
   var timeDiff = currentDateTime;//moment(currentDateTime).fromNow();
-  if(props.podcast.timestamp)
-    timeDiff = moment(props.podcast.timestamp).fromNow();
+  if(props.podcast.createdOn)
+    timeDiff = moment(props.podcast.createdOn).fromNow();
   const dispatch=useDispatch();
 
  const _menu = useRef(null);
@@ -181,12 +181,14 @@ const styles = StyleSheet.create({
           
         </View>
             <View style={[styles.flex, styles.column, styles.shadow, { padding: theme.sizes.padding / 4 }]}>
-              <View style={{height:(height)/16}}>
-              <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.podcast.podcastName.slice(0,25)}
-                {(props.podcast.podcastName.length > 25) ? ".." : ""}</Text> 
+              <View style={{height:(height)/12}}>
+              <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.podcast.podcastName.slice(0,30)}
+                {(props.podcast.podcastName.length > 30) ? ".." : ""}</Text> 
+                <Text style={{ fontSize: theme.sizes.font * 0.8, color: theme.colors.gray_green }}>{props.podcast.bookName.slice(0,30)}
+                {(props.podcast.bookName.length > 30) ? ".." : ""}</Text>
               </View>
-              <View style ={{height:(height)/20}}>
-              <Text style={{ color: theme.colors.gray_green }}>{props.podcast.podcasterName}</Text>
+              <View style ={{height:(height)/30}}>
+              <Text style={{ fontSize: theme.sizes.font * 0.9,color: theme.colors.gray_green }}>{props.podcast.podcasterName}</Text>
               </View>
           
               <View style={[

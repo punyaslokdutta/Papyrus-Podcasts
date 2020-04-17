@@ -17,14 +17,11 @@ class ProfileFollowerScreen extends React.Component {
 
       this.state={
         Followers:[], 
-        //chapterPodcasts:[],
-        limit:6,
+        limit:10,
         lastVisibleFollower:null,
-        //lastVisibleChapterPodcast:null,
         refreshing:false,
         loading:false,
-        onEndReachedCalledDuringMomentum : true,
-        // navigation: this.props.navigation,
+        onEndReachedCalledDuringMomentum : true
       }
       }
     
@@ -59,11 +56,8 @@ class ProfileFollowerScreen extends React.Component {
                                                 .limit(this.state.limit).onSnapshot(
                                                   async(docs) => {
                                                     let FollowerData = docs.docs.map(document=>document.data());
-                                                    var lastVisibleFollower = this.state.lastVisibleFollower;
-                                                    //var lastVisibleChapter = this.state.lastVisibleChapterPodcast;
-                                            
+                                                    var lastVisibleFollower = this.state.lastVisibleFollower;                                            
                                                     lastVisibleFollower = FollowerData[FollowerData.length - 1].id;        
-                                                    //lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].podcastID;
                                                      
                                                     this.setState({
                                                         Followers: FollowerData,
@@ -126,7 +120,7 @@ class ProfileFollowerScreen extends React.Component {
       {
       let lastVisibleFollower = documentData[documentData.length - 1].id;
        
-      if(this.state.lastVisibleBookPodcast===lastVisibleBook){
+      if(this.state.lastVisibleFollower === lastVisibleFollower){
           this.setState({
                   refreshing:false
               });
@@ -182,15 +176,17 @@ class ProfileFollowerScreen extends React.Component {
     }
 
     onEndReached = ({ distanceFromEnd }) => {
-      if(this.state.Followers.length>5)
-      if(!this.onEndReachedCalledDuringMomentum){
-        this.retrieveMoreFollowers();
+      if(this.state.Followers.length > (this.state.limit - 1))
+      {
+        if(!this.onEndReachedCalledDuringMomentum)
+        {
+          this.retrieveMoreFollowers();
           this.onEndReachedCalledDuringMomentum = true;
+        }
       }
-      
   }
 
-  separator = () => <View style={[styles.separator,{paddingTop:height/96}]} />;
+  separator = () => <View style={[styles.separator]} />;
     
  
   render() {
@@ -247,4 +243,8 @@ const styles = StyleSheet.create({
  flexDirection:'row',
  backgroundColor: 'white'
   },
+  separator: {
+    borderBottomColor: '#d1d0d4',
+    borderBottomWidth: 1
+  }
 });

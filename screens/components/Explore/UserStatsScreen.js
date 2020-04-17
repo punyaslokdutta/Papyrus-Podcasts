@@ -116,21 +116,23 @@ var {width, height}=Dimensions.get('window')
         </View>
 
         <View style={{flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
+        <TouchableOpacity onPress={()=>this.props.navigation.navigate('UserFollowingScreen', { id : this.props.navigation.state.params.item.id })}>
         <View style={{alignItems:'center'}}>
           <Text style={{paddingTop:height/20, paddingHorizontal:width/10, fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
           {this.state.followingCount}
           </Text>
-          <TouchableOpacity onPress={()=>this.props.navigation.navigate('UserFollowingScreen', { id : this.props.navigation.state.params.item.id })}><Text style={{fontFamily:'sans-serif-light', paddingHorizontal:width/13}}>Following</Text>
-          </TouchableOpacity>
+          <Text style={{fontFamily:'sans-serif-light', paddingHorizontal:width/13}}>Following</Text>
           </View>
-    
-            
+          </TouchableOpacity>
+          
+          <TouchableOpacity onPress={()=>this.props.navigation.navigate('UserFollowerScreen', { id : this.props.navigation.state.params.item.id })}>
             <View style={{alignItems:'center'}}>
             <Text style={{paddingTop:height/20 , paddingHorizontal:width/10,  fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
             {this.state.followersCount}
           </Text>                                             
-          <TouchableOpacity onPress={()=>this.props.navigation.navigate('UserFollowerScreen', { id : this.props.navigation.state.params.item.id })}><Text style={{fontFamily:'sans-serif-light', paddingHorizontal:width/13}}>Followers</Text></TouchableOpacity>
+          <Text style={{fontFamily:'sans-serif-light', paddingHorizontal:width/13}}>Followers</Text>
           </View>
+          </TouchableOpacity>
 
         </View>
 

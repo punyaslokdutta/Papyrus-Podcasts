@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import * as theme from '../../constants/theme'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import {useDispatch} from "react-redux"
-
+import moment from 'moment'
 
 var {width, height}=Dimensions.get('window')
 
@@ -154,15 +154,9 @@ const styles = StyleSheet.create({
               ]}>
                 
                 <Text style={{  fontSize: theme.sizes.font * 0.9,color: theme.colors.gray_green }}>
-                  {props.podcast.timestamp}
+                  {moment(props.podcast.createdOn).fromNow()}
                 </Text>
-                <View style={{alignItems: 'flex-end',paddingRight:5}}>
-                  <Icon
-                    name={props.podcast.saved ? 'bookmark' : 'bookmark-o'}
-                    color={theme.colors.black}
-                    size={theme.sizes.font * 1.25}
-                  />
-                </View>
+                
               </View>
               <View>
               <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>

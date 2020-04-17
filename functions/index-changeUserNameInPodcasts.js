@@ -28,14 +28,24 @@ exports.changeUserNameInPodcastsAsiaEast = functions.region("asia-northeast1").h
         doc._fieldsProto.bookID !== null)
         {
           console.log("podcastID : ",doc._fieldsProto.podcastID.stringValue);
-          const docRef = db.collection('books').doc(doc._fieldsProto.bookID.stringValue).collection('podcasts')
-                                        .doc(doc._fieldsProto.podcastID.stringValue);
-          batch.update(docRef, {podcasterName : nameSetInSettingsScreen}) 
+          if(doc._fieldsProto.isChapterPodcast.booleanValue === false)
+          {
+            const docRef = db.collection('books').doc(doc._fieldsProto.bookID.stringValue).collection('podcasts')
+                          .doc(doc._fieldsProto.podcastID.stringValue);
+            batch.update(docRef, {podcasterName : nameSetInSettingsScreen}) 
+          }
+          else if(doc._fieldsProto.isChapterPodcast.booleanValue === true)
+          {
+            const docRef = db.collection('books').doc(doc._fieldsProto.bookID.stringValue).collection('chapters').doc(doc._fieldsProto.chapterID.stringValue)
+                          .collection('podcasts').doc(doc._fieldsProto.podcastID.stringValue);
+            batch.update(docRef, {podcasterName : nameSetInSettingsScreen}) 
+          }
+         
         }
        
    })
    return batch.commit().then(() => {
-       console.log('updated all documents of podcasterID - 123456789');
+       console.log('updated all podcast documents of podcasterID - ',uid);
        return true;
    })
 }).catch(err => console.log(err));

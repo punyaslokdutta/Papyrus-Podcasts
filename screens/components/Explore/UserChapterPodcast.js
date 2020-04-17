@@ -9,7 +9,7 @@ var {width, height}=Dimensions.get('window')
 class UserChapterPodcast extends React.Component {
     
     static navigationOptions={
-       // header:null
+       // header:re
     }
    constructor(props)
    {
@@ -45,9 +45,9 @@ class UserChapterPodcast extends React.Component {
         console.log("[UserChapterPodcast] retrieveData");
         const  userid = this.props.navigation.state.params.userData.id;
         let query3 = await firestore().collectionGroup('podcasts').where('podcasterID','==',userid);    
-        let documentChapterPodcasts = 90;
+        let documentChapterPodcasts = null;
         try{
-         documentChapterPodcasts = await query3.where('isChapterPodcast','==',true).orderBy('timestamp','desc').limit(this.state.limit).get();
+         documentChapterPodcasts = await query3.where('isChapterPodcast','==',true).orderBy('createdOn','desc').limit(this.state.limit).get();
         }
         catch(error)
         {
@@ -62,13 +62,13 @@ class UserChapterPodcast extends React.Component {
           }
         let documentData_chapterPodcasts = documentChapterPodcasts.docs.map(document => document.data());
   
-        var lastVisibleChapter = this.state.lastVisibleChapterPodcast;  
+        var lastVisibleChapterPodcast = this.state.lastVisibleChapterPodcast;  
         if(documentData_chapterPodcasts.length != 0)      
-          lastVisibleChapter = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].podcastID;
+          lastVisibleChapterPodcast = documentData_chapterPodcasts[documentData_chapterPodcasts.length - 1].createdOn;
         
           this.setState({
             chapterPodcasts: documentData_chapterPodcasts,
-            lastVisibleChapterPodcast: lastVisibleChapter,
+            lastVisibleChapterPodcast: lastVisibleChapterPodcast,
             loading:false
             });
       }
@@ -86,11 +86,11 @@ class UserChapterPodcast extends React.Component {
           }); 
  
           const  userid = this.props.navigation.state.params.userData.id;
-          let additionalQuery = 9;
+          let additionalQuery = null;
           try{
             additionalQuery = await firestore().collectionGroup('podcasts')
                              .where('podcasterID','==',userid).where('isChapterPodcast','==',true)
-                             .orderBy('timestamp','desc')
+                             .orderBy('createdOn','desc')
                              .startAfter(this.state.lastVisibleChapterPodcast)
                              .limit(this.state.limit);
          }
@@ -98,7 +98,7 @@ class UserChapterPodcast extends React.Component {
          {
            console.log(error);
          }
-         let documentSnapshots = 98;
+         let documentSnapshots = null;
          try{
           documentSnapshots = await additionalQuery.get();
          }
@@ -110,8 +110,8 @@ class UserChapterPodcast extends React.Component {
        let documentData = documentSnapshots.docs.map(document => document.data());
        if(documentData.length != 0)
        {
-            let lastVisibleChapter = documentData[documentData.length - 1].podcastID;
-          if(this.state.lastVisibleChapter === lastVisibleChapter)
+            let lastVisibleChapterPodcast = documentData[documentData.length - 1].createdOn;
+          if(this.state.lastVisibleChapterPodcast === lastVisibleChapterPodcast)
           {
               this.setState({
                   refreshing:false
@@ -121,7 +121,7 @@ class UserChapterPodcast extends React.Component {
           {
             this.setState({
               chapterPodcasts: [...this.state.chapterPodcasts, ...documentData],
-              lastVisibleChapterPodcast : lastVisibleChapter,
+              lastVisibleChapterPodcast : lastVisibleChapterPodcast,
               refreshing:false
             });
           }
@@ -154,7 +154,6 @@ class UserChapterPodcast extends React.Component {
         if (this.state.refreshing == true && this.state.chapterPodcasts.length > 6) {
           return (
             <View>
-            <Text>Refreshing</Text>
             <ActivityIndicator />
             </View>
           )
@@ -172,13 +171,13 @@ class UserChapterPodcast extends React.Component {
     
 
     onEndReached = ({ distanceFromEnd }) => {
-      if(this.state.chapterPodcasts.length > 5)
+      if(this.state.chapterPodcasts.length > (this.state.limit - 1))
       {
-      if(!this.onEndReachedCalledDuringMomentum){
+        if(!this.onEndReachedCalledDuringMomentum){
           this.retrieveMoreChapterPodcasts()
           this.onEndReachedCalledDuringMomentum = true;
+        }
       }
-  }
 }
 
 

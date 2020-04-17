@@ -43,6 +43,8 @@ const SearchBookScreen=(props)=>
     const dispatch=useDispatch();
     const refRBSheet = useRef();
     const userID = props.firebase._getUid();
+    const fromSearchChapterScreen = useSelector(state=>state.userReducer.fromSearchChapterScreen)
+    console.log("FROM_SEARCH_CHAPTER_SCREEN : ",fromSearchChapterScreen)
 
     const initialAuthors  ={
       tag: '',
@@ -120,33 +122,18 @@ const SearchBookScreen=(props)=>
 
     useEffect(
         () => {
-          //console.log("Inside useEffect - componentDidMount of SearchBookScreen");
-          //BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
           return () => {
             console.log(" back_Button_Press Unmounted");
-            //BackHandler.removeEventListener("hardwareBackPress",  back_Button_Press);
-            //props.navigation.navigate('Explore');
             dispatch({type:"SET_ALGOLIA_QUERY",payload:"papyrus"})
           };
         }, [])
-
-   
-
-    // function back_Button_Press()
-    // {
-    //     console.log("Inside BackButton Press");
-    //     dispatch({type:"SET_ALGOLIA_QUERY", payload: null})
-    //     return false;
-    //     //BackHandler.removeEventListener('hardwareBackPress', this.back_Buttton_Press);
-    // }
-    
 
     function renderDatas({item,index})
     {
         console.log(item)
        return(
            <View>
-         <SearchBookItem book={item} index={index} navigation={props.navigation}/>
+         <SearchBookItem book={item} index={index} fromSearchChapterScreen={fromSearchChapterScreen} navigation={props.navigation}/>
           </View>
        )
     }
@@ -171,64 +158,60 @@ const SearchBookScreen=(props)=>
           else
           {
             if(fromExploreScreen == false)
-          {
-            return (
-              <View style={{paddingBottom:height/96}}>
-                <View style={[styles.seperator]} />
-            
+            {
+              return (
+                <View style={{paddingBottom:height/96}}>
+                  <View style={[styles.seperator]} />
+              
+                <View style={{alignItems:'center'}}>
+                  <Text>{"\n"}Couldn't find your book?  </Text>
+                  <TouchableOpacity onPress={() => {refRBSheet.current.open()
+                                                    }}>
+                  <RBSheet
+                    ref={refRBSheet}
+                    animationType={"slide"}
+                    closeOnDragDown={true}
+                    closeOnPressMask={true}
+                    duration={50}
+                    customStyles={{
+                      container:{
+                        backgroundColor: "#dddd",
+                        height:(height*5)/8,
+                        borderRadius:40
+                      },
+                      wrapper: {
+                        backgroundColor: "transparent"
+                      },
+                      draggableIcon: {
+                        backgroundColor: "#000"
+                      }
+                    }}
+                  >
+                 <AddBook refRb ={refRBSheet.current}/>
+                 </RBSheet>
+                      
+                  <Text style={{textDecorationLine: 'underline',color:'rgb(218,165,32)'}}>Click Here to add book</Text>
+                  </TouchableOpacity>
+                  </View>
+                  </View>
+              );
+            }
+            else //if(fromExploreScreen === true)
+            {
+              return (
+                <TouchableOpacity onPress={() =>{
+                  props.navigation.navigate('SelectScreen');
+                }}>
+              
               <View style={{alignItems:'center'}}>
-                <Text>{"\n"}Couldn't find your book?  </Text>
-                <TouchableOpacity onPress={() => {refRBSheet.current.open()
-                                                  }}>
-                <RBSheet
-                  ref={refRBSheet}
-                  animationType={"slide"}
-                  closeOnDragDown={true}
-                  closeOnPressMask={true}
-                  duration={50}
-                  customStyles={{
-                    container:{
-                      backgroundColor: "#dddd",
-                      height:(height*5)/8,
-                      borderRadius:40
-                    },
-                    wrapper: {
-                      backgroundColor: "transparent"
-                    },
-                    draggableIcon: {
-                      backgroundColor: "#000"
-                    }
-                  }}
-                >
-
-        <AddBook refRb ={refRBSheet.current}/>
-         
-      </RBSheet>
-                    
-                <Text style={{textDecorationLine: 'underline',color:'rgb(218,165,32)'}}>Click Here to add book</Text>
+              <Text style={{textDecorationLine: 'underline',color:'rgb(218,165,32)'}}>
+                Proceed to Record Screen to {"\n"}add book for your podcast</Text>
+                </View>
                 </TouchableOpacity>
-                </View>
-                </View>
-            );
-          }
-          else //if(fromExploreScreen === true)
-          {
-            return (
-              <TouchableOpacity onPress={() =>{
-                props.navigation.navigate('SelectScreen');
-              }}>
-            
-            <View style={{alignItems:'center'}}>
-            <Text style={{textDecorationLine: 'underline',color:'rgb(218,165,32)'}}>
-              Proceed to Record Screen to {"\n"}add book for your podcast</Text>
-              </View>
-              </TouchableOpacity>
-            );
-          }
+              );
+            }
           } 
-        
-        
-      }
+        }
 
       
       if(loading == true)

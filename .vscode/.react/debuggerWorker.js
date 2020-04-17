@@ -208,6 +208,8 @@ onmessage = function () {
     }
   };
 }();
+
+//# sourceMappingURL=debuggerWorker.js.map
 // Notify debugger that we're done with loading
 // and started listening for IPC messages
 postMessage({workerLoaded:true});

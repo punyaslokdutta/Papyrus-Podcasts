@@ -141,7 +141,8 @@ const styles = StyleSheet.create({
                  </View>
                <View style ={{height:(height)/20}}>
                  {
-                    props.book.authors.map((item) => (
+                    props.book.authors.map((item,index) => (
+                      (index<=1) &&
                       <Text style={{ color: theme.colors.gray_green }}>{item}</Text>
                     ))
                  }
@@ -155,13 +156,7 @@ const styles = StyleSheet.create({
                 <Text style={{  fontSize: theme.sizes.font * 0.9,color: theme.colors.gray_green }}>
                   Published in {props.book.publicationYear}
                 </Text>
-                <View style={{alignItems: 'flex-end',paddingRight:5}}>
-                  <Icon
-                    name={props.book.saved ? 'bookmark' : 'bookmark-o'}
-                    color={theme.colors.black}
-                    size={theme.sizes.font * 1.25}
-                  />
-                </View>
+                
               </View>
               <View>
               <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>

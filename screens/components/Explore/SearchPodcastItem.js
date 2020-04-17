@@ -128,10 +128,10 @@ const styles = StyleSheet.create({
   console.log("props.podcast : ",props.podcast);
   const dispatch = useDispatch();
   
-  var timestamp = moment(props.podcast.timestamp).fromNow();
+  var createdOn = moment(props.podcast.createdOn).fromNow();
 
-  if(timestamp === null)
-    timestamp = props.podcast.timestamp.slice(0,10);
+  if(createdOn === null)
+    createdOn = props.podcast.createdOn.slice(0,10);
 
   async function retrievePodcastDocument()
   {
@@ -147,19 +147,28 @@ const styles = StyleSheet.create({
           <TouchableOpacity onPress={() => {
             retrievePodcastDocument();
           }}>
-             <View style={{flex:1,flexDirection:"row",paddingLeft:width/64,width:width,height:height/6}}>
+             <View style={{flex:1,flexDirection:"row",paddingBottom:theme.sizes.padding/4,paddingLeft:width/64,width:width,height:height/6}}>
              
-             <View style={{flexDirection: 'row', justifyContent: 'flex-end',paddingTop:height/48,paddingLeft:width/8}}>
+             <View style={{flexDirection: 'row', justifyContent: 'flex-end',paddingTop:height/48,paddingLeft:width/24}}>
               <Image style={{width:width/4,height:height/8}} source={ {uri: props.podcast.podcastPicture}} />
             </View>
 
-               <View style={[styles.flex, styles.column, styles.shadow, { width:(width)/2,padding: theme.sizes.padding / 4 }]}>
-                 <View style={{height:(height)/16}}>
-                  <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.podcast.podcastName.slice(0,40)}
-                       {(props.podcast.podcastName.length > 40) ? ".." : ""}</Text> 
-                 </View>
-               <View style ={{height:(height)/20}}>
-                  <Text style={{ color: theme.colors.gray_green }}>{props.podcast.podcasterName}</Text>
+               <View style={[styles.flex, styles.column, styles.shadow, { width:(width*2)/3,paddingLeft:theme.sizes.padding, paddingTop: theme.sizes.padding / 4 }]}>
+                 <View style={{height:(height)/12,paddingBottom:20}}>
+                  <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.podcast.podcastName.slice(0,50)}
+                       {(props.podcast.podcastName.length > 50) ? ".." : ""}</Text> 
+                {
+                  (props.podcast.chapterName !== null && props.podcast.chapterName !== undefined) &&
+                  <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
+                  {props.podcast.chapterName}
+                </Text>
+                }
+              <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
+                  {props.podcast.bookName}
+                </Text>
+                </View>
+               <View style={{paddingTop:5}}>
+                  <Text style={{ fontSize:theme.sizes.font * 0.8,color: theme.colors.gray_green }}>{props.podcast.podcasterName}</Text>
                </View>
           
               <View style={[
@@ -167,16 +176,12 @@ const styles = StyleSheet.create({
               { alignItems: 'center', justifyContent: 'space-between'}
               ]}>
                 
-                <Text style={{  fontSize: theme.sizes.font * 0.9,color: theme.colors.gray_green }}>
-                {timestamp}
+                <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
+                {createdOn}
                 </Text>
                 
               </View>
-              <View>
-              <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
-                  {props.podcast.bookName}
-                </Text>
-                </View>
+              
             </View>
         
           </View>

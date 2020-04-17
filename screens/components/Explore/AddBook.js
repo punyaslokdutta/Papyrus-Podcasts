@@ -171,7 +171,8 @@ const AddBook=(props)=>{
                  authors : authors.tagsArray,
                  bookPictures : [BookImageDownloadURL],
                  reviewPending : true,
-                 timestamp : moment().format()
+                 createdOn : moment().format(),
+                 createdBy : userID
                })
                .then(function(docRef){
                  firestore().collection('books').doc(docRef.id).set({

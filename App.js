@@ -35,6 +35,7 @@ import PreviewScreen from './screens/PreviewScreen'
 import TagsScreen from './screens/TagsScreen'
 import CategoryScreen from './screens/CategoryScreen'
 import RecordBook from './screens/RecordBook'
+import RecordChapter from './screens/RecordChapter'
 import StatisticsScreen from './screens/StatisticsScreen'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { theme } from './screens/components/categories/constants';
@@ -360,6 +361,10 @@ const AppStackNavigator= createStackNavigator(
     navigationOptions:{
       header:null
    }}, 
+   RecordChapter: {screen :RecordChapter,
+    navigationOptions:{
+      header:null
+   }},
    PreviewScreen: {screen:PreviewScreen,navigationOptions:{
     header : null
 }},
@@ -369,7 +374,6 @@ SearchScreen: {screen:SearchScreen,navigationOptions:{
    SearchTabNavigator: {screen: SearchTabNavigator,navigationOptions:{
          //header : null
    }}
-   
   }, 
   {
     
@@ -394,8 +398,10 @@ const AppDrawerNavigator=createDrawerNavigator(
         drawerIcon: () => (<TouchableOpacity onPress={()=>{NativeModules.ReactNativeRecorder.sampleMethodTwo()}}>
           <Icon name="hdd-o" size={22} style={{ color: 'white' }} />
           </TouchableOpacity>),
-      }}, 
-    Activity: {screen:ActivityScreen, 
+      },
+     
+    }, 
+    "Activity": {screen:ActivityScreen, 
       navigationOptions: {
         drawerIcon: () => (<Icon name="bell" size={22} style={{ color: 'white' }} />),
       }},
@@ -415,7 +421,8 @@ const AppDrawerNavigator=createDrawerNavigator(
     drawerToggleRoute:'DrawerToggle', 
     contentComponent: CustomDrawerContentComponent,
     contentOptions: {
-      
+      activeTintColor: '#dddd',
+      inactiveTintColor: '#dddd'
     }, 
     
 

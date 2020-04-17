@@ -99,10 +99,20 @@ async function updatePodcastsLiked(props){
   
   console.log("[PodcastContent] In function updatePodcastsLiked, numUsers = ",numUsers);
 
-  const numlikedUsers = await firestore().collection('books').doc(props.podcast.bookID).collection('podcasts').doc(props.podcast.podcastID)
-                                  .update({
-    numUsersLiked : firestore.FieldValue.increment(1)
-  })
+  if(props.podcast.isChapterPodcast == true)// && props.podcast.chapterID !== undefined)
+  {
+     await firestore().collection('books').doc(props.podcast.bookID).collection('chapters').doc(props.podcast.chapterID)
+                          .collection('podcasts').doc(props.podcast.podcastID).update({
+              numUsersLiked : firestore.FieldValue.increment(1)
+        })
+  }
+  else
+  {
+     await firestore().collection('books').doc(props.podcast.bookID).collection('podcasts').doc(props.podcast.podcastID)
+               .update({
+        numUsersLiked : firestore.FieldValue.increment(1)
+    })
+  }
 
 
   console.log("props.podcast = ",props.podcast);

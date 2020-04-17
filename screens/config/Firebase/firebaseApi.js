@@ -2,15 +2,13 @@
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import {firebase} from '@react-native-firebase/auth';
-import storage from '@react-native-firebase/storage'
-
+import storage from '@react-native-firebase/storage';
+import moment from 'moment';
  
 const firebaseApi={
     
       _signOutUser : async () => {
         try {
-            //await AsyncStorage.clear();
-    //this.props.navigation.navigate('Auth');
             await firebase.auth().signOut();
             navigate('Auth');
         } catch (e) {
@@ -21,12 +19,13 @@ const firebaseApi={
     _checkUserAuth: async( user) => {
         return firebase.auth().onAuthStateChanged(user)
       },
+
       _passwordReset: async(email)  => {
         return firebase.auth().sendPasswordResetEmail(email)
       },
 
 
-     _createNewUser:async(user,fullName,userName) => {
+     _createNewUser:async(user,fullName,userName,userPreferences,languagePreferences) => {
 
         //const query11 = await firestore().collection('users').doc("656523232").get();
         console.log("createNewUser QQUUEERRYY");
@@ -51,19 +50,19 @@ const firebaseApi={
                             displayPicture: pictureURL,
                             email: user._user.email,
                             introduction: "",
-                            accountCreationTime: Date.now(),
+                            accountCreationTime: moment().format(),
                             userName:userName,
                             followingCount: 0,
                             followingList: [],
-                            lastSeenTime: Date.now(),//have to set it in Explore useEffect()
                             podcastsLiked: [],
                             numCreatedBookPodcasts: 0, // On podcast upload
                             numCreatedChapterPodcasts: 0,// On podcast upload
                             numNotifications: 0,    
-                            languagesComfortableTalking: [],// In setPreferences ******
+                            languagesComfortableTalking: languagePreferences,
                             listenedBookPodcastsCount: 0,
                             listenedChapterPodcastsCount: 0,
                             timespentByUserListening: 0,
+                            userPreferences: userPreferences,
                             website : null        
         });
 

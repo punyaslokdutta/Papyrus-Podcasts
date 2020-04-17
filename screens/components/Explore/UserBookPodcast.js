@@ -43,18 +43,18 @@ class UserBookPodcast extends React.Component {
           loading: true,
         });
         console.log("[UserBookPodcast] Inside retrieveData function");
-        console.log("[UserBookPodcast] this.props.navigation.state.params = ",this.props.navigation.state.params);
-        const  userid = this.props.navigation.state.params.userData.id;
-        
+        const  userid = this.props.navigation.state.params.userData.id;       
         let query3 = await firestore().collectionGroup('podcasts').where('podcasterID','==',userid);    
-        let documentPodcasts = await query3.where('isChapterPodcast','==',false).orderBy('timestamp','desc').limit(this.state.limit).get();
+        let documentPodcasts = await query3.where('isChapterPodcast','==',false).orderBy('createdOn','desc').limit(this.state.limit).get();
         let documentData_podcasts = documentPodcasts.docs.map(document => document.data());
-        var lastVisibleBook = this.state.lastVisibleBookPodcast;
-        lastVisibleBook = documentData_podcasts[documentData_podcasts.length - 1].podcastID;        
+        var lastVisibleBookPodcast = this.state.lastVisibleBookPodcast;
+
+        if(documentData_podcasts.length != 0)
+          lastVisibleBookPodcast = documentData_podcasts[documentData_podcasts.length - 1].createdOn;        
          
         this.setState({
         bookPodcasts: documentData_podcasts,
-        lastVisibleBookPodcast:lastVisibleBook,
+        lastVisibleBookPodcast:lastVisibleBookPodcast,
         loading:false
         });
       }
@@ -74,11 +74,11 @@ class UserBookPodcast extends React.Component {
          }); 
 
          const  userid = this.props.navigation.state.params.userData.id;
-         let additionalQuery = 9;
+         let additionalQuery = null;
          try{
            additionalQuery = await firestore().collectionGroup('podcasts')
                             .where('podcasterID','==',userid).where('isChapterPodcast','==',false)
-                            .orderBy('timestamp','desc')
+                            .orderBy('createdOn','desc')
                             .startAfter(this.state.lastVisibleBookPodcast)
                             .limit(this.state.limit);
         
@@ -88,7 +88,7 @@ class UserBookPodcast extends React.Component {
         {
           console.log(error);
         }
-        let documentSnapshots=9;
+        let documentSnapshots = null;
         try{
          documentSnapshots = await additionalQuery.get();
         }
@@ -100,9 +100,9 @@ class UserBookPodcast extends React.Component {
       let documentData = documentSnapshots.docs.map(document => document.data());
       if(documentData.length != 0)
       {
-      let lastVisibleBook = documentData[documentData.length - 1].podcastID;
+      let lastVisibleBookPodcast = documentData[documentData.length - 1].createdOn;
        
-      if(this.state.lastVisibleBookPodcast===lastVisibleBook){
+      if(this.state.lastVisibleBookPodcast===lastVisibleBookPodcast){
           this.setState({
                   refreshing:false
               });
@@ -111,7 +111,7 @@ class UserBookPodcast extends React.Component {
       {
         this.setState({
             bookPodcasts: [...this.state.bookPodcasts, ...documentData],
-            lastVisibleBookPodcast : lastVisibleBook,
+            lastVisibleBookPodcast : lastVisibleBookPodcast,
             refreshing:false
           });
 
@@ -157,7 +157,7 @@ class UserBookPodcast extends React.Component {
     }
 
     onEndReached = ({ distanceFromEnd }) => {
-      if(this.state.bookPodcasts.length>5)
+      if(this.state.bookPodcasts.length > (this.state.limit - 1))
       {
         if(!this.onEndReachedCalledDuringMomentum)
         {

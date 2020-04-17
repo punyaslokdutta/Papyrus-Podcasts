@@ -19,7 +19,6 @@ class  AuthLoadingScreen extends Component {
           }
         }
         this.props.firebase._checkUserAuth=this.props.firebase._checkUserAuth.bind(this)
-        //this.loadApp();
     }
 
     
@@ -38,16 +37,26 @@ class  AuthLoadingScreen extends Component {
             if(user)
             {
               console.log(user)
-              if (user.emailVerified == false) {
-                user.sendEmailVerification().then(function() {
-                   console.log("Email sent.");
-                  }, function(error) {
-                   console.log(error)
-                  });
-              }
-              else {
-                console.log('User email is verified');
-              }
+
+
+              // [1] For email verification, the below given code is to be used.
+              // [2] Have to use it before any payment related activities to block users from payment if email is not verified.
+              // [3] In payment screen, we shall have to include another checkUserAuth so as to listen to user state change as 
+              //     email is verified or not.
+
+              // if (user.emailVerified == false) 
+              // {
+              //   user.sendEmailVerification().then(function() {
+              //      console.log("Email sent.");
+              //     }, function(error) {
+              //      console.log(error)
+              //     });
+              // }
+              // else 
+              // {
+              //   console.log('User email is verified');
+              // }
+
               try{
                 var unsubscribe = await firestore().collection('users').doc(user._user.uid).onSnapshot(
                    (doc)=> {  
@@ -84,8 +93,7 @@ class  AuthLoadingScreen extends Component {
               }
               catch(error)
               {
-                console.log("ERRRRRRRRRRROOOOORRRRRRRRRRRRR")
-                 console.log(error)
+                console.log("ERROR : ",error)
               }
             
           }
