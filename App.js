@@ -1,10 +1,10 @@
 import ProfileFollowerScreen from './screens/components/Profile/ProfileFollowerScreen'
 import ProfileFollowingScreen from './screens/components/Profile/ProfileFollowingScreen'
-
+// import {Text} from './screens/components/categories/components'
 import React, {Component} from 'react';
 import CustomDrawerContentComponent from './screens/navigation/CustomDrawerContentComponent';
 import setUserDetails from './screens/setUserDetails'
-import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView,  NativeModules} from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Image, Text,Dimensions, Button, ScrollView,  NativeModules} from 'react-native';
 import {createSwitchNavigator,
   createAppContainer,
   } from 'react-navigation'
@@ -391,22 +391,24 @@ const AppDrawerNavigator=createDrawerNavigator(
  {
     Home: {screen : AppStackNavigator, 
       navigationOptions: {
+        drawerLabel: "Home  ",
         drawerIcon: () => (<Icon name="home" size={24} style={{ color: 'white' }} />),
       }},
-    Drafts: {screen:StatisticsScreen, 
+    Drafts: {screen: StatisticsScreen, 
       navigationOptions: {
+        drawerLabel: "Drafts ",
         drawerIcon: () => (<TouchableOpacity onPress={()=>{NativeModules.ReactNativeRecorder.sampleMethodTwo()}}>
           <Icon name="hdd-o" size={22} style={{ color: 'white' }} />
           </TouchableOpacity>),
-      },
-     
-    }, 
-    "Activity": {screen:ActivityScreen, 
+      }}, 
+    Activity: {screen:ActivityScreen, 
       navigationOptions: {
+        drawerLabel: "Activity  ",
         drawerIcon: () => (<Icon name="bell" size={22} style={{ color: 'white' }} />),
       }},
     Settings: {screen:SettingsScreen, 
       navigationOptions: {
+        drawerLabel: "Settings ",
         drawerIcon: () => (<Icon name="cog" size={22} style={{ color: 'white' }} />),
       }}
   }, 

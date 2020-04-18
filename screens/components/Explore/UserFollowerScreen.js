@@ -18,7 +18,7 @@ class UserFollowerScreen extends React.Component {
 
       this.state={
         Followers:[], 
-        limit:12,
+        limit:11,
         lastVisibleFollower:null,
         refreshing:false,
         loading:false,

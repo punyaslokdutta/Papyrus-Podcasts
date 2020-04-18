@@ -245,10 +245,24 @@ const PreviewScreen = (props) => {
       
 
 
-  function updateTagState(state){
-    setTags(state);
-  };
+  
 
+  function updateTagState(state)
+  {
+    console.log(state);
+    setTags(state);
+
+    var tagsArrayLength = state.tagsArray.length;
+    if(tagsArrayLength != 0)
+    {
+      if(state.tagsArray[tagsArrayLength-1].length == 0 || !state.tagsArray[tagsArrayLength-1].replace(/\s/g,'').length)
+      {
+        var tagState = state;
+        tagState.tagsArray.pop();
+        setTags(tagState);   
+      }
+    }         
+  };
 
   function uploadPodcast(recordedFilePath)
   {

@@ -4,8 +4,8 @@ import UserBookPodcast from '../components/Explore/UserBookPodcast';
 import UserChapterPodcast from '../components/Explore/UserChapterPodcast';
 import {createMaterialTopTabNavigator} from 'react-navigation-tabs';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView} from 'react-native';
-import { Block, Text } from '../components/categories/components'
+import { StyleSheet, View, TouchableOpacity, Image,Text, Dimensions, Button, ScrollView} from 'react-native';
+import { Block } from '../components/categories/components'
 import { theme } from '../components/categories/constants';
 import UserStatsScreen from '../components/Explore/UserStatsScreen'
 import { withFirebaseHOC } from '../config/Firebase';
@@ -30,7 +30,7 @@ async function retrieveData(message,userid,item,userDisplayPictureURL,name,userI
       console.log(item.id)
       var val = userid
 
-    if(message === 'FOLLOW')
+    if(message === 'FOLLOW ')
     {
         let addQuery1 = await firestore().collection('users').doc(item.id).set({
                    followersList : firestore.FieldValue.arrayUnion(userid),
@@ -65,7 +65,7 @@ async function retrieveData(message,userid,item,userDisplayPictureURL,name,userI
 
         //console.log(list1);
     } 
-    else if(message === 'FOLLOWING')
+    else if(message === 'FOLLOWING ')
      {
       let removeQuery1 = await firestore().collection('users').doc(item.id).set({
         followersList : firestore.FieldValue.arrayRemove(userid),
@@ -143,13 +143,13 @@ const CustomUserHeader = (props) => {
 
       
     
-      let wholestring = 'FOLLOW';
+      let wholestring = 'FOLLOW ';
        
       console.log("[CustomUserHeader] item = ",item);
       let initialMessage = useSelector(state=>state.userReducer.isUserFollowing[item.id])
       let printMessage = useSelector(state=>state.userReducer.isUserFollowing)
       if(initialMessage === true)
-        wholestring = 'FOLLOWING'
+        wholestring = 'FOLLOWING '
       
       console.log("[CustomUserHeader] isUserFollowing = ", printMessage)
       const [message,setMessage] = useState(wholestring);
@@ -158,21 +158,21 @@ const CustomUserHeader = (props) => {
       return (
         <View>
         <View style={{alignItems:'flex-end',paddingRight:10,paddingTop:10}}>
-        <Button title={message} style={{flex:1,alignItems:'flex-end', justifyContent:'flex-end', height:SCREEN_HEIGHT/25, width:SCREEN_WIDTH/3,
+        <Button title={message} style={{flex:1, height:SCREEN_HEIGHT/25, width:SCREEN_WIDTH/3,
                     borderRadius:5, backgroundColor:theme.colors.primary}} onPress={() => {
                       
-                      if(message === 'FOLLOW')
+                      if(message === 'FOLLOW ')
                       {
                         console.log("FoLLow")
                         dispatch({
                           type: "ADD_TO_FOLLOWING_MAP",
                           payload: item.id
                         })
-                        setMessage('FOLLOWING')
+                        setMessage('FOLLOWING ')
                         console.log(printMessage)
                       }
                         
-                      else if(message === 'FOLLOWING')
+                      else if(message === 'FOLLOWING ')
                       {
                         console.log("UnFOLLOW")
                         console.log(message)
@@ -180,7 +180,7 @@ const CustomUserHeader = (props) => {
                           type: "REMOVE_FROM_FOLLOWING_MAP",
                           payload: item.id
                         })
-                        setMessage('FOLLOW')
+                        setMessage('FOLLOW ')
                         console.log(printMessage)
                       }
                       else
@@ -196,12 +196,12 @@ const CustomUserHeader = (props) => {
         </View>
           <View style={{alignItems:'center',justifyContent:'center', flexDirection:'column'}}>
             <View style={{flexDirection:'column'}}>
-      <Text h3 center>{item.name}'s</Text>
+      
+            <Text style={{fontSize:theme.sizes.h3}}>{item.name}'s</Text>
               <View style = {{alignItems:'center'}}>
-              <Text h2 bold>Collections</Text>
+              <Text style={{fontWeight:"bold",fontSize:theme.sizes.h2,paddingRight:5}}>Collections</Text>              
               </View>
               </View>
-              
               <TouchableOpacity style={{alignItems:'center'}} onPress={() => props.navigation.navigate({
                 routeName : 'UserStatsScreen',
                 params : {item:item},

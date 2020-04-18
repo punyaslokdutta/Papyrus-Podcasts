@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView} from 'react-native';
-import { Block, Text } from '../components/categories/components'
+import { StyleSheet, View,Text, TouchableOpacity, Image, Dimensions, Button, ScrollView} from 'react-native';
+import { Block } from '../components/categories/components'
 import { theme } from '../components/categories/constants';
 import {useSelector} from 'react-redux'
 
@@ -22,9 +22,9 @@ const CustomProfileHeader = props => {
   
         <View style={{alignItems:'center',justifyContent:'center',paddingTop: 30,paddingBottom:15, flexDirection:'column'}}>
           <View style={{flexDirection:'column'}}>
-    <Text h3 center>{name}'s</Text>
+    <Text style={{fontSize:theme.sizes.h3}}>{name}'s</Text>
             <View style = {{alignItems:'center'}}>
-            <Text h2 bold>Collections</Text>
+            <Text style={{fontWeight:"bold",fontSize:theme.sizes.h2,paddingRight:5}}>Collections</Text>
             </View>
             </View>
             

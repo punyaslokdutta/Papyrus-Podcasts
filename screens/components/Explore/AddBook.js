@@ -1,5 +1,5 @@
 import React , {Component, useState,useEffect}from "react";
-import { View,Text,  StyleSheet,  Dimensions, SafeAreaView, ScrollView , TouchableOpacity, Image, TextInput} from "react-native";
+import { View,Text,  StyleSheet,  Dimensions, SafeAreaView, ScrollView , TouchableOpacity, Image, TextInput, ActivityIndicator} from "react-native";
 import TagInput from 'react-native-tags-input';
 import ImagePicker from 'react-native-image-picker'
 import ImageResizer from 'react-native-image-resizer';
@@ -15,8 +15,6 @@ const options = {
     chooseFromLibraryButtonTitle: 'Select from Library'
   };
 
-
-
 var {width, height}=Dimensions.get('window')
 const AddBook=(props)=>{
 
@@ -29,6 +27,7 @@ const AddBook=(props)=>{
 
     const dispatch = useDispatch();
 
+    const [loading,setLoading] = useState(false);
     const [bookImage, setBookImage]=useState(null);
     const [BookImageDownloadURL, setBookImageDownloadURL]=useState(null);
     const [uploadBookSuccess, setUploadBookSuccess]=useState(false)
@@ -49,9 +48,24 @@ const AddBook=(props)=>{
         //props.navigation.navigate('SelectScreen',{bookItem:article});
       },[uploadBookSuccess])
 
-    function updateAuthorState(state){
-        setAuthors(state);
-      };
+    function updateAuthorState(state)
+    {
+      console.log(state);
+      // if(state.tag.replace(/\s/g,'').length)
+      
+      setAuthors(state);
+      var tagsArrayLength = state.tagsArray.length;
+      if(tagsArrayLength != 0)
+      {
+        if(state.tagsArray[tagsArrayLength-1].length == 0 || !state.tagsArray[tagsArrayLength-1].replace(/\s/g,'').length)
+        {
+          var tagState = state;
+          tagState.tagsArray.pop();
+          setAuthors(tagState);   
+        }
+      }
+            
+    };
 
     async function uploadImage() {
         ImagePicker.showImagePicker(options, async (response) => {
@@ -127,11 +141,17 @@ const AddBook=(props)=>{
                        paddingRight:width/7
                    }} >
            <TextInput
-                  
                   style={styles.TextInputStyleClass2}
-                  value={bookNameState}         
+                  value={bookNameState}        
                   onChangeText={(text) => {setBookNameState(text)} }
-                   placeholder="Book"                
+                  placeholder="Book"
+                  onBlur={() => {
+                    if(bookNameState != null && bookNameState.length < 1)
+                    {
+                      setBookNameState(null);
+                      alert('Please enter the name of the book you want to add');
+                    }
+                  }}                
                />
              </View>
 
@@ -164,33 +184,57 @@ const AddBook=(props)=>{
                </View>
                <View style={{paddingTop:width/8 ,alignItems: 'center',}}>
 
-             <TouchableOpacity onPress={()=>{
-                 
-               firestore().collection('books').add({
-                 bookName : bookNameState,
-                 authors : authors.tagsArray,
-                 bookPictures : [BookImageDownloadURL],
-                 reviewPending : true,
-                 createdOn : moment().format(),
-                 createdBy : userID
-               })
-               .then(function(docRef){
-                 firestore().collection('books').doc(docRef.id).set({
-                   bookID : docRef.id
-                 },{merge:true})
+            {
+              loading == true ?
+                 <ActivityIndicator/>
+                 :
+                 <TouchableOpacity onPress={()=>{
+                  
+                  if(bookNameState === null)
+                  {
+                    alert('Please enter the name of the book you want to add');
+                    return;
+                  }
+                  else if(!bookNameState.replace(/\s/g,'').length)
+                  {
+                    setBookNameState(null);
+                    alert("Please enter some text in book name field");
+                    return;
+                  }
+                  else if(authors.tagsArray.length == 0)
+                  {
+                    alert('Please enter atleast 1 author for your book');
+                    return;
+                  }
+                setLoading(true);
+                firestore().collection('books').add({
+                  bookName : bookNameState,
+                  authors : authors.tagsArray,
+                  bookPictures : [BookImageDownloadURL],
+                  reviewPending : true,
+                  createdOn : moment().format(),
+                  createdBy : userID
+                })
+                .then(function(docRef){
+                  firestore().collection('books').doc(docRef.id).set({
+                    bookID : docRef.id
+                  },{merge:true})
 
-                 Toast.show("Book Successfully uploaded")
-                 setBookID(docRef.id);
-                 setUploadBookSuccess(true);
-               })
-               .catch(function(error) {
-                 console.error("Error adding Book Document: ", error);
-                 Toast.show("Error: Please try again.")
-             });
-             }} 
-             style={{ alignItems: 'center', justifyContent:'center', height:height/20, width:(width*7)/24, borderRadius:15, backgroundColor:'rgba(0, 0, 0, 0.7)', borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }}>
-             <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Add Book</Text>
-             </TouchableOpacity>
+                  Toast.show("Book Successfully uploaded")
+                  setBookID(docRef.id);
+                  setUploadBookSuccess(true);
+                  setLoading(false);
+                })
+                .catch(function(error) {
+                  console.error("Error adding Book Document: ", error);
+                  Toast.show("Error: Please try again.")
+              });
+              }} 
+              style={{ alignItems: 'center', justifyContent:'center', height:height/20, width:(width*7)/24, borderRadius:15, backgroundColor:'rgba(0, 0, 0, 0.7)', borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }}>
+              <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Add Book</Text>
+              </TouchableOpacity>
+            }
+             
              </View> 
 </ScrollView>
          </SafeAreaView>)
