@@ -32,12 +32,18 @@ const SettingsScreen = (props) => {
   const [editing,setEditing] = useState(null);
   const [notifications,setNotifications] =useState(true);
 
+  function myTrim(x) {
+    return x.replace(/^\s+|\s+$/gm,'');
+  }
+
   function handleEdit(name, text) {
     console.log("IN Handle Edit function");
     switch(name)
     {
       case 'account':
-        setAccountNameState(text)
+        trimmedText = text.trim();
+        //trimmedText = myTrim(text);
+        setAccountNameState(trimmedText);
         //dispatch({type:'CHANGE_NAME',payload:text});
         break;
       case 'username':
@@ -232,7 +238,7 @@ const SettingsScreen = (props) => {
                 <Text gray2 style={{ marginBottom: 10 }}>Username</Text>
                 {renderEdit('username')}
               </Block>
-              <TouchableOpacity onPress={() => toggleEdit('username')}>
+              {/* <TouchableOpacity onPress={() => toggleEdit('username')}>
               <View>
               {
                loadingUserName ?  
@@ -242,7 +248,7 @@ const SettingsScreen = (props) => {
                  </Text>)
               }
               </View>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </Block>
             <Block row space="between" margin={[10, 0]} style={styles.inputRow}>
               <Block>

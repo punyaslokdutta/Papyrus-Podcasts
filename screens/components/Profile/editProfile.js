@@ -104,8 +104,11 @@ const editProfile = (props) => {
     console.log("WEBSITE STATE : ",websiteState);
     console.log("INTRODUCTION STATE : ",introductionState);
     console.log("Setting Editing to :",name);
-    dispatch({ type: 'CHANGE_WEBSITE', payload: websiteState });
-    dispatch({ type: 'ADD_INTRODUCTION', payload: introductionState });
+
+    if(websiteState !== null)
+      dispatch({ type: 'CHANGE_WEBSITE', payload: websiteState.trim() });
+    if(introductionState !== null)
+      dispatch({ type: 'ADD_INTRODUCTION', payload: introductionState.trim() });
 
     if (!editing)
       setEditing(name);

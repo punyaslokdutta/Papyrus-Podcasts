@@ -56,6 +56,8 @@ var {width:WIDTH, height:HEIGHT}=Dimensions.get('window')
 
 const SignUpScreen=(props)=>{
 
+  const userEmail = props.navigation.state.params.userEmail;
+  console.log("[SIGN UP Screen] userEmail: ", userEmail);
 
   onFBLoginOrRegister = async () => {
     LoginManager.logInWithPermissions(['public_profile', 'email',])
@@ -126,7 +128,7 @@ const SignUpScreen=(props)=>{
           
         </View>
         <View style={styles.positions}>
-        <TextInput style={styles.Input}   placeholder={'Email'} placeholderTextColor={'rgba(255, 255, 255, 0.5)'} underlineColorAndroid='transparent'
+        <TextInput style={styles.Input}  defaultValue={userEmail} placeholder={'Email'} placeholderTextColor={'rgba(255, 255, 255, 0.5)'} underlineColorAndroid='transparent'
           onChangeText={formikProps.handleChange('email')}
           /> 
           <Text style={{ color: 'rgba(255, 255, 255, 0.5)', paddingLeft:45 ,fontFamily:'sans-serif-light' , fontSize:12 }}>
@@ -134,7 +136,7 @@ const SignUpScreen=(props)=>{
           </Text>
           </View>
           <View style={styles.positions}>
-          <TextInput style={styles.Input}   placeholder={'Password'} placeholderTextColor={'rgba(255, 255, 255, 0.5)'} underlineColorAndroid='transparent'
+          <TextInput style={styles.Input}   placeholder={'Password'} placehoPodcastPlayerlderTextColor={'rgba(255, 255, 255, 0.5)'} underlineColorAndroid='transparent'
           onChangeText={formikProps.handleChange('password')}
           secureTextEntry
           /> 

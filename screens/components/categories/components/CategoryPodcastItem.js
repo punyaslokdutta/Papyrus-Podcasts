@@ -138,6 +138,7 @@ const styles = StyleSheet.create({
         return (
           <TouchableOpacity  onPress={(()=>{
             dispatch({type:"SET_CURRENT_TIME", payload:0})
+            dispatch({type:"SET_DURATION", payload:props.podcast.duration})
             dispatch({type:"SET_PAUSED", payload:false})
             dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
             dispatch({type:"SET_PODCAST", payload: props.podcast})

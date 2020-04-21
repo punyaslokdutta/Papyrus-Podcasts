@@ -1,55 +1,136 @@
-const functions         = require('firebase-functions');
-const admin=require('firebase-admin');
-const algoliasearch=require('algoliasearch');
-const serviceAccount = require('./serviceAccount.json');//this one
+
+const functions = require("firebase-functions");
+const admin = require('firebase-admin');
+const serviceAccount = require('./serviceAccount.json');
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)//not required for uploading json to firestore
+  });
 
 
- admin.initializeApp({
-   credential: admin.credential.cert(serviceAccount)//not required for uploading json to firestore
- });
-
-exports.changeUserNameInPodcastsAsiaEast = functions.region("asia-northeast1").https.onCall((data, context) => {
-
- const nameSetInSettingsScreen = data.changedName;
- const uid = context.auth.uid;
- console.log("User ID: ",uid);
- console.log("data variable: ",data);
-
+exports.addActivity = functions.region("asia-northeast1").https.onCall(async(data, context) => {
  
- 
- const db = admin.firestore();
- db.collectionGroup('podcasts').where('podcasterID','==',uid).get().then(response => {
-   let batch = db.batch()
-   console.log("Response DOCS : ",response.docs);
-   response.docs.forEach((doc) => {
-       console.log("Full Doc : ",doc);
-       //console.log("bookID : ",doc._fieldsProto.bookID.stringValue);
-       if(doc._fieldsProto.bookID !== undefined && 
-        doc._fieldsProto.bookID !== null)
+
+  const creationTimestamp = data.timestamp;
+  const likerOrFollowerID = context.auth.uid;
+  const likerOrFollowerImage = data.photoURL;
+  const podcastID = data.podcastID;
+  const userID = data.userID;
+  const podcastPicture = data.podcastImageURL;
+  const type = data.type;
+  const likerOrFollowerName = data.Name;
+  const podcastName = data.podcastName;
+  const bookID = data.bookID;
+  const chapterID = data.chapterID;
+  const isChapterPodcast = data.isChapterPodcast;
+
+
+  console.log("ACTIVITY DETAILS: ");
+
+  console.log("type: ",type);
+  console.log("creationTimestamp: ",creationTimestamp);
+  console.log("likerOrFollowerID: ",likerOrFollowerID);
+  console.log("likerOrFollowerImage: ",likerOrFollowerImage);
+  console.log("likerOrFollowerName: ",likerOrFollowerName);
+  console.log("podcastID: ",podcastID);
+  console.log("userID: ",userID);
+  console.log("podcastPicture: ",podcastPicture);
+  console.log("podcastName: ",podcastName);
+  console.log("bookID: ",bookID);
+  console.log("chapterID: ",chapterID);
+  console.log("isChapterPodcast: ",isChapterPodcast);
+
+  console.log("context.auth = ",context.auth);
+  
+  const db = admin.firestore();
+  const privateDataID = "private" + userID;
+  // FOLLOW activity
+  if(podcastName === undefined)
+    {
+
+      db.collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('Activities').add({
+        type : type,
+        creationTimestamp: creationTimestamp,
+        actorID: likerOrFollowerID,
+        actorImage: likerOrFollowerImage,
+        actorName: likerOrFollowerName
+      })
+      .then((docRef) => {
+        console.log("Document written with ID: ", docRef.id);
+       return db.collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('Activities')
+                .doc(docRef.id).set({
+                    activityID: docRef.id
+                },{merge:true})
+    
+    })
+    .catch(function(error) {
+        console.error("Error adding document: ", error);
+    });
+    }
+  else // LIKE activity
+    {
+      try{
+        if(isChapterPodcast === true)// && props.podcast.chapterID !== undefined)
         {
-          console.log("podcastID : ",doc._fieldsProto.podcastID.stringValue);
-          if(doc._fieldsProto.isChapterPodcast.booleanValue === false)
-          {
-            const docRef = db.collection('books').doc(doc._fieldsProto.bookID.stringValue).collection('podcasts')
-                          .doc(doc._fieldsProto.podcastID.stringValue);
-            batch.update(docRef, {podcasterName : nameSetInSettingsScreen}) 
-          }
-          else if(doc._fieldsProto.isChapterPodcast.booleanValue === true)
-          {
-            const docRef = db.collection('books').doc(doc._fieldsProto.bookID.stringValue).collection('chapters').doc(doc._fieldsProto.chapterID.stringValue)
-                          .collection('podcasts').doc(doc._fieldsProto.podcastID.stringValue);
-            batch.update(docRef, {podcasterName : nameSetInSettingsScreen}) 
-          }
-         
+          console.log("updating numUsersLiked in chapterpodcast")
+           await db.collection('books').doc(bookID).collection('chapters').doc(chapterID)
+                                .collection('podcasts').doc(podcastID).update({
+                    numUsersLiked : admin.firestore.FieldValue.increment(1)
+              })
         }
-       
-   })
-   return batch.commit().then(() => {
-       console.log('updated all podcast documents of podcasterID - ',uid);
-       return true;
-   })
-}).catch(err => console.log(err));
+        else
+        {
+           console.log("updating numUsersLiked in bookpodcast")
+           await db.collection('books').doc(bookID).collection('podcasts').doc(podcastID)
+                     .update({
+              numUsersLiked : admin.firestore.FieldValue.increment(1)
+          })
+        }
+      }
+      catch(error){
+        console.log("Error in updating numUsersLiked: ",error)
+      }
+     
 
-     return true;
- });
+
+      db.collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('Activities').add({
+        type : type,
+        creationTimestamp: creationTimestamp,
+        actorID: likerOrFollowerID,
+        actorImage: likerOrFollowerImage,
+        actorName: likerOrFollowerName,
+        podcastID: podcastID,
+        podcastPicture: podcastPicture,
+        podcastName: podcastName
+      })
+      .then((docRef) => {
+        console.log("Document written with ID: ", docRef.id);
+       return db.collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('Activities')
+                .doc(docRef.id).set({
+                    activityID: docRef.id
+                },{merge:true})
+    
+      })
+      .catch(function(error) {
+          console.error("Error adding document: ", error);
+      });
+    }  
+  
+    db.collection('users').doc(userID).collection('privateUserData').doc(privateDataID).set({
+        numNotifications: admin.firestore.FieldValue.increment(1)
+    },{merge:true}).then(
+      () => {
+        console.log("Added 1 to numNotifications in privateData");
+        return true;
+      })
+      .catch(function(error) {
+        console.error("Error adding 1 to numNotifications to user's private document: ", error);
+    });
+  
+  
+      return true;
+  });
+
+
+
+
 

@@ -18,6 +18,7 @@ const options = {
 var {width, height}=Dimensions.get('window')
 const AddBook=(props)=>{
 
+  const [tagsLength,setTagsLength] = useState(0);
   const initialAuthors = {
     tag: '',
     tagsArray: []
@@ -53,11 +54,21 @@ const AddBook=(props)=>{
       console.log(state);
       // if(state.tag.replace(/\s/g,'').length)
       
-      setAuthors(state);
-      var tagsArrayLength = state.tagsArray.length;
+      if(state.tagsArray.length != tagsLength)  // for trimming last selected author(tag)
+      {
+        var trimmedTagState = state;
+        const trimmedTag = state.tagsArray[state.tagsArray.length - 1].trim();
+        trimmedTagState.tagsArray[trimmedTagState.tagsArray.length - 1] = trimmedTag;
+        setAuthors(trimmedTagState);
+        setTagsLength(trimmedTagState.tagsArray.length);
+      }
+      else
+        setAuthors(state);
+
+        var tagsArrayLength = state.tagsArray.length;
       if(tagsArrayLength != 0)
       {
-        if(state.tagsArray[tagsArrayLength-1].length == 0 || !state.tagsArray[tagsArrayLength-1].replace(/\s/g,'').length)
+        if(state.tagsArray[tagsArrayLength-1].length == 0 || !state.tagsArray[tagsArrayLength-1].replace(/\s/g,'').length) // to check for whitespaces at right or left
         {
           var tagState = state;
           tagState.tagsArray.pop();
@@ -161,6 +172,7 @@ const AddBook=(props)=>{
                   onChangeText={(text) => {setBookNameState(text)} }
                   placeholder="Book"
                   onBlur={() => {
+                    setBookNameState(bookNameState.trim());
                     if(bookNameState != null && bookNameState.length < 1)
                     {
                       setBookNameState(null);

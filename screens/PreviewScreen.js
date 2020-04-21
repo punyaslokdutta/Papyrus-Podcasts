@@ -58,6 +58,7 @@ const PreviewScreen = (props) => {
   const [tags, setTags]=useState(initialTags);
   const [tagsColor, settagsColor]=useState('#3ca897');
   const [tagsText, settagsText]=useState('#fff');
+  const [tagsLength,setTagsLength] = useState(0);
   const [podcastImageDownloadURL,setPodcastImageDownloadURL] = useState("https://storage.googleapis.com/papyrus-fa45c.appspot.com/podcasts/Waves.jpg");
   const [podcastAudioDownloadURL,setPodcastAudioDownloadURL] = useState(null);
   const [duration , setDuration]=useState(props.navigation.getParam('duration'))
@@ -264,7 +265,17 @@ const PreviewScreen = (props) => {
   function updateTagState(state)
   {
     console.log(state);
-    setTags(state);
+      
+    if(state.tagsArray.length != tagsLength)  // for trimming last selected tag
+    {
+      var trimmedTagState = state;
+      const trimmedTag = state.tagsArray[state.tagsArray.length - 1].trim();
+      trimmedTagState.tagsArray[trimmedTagState.tagsArray.length - 1] = trimmedTag;
+      setTags(trimmedTagState);
+      setTagsLength(trimmedTagState.tagsArray.length);
+    }
+    else
+      setTags(state);
 
     var tagsArrayLength = state.tagsArray.length;
     if(tagsArrayLength != 0)
@@ -275,6 +286,8 @@ const PreviewScreen = (props) => {
         tagState.tagsArray.pop();
         setTags(tagState);   
       }
+      
+
     }         
   };
 
@@ -465,11 +478,13 @@ const PreviewScreen = (props) => {
           placeholderTextColor={"gray"}
           value={podcastName}
           onBlur={() => {
+            setPodcastName(podcastName.trim());
             if(podcastName != null && (podcastName.length < 6 || podcastName.length > 50))
             {
               setPodcastName(null);
               alert('The name of the podcast should follow the given limits.\nMin characters required: 6\nMax characters allowed: 50');
             }
+            
           }}
           onChangeText={(text) => {
             setPodcastName(text)
@@ -487,7 +502,17 @@ const PreviewScreen = (props) => {
           underlineColorAndroid="transparent"
           placeholder={"How should your listeners approach this podcast?" }
           placeholderTextColor={"gray"}
-
+          onBlur={() => {
+            setPodcastDescription(podcastDescription.trim());
+            console.log(podcastDescription.length);
+            if(podcastDescription != null && (podcastDescription.length < 6 || podcastDescription.length > 1000))
+            {
+              console.log(podcastDescription.length);
+              setPodcastDescription(null);
+              alert('The description of the podcast should follow the given limits.\nMin characters required: 6\nMax characters allowed: 1000');
+            }
+            
+          }}
           onChangeText={(text) => setPodcastDescription(text)}
           numberOfLines={6}
           multiline={true}

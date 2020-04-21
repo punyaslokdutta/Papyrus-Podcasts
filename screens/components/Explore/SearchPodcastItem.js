@@ -141,6 +141,7 @@ const styles = StyleSheet.create({
     const podcastDocumentData = podcastCollection.docs[0]._data;
     console.log("[SearchPodcastItem] podcastDocumentData : ", podcastDocumentData);
     dispatch({type:"SET_CURRENT_TIME", payload:0})
+    dispatch({type:"SET_DURATION", payload:podcastDocumentData.duration})
     dispatch({type:"SET_PAUSED", payload:false})
     dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
     dispatch({type:"SET_PODCAST", payload: podcastDocumentData})
