@@ -7,6 +7,7 @@ import React, {Component} from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { theme } from '../components/categories/constants';
 import { Text } from '../components/categories/components';
+
 const CustomCategoryHeader = props => {
     {console.log("Inside Custom Category header//////////////////////////////////// ")}
     // {console.log(props.navigation.state)}
@@ -21,16 +22,16 @@ const CustomCategoryHeader = props => {
         else
         {
             return (
-                <View style={{flexDirection:'row'}}>
-                 <TouchableOpacity onPress={() => props.navigation.navigate('CategoryScreen')}>
+                <View style={{backgroundColor:'black',flexDirection:'row'}}>
+                 {/* <TouchableOpacity onPress={() => props.navigation.navigate('CategoryScreen')}>
                 <Image
                   resizeMode="contain"
                   source={'../../assets/icons/Back.png'}
-                  style={{ width: 20, height: 50, marginTop: 2,marginLeft: theme.sizes.base}}
+                  style={{ width: 10, height: 50, marginTop: 2,paddingLeft: theme.sizes.base}}
                 />
-                </TouchableOpacity> 
+                </TouchableOpacity>  */}
                 
-              <Text h1 bold style={{paddingTop:10,paddingLeft:10}}>{props.navigation.state.routes[1].params.category}</Text>
+              <Text h2 style={{color:'white',paddingVertical:10,paddingLeft:10,paddingRight:10}}>{props.navigation.state.routes[1].params.category}</Text>
                 </View>
               );
         }

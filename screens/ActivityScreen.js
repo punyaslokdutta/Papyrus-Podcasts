@@ -4,12 +4,13 @@ import React, {Component, useState,useEffect} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import { StyleSheet, Text, View,ActivityIndicator,Dimensions} from 'react-native';
 
-import { FlatList } from 'react-native-gesture-handler';
+import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import {withFirebaseHOC} from '../screens/config/Firebase'
 import ActivityItem from './ActivityItem'
 import { useDispatch } from 'react-redux';
+import { theme } from './components/categories/constants';
 
 var {width, height}=Dimensions.get('window')
 
@@ -17,20 +18,17 @@ const ActivityScreen = (props) => {
    
   const dispatch = useDispatch();
   var [activities,setActivities] = useState([]);
-  const limit = 10;
+  const limit = 12;
   var [lastVisibleActivity,setLastVisibleActivity] = useState(null);
   var [loading,setLoading] = useState(false);
   var [refreshing,setRefreshing] = useState(false);
   var [onEndReachedCalledDuringMomentum,setOnEndReachedCalledDuringMomentum] = useState(true);
 
-
-
   async function fetchActivities()
   {
+    console.log('Retrieving Data in Activity Screen');
     setLoading(true);
-       try {       
-        console.log('Retrieving Data in Activity Screen');
-        
+    try{       
         const  userid = props.firebase._getUid();
         const privateDataID = "private" + userid;
   
@@ -51,20 +49,26 @@ const ActivityScreen = (props) => {
                           setActivities(documentActivities);
                           setLastVisibleActivity(lastVisible);
                             
-                          }
-                      ); 
+                          },function(error) {
+                            console.log("Error in onSnapshot Listener in ActivityScreen: ",error);
+                          }); 
 
-        await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({
-          numNotifications : 0
-        },{merge:true})
-
-        dispatch({type:'ADD_NUM_NOTIFICATIONS',payload: 0})
-      }
-      catch (error) {
-        console.log(error);
-      }
-
-       setLoading(false);
+        try{
+          await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({
+            numNotifications : 0
+          },{merge:true})
+          dispatch({type:'ADD_NUM_NOTIFICATIONS',payload: 0})
+        }
+        catch(error){
+          console.log(error);
+        }
+    }
+    catch (error) {
+      console.log(error);
+    }
+    finally {
+      setLoading(false);
+    }
 
   }
   useEffect(
@@ -74,61 +78,32 @@ const ActivityScreen = (props) => {
     },[])
 
   async function retrieveMoreActivities(){
-    
-    setRefreshing(true);
 
-    try
-     {
-       {console.log("retrieveMoreActivities starts()")}
-        const  userid = props.firebase._getUid();
-        const privateDataID = "private" + userid;
-        let additionalQuery = 9;
-        try{
-          additionalQuery = await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).collection('Activities')
-                           .orderBy('creationTimestamp','desc')
-                           .startAfter(lastVisibleActivity)
-                           .limit(limit);
+    console.log("retrieveMoreActivities starts()")
+    setRefreshing(true);
+    try{   
+     const  userid = props.firebase._getUid();
+     const privateDataID = "private" + userid;
+     let additionalActivities = await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).collection('Activities')
+                        .orderBy('creationTimestamp','desc').startAfter(lastVisibleActivity).limit(limit).get();
        
-     
-      {console.log("retrieveMoreActivities afterQuery()")}
-        
-       }
-       catch(error)
-       {
-         console.log(error);
-       }
-       let documentSnapshots=9;
-       try{
-        documentSnapshots = await additionalQuery.get();
-       }
-       catch(error)
-       {
-           console.log(error);
-       }
-       
-     let documentData = documentSnapshots.docs.map(document => document.data());
+     let documentData = additionalActivities.docs.map(document => document.data());
      if(documentData.length != 0)
      {
         let lastVisible = documentData[documentData.length - 1].creationTimestamp;
-          
-        if(lastVisibleActivity == lastVisible){
-          setRefreshing(false);
-        }
-        else
+        if(lastVisibleActivity != lastVisible && (activities.length < 36))
         {
           setActivities([...activities, ...documentData]);
           setLastVisibleActivity(lastVisible);
-          setRefreshing(false);
         }
      }
-     else
-     {
-        setRefreshing(false);
-     }
-     }
-     catch(error){
-        console.log(error);
-     }
+    }
+    catch(error){
+      console.log(error);
+    }
+    finally {
+      setRefreshing(false);
+    }
    }
 
    function renderData({item,index})
@@ -140,29 +115,33 @@ const ActivityScreen = (props) => {
        )
     }
    
-   function renderHeader() {
-     return
-     (
-      <View>
-     <Text>Activities</Text>
-     </View>
-     )
-   }
-
-   function renderFooter() {
-    try {
-      if (refreshing == true) {
+    function renderFooter() {
+      
+      if(refreshing == true)
         return (
-          <ActivityIndicator />
-        )
-      }
-      else {
-        return null;
-      }
+          <ActivityIndicator/>
+        ) 
+      else
+        return null
+      
     }
-    catch (error) {
-      console.log(error);
-    }
+
+   function renderHeader() {
+    return (
+      <View style={{flexDirection:'row',backgroundColor:'black',height:height/12,paddingLeft:theme.sizes.padding}}>
+        
+        <View style={{paddingTop:theme.sizes.padding*3/4}}>
+        <TouchableOpacity onPress={() => props.navigation.toggleDrawer()}>
+          <View> 
+        <Icon name="bars" size={22} style={{color:'white'}}/>
+          </View>
+        </TouchableOpacity>
+        </View>
+        <View>
+        <Text style={{paddingTop:theme.sizes.padding/2,color:'white',fontSize:theme.sizes.font*1.7,paddingLeft:theme.sizes.padding/2,paddingRight:5}}> Activities </Text> 
+      </View>
+      </View>
+      );
   }
 
   function onEndReached({ distanceFromEnd }){
@@ -184,8 +163,12 @@ const ActivityScreen = (props) => {
 
   if(loading == true)
   {
+
     return (
+      <View> 
+        {renderHeader()}
       <ActivityIndicator />
+      </View>
     )
   }
   else
@@ -196,8 +179,9 @@ const ActivityScreen = (props) => {
             data={activities}
             renderItem={renderData}
             showsVerticalScrollIndicator={false}
-            keyExtractor={item => item.creationTimestamp}
-            ListHeaderComponent={renderFooter}
+            keyExtractor={item => item.activityID}
+            ListHeaderComponent={renderHeader}
+            ListFooterComponent={renderFooter}
             ItemSeparatorComponent={separator}
             onEndReached={onEndReached}
             onEndReachedThreshold={0.01}

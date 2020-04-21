@@ -42,7 +42,7 @@ function rootReducer(state = INITIAL_STATE, action)  {
         console.log("BUFFERING_PODCAST"+ " " + action.payload)
           return {...state, isBuffering:action.payload}
       case "SET_PAUSED":
-          return {...state, paused:!state.paused}
+          return {...state, paused:action.payload}
     case "TOGGLE_PLAY_PAUSED":
         console.log("SET_TOGGLE_PLAY_PAUSED_ACTION"+ " " + action.payload)
         return {...state, paused:!state.paused}

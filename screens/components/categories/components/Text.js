@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
   light: {
     fontWeight: "200",
   },
+  
   // position
   center: { textAlign: "center" },
   right: { textAlign: "right" },
@@ -121,6 +122,8 @@ const styles = StyleSheet.create({
   white: { color: theme.colors.white },
   gray: { color: theme.colors.gray },
   gray2: { color: theme.colors.gray2 },
+
+  paddingRight: {paddingRight: 5},
   // fonts
   h1: theme.fonts.h1,
   h2: theme.fonts.h2,
@@ -128,5 +131,7 @@ const styles = StyleSheet.create({
   title: theme.fonts.title,
   body: theme.fonts.body,
   caption: theme.fonts.caption,
-  small: theme.fonts.small
+  small: theme.fonts.small,
+
+
 });

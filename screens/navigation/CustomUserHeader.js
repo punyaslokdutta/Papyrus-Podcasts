@@ -194,7 +194,7 @@ const CustomUserHeader = (props) => {
 
                     }}></Button>
         </View>
-          <View style={{alignItems:'center',justifyContent:'center', flexDirection:'column'}}>
+          <View style={{alignItems:'center',justifyContent:'center', flexDirection:'column',paddingBottom:10}}>
             <View style={{flexDirection:'column'}}>
       
             <Text style={{fontSize:theme.sizes.h3}}>{item.name}'s</Text>

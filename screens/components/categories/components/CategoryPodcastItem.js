@@ -136,7 +136,13 @@ const styles = StyleSheet.create({
   const dispatch=useDispatch();
 
         return (
-          <TouchableOpacity  onPress={(()=>dispatch({type:"SET_PODCAST", payload: props.podcast}))}>
+          <TouchableOpacity  onPress={(()=>{
+            dispatch({type:"SET_CURRENT_TIME", payload:0})
+            dispatch({type:"SET_PAUSED", payload:false})
+            dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
+            dispatch({type:"SET_PODCAST", payload: props.podcast})
+            dispatch({type:"SET_NUM_LIKES", payload: props.podcast.numUsersLiked})
+          })}>
              <View style={{flex:1,flexDirection:"row",paddingLeft:width/64,width:width,height:height/5}}>
                
                <View style={[styles.flex, styles.column, styles.shadow, { width:(width)/2,padding: theme.sizes.padding / 4 }]}>

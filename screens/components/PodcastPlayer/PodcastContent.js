@@ -26,15 +26,11 @@ const { width,height } = Dimensions.get('window');
   const video = useRef();
   const userID = props.userID;
   const privateDataID = "private" + userID;
-
-  const userItem = useSelector(state=>state.userReducer.userItem)
-
   const isHomeScreen = useSelector(state=>state.rootReducer.isHomeScreen)
   //const 
   const rate=useSelector(state=>state.rootReducer.rate);
   const currentTime=useSelector(state=>state.rootReducer.currentTime)
 
-  //const isBuffering=useSelector(state=>state.rootReducer.isBuffering);
   const paused=useSelector(state=>state.rootReducer.paused);
   const volume=useSelector(state=>state.rootReducer.volume);
   const liked = useSelector(state=>state.userReducer.isPodcastLiked[props.podcast.podcastID]);

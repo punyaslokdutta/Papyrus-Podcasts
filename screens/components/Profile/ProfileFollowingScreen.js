@@ -3,7 +3,7 @@ import firestore from '@react-native-firebase/firestore';
 import { StyleSheet, Text, View, Image, TouchableOpacity,FlatList,  Dimensions,SafeAreaView, ScrollView,ActivityIndicator} from 'react-native';
 import Podcast from '../Home/Podcast'
 import {withFirebaseHOC} from '../../config/Firebase'
-import FollowerItem from '../Explore/FollowerItem';
+import FollowingItem from '../Explore/FollowingItem';
 var {width, height}=Dimensions.get('window')
 
 class ProfileFollowingScreen extends React.Component {
@@ -41,13 +41,15 @@ class ProfileFollowingScreen extends React.Component {
 
      //retrieve data
      retrieveData = async () => {
+      
+       // Set State: Loading
+       this.setState({
+        loading: true,
+      });
+      console.log('IN Profile FOLLOWING SCREEN');
+
       try {
-        // Set State: Loading
-        this.setState({
-          loading: true,
-        });
-        console.log('IN Profile FOLLOWING SCREEN');
-        // Cloud Firestore: Query
+       
         const userid = this.props.navigation.state.params.id;// props.firebase._getUid();
         var wholestring = "isUserFollower." + userid;
         console.log(wholestring);
@@ -57,89 +59,60 @@ class ProfileFollowingScreen extends React.Component {
                                                 .limit(this.state.limit).get();
         let followingData = followingQuery.docs.map(document=>document.data());
         var lastVisibleFollowing = this.state.lastVisibleFollowing;
-
-        lastVisibleFollowing = followingData[followingData.length - 1].id;        
+        if(followingData.length != 0)
+          lastVisibleFollowing = followingData[followingData.length - 1].id;        
          
         this.setState({
             Followings: followingData,
-       lastVisibleFollowing:lastVisibleFollowing,
-        loading:false
+       lastVisibleFollowing:lastVisibleFollowing
         });
       }
       catch (error) {
         console.log(error);
       }
+      finally {
+        this.setState({
+          loading: false
+        });
+      }
     };
 
     retrieveMoreFollowings = async () => {
-     try
-      {
 
-        {console.log("retrieveMoreProfileFollowings starts()")}
-
+      console.log("retrieveMoreProfileFollowings starts()");
       this.setState({
         refreshing: true
          }); 
 
-         const  userid = this.props.navigation.state.params.id;
-         var wholestring = "isUserFollower." + userid;
-         console.log(wholestring);
-  
-        //  let followingQuery = await firestore().collection('users').where(wholestring,'==',true).get();
-        //  let followingData = followingQuery.docs.map(document=>document.data());
-         
-         let additionalQuery = null;
-         try{
-           additionalQuery = await firestore().collection('users').where('followersList','array-contains',userid).orderBy('id')
-                            .startAfter(this.state.lastVisibleFollowing)
-                            .limit(this.state.limit);
+      try{
+        const  userid = this.props.navigation.state.params.id;
+        var wholestring = "isUserFollower." + userid;
+        console.log(wholestring);
         
-      // Cloud Firestore: Query Snapshot
-      {console.log("retrieveMoreProfileFollowings afterQuery()")}
-         
-        }
-        catch(error)
-        {
-          console.log(error);
-        }
-        let documentSnapshots = null;
-        try{
-         documentSnapshots = await additionalQuery.get();
-        }
-        catch(error)
-        {
-            console.log(error);
-        }
+        let additionalProfileFollowings = await firestore().collection('users').where('followersList','array-contains',userid).orderBy('id')
+                                          .startAfter(this.state.lastVisibleFollowing).limit(this.state.limit).get();
         
-      let documentData = documentSnapshots.docs.map(document => document.data());
-      if(documentData.length != 0)
-      {
-      let lastVisibleFollowing = documentData[documentData.length - 1].id;
-       
-      if(this.state.lastVisibleFollowing===lastVisibleFollowing){
-          this.setState({
-                  refreshing:false
+        let documentData = additionalProfileFollowings.docs.map(document => document.data());
+        if(documentData.length != 0)
+        {
+          let lastVisibleFollowing = documentData[documentData.length - 1].id;
+          if(this.state.lastVisibleFollowing !=lastVisibleFollowing)
+          {
+            this.setState({
+                Followings: [...this.state.Followings, ...documentData],
+                lastVisibleFollowing : lastVisibleFollowing
               });
-      }
-      else
-      {
-        this.setState({
-            Followings: [...this.state.Followings, ...documentData],
-            lastVisibleFollowing : lastVisibleFollowing,
-            refreshing:false
-          });
-
-      }
-    }
-      else
-      {
-        this.setState({
-          refreshing:false
-      });
-      }
+          }
+        }
+      
       }
       catch(error){
-      console.log(error);
+        console.log(error);
+      }
+      finally {
+        this.setState({
+          refreshing: false
+        });
       }
     }
 
@@ -147,7 +120,7 @@ class ProfileFollowingScreen extends React.Component {
     {
        return(
          <View>
-        <FollowerItem item={item} index={index} navigation={this.props.navigation}/>
+        <FollowingItem item={item} index={index} navigation={this.props.navigation}/>
         </View>
        )
     }

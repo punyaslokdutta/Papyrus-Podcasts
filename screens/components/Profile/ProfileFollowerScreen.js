@@ -38,113 +38,77 @@ class ProfileFollowerScreen extends React.Component {
     };
     
 
-     //retrieve data
-     retrieveData = async () => {
+    retrieveData = async () => {
+      
+      this.setState({
+        loading: true,
+      });
+      console.log('IN Profile Follower SCREEN');
+
       try {
-        // Set State: Loading
-        this.setState({
-          loading: true,
-        });
-        console.log('IN Profile Follower SCREEN');
-        // Cloud Firestore: Query
-        const userid = this.props.navigation.state.params.id;// props.firebase._getUid();
+        const userid = this.props.navigation.state.params.id;
         var wholestring = "isUserFollowing." + userid;
         console.log(wholestring);
 
   
-        let FollowerQuery =  await firestore().collectionGroup('privateUserData').where('followingList','array-contains',userid).orderBy('id')
-                                                .limit(this.state.limit).onSnapshot(
-                                                  async(docs) => {
-                                                    let FollowerData = docs.docs.map(document=>document.data());
-                                                    var lastVisibleFollower = this.state.lastVisibleFollower;                                            
-                                                    lastVisibleFollower = FollowerData[FollowerData.length - 1].id;        
-                                                     
-                                                    this.setState({
-                                                        Followers: FollowerData,
-                                                   lastVisibleFollower:lastVisibleFollower,
-                                                    loading:false
-                                                    });
-                                                  }
-                                                );
+       let profileFollowerDocs = await firestore().collectionGroup('privateUserData').where('followingList','array-contains',userid).orderBy('id')
+                                 .limit(this.state.limit).get();
+        let FollowerData = profileFollowerDocs.docs.map(document=>document.data());
+        var lastVisibleFollower = this.state.lastVisibleFollower;
+        if(FollowerData.length != 0)                                            
+          lastVisibleFollower = FollowerData[FollowerData.length - 1].id;        
         
+        this.setState({
+            Followers: FollowerData,
+            lastVisibleFollower:lastVisibleFollower
+        });
       }
       catch (error) {
         console.log(error);
       }
+      finally {
+        this.setState({
+          loading: false
+        });
+      }
+
     };
 
     retrieveMoreFollowers = async () => {
-     try
-      {
 
-        {console.log("retrieveMoreProfileFollowers starts()")}
-
+      console.log("retrieveMoreProfileFollowers starts()")
       this.setState({
         refreshing: true
          }); 
-
+      try{
          const  userid = this.props.navigation.state.params.id;
          var wholestring = "isUserFollowing." + userid;
          console.log(wholestring);
   
-        //  let FollowerQuery = await firestore().collection('users').where(wholestring,'==',true).get();
-        //  let FollowerData = FollowerQuery.docs.map(document=>document.data());
-         
-         let additionalQuery = 9;
-         try{
-           additionalQuery = await firestore().collectionGroup('privateUserData').where('followingList','array-contains',userid).orderBy('id')
-                            .startAfter(this.state.lastVisibleFollower)
-                            .limit(this.state.limit);
+         let additionalProfileFollowers = await firestore().collectionGroup('privateUserData').where('followingList','array-contains',userid)
+                                          .orderBy('id').startAfter(this.state.lastVisibleFollower).limit(this.state.limit).get();
         
-      // Cloud Firestore: Query Snapshot
-      {console.log("retrieveMoreProfileFollowers afterQuery()")}
-         
-        }
-        catch(error)
+        let documentData = additionalProfileFollowers.docs.map(document => document.data());
+        if(documentData.length != 0)
         {
-          console.log(error);
-        }
-        let documentSnapshots=9;
-        try{
-         documentSnapshots = await additionalQuery.get();
-        }
-        catch(error)
-        {
-            console.log(error);
-        }
-        
-      // Cloud Firestore: Document Data
-      let documentData = documentSnapshots.docs.map(document => document.data());
-      // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
-      if(documentData.length != 0)
-      {
-      let lastVisibleFollower = documentData[documentData.length - 1].id;
-       
-      if(this.state.lastVisibleFollower === lastVisibleFollower){
-          this.setState({
-                  refreshing:false
+          let lastVisibleFollower = documentData[documentData.length - 1].id;
+          if(this.state.lastVisibleFollower != lastVisibleFollower)
+          {
+            this.setState({
+                Followers: [...this.state.Followers, ...documentData],
+                lastVisibleFollower : lastVisibleFollower
               });
-      }
-      else
-      {
-        this.setState({
-            Followers: [...this.state.Followers, ...documentData],
-            //chapterPodcasts: documentData_chapterPodcasts,
-            lastVisibleFollower : lastVisibleFollower,
-            refreshing:false
-          });
 
-      }
-    }
-      else
-      {
-        this.setState({
-          refreshing:false
-      });
-      }
+          }
+        }
       }
       catch(error){
-      console.log(error);
+        console.log(error);
+      }
+      finally {
+        this.setState({
+          refreshing: false
+        });
       }
     }
 

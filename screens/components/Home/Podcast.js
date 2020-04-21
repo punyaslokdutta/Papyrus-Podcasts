@@ -169,6 +169,8 @@ const styles = StyleSheet.create({
            <View style={[styles.flex, styles.recommendationHeader]}>
            <TouchableOpacity  onPress={(()=>{
              dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
+             dispatch({type:"SET_CURRENT_TIME", payload:0})
+             dispatch({type:"SET_PAUSED", payload:false})
              dispatch({type:"SET_PODCAST", payload: props.podcast}) 
              dispatch({type:"SET_NUM_LIKES", payload: props.podcast.numUsersLiked})
              if(props.isHomeScreen)

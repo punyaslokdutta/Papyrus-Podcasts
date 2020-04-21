@@ -87,165 +87,179 @@ const PreviewScreen = (props) => {
 
   useEffect(() => { 
 
-    // uploading book podcast
-    if(chapterID === null || chapterID === undefined)         
+    if(podcastAudioDownloadURL !== null)
     {
-      podcastAudioDownloadURL && 
-      firestore().collection('users').doc(userID).collection('privateUserData').
-                    doc(privateDataID).set({
-          numCreatedBookPodcasts : incrementedValue
-            },{merge:true}) && 
+      // uploading book podcast
+      if(chapterID === null || chapterID === undefined)         
+      {
+        try{
+          firestore().collection('users').doc(userID).collection('privateUserData').
+                      doc(privateDataID).set({
+            numCreatedBookPodcasts : incrementedValue
+              },{merge:true})
+              
+          dispatch({type:"ADD_NUM_CREATED_BOOK_PODCASTS", payload: incrementedValue}) 
+        }
+        catch(error){
+          console.log("updating numCreatedBookPodcasts in user Doc error: ", error)
+        } 
 
-      dispatch({type:"ADD_NUM_CREATED_BOOK_PODCASTS", payload: incrementedValue}) &&
+        firestore().collection('books').doc(bookID).collection('podcasts').add({
+          audioFileLink: podcastAudioDownloadURL,
+          bookID: bookID, 
+          chapterName: "",
+          isChapterPodcast: false,
+          bookName: bookName, 
+          duration: duration,
+          genres: genres,
+          language: languageSelected,
+          podcastName: podcastName,
+          podcastPictures: [podcastImageDownloadURL],
+          createdOn: moment().format(),
+          podcastDescription: podcastDescription,
+          tags : tags.tagsArray,
+          podcasterID: userID,
+          podcasterName: userName,
+          numUsersLiked : 0,
+          authors: authors
+        })
+        .then(async function(docRef, props) {
+          console.log("Document written with ID: ", docRef.id);
+          firestore().collection('books').doc(bookID).collection('podcasts')
+                  .doc(docRef.id).set({
+                      podcastID: docRef.id
+                  },{merge:true})
+            Toast.show("Successfully uploaded")
+            setPodcastID(docRef.id)
+            setTags({
+              tag: '',
+              tagsArray: [], 
+            });
+            setUploadPodcastSuccess(true);
+        })
+        .catch(function(error) {
+          console.error("Error adding document: ", error);
+          Toast.show("Error: Please try again.")
+        });
+      } 
+      // uploading chapter podcast
+      else                             
+      {
+        try{
+          firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).set({
+                numCreatedChapterPodcasts : incrementedValue
+              },{merge:true}) 
 
-      firestore().collection('books').doc(bookID).collection('podcasts').add({
-        audioFileLink: podcastAudioDownloadURL,
-        bookID: bookID, 
-        chapterName: "",
-        isChapterPodcast: false,
-        bookName: bookName, 
-        duration: duration,
-        genres: genres,
-        language: languageSelected,
-        podcastName: podcastName,
-        podcastPictures: [podcastImageDownloadURL],
-        createdOn: moment().format(),
-        podcastDescription: podcastDescription,
-        tags : tags.tagsArray,
-        podcasterID: userID,
-        podcasterName: userName,
-        numUsersLiked : 0,
-        authors: authors
-      })
-      .then(async function(docRef, props) {
-        console.log("Document written with ID: ", docRef.id);
-        firestore().collection('books').doc(bookID).collection('podcasts')
-                .doc(docRef.id).set({
-                    podcastID: docRef.id
-                },{merge:true})
-          Toast.show("Successfully uploaded")
-          setPodcastID(docRef.id)
-          setUploadPodcastSuccess(true);
-      })
-      .catch(function(error) {
-        console.error("Error adding document: ", error);
-        Toast.show("Error: Please try again.")
-      });
-    } 
-
-    // uploading chapter podcast
-    else                                  
-    {
-      podcastAudioDownloadURL && 
-      firestore().collection('users').doc(userID).collection('privateUserData').
-                    doc(privateDataID).set({
-          numCreatedChapterPodcasts : incrementedValue
-            },{merge:true}) && 
-
-      dispatch({type:"ADD_NUM_CREATED_CHAPTER_PODCASTS", payload: incrementedValue}) &&
-
-      firestore().collection('books').doc(bookID).collection('chapters').doc(chapterID).collection('podcasts').add({
-        audioFileLink: podcastAudioDownloadURL,
-        bookID: bookID,
-        chapterID: chapterID, 
-        chapterName: chapterName,
-        isChapterPodcast: true,
-        bookName: bookName, 
-        duration: duration,
-        genres: genres,
-        language: languageSelected,
-        podcastName: podcastName,
-        podcastPictures: [podcastImageDownloadURL],
-        createdOn: moment().format(),
-        podcastDescription: podcastDescription,
-        tags : tags.tagsArray,
-        podcasterID: userID,
-        podcasterName: userName,
-        numUsersLiked : 0,
-        authors:authors
-      })
-      .then(async function(docRef, props) {
-        console.log("Document written with ID: ", docRef.id);
-        firestore().collection('books').doc(bookID).collection('chapters').doc(chapterID).collection('podcasts')
-                .doc(docRef.id).set({
-                    podcastID: docRef.id
-                },{merge:true})
-          Toast.show("Successfully uploaded")
-          setPodcastID(docRef.id)
-          setUploadPodcastSuccess(true);
-      })
-      .catch(function(error) {
-        console.error("Error adding document: ", error);
-        Toast.show("Error: Please try again.")
-      });
-    }          
+          dispatch({type:"ADD_NUM_CREATED_CHAPTER_PODCASTS", payload: incrementedValue}); 
+        } 
+        catch(error){
+          console.log("updating numCreatedChapterPodcasts in user Doc error: ", error)
+        }
+        
+        firestore().collection('books').doc(bookID).collection('chapters').doc(chapterID).collection('podcasts').add({
+          audioFileLink: podcastAudioDownloadURL,
+          bookID: bookID,
+          chapterID: chapterID, 
+          chapterName: chapterName,
+          isChapterPodcast: true,
+          bookName: bookName, 
+          duration: duration,
+          genres: genres,
+          language: languageSelected,
+          podcastName: podcastName,
+          podcastPictures: [podcastImageDownloadURL],
+          createdOn: moment().format(),
+          podcastDescription: podcastDescription,
+          tags : tags.tagsArray,
+          podcasterID: userID,
+          podcasterName: userName,
+          numUsersLiked : 0,
+          authors:authors
+        })
+        .then(async function(docRef, props) {
+          console.log("Document written with ID: ", docRef.id);
+          firestore().collection('books').doc(bookID).collection('chapters').doc(chapterID).collection('podcasts')
+                  .doc(docRef.id).set({
+                      podcastID: docRef.id
+                  },{merge:true})
+            Toast.show("Successfully uploaded")
+            setPodcastID(docRef.id)
+            setUploadPodcastSuccess(true);
+        })
+        .catch(function(error) {
+          console.error("Error adding document: ", error);
+          Toast.show("Error: Please try again.")
+        });
+      }
+    }
+              
   },[podcastAudioDownloadURL])
 
-    async function indexPodcast(){
-      const instance = firebase.app().functions("asia-northeast1").httpsCallable('AddToPodcastsIndex');
-        if(uploadPodcastSuccess == true)
-        {
-          try 
-          {          
-            await instance({ // change in podcast docs created by  user
-              createdOn : moment().format(),
-              podcastID : podcastID,
-              podcastPicture : podcastImageDownloadURL,
-              chapterName : chapterName,  // have to handle it in SearchPodcastItem *******************
-              bookName : bookName,
-              podcastName : podcastName,
-              language : languageSelected,
-              podcasterName : userName
-            });
-          }
-          catch (e) 
-          {
-            console.log(e);
-          }
-          
-          props.navigation.navigate('HomeScreen');
+  async function indexPodcast(){
+    const instance = firebase.app().functions("asia-northeast1").httpsCallable('AddToPodcastsIndex');
+      if(uploadPodcastSuccess == true)
+      {
+        try 
+        {          
+          await instance({ // change in podcast docs created by  user
+            createdOn : moment().format(),
+            podcastID : podcastID,
+            podcastPicture : podcastImageDownloadURL,
+            chapterName : chapterName,  // have to handle it in SearchPodcastItem *******************
+            bookName : bookName,
+            podcastName : podcastName,
+            language : languageSelected,
+            podcasterName : userName
+          });
         }
-    }
-    
-    async function updateTotalMinutesRecorded(updatedMinutesRecorded)
-    {
+        catch (e) 
+        {
+          console.log(e);
+        }
+        
+        props.navigation.navigate('HomeScreen');
+      }
+  }
+  
+  async function updateTotalMinutesRecorded(updatedMinutesRecorded)
+  {
+    try{
       await firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).set({
         totalMinutesRecorded : updatedMinutesRecorded
       },{merge:true})
     }
-
-    useEffect(
-      () => {
-        if(uploadPodcastSuccess == true)
-        {
-          indexPodcast();
-          const updatedMinutesRecorded = totalMinutesRecorded + duration/60; 
-          dispatch({type:"UPDATE_TOTAL_MINUTES_RECORDED",payload:updatedMinutesRecorded});
-          updateTotalMinutesRecorded(updatedMinutesRecorded);
-        }
-      },[uploadPodcastSuccess]
-    )
+    catch(error){
+      console.log(error);
+    }
+  }
 
 
-    useEffect(
-      () => {
-        console.log("Inside useEffect - componentDidMount of PreviewScreen");
-        BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
-        //if(props.navigation.state.params.bookName != null)
-        //  dispatch({type:"CHANGE_BOOK",payload:props.navigation.state.params.bookName})
-        //if(props.navigation.state.params.bookID != null)
-        //  dispatch({type:"CHANGE_BOOK_ID",payload:props.navigation.state.params.bookID})
-        return () => {
-          console.log(" back_Button_Press Unmounted");
-          BackHandler.removeEventListener("hardwareBackPress",  back_Button_Press);
-          uploadPodcastSuccess && props.navigation.navigate('HomeScreen');
+  useEffect(
+    () => {
+      if(uploadPodcastSuccess == true)
+      {
+        indexPodcast();
+        const updatedMinutesRecorded = totalMinutesRecorded + duration/60; 
+        dispatch({type:"UPDATE_TOTAL_MINUTES_RECORDED",payload:updatedMinutesRecorded});
+        updateTotalMinutesRecorded(updatedMinutesRecorded);
+        setTags(initialTags);
+      }
+    },[uploadPodcastSuccess]
+  )
 
-        };
-      }, [back_Button_Press])
+
+  useEffect(
+    () => {
+      console.log("Inside useEffect - componentDidMount of PreviewScreen");
+      BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
+      return () => {
+        console.log(" back_Button_Press Unmounted");
+        BackHandler.removeEventListener("hardwareBackPress",  back_Button_Press);
+        uploadPodcastSuccess && props.navigation.navigate('HomeScreen');
+
+      };
+  }, [back_Button_Press])
       
-
-
-  
 
   function updateTagState(state)
   {
@@ -266,7 +280,6 @@ const PreviewScreen = (props) => {
 
   function uploadPodcast(recordedFilePath)
   {
-    //BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
     setToggleIndicator(true);
     uploadAudio(recordedFilePath);
   }
@@ -279,21 +292,18 @@ const PreviewScreen = (props) => {
       Toast.show("Warning: Changes will be discarded on BackPress")
       setWarningMessage(true);
       return true;
-      //dispatch({type:"TOGGLE_MINI_PLAYER"})
-      
-  }
-  return false;
+    }
+    return false;
   }
 
 
   async function uploadAudio(FilePath) {
 
-    var refPath = "podcasts/audio/" + userID + "_" + Date.now() + ".m4a";
+    var refPath = "podcasts/audio/" + userID + "_" + bookID + "_" + moment().format() + ".m4a";
     var storageRef = storage().ref(refPath);
     console.log("Before storageRef.putFile in uploadAudio ");
-
-    FilePath && storageRef.putFile(FilePath)
-      .on(
+    try{
+      FilePath && storageRef.putFile(FilePath).on(
         firebase.storage.TaskEvent.STATE_CHANGED,
         snapshot => {
           setIndeterminate(false);
@@ -304,7 +314,6 @@ const PreviewScreen = (props) => {
           if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
             console.log("Success");
             //setIndeterminate(true);
-
           }
         },
         error => {
@@ -318,67 +327,78 @@ const PreviewScreen = (props) => {
               setPodcastAudioDownloadURL(downloadUrl);
               //setUploadPodcastSuccess(true);
             })
+            .catch(err => {
+              console.log("Error in storageRef.getDownloadURL() in uploadAudio in PreviewScreen: ",err);
+            })
         }
       )
-
+    }
+    catch(error){
+      console.log("Podcast Audio upload error: ",error);
+    }
   }
 
   async function uploadImage() {
-    ImagePicker.showImagePicker(options, async (response) => {
-      console.log('Response URI = ', response.uri);
-      console.log('Response PATH = ', response.path);
 
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-      } else {
-        const source = { uri: response.uri };
-        console.log("Before storageRef.putFile");
-        setPodcastImage(source)
-        var refPath = "podcasts/images/" + userID + "_" + Date.now() + ".jpg";
-        var storageRef = storage().ref(refPath);
-        console.log("Before storageRef.putFile");
-
-        ImageResizer.createResizedImage(response.path, 720, 720, 'JPEG',100)
-      .then(({path}) => {
-
-        const unsubscribe=storageRef.putFile(path)//: 'content://com.miui.gallery.open/raw/storage/emulated/DCIM/Camera/IMG_20200214_134628_1.jpg')
-          .on(
-            firebase.storage.TaskEvent.STATE_CHANGED,
-            snapshot => {
-              //setIndeterminate(false);
-              console.log("snapshot: " + snapshot.state);
-              console.log("progress: " + (snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-              //setProgress((snapshot.bytesTransferred / snapshot.totalBytes));
-              if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
-                console.log("Success");
+    try{
+      ImagePicker.showImagePicker(options, async (response) => {
+        console.log('Response URI = ', response.uri);
+        console.log('Response PATH = ', response.path);
+  
+        if (response.didCancel) {
+          console.log('User cancelled image picker');
+        } else if (response.error) {
+          console.log('ImagePicker Error: ', response.error);
+        } else if (response.customButton) {
+          console.log('User tapped custom button: ', response.customButton);
+        } else {
+          const source = { uri: response.uri };
+          console.log("Before storageRef.putFile");
+          setPodcastImage(source)
+          var refPath = "podcasts/images/" + userID + "_" + bookID + "_" + moment().format() + ".jpg";
+          var storageRef = storage().ref(refPath);
+          console.log("Before storageRef.putFile");
+  
+          ImageResizer.createResizedImage(response.path, 720, 720, 'JPEG',100)
+        .then(({path}) => {
+  
+          const unsubscribe=storageRef.putFile(path)//: 'content://com.miui.gallery.open/raw/storage/emulated/DCIM/Camera/IMG_20200214_134628_1.jpg')
+            .on(
+              firebase.storage.TaskEvent.STATE_CHANGED,
+              snapshot => {
+                console.log("snapshot: " + snapshot.state);
+                console.log("progress: " + (snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+                  console.log("Success");
+                }
+              },
+              error => {
+                unsubscribe();
+                console.log("image upload error: " + error.toString());
+              },
+              () => {
+                storageRef.getDownloadURL()
+                  .then((downloadUrl) => {
+                    console.log("File available at: " + downloadUrl);
+                    setPodcastImageDownloadURL(downloadUrl);
+                  })
+                  .catch(err => {
+                    console.log("Error in storageRef.getDownloadURL() in uploadImage in PreviewScreen: ",err);
+                  })
               }
-            },
-            error => {
-              unsubscribe();
-              console.log("image upload error: " + error.toString());
-            },
-            () => {
-              storageRef.getDownloadURL()
-                .then((downloadUrl) => {
-                  console.log("File available at: " + downloadUrl);
-                  setPodcastImageDownloadURL(downloadUrl);
-                })
-            }
-          )
-          });
-        }
-    });
+            )
+            });
+          }
+      });
+    }
+    catch(error){
+      console.log("Resizing & Uploading Podcast Image Error: ",error);
+    }
   }
 
   return (
     
-    // <Text>fghj</Text>
-     <ScrollView style={{ flex: 1, backgroundColor: '#101010' }}>
-      
+    <ScrollView style={{ flex: 1, backgroundColor: '#101010' }}>
     <SafeAreaView style={{ flex: 1, backgroundColor: '#101010' }}>
     
      <View>
@@ -398,7 +418,7 @@ const PreviewScreen = (props) => {
             {
               podcastImage == "https://storage.googleapis.com/papyrus-fa45c.appspot.com/podcasts/Waves.jpg"
               ?
-              <Image source={{uri:"https://uploads.scratch.mit.edu/users/avatars/39669136.png"}} style={{ width: height / 6, height: height / 6, borderRadius: 20, borderColor: 'white', borderWidth: 1 }} />
+              <Image source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/Insert-Image.png"}} style={{ width: height / 6, height: height / 6, borderRadius: 20, borderColor: 'white', borderWidth: 1 }} />
               :
               <Image source={podcastImage} style={{ width: height / 6, height: height / 6, borderRadius: 20, borderColor: 'white', borderWidth: 1 }} />
             }

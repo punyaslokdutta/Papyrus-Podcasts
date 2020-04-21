@@ -46,7 +46,7 @@ class CategoryScreen extends Component {
 
   componentDidMount = () => {
     try {
-      // Cloud Firestore: Initial Query
+      
       this.retrieveData();
     }
     catch (error) {
@@ -54,29 +54,28 @@ class CategoryScreen extends Component {
     }
   };
 
-  // componentDidMount() {
-  //   this.setState({ categories: this.props.categories });
-  // }
-  //retrieve data
+
   retrieveData = async () => {
+    
+    this.setState({
+      loading: true,
+    });
+    console.log('Retrieving Data');
     try {
-      // Set State: Loading
-      this.setState({
-        loading: true,
-      });
-
-      console.log('Retrieving Data');
-      // Cloud Firestore: Query
-      let query3 = await firestore().collection('Categories').get();
-      let documentData = query3.docs.map(document => document.data());
+      let categoriesQuery = await firestore().collection('Categories').get();
+      let documentData = categoriesQuery.docs.map(document => document.data());
 
       this.setState({
-        categories: documentData,
-        loading:false
+        categories: documentData
       });
     }
     catch (error) {
       console.log(error);
+    }
+    finally {
+      this.setState({
+        loading: false
+      });
     }
   };
   
@@ -89,9 +88,6 @@ class CategoryScreen extends Component {
        return (
         <View>
         <View  style={{paddingBottom: (height*5)/12}}>
-            {/* <Block flex={false} row center space="between" style={styles.header}>
-          <Text h1 bold>Categories</Text>
-        </Block> */}
           </View>
            <ActivityIndicator/>
            </View>
@@ -101,10 +97,6 @@ class CategoryScreen extends Component {
     {
       return (
         <Block>
-          {/* <Block flex={false} row center space="between" style={styles.header}>
-            <Text h1 bold>Categories</Text>
-          </Block> */}
-  
           <ScrollView
             showsVerticalScrollIndicator={false}
             style={{ paddingVertical: theme.sizes.base * 2}}>

@@ -308,7 +308,7 @@ class BookList extends Component {
     console.log("dwdeeedee")
     console.log(item)     
     return (
-      <TouchableOpacity activeOpacity={0.8} onPress={() => this.props.navigation.navigate('RecordBook', { book : item.bookID })}>
+      <TouchableOpacity activeOpacity={0.8} onPress={() => this.props.navigation.navigate('RecordBook', { bookID : item.bookID })}>
         <ImageBackground
           style={[styles.flex, styles.destination,styles.shadow]}
           imageStyle={{ borderRadius: theme.sizes.radius }}

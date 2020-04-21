@@ -39,102 +39,71 @@ class CategoryChapter extends React.Component {
       }
     };
     
-
-     //retrieve data
      retrieveData = async () => {
-      try {
-        // Set State: Loading
-        this.setState({
-          loading: true,
-        });
-        console.log('Retrieving Data');
-        // Cloud Firestore: Query
+      
+      this.setState({
+        loading: true,
+      });
+      console.log('Retrieving Data');
+      
+      try{
         const genre = this.props.navigation.state.params;
-        let query3 = await firestore().collectionGroup('chapters').where("genres","array-contains",genre.category);    
-        let documentChapters = await query3.orderBy('createdOn','desc').limit(this.state.limit).get();
+        let documentChapters = await firestore().collectionGroup('chapters').where("genres","array-contains",genre.category)
+                              .orderBy('createdOn','desc').limit(this.state.limit).get();
         let documentDataChapters = documentChapters.docs.map(document => document.data());
 
         var lastVisible = this.state.lastVisibleChapter;
-        lastVisible = documentDataChapters[documentDataChapters.length - 1].chapterID;        
+        if(documentDataChapters.length != 0)
+          lastVisible = documentDataChapters[documentDataChapters.length - 1].createdOn;        
          
         this.setState({
           chapters: documentDataChapters,
-          lastVisibleChapter:lastVisible,
-          loading:false
+          lastVisibleChapter:lastVisible
         });
       }
       catch (error) {
         console.log(error);
       }
+      finally {
+        this.setState({
+          loading: false
+        });
+      }
     };
 
     retrieveMoreCategoryChapters = async () => {
-     try
-      {
-
-        {console.log("retrieveMoreCategoryChapters starts()")}
-
+     
+      console.log("retrieveMoreCategoryChapters starts()")
       this.setState({
         refreshing: true
          }); 
 
-         //const  userid = this.props.firebase._getUid();
-         const genre = this.props.navigation.state.params;
-         let additionalQuery = null;
-         try{
-           additionalQuery = await firestore().collectionGroup('chapters').where('genres','array-contains',genre.category)
-                            .orderBy('createdOn','desc')
-                            .startAfter(this.state.lastVisibleChapter)
-                            .limit(this.state.limit);
-        
-      // Cloud Firestore: Query Snapshot
-      {console.log("retrieveMoreCategoryChapters afterQuery()")}
-         
-        }
-        catch(error)
-        {
-          console.log(error);
-        }
-        let documentSnapshots = null;
-        try{
-         documentSnapshots = await additionalQuery.get();
-        }
-        catch(error)
-        {
-            console.log(error);
-        }
-        
-      // Cloud Firestore: Document Data
-      let documentData = documentSnapshots.docs.map(document => document.data());
-      // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
-      if(documentData.length != 0)
-      {
-      let lastVisibleChapter = documentData[documentData.length - 1].chapterID;
-       
-      if(this.state.lastVisibleChapter===lastVisibleChapter){
-          this.setState({
-                  refreshing:false
-              });
-      }
-      else
-      {
-        this.setState({
-            chapters: [...this.state.chapters, ...documentData],
-            lastVisibleChapter : lastVisibleChapter,
-            refreshing:false
-          });
+      try{
+        const genre = this.props.navigation.state.params;
+        let categoryChapters = await firestore().collectionGroup('chapters').where('genres','array-contains',genre.category)
+                          .orderBy('createdOn','desc').startAfter(this.state.lastVisibleChapter)
+                          .limit(this.state.limit).get();
 
-      }
-    }
-      else
-      {
-        this.setState({
-          refreshing:false
-      });
-      }
+        let documentData = categoryChapters.docs.map(document => document.data());
+        if(documentData.length != 0)
+        {
+          let lastVisibleChapter = documentData[documentData.length - 1].createdOn;
+          if(this.state.lastVisibleChapter != lastVisibleChapter)
+            {
+              this.setState({
+                  chapters: [...this.state.chapters, ...documentData],
+                  lastVisibleChapter : lastVisibleChapter
+                });
+            }
+        }
       }
       catch(error){
-      console.log(error);
+        console.log(error);
+      }
+      finally {
+        this.setState({
+          refreshing: false
+        });
       }
     }
 
@@ -150,18 +119,13 @@ class CategoryChapter extends React.Component {
    
 
     renderFooter = () => {
-      try {
-        if (this.state.refreshing===true) {
-          return (
-            <ActivityIndicator />
-          )
-        }
-        else {
-          return null;
-        }
+      if (this.state.refreshing == true) {
+        return (
+          <ActivityIndicator />
+        )
       }
-      catch (error) {
-        console.log(error);
+      else {
+        return null;
       }
     }
 

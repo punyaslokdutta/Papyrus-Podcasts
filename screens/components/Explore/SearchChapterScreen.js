@@ -35,14 +35,12 @@ const searchClient = algoliasearch(
 );
 
 const index = searchClient.initIndex('chapters');
-const replicaIndex = searchClient.initIndex('chapters');
+//const replicaIndex = searchClient.initIndex('chapters');
 
 var {width, height}=Dimensions.get('window')
 const SearchChapterScreen=(props)=>
 {
     const dispatch=useDispatch();
-    const userID = props.firebase._getUid();
-
     const initialAuthors  ={
       tag: '',
       tagsArray: []
@@ -67,57 +65,6 @@ const SearchChapterScreen=(props)=>
     const [onEndReachedCalledDuringMomentum,setOnEndReachedCalledDuringMomentum] = useState(true);
     const numHits = 10;
 
-    async function uploadImage() {
-      ImagePicker.showImagePicker(options, async (response) => {
-        console.log('Response URI = ', response.uri);
-        console.log('Response PATH = ', response.path);
-  
-        if (response.didCancel) {
-          console.log('User cancelled image picker');
-        } else if (response.error) {
-          console.log('ImagePicker Error: ', response.error);
-        } else if (response.customButton) {
-          console.log('User tapped custom button: ', response.customButton);
-        } else {
-          const source = { uri: response.uri };
-          console.log("Before storageRef.putFile");
-          setChapterImage(source)
-          var refPath = "Chapters/images/" + userID + "_" + Date.now() + ".jpg";
-          var storageRef = storage().ref(refPath);
-          console.log("Before storageRef.putFile");
-  
-          ImageResizer.createResizedImage(response.path, 720, 720, 'JPEG',100)
-        .then(({path}) => {
-  
-          const unsubscribe=storageRef.putFile(path)//: 'content://com.miui.gallery.open/raw/storage/emulated/DCIM/Camera/IMG_20200214_134628_1.jpg')
-            .on(
-              firebase.storage.TaskEvent.STATE_CHANGED,
-              snapshot => {
-                //setIndeterminate(false);
-                console.log("snapshot: " + snapshot.state);
-                console.log("progress: " + (snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                //setProgress((snapshot.bytesTransferred / snapshot.totalBytes));
-                if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
-                  console.log("Success");
-                }
-              },
-              error => {
-                unsubscribe();
-                console.log("image upload error: " + error.toString());
-              },
-              () => {
-                storageRef.getDownloadURL()
-                  .then((downloadUrl) => {
-                    console.log("File available at: " + downloadUrl);
-                    setChapterImageDownloadURL(downloadUrl);
-                  })
-              }
-            )
-            });
-          }
-      });
-    }
-
     useEffect( ()=>
         {
             setLoading(true);
@@ -129,33 +76,33 @@ const SearchChapterScreen=(props)=>
                 setLoading(false);
             }
 
-            // searchQuery && index.search(searchQuery,{
-            //     page : 0,
-            //     hitsPerPage : numHits
-            // }).then(({hits})=>
-            // {
-            //     setChapters(hits);
-            //     setLoading(false);
-            //     console.log(hits);
-            // }).catch(function(error) {
-            //     console.log("Error loading document: ", error);
-            //     //Toast.show("Error: Please try again.")
-            //     setLoading(false)
-            // });
+            searchQuery && index.search(searchQuery,{
+                page : 0,
+                hitsPerPage : numHits
+            }).then(({hits})=>
+            {
+                setChapters(hits);
+                setLoading(false);
+                console.log(hits);
+            }).catch(function(error) {
+                console.log("Error loading document: ", error);
+                //Toast.show("Error: Please try again.")
+                setLoading(false)
+            });
             
-            searchQuery && replicaIndex.search(searchQuery,{
-              page : 0,
-              hitsPerPage : numHits
-          }).then(({hits})=>
-          {
-              setChapters(hits);
-              setLoading(false);
-              console.log(hits);
-          }).catch(function(error) {
-              console.log("Error loading document: ", error);
-              //Toast.show("Error: Please try again.")
-              setLoading(false)
-          });
+          //   searchQuery && replicaIndex.search(searchQuery,{
+          //     page : 0,
+          //     hitsPerPage : numHits
+          // }).then(({hits})=>
+          // {
+          //     setChapters(hits);
+          //     setLoading(false);
+          //     console.log(hits);
+          // }).catch(function(error) {
+          //     console.log("Error loading document: ", error);
+          //     //Toast.show("Error: Please try again.")
+          //     setLoading(false)
+          // });
 
         }, [searchQuery]
     )
@@ -258,7 +205,7 @@ const SearchChapterScreen=(props)=>
             return (
               <View style={{paddingBottom:height/96}}>
                 <View style={[styles.seperator]} />
-              <View style={{alignItems:'center'}}>
+              {/* <View style={{alignItems:'center'}}>
                 <Text>{"\n"}Couldn't find your chapter?  </Text>
                 <TouchableOpacity onPress={()=> {
                   setChapters([]);
@@ -266,7 +213,7 @@ const SearchChapterScreen=(props)=>
                 }}>
                 <Text style={{textDecorationLine: 'underline',color:'rgb(218,165,32)'}}>Proceed to Select Screen to add chapter</Text>
                 </TouchableOpacity>
-                </View>
+                </View> */}
                 </View>
             );
           }
@@ -275,7 +222,7 @@ const SearchChapterScreen=(props)=>
             return (
               <View style={{paddingBottom:height/96}}>
                 <View style={[styles.seperator]} />
-              <View style={{alignItems:'center'}}>
+              {/* <View style={{alignItems:'center'}}>
                 <Text>{"\n"}Couldn't find your chapter?  </Text>
                 <TouchableOpacity onPress={()=> {
                   setChapters([]);
@@ -285,7 +232,7 @@ const SearchChapterScreen=(props)=>
                 }}>
                 <Text style={{textDecorationLine: 'underline',color:'rgb(218,165,32)'}}>Proceed to SearchBookScreen to add book</Text>
                 </TouchableOpacity>
-                </View>
+                </View> */}
                 </View>
             );
           }

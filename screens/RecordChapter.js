@@ -156,10 +156,10 @@ class RecordChapter extends Component {
 
 
   retrieveData = async () => {
-    try {
-      
-      console.log('[RecordChapter] Retrieving Data');
-      console.log(this.props);
+    
+    console.log('[RecordChapter] Retrieving Data');
+    console.log(this.props);
+    try {  
       const chapterParams = this.props.navigation.state.params;
       console.log(chapterParams)
       let chapterDoc = await firestore().collection('books').doc(chapterParams.bookID).collection('chapters').doc(chapterParams.chapterID).get();

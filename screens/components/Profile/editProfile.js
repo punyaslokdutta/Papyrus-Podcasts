@@ -13,6 +13,7 @@ import { withFirebaseHOC } from '../../config/Firebase'
 import firestore from '@react-native-firebase/firestore'
 import { useSelector, useDispatch } from 'react-redux'
 import ImageResizer from 'react-native-image-resizer';
+import moment from 'moment';
 //const sharp = require("sharp");
 
 
@@ -42,20 +43,28 @@ const editProfile = (props) => {
   async function addIntroToFirestore(introduction)
   {
     console.log("Inside useEffect - introduction : ",introduction);
-    await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({
-      introduction:  introduction 
-    }, { merge: true })
-    setLoadingIntroduction(false);
+    try{
+      await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({
+        introduction:  introduction 
+      }, { merge: true })
+      setLoadingIntroduction(false);
+    }
+    catch(error){
+      console.log(error);
+    }
   }
 
   async function addWebsiteToFirestore(website)
   {
-   // console.log("Inside useEffect - website : ",{website});
+   try{
     await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({
       website:  website 
     }, { merge: true })
     setLoadingWebsite(false);
-
+   }
+   catch(error){
+     console.log(error);
+   }
   }
 
   useEffect(
@@ -90,7 +99,6 @@ const editProfile = (props) => {
   }
 
   function toggleEdit(name)  {
-
 
     console.log("In Toggle Edit -- ");
     console.log("WEBSITE STATE : ",websiteState);
@@ -147,7 +155,7 @@ const editProfile = (props) => {
     }
   }
 
-    async function uploadImage () {
+  async function uploadImage () {
     //[TASK] --> upload images from user's local storage to google cloud storage
     ImagePicker.showImagePicker(options, async (response) => {
       //[IMAGE PICKER] --> ImagePicker picks the response object for any image selected or captured by the user
@@ -164,137 +172,77 @@ const editProfile = (props) => {
         const source = { uri: response.uri };
         console.log("Before storageRef.putFile");
 
-       // var storageRef_680 = storage().ref('books/10000_5_680x680.jpg');
-        var referencePath = 'users/' + userid + "/" + userid + "_" + Date.now() + '.jpg'; 
+        var referencePath = 'users/' + userid + "_" + moment().format() + '.jpg'; 
         var storageRef = storage().ref(referencePath);
 
         ImageResizer.createResizedImage(response.path, 400, 400, 'JPEG', 100)
-      .then(({path}) => {
-          //setResizedImagePath(uri);
-     
-          const unsubscribe = storageRef.putFile(path)//: 'content://com.miui.gallery.open/raw/storage/emulated/DCIM/Camera/IMG_20200214_134628_1.jpg')
-          .on(
-            firebase.storage.TaskEvent.STATE_CHANGED,
-            snapshot => {
-              console.log("snapshot: " + snapshot.state);
-              console.log("progress: " + (snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+          .then(({path}) => {     
+          storageRef.putFile(path)//: 'content://com.miui.gallery.open/raw/storage/emulated/DCIM/Camera/IMG_20200214_134628_1.jpg')
+           .on(
+              firebase.storage.TaskEvent.STATE_CHANGED,
+              snapshot => {
+                console.log("snapshot: " + snapshot.state);
+                console.log("progress: " + (snapshot.bytesTransferred / snapshot.totalBytes) * 100);
 
-              if (snapshot.state === firebase.storage.TaskState.RUNNING) {
-                if(loading != true)
-                {
-                  setLoading(true);
+                if (snapshot.state === firebase.storage.TaskState.RUNNING) {
+                  if(loading != true)
+                  {
+                    setLoading(true);
+                  }
+                  console.log("Running");
                 }
-                console.log("Running");
+
+                if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+                  setLoading(false);
+                  console.log("Success");
+                }
+              },
+              error => {
+                //unsubscribe();
+                console.log("image upload error: " + error.toString());
+              },
+              () => {
+
+                storageRef.getDownloadURL()
+                  .then(async (downloadUrl) => {
+                    console.log("File available at: " + downloadUrl);
+                    
+                    dispatch({ type: 'CHANGE_DISPLAY_PICTURE', payload: downloadUrl })
+    
+                    const privateDataID = "private" + userid;
+                    console.log("privateDataID : ",privateDataID);
+                    try{
+                      await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({
+                        displayPicture: downloadUrl
+                      }, { merge: true })
+
+                      await firestore().collection('users').doc(userid).set({
+                        displayPicture: downloadUrl
+                      }, { merge: true })
+                    }
+                    catch(error){
+                      console.log(error)
+                    }
+                  })
+                  .catch(err => {
+                    console.log("Error in storageRef.getDownloadURL() in editProfile: ",err);
+                  })
               }
-
-              if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
-                setLoading(false);
-                console.log("Success");
-              }
-            },
-            error => {
-              unsubscribe();
-              console.log("image upload error: " + error.toString());
-            },
-            () => {
-
-              storageRef.getDownloadURL()
-                .then(async (downloadUrl) => {
-                  console.log("File available at: " + downloadUrl);
-                  
-                  dispatch({ type: 'CHANGE_DISPLAY_PICTURE', payload: downloadUrl })
-  
-                  const privateDataID = "private" + userid;
-                  console.log("privateDataID : ",privateDataID);
-                  await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({
-                    displayPicture: downloadUrl
-                  }, { merge: true })
-
-                  await firestore().collection('users').doc(userid).set({
-                    displayPicture: downloadUrl
-                  }, { merge: true })
-
-                })
-            }
-          )
-     
-     
+           )
         })
-      .catch(err => {
-        console.log(err);
-        return Alert.alert(
-          'Unable to resize the photo',
-          'Check the console for full the error message',
-        );
-      });
-
-        console.log("Before storageRef.putFile");
-        // try{
-        // await sharp(response.path).resize({ width: 682 }).toFile('./temp_image.jpg');
-        // }
-        // catch(error)
-        // {
-        //   console.log(error);
-        // }
-        
-
+        .catch(err => {
+          console.log(err);
+          return Alert.alert(
+            'Unable to resize the photo',
+            'Check the console for full the error message',
+          );
+        });
       }
 
       return null;
-    });
+      });
   }
 
-  // uploadImage = async () =>
-  // {
-  
-
-  //   ImagePicker.showImagePicker(options, async(response) => {
-  //     console.log('Response URI = ', response.uri);
-  //     console.log('Response PATH = ', response.path);
-
-  //     if (response.didCancel) {
-  //       console.log('User cancelled image picker');
-  //     } else if (response.error) {
-  //       console.log('ImagePicker Error: ', response.error);
-  //     } else if (response.customButton) {
-  //       console.log('User tapped custom button: ', response.customButton);
-  //     } else {
-  //       const source = { uri: response.uri };
-  //      console.log("Before storageRef.putFile");
-  //      this.setState({
-  //       ProfileImage: source,
-  //     });
-  //        var storageRef = storage().ref('books/10000_5.jpg');
-
-
-  //         console.log("Before storageRef.putFile");
-  //        storageRef.putFile(response.path)//: 'content://com.miui.gallery.open/raw/storage/emulated/DCIM/Camera/IMG_20200214_134628_1.jpg')
-  //        .on(
-  //            firebase.storage.TaskEvent.STATE_CHANGED,
-  //          snapshot => {
-  //            console.log("snapshot: " + snapshot.state);
-  //            console.log("progress: " + (snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-   
-  //            if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
-  //              console.log("Success");
-  //            }
-  //          },
-  //          error => {
-  //            unsubscribe();
-  //            console.log("image upload error: " + error.toString());
-  //          },
-  //          () => {
-  //            storageRef.getDownloadURL()
-  //              .then((downloadUrl) => {
-  //                console.log("File available at: " + downloadUrl);
-  //              })
-  //          }
-  //        )
-       
-  //     }
-  //   });
-  // }
-   
   return (
 
     <KeyboardAvoidingView style={styles.container} enabled>
@@ -346,7 +294,7 @@ const editProfile = (props) => {
                loadingWebsite ?  
                  <ActivityIndicator/> :
                  (<Text medium primary>
-                 {(editing === 'website' ? 'Save' : 'Edit')}
+                 {(editing === 'website' ? 'Save  ' : 'Edit  ')}
                  </Text>)
               }
               </View>
@@ -369,7 +317,7 @@ const editProfile = (props) => {
                loadingIntroduction ?  
                  <ActivityIndicator/> :
                  (<Text medium primary>
-                 {(editing === 'introduction' ? 'Save' : 'Edit')}
+                 {(editing === 'introduction' ? 'Save  ' : 'Edit  ')}
                  </Text>)
               }
               </View>

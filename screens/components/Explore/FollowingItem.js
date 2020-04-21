@@ -135,23 +135,28 @@ const styles = StyleSheet.create({
   console.log(props);
   console.log("userData = ",props.item);
   const realUserID = props.firebase._getUid();
-  const isUserSame = (props.item.id == realUserID);
+  const isUserSame = (props.item.id == realUserID); 
   console.log("isUserSame : ",isUserSame);
+
   async function retrievePrivateUserData(props,userid){
 
-    const privateDataID = "private" + userid;
-
-    const privateUserDoc = await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).get();
-    const privateItem = privateUserDoc._data;
-    props.navigation.navigate({
-      routeName: 'ExploreTabNavigator',
-      params : {userData:privateItem},
-      //key : 'user' + userid 
-    })
-    // [2] Move to top of stack,i.e, pop all screens until the last one
-    props.navigation.popToTop();
-    // [3] props.navigation.push will move us towards updated ExploreTabNavigator with updated CustomUserHeader
-    props.navigation.push('ExploreTabNavigator', {userData:privateItem})
+    try{
+      const privateDataID = "private" + userid;
+      const privateUserDoc = await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).get();
+      const privateItem = privateUserDoc._data;
+      props.navigation.navigate({
+        routeName: 'ExploreTabNavigator',
+        params : {userData:privateItem},
+        //key : 'user' + userid 
+      })
+      // [2] Move to top of stack,i.e, pop all screens until the last one
+      props.navigation.popToTop();
+      // [3] props.navigation.push will move us towards updated ExploreTabNavigator with updated CustomUserHeader
+      props.navigation.push('ExploreTabNavigator', {userData:privateItem})
+    }
+    catch(error){
+      console.log("Error in retrievePrivateUserData in FollowingItem: ",error);
+    }
   }
 
         return (
@@ -171,9 +176,13 @@ const styles = StyleSheet.create({
         <TouchableOpacity onPress={() => {
           props.navigation.navigate('ProfileTabNavigator');
         }}>
-        <View style={[styles.shadow,{marginLeft: 15}]}>
-            <Image source={{ uri: props.item.displayPicture }} style={{width:width/8,height:width/8}}/>
-            <Text style={styles.username}>{props.item.name}</Text>
+        <View style={{flexDirection:'row', marginLeft: 15,paddingVertical:10}}>
+          <View style={{paddingRight:20}}>
+            <Image source={{ uri: props.item.displayPicture }} style={{borderRadius:50,width:width/8,height:width/8}}/>
+          </View>
+          <View style={{alignItems:'center',justifyContent:'center'}}>
+            <Text style={{fontWeight:'bold',fontSize:18,paddingRight:5}}>{props.item.name}</Text>
+            </View>
             </View>
             {/* </TouchableOpacity> */}
           </TouchableOpacity>
@@ -184,9 +193,13 @@ const styles = StyleSheet.create({
           retrievePrivateUserData(props,props.item.id);
           
           }}>
-            <View style={[styles.shadow,{marginLeft: 15}]}>
-            <Image source={{ uri: props.item.displayPicture }} style={{width:width/4,height:height/8}}/>
-            <Text style={styles.username}>{props.item.name}</Text>
+            <View style={{flexDirection:'row', marginLeft: 15,paddingVertical:10}}>
+          <View style={{paddingRight:20}}>
+            <Image source={{ uri: props.item.displayPicture }} style={{borderRadius:50,width:width/8,height:width/8}}/>
+            </View>
+            <View style={{alignItems:'center',justifyContent:'center'}}>
+            <Text style={{fontWeight:'bold',fontSize:18,paddingRight:5}}>{props.item.name}</Text>
+            </View>
             </View>
             {/* </TouchableOpacity> */}
           </TouchableOpacity>

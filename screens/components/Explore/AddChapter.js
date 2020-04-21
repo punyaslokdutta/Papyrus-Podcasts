@@ -70,7 +70,7 @@ const AddChapter=(props)=>{
             const source = { uri: response.uri };
             console.log("Before storageRef.putFile");
             setBookImage(source)
-            var refPath = "books/images/" + userID + "_" + Date.now() + ".jpg";
+            var refPath = "books/images/" + userID + "_" + moment().format()() + ".jpg";
             var storageRef = storage().ref(refPath);
             console.log("Before storageRef.putFile");
     

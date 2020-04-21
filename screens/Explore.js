@@ -43,24 +43,46 @@ const Explore = (props) => {
   {
     console.log('[Explore] useEffect in Explore Screen[componentDidMount]');
     setLoading(true);
-    let userQuery = await firestore().collectionGroup('privateUserData').where('isTopStoryTeller','==',true).get();
-    let podcastQuery = await firestore().collectionGroup('podcasts').where('isTrendingPodcast','==',true).get();
-    let bookQuery = await firestore().collectionGroup('podcasts').where('isShortStory','==',true).get();
-    let chapterQuery = await firestore().collectionGroup('podcasts').where('isClassicNovel','==',true).get();
-   
 
-    let documentUsers = userQuery._docs.map(document => document.data());
-    let documentPodcasts = podcastQuery.docs.map(document => document.data());
-    let documentBooks = bookQuery.docs.map(document => document.data());
-    let documentChapters = chapterQuery.docs.map(document => document.data());
+    //Top Storytellers
+    try{
+      let userQuery = await firestore().collectionGroup('privateUserData').where('isTopStoryTeller','==',true).get();
+      let documentUsers = userQuery._docs.map(document => document.data());
+      setStorytellers(documentUsers);
+    }
+    catch(error){
+      console.log(error)
+    }
+    
+    // Trending podcasts
+    try{
+      let podcastQuery = await firestore().collectionGroup('podcasts').where('isTrendingPodcast','==',true).get();
+      let documentPodcasts = podcastQuery.docs.map(document => document.data());
+      setPodcasts(documentPodcasts);
+    }
+    catch(error){
+      console.log(error)
+    }
 
-    console.log("documentUsers: ",documentUsers);
+    // Short Stories
+    try{
+      let bookQuery = await firestore().collectionGroup('podcasts').where('isShortStory','==',true).get();
+      let documentBooks = bookQuery.docs.map(document => document.data());
+      setBooks(documentBooks);
+    }
+    catch(error){
+      console.log(error)
+    }
 
-    setStorytellers(documentUsers);
-    setPodcasts(documentPodcasts);
-    setBooks(documentBooks);
-    setChapters(documentChapters);
-
+    // Classic Novels
+    try{
+      let chapterQuery = await firestore().collectionGroup('podcasts').where('isClassicNovel','==',true).get();
+      let documentChapters = chapterQuery.docs.map(document => document.data());
+      setChapters(documentChapters);
+    }
+    catch(error){
+      console.log(error)
+    }
     setLoading(false);
   }
 

@@ -29,7 +29,7 @@ var {width, height}=Dimensions.get('window')
           <TouchableOpacity onPress={() => {
               console.log("fromSearchChapterScreen : ",props.fromSearchChapterScreen)
             if(props.fromSearchChapterScreen === false)
-              props.navigation.navigate('RecordBook', {book : props.book.objectID })
+              props.navigation.navigate('RecordBook', {bookID : props.book.objectID })
              else
               refRBSheet.current.open()
           }

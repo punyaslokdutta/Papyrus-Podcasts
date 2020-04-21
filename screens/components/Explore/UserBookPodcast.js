@@ -38,14 +38,15 @@ class UserBookPodcast extends React.Component {
     };
     
      retrieveData = async () => {
+      
+      console.log("[UserBookPodcast] Inside retrieveData function");
+      this.setState({
+        loading: true,
+      });
       try {
-        this.setState({
-          loading: true,
-        });
-        console.log("[UserBookPodcast] Inside retrieveData function");
         const  userid = this.props.navigation.state.params.userData.id;       
-        let query3 = await firestore().collectionGroup('podcasts').where('podcasterID','==',userid);    
-        let documentPodcasts = await query3.where('isChapterPodcast','==',false).orderBy('createdOn','desc').limit(this.state.limit).get();
+        let documentPodcasts = await firestore().collectionGroup('podcasts').where('podcasterID','==',userid)
+                              .where('isChapterPodcast','==',false).orderBy('createdOn','desc').limit(this.state.limit).get();
         let documentData_podcasts = documentPodcasts.docs.map(document => document.data());
         var lastVisibleBookPodcast = this.state.lastVisibleBookPodcast;
 
@@ -54,78 +55,53 @@ class UserBookPodcast extends React.Component {
          
         this.setState({
         bookPodcasts: documentData_podcasts,
-        lastVisibleBookPodcast:lastVisibleBookPodcast,
-        loading:false
+        lastVisibleBookPodcast:lastVisibleBookPodcast
         });
       }
       catch (error) {
         console.log(error);
       }
+      finally {
+        this.setState({
+          loading: false
+        });
+      }
     };
 
     retrieveMoreBookPodcasts = async () => {
-     try
-      {
-
-        console.log("[UserBookPodcast] retrieveMoreBookPodcasts starts()")
-
+     
+      console.log("[UserBookPodcast] retrieveMoreBookPodcasts starts()")
       this.setState({
         refreshing: true
          }); 
 
-         const  userid = this.props.navigation.state.params.userData.id;
-         let additionalQuery = null;
-         try{
-           additionalQuery = await firestore().collectionGroup('podcasts')
-                            .where('podcasterID','==',userid).where('isChapterPodcast','==',false)
-                            .orderBy('createdOn','desc')
-                            .startAfter(this.state.lastVisibleBookPodcast)
-                            .limit(this.state.limit);
-        
-        console.log("[UserBookPodcast] retrieveMoreBookPodcasts afterQuery()")
-        }
-        catch(error)
+      try{
+        const  userid = this.props.navigation.state.params.userData.id;
+         
+         
+        let additionalBookPodcasts = await firestore().collectionGroup('podcasts').where('podcasterID','==',userid).
+                                        where('isChapterPodcast','==',false).orderBy('createdOn','desc').
+                                        startAfter(this.state.lastVisibleBookPodcast).limit(this.state.limit).get();
+        let documentData = additionalBookPodcasts.docs.map(document => document.data());
+        if(documentData.length != 0)
         {
-          console.log(error);
-        }
-        let documentSnapshots = null;
-        try{
-         documentSnapshots = await additionalQuery.get();
-        }
-        catch(error)
-        {
-            console.log(error);
-        }
-        
-      let documentData = documentSnapshots.docs.map(document => document.data());
-      if(documentData.length != 0)
-      {
-      let lastVisibleBookPodcast = documentData[documentData.length - 1].createdOn;
-       
-      if(this.state.lastVisibleBookPodcast===lastVisibleBookPodcast){
-          this.setState({
-                  refreshing:false
+          let lastVisibleBookPodcast = documentData[documentData.length - 1].createdOn;
+          if(this.state.lastVisibleBookPodcast != lastVisibleBookPodcast)
+          {
+            this.setState({
+                bookPodcasts: [...this.state.bookPodcasts, ...documentData],
+                lastVisibleBookPodcast : lastVisibleBookPodcast
               });
-      }
-      else
-      {
-        this.setState({
-            bookPodcasts: [...this.state.bookPodcasts, ...documentData],
-            lastVisibleBookPodcast : lastVisibleBookPodcast,
-            refreshing:false
-          });
-
-      }
-    }
-      else
-      {
-        this.setState({
-          refreshing:false
-      });
-      }
+          }
+        }
       }
       catch(error){
-      console.log(error);
+        console.log(error);
+      }
+      finally {
+        this.setState({
+          refreshing: false
+        });
       }
     }
 
@@ -141,18 +117,14 @@ class UserBookPodcast extends React.Component {
    
 
     renderFooter = () => {
-      try {
-        if (this.state.refreshing===true) {
-          return (
-            <ActivityIndicator />
-          )
-        }
-        else {
-          return null;
-        }
+      
+      if (this.state.refreshing == true) {
+        return (
+          <ActivityIndicator />
+        )
       }
-      catch (error) {
-        console.log(error);
+      else {
+        return null;
       }
     }
 
