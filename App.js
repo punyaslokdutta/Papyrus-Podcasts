@@ -4,7 +4,7 @@ import ProfileFollowingScreen from './screens/components/Profile/ProfileFollowin
 import React, {Component} from 'react';
 import CustomDrawerContentComponent from './screens/navigation/CustomDrawerContentComponent';
 import setUserDetails from './screens/setUserDetails'
-import { StyleSheet, View, TouchableOpacity, Image, Text,Dimensions, Button, ScrollView,  NativeModules} from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Image, Text,Dimensions, Button, ScrollView,  NativeModules,Linking,Platform} from 'react-native';
 import {createSwitchNavigator,
   createAppContainer,
   } from 'react-navigation'
@@ -455,7 +455,30 @@ const AppSwitchNavigator = createSwitchNavigator(
 const store = createStore(mainReducer, applyMiddleware(thunk))
 
 export default class App extends Component {
+
+  componentDidMount() {
+    if (Platform.OS === 'android') {
+      Linking.getInitialURL().then(url => {
+        console.log("URL: ",url);
+        
+       // this.navigate(url);
+      });
+    } 
+    else
+      Linking.addEventListener('url', this.handleOpenURL);
+    
+  }
+
+  componentWillUnmount() {
+    Linking.removeEventListener('url', this._handleOpenURL);
+  }
+
+  _handleOpenURL = (event) => {
+    console.log("\n\nINCOMING URL: \n\n",event.url);
+  }
+
   render(){
+
     console.log("REDUX_STORE_STATE: " + store.getState());
     return(
     <Provider store ={store}>
