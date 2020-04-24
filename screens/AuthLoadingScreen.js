@@ -57,7 +57,7 @@ class  AuthLoadingScreen extends Component {
               //   console.log('User email is verified');
               // }
 
-              try{
+              
                 var unsubscribe = await firestore().collection('users').doc(user._user.uid).onSnapshot(
                    (doc)=> {  
                     var source = doc.metadata.hasPendingWrites ? "Local" : "Server";
@@ -89,23 +89,20 @@ class  AuthLoadingScreen extends Component {
                         this.props.navigation.navigate('Explore');
 
                   }
-                })
-              }
-              catch(error)
-              {
-                console.log("ERROR : ",error)
-              }
-            
-          }
+                },function(error) {
+                  console.log("Error in onSnapshot Listener in AuthLoadingScreen: ",error);
+                })        
+            }
             else{
              // this.props.navigation.navigate('setPreferences')
               this.props.navigation.navigate('Auth')
             }
-       })
-        }catch(error)
-          {
-            console.log(error)
-          }
+          })
+        }
+        catch(error)
+        {
+          console.log("Error in checkUserAuth in AuthLoadingScreen: ",error)
+        }
       
 
     

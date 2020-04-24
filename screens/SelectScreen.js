@@ -44,12 +44,14 @@ const SelectScreen = (props)=> {
     {
       itemSelected = props.navigation.state.params.chapterItem;
       itemPictureURL = itemSelected.chapterPictures[0];
+      genres = itemSelected.genres;
       console.log("[SelectScreen] Chapter Selected: ",itemSelected);
     }
     else                                                //itemSelected is bookItem
     {
       itemSelected = props.navigation.state.params.bookItem;
       itemPictureURL = itemSelected.bookPictures[0];  
+      genres = itemSelected.genres;
       console.log("[SelectScreen] Book Selected: ",itemSelected);
     }
 

@@ -32,12 +32,18 @@ const SettingsScreen = (props) => {
   const [editing,setEditing] = useState(null);
   const [notifications,setNotifications] =useState(true);
 
+  function myTrim(x) {
+    return x.replace(/^\s+|\s+$/gm,'');
+  }
+
   function handleEdit(name, text) {
     console.log("IN Handle Edit function");
     switch(name)
     {
       case 'account':
-        setAccountNameState(text)
+        trimmedText = text.trim();
+        //trimmedText = myTrim(text);
+        setAccountNameState(trimmedText);
         //dispatch({type:'CHANGE_NAME',payload:text});
         break;
       case 'username':
@@ -70,15 +76,21 @@ const SettingsScreen = (props) => {
           }
 
           setLoadingAccountName(true);
-          dispatch({type:'CHANGE_NAME',payload:accountNameState});
-          await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({  // change in actual doc
-            name : accountNameState
-           },{ merge:true })
+          
+          try{
+            dispatch({type:'CHANGE_NAME',payload:accountNameState});
+            
+            await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({  // change in actual doc
+              name : accountNameState
+            },{ merge:true })
 
-           await firestore().collection('users').doc(userid).set({  // change in actual doc
-            name : accountNameState
-           },{ merge:true })
-
+            await firestore().collection('users').doc(userid).set({  // change in actual doc
+              name : accountNameState
+            },{ merge:true })
+          }
+          catch(error){
+            console.log(error);
+          }
           const instance = firebase.app().functions("asia-northeast1").httpsCallable('changeUserNameInPodcastsAsiaEast');
           try 
           {          
@@ -106,10 +118,15 @@ const SettingsScreen = (props) => {
             }
           }
           setLoadingUserName(true);
-          dispatch({type:'CHANGE_USER_NAME',payload:userNameState});
-          await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({ // change in actual doc
-            userName : userNameState
-        },{ merge:true })
+          try{
+            dispatch({type:'CHANGE_USER_NAME',payload:userNameState});
+            await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({ // change in actual doc
+              userName : userNameState
+            },{ merge:true })
+          }
+          catch(error){
+            console.log(error);
+          } 
           setLoadingUserName(false);
           break;
         default:
@@ -122,23 +139,28 @@ const SettingsScreen = (props) => {
   async function logoutFromApp() 
   {
       console.log("[SettingsScreen] logoutFromApp")
+      try{
+        dispatch({type:'CLEAR_PODCASTS_LIKED',payload:null})
+        dispatch({type:'ADD_NUM_FOLLOWERS',payload:0})
+        dispatch({type:'CHANGE_EMAIL',payload:null})
+        dispatch({type:'CHANGE_NAME',payload:null})
+        dispatch({type:'CHANGE_USER_NAME',payload:null})
+        dispatch({type:'CHANGE_DISPLAY_PICTURE',payload:null})
+        dispatch({type:'CLEAR_FOLLOWING_MAP',payload:null})
+        dispatch({type:'CHANGE_WEBSITE',payload:null})
+        dispatch({type:'ADD_INTRODUCTION',payload: null})
+        dispatch({type:'ADD_NUM_CREATED_BOOK_PODCASTS',payload: 0})
+        dispatch({type:'ADD_NUM_CREATED_CHAPTER_PODCASTS',payload: 0})
+        dispatch({type:'UPDATE_TOTAL_MINUTES_RECORDED',payload: 0})
+        dispatch({type:'ADD_NUM_NOTIFICATIONS',payload: 0});
+        dispatch({type:"SET_USER_PREFERENCES",payload:[]});
 
-      dispatch({type:'CLEAR_PODCASTS_LIKED',payload:null})
-      dispatch({type:'ADD_NUM_FOLLOWERS',payload:0})
-      dispatch({type:'CHANGE_EMAIL',payload:null})
-      dispatch({type:'CHANGE_NAME',payload:null})
-      dispatch({type:'CHANGE_USER_NAME',payload:null})
-      dispatch({type:'CHANGE_DISPLAY_PICTURE',payload:null})
-      dispatch({type:'CLEAR_FOLLOWING_MAP',payload:null})
-      dispatch({type:'CHANGE_WEBSITE',payload:null})
-      dispatch({type:'ADD_INTRODUCTION',payload: null})
-      dispatch({type:'ADD_NUM_CREATED_BOOK_PODCASTS',payload: 0})
-      dispatch({type:'ADD_NUM_CREATED_CHAPTER_PODCASTS',payload: 0})
-      dispatch({type:'UPDATE_TOTAL_MINUTES_RECORDED',payload: 0})
-      dispatch({type:'ADD_NUM_NOTIFICATIONS',payload: 0});
-      dispatch({type:"SET_USER_PREFERENCES",payload:[]});
-
-      props.firebase._signOutUser();
+        props.firebase._signOutUser();
+      }
+      catch(error){
+        console.log("Logout error: ",error);
+      }
+      
   }
   function renderEdit(name) {
     var val = 9;
@@ -179,7 +201,7 @@ const SettingsScreen = (props) => {
             style={{ width: 20, height: 24, marginRight: theme.sizes.base  }}
           />
         </TouchableOpacity>
-          <Text h1 bold>Settings</Text>
+    <Text h1 bold paddingRight>Settings</Text>
           <Button>
             <Image
               source={{uri:accountPicURI}}
@@ -205,7 +227,7 @@ const SettingsScreen = (props) => {
                loadingAccountName ?  
                  <ActivityIndicator/> :
                  (<Text medium primary>
-                 {(editing === 'account' ? 'Save' : 'Edit')}
+                 {(editing === 'account' ? 'Save  ' : 'Edit  ')}
                  </Text>)
               }
               </View>
@@ -216,17 +238,17 @@ const SettingsScreen = (props) => {
                 <Text gray2 style={{ marginBottom: 10 }}>Username</Text>
                 {renderEdit('username')}
               </Block>
-              <TouchableOpacity onPress={() => toggleEdit('username')}>
+              {/* <TouchableOpacity onPress={() => toggleEdit('username')}>
               <View>
               {
                loadingUserName ?  
                  <ActivityIndicator/> :
                  (<Text medium primary>
-                 {(editing === 'username' ? 'Save' : 'Edit')}
+                 {(editing === 'username' ? 'Save  ' : 'Edit  ')}
                  </Text>)
               }
               </View>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </Block>
             <Block row space="between" margin={[10, 0]} style={styles.inputRow}>
               <Block>
@@ -278,7 +300,11 @@ const SettingsScreen = (props) => {
           <Block style={styles.toggles}>
             <Block row center space="between" >
               <Text black>Follow us on Instagram</Text>
-              <TouchableOpacity onPress={() => Linking.openURL('https://www.instagram.com/papyrus_podcast/')}>
+              <TouchableOpacity onPress={() => {
+                Linking.openURL('https://www.instagram.com/papyrus_podcast/').catch(err => {
+                  console.log("Instagram Page Linking error: ",err);
+                })
+              }}>
         <View style={{paddingLeft: 15,paddingRight:10 } }>
           <Icon name="chevron-right" size={20} style={{color:'#101010'}}/>
         </View>
@@ -324,7 +350,11 @@ const SettingsScreen = (props) => {
           <Block style={styles.toggles}>
             <Block row center space="between" >
               <Text black>Terms of Service</Text>
-              <TouchableOpacity onPress={() => Linking.openURL('https://storage.googleapis.com/www.papyruspodcasts.com/Papyrus_Podcasts/Terms%20%26%20Conditions%20Final%20(1).html')}>
+              <TouchableOpacity onPress={() => {
+                Linking.openURL('https://storage.googleapis.com/www.papyruspodcasts.com/Papyrus_Podcasts/Terms%20%26%20Conditions%20Final%20(1).html').catch(err => {
+                  console.log("Terms of Service Error: ",err)
+                })
+              }}>
         <View style={{paddingLeft: 15,paddingRight:10 } }>
           <Icon name="chevron-right" size={20} style={{color:'#101010'}}/>
         </View>
@@ -336,7 +366,11 @@ const SettingsScreen = (props) => {
           <Block style={styles.toggles}>
             <Block row center space="between" >
               <Text black>Privacy Policies</Text>
-              <TouchableOpacity onPress={() => Linking.openURL('https://storage.googleapis.com/www.papyruspodcasts.com/Papyrus_Podcasts/Privacy%20Policy%20for%20Papyrus%20(1).html')}>
+              <TouchableOpacity onPress={() => {
+                Linking.openURL('https://storage.googleapis.com/www.papyruspodcasts.com/Papyrus_Podcasts/Privacy%20Policy%20for%20Papyrus%20(1).html').catch(err => {
+                  console.log("Privacy Policy Error: ",err);
+                })
+                }}>
               <View style={{paddingLeft: 15,paddingRight:10 } }>
               <Icon name="chevron-right" size={20} style={{color:'#101010'}}/>
               </View>

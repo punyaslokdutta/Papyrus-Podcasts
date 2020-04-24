@@ -169,6 +169,9 @@ const styles = StyleSheet.create({
            <View style={[styles.flex, styles.recommendationHeader]}>
            <TouchableOpacity  onPress={(()=>{
              dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
+             dispatch({type:"SET_CURRENT_TIME", payload:0})
+             dispatch({type:"SET_DURATION", payload:props.podcast.duration});
+             dispatch({type:"SET_PAUSED", payload:false})
              dispatch({type:"SET_PODCAST", payload: props.podcast}) 
              dispatch({type:"SET_NUM_LIKES", payload: props.podcast.numUsersLiked})
              if(props.isHomeScreen)
@@ -187,7 +190,7 @@ const styles = StyleSheet.create({
                 <Text style={{ fontSize: theme.sizes.font * 0.8, color: theme.colors.gray_green }}>{props.podcast.bookName.slice(0,30)}
                 {(props.podcast.bookName.length > 30) ? ".." : ""}</Text>
               </View>
-              <View style ={{height:(height)/30}}>
+              <View style ={{paddingTop:5,height:(height)/30}}>
               <Text style={{ fontSize: theme.sizes.font * 0.9,color: theme.colors.gray_green }}>{props.podcast.podcasterName}</Text>
               </View>
           

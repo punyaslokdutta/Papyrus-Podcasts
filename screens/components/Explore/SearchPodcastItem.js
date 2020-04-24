@@ -135,13 +135,21 @@ const styles = StyleSheet.create({
 
   async function retrievePodcastDocument()
   {
+    try{
     const podcastCollection = await firestore().collectionGroup('podcasts')
-             .where('podcastID','==',props.podcast.objectID).get();
+                             .where('podcastID','==',props.podcast.objectID).get();
     const podcastDocumentData = podcastCollection.docs[0]._data;
     console.log("[SearchPodcastItem] podcastDocumentData : ", podcastDocumentData);
+    dispatch({type:"SET_CURRENT_TIME", payload:0})
+    dispatch({type:"SET_DURATION", payload:podcastDocumentData.duration})
+    dispatch({type:"SET_PAUSED", payload:false})
     dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
     dispatch({type:"SET_PODCAST", payload: podcastDocumentData})
     dispatch({type:"SET_NUM_LIKES", payload: podcastDocumentData.numUsersLiked})
+    }
+    catch(error){
+      console.log("Error in retrievePodcastDocument() in SearchPodcastItem: ",error);
+    }
   }
         return (
           <TouchableOpacity onPress={() => {

@@ -41,107 +41,82 @@ class UserFollowerScreen extends React.Component {
 
      //retrieve data
      retrieveData = async () => {
-      try {
-        // Set State: Loading
-        this.setState({
-          loading: true,
-        });
+      
+      this.setState({
+        loading: true,
+      });
+      try { 
         console.log('IN USER Follower SCREEN');
-        // Cloud Firestore: Query
         const userid = this.props.navigation.state.params.id;// props.firebase._getUid();
         var wholestring = "isUserFollowing." + userid;
         console.log(wholestring);
 
   
-        let FollowerQuery =  await firestore().collectionGroup('privateUserData').where('followingList','array-contains',userid).orderBy('id')
-                                                .limit(this.state.limit).onSnapshot(
-                                                  async(docs) => {
-                                                    let FollowerData = docs.docs.map(document=>document.data());
-                                                    var lastVisibleFollower = this.state.lastVisibleFollower;                                     
-                                                    lastVisibleFollower = FollowerData[FollowerData.length - 1].id;        
-                                                    this.setState({
-                                                        Followers: FollowerData,
-                                                        lastVisibleFollower:lastVisibleFollower,
-                                                        loading:false
-                                                    });
-                                                  }
-                                                );
-        
+        await firestore().collectionGroup('privateUserData').where('followingList','array-contains',userid).orderBy('id')
+          .limit(this.state.limit).onSnapshot(
+            async(docs) => {
+              let FollowerData = docs.docs.map(document=>document.data());
+              var lastVisibleFollower = this.state.lastVisibleFollower; 
+              if(FollowerData.length != 0)                                    
+                lastVisibleFollower = FollowerData[FollowerData.length - 1].id;        
+              this.setState({
+                  Followers: FollowerData,
+                  lastVisibleFollower:lastVisibleFollower,
+              });
+            },function(error) {
+              console.log("Error in onSnapshot Listener in UserFollowerScreen: ",error);
+            });   
       }
       catch (error) {
         console.log(error);
       }
+      finally {
+        this.setState({
+          loading: false
+        });
+      }
     };
 
     retrieveMoreFollowers = async () => {
-     try
-      {
-
-        {console.log("retrieveMoreBookPodcasts starts()")}
-
+      
+      console.log("retrieveMoreBookPodcasts starts()")
       this.setState({
         refreshing: true
          }); 
 
+      try{
+
+       
          const  userid = this.props.navigation.state.params.id;
          var wholestring = "isUserFollowing." + userid;
          console.log(wholestring);
-  
-        //  let FollowerQuery = await firestore().collection('users').where(wholestring,'==',true).get();
-        //  let FollowerData = FollowerQuery.docs.map(document=>document.data());
          
-         let additionalQuery = null;
-         try{
-           additionalQuery = await firestore().collectionGroup('privateUserData').where('followingList','array-contains',userid).orderBy('id')
+         let additionalUserFollowers = await firestore().collectionGroup('privateUserData').where('followingList','array-contains',userid).orderBy('id')
                             .startAfter(this.state.lastVisibleFollower)
-                            .limit(this.state.limit);
+                            .limit(this.state.limit).get();
         
-          console.log("retrieveMoreUserFollowers afterQuery()") 
-        }
-        catch(error) {
-          console.log(error);
-        }
-
-        let documentSnapshots=null;
-        try{
-         documentSnapshots = await additionalQuery.get();
-        }
-        catch(error)
-        {
-            console.log(error);
-        }
-        
-      // Cloud Firestore: Document Data
-      let documentData = documentSnapshots.docs.map(document => document.data());
-      // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
+          
+      let documentData = additionalUserFollowers.docs.map(document => document.data());
       if(documentData.length != 0)
       {
-      let lastVisibleFollower = documentData[documentData.length - 1].id;
-       
-      if(this.state.lastVisibleFollower === lastVisibleFollower){
+        let lastVisibleFollower = documentData[documentData.length - 1].id;  
+        if(this.state.lastVisibleFollower != lastVisibleFollower)
+        {
           this.setState({
-                  refreshing:false
-              });
-      }
-      else
-      {
-        this.setState({
-            Followers: [...this.state.Followers, ...documentData],
-            lastVisibleFollower : lastVisibleFollower,
-            refreshing:false
-          });
+              Followers: [...this.state.Followers, ...documentData],
+              lastVisibleFollower : lastVisibleFollower,
+            });
 
-      }
-    }
-      else
-      {
-        this.setState({
-          refreshing:false
-      });
+        }
       }
       }
       catch(error){
-      console.log(error);
+        console.log(error);
+      }
+      finally {
+        this.setState({
+          refreshing: false
+        });
       }
     }
 
@@ -199,10 +174,10 @@ class UserFollowerScreen extends React.Component {
       showsVerticalScrollIndicator={false}
       keyExtractor={item => item.id}
      // ListHeaderComponent={this.renderHeader}
-     ItemSeparatorComponent={this.separator}
-       ListFooterComponent={this.renderFooter}
+      ItemSeparatorComponent={this.separator}
+      ListFooterComponent={this.renderFooter}
       onEndReached={this.onEndReached}
-      onEndReachedThreshold={0.5}
+      onEndReachedThreshold={0.01}
       refreshing={this.state.refreshing}
       onMomentumScrollBegin={() => { this.onEndReachedCalledDuringMomentum = false; }}
     />

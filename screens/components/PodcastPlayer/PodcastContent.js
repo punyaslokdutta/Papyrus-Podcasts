@@ -26,15 +26,11 @@ const { width,height } = Dimensions.get('window');
   const video = useRef();
   const userID = props.userID;
   const privateDataID = "private" + userID;
-
-  const userItem = useSelector(state=>state.userReducer.userItem)
-
   const isHomeScreen = useSelector(state=>state.rootReducer.isHomeScreen)
   //const 
   const rate=useSelector(state=>state.rootReducer.rate);
   const currentTime=useSelector(state=>state.rootReducer.currentTime)
 
-  //const isBuffering=useSelector(state=>state.rootReducer.isBuffering);
   const paused=useSelector(state=>state.rootReducer.paused);
   const volume=useSelector(state=>state.rootReducer.volume);
   const liked = useSelector(state=>state.userReducer.isPodcastLiked[props.podcast.podcastID]);
@@ -99,23 +95,29 @@ async function updatePodcastsLiked(props){
   
   console.log("[PodcastContent] In function updatePodcastsLiked, numUsers = ",numUsers);
 
-  if(props.podcast.isChapterPodcast == true)// && props.podcast.chapterID !== undefined)
-  {
-     await firestore().collection('books').doc(props.podcast.bookID).collection('chapters').doc(props.podcast.chapterID)
-                          .collection('podcasts').doc(props.podcast.podcastID).update({
-              numUsersLiked : firestore.FieldValue.increment(1)
-        })
-  }
-  else
-  {
-     await firestore().collection('books').doc(props.podcast.bookID).collection('podcasts').doc(props.podcast.podcastID)
-               .update({
-        numUsersLiked : firestore.FieldValue.increment(1)
-    })
-  }
+  // if(props.podcast.isChapterPodcast == true)// && props.podcast.chapterID !== undefined)
+  // {
+  //    await firestore().collection('books').doc(props.podcast.bookID).collection('chapters').doc(props.podcast.chapterID)
+  //                         .collection('podcasts').doc(props.podcast.podcastID).update({
+  //             numUsersLiked : firestore.FieldValue.increment(1)
+  //       })
+  // }s
+  // else
+  // {
+  //    await firestore().collection('books').doc(props.podcast.bookID).collection('podcasts').doc(props.podcast.podcastID)
+  //              .update({
+  //       numUsersLiked : firestore.FieldValue.increment(1)
+  //   })
+  // }
 
 
   console.log("props.podcast = ",props.podcast);
+
+  var chapterID = null;
+  if(props.podcast.isChapterPodcast === true)
+    chapterID = props.podcast.chapterID;
+  else
+    chapterID = "";
 
   const instance = firebase.app().functions("asia-northeast1").httpsCallable('addActivity');
   try 
@@ -128,21 +130,15 @@ async function updatePodcastsLiked(props){
       podcastImageURL : props.podcast.podcastPictures[0],
       type : "like",
       Name : name,
-      podcastName : props.podcast.podcastName 
+      podcastName : props.podcast.podcastName,
+      bookID : props.podcast.bookID,
+      chapterID : props.podcast.chapterID,
+      isChapterPodcast: props.podcast.isChapterPodcast 
     });
   }
   catch (e) 
   {
     console.log(e);
-  }
-  
-  if(isHomeScreen)
-  {
-    await firestore().collection('users').doc(userID).collection('privateUserData')
-                .doc(privateDataID).collection('podcastRecommendations')
-                .doc(props.podcast.podcastID).update({
-                  numUsersLiked : firestore.FieldValue.increment(1)
-                })
   }
 } 
 

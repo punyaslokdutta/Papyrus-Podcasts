@@ -14,8 +14,8 @@ import {useSelector,useDispatch} from 'react-redux';
 import SearchOnlyBookItem from './SearchOnlyBookItem';
 
 const searchClient = algoliasearch(
-  'GL4BSOR8T3',
-  '015571974bee040ecf4f58bf3276f8b3'
+  'VSRFUPESVM',
+  '4d3be49cf4512e3579ea5b198a420f1d'
 );
 
 const SearchScreen=(props)=> {

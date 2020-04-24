@@ -38,99 +38,77 @@ class ProfileChapterPodcast extends React.Component {
     
 
      retrieveData = async () => {
+      
+      this.setState({
+        loading: true,
+      });
       try {
-        this.setState({
-          loading: true,
-        });
         console.log('Retrieving Data');
         const  userid = this.props.firebase._getUid();
-        let query3 = await firestore().collectionGroup('podcasts').where('podcasterID','==',userid).   
-                      where('isChapterPodcast','==',true).orderBy('createdOn','desc').limit(this.state.limit)
-                       .onSnapshot((querySnapshot) =>
-                        {
-                          var documentData_podcasts = [];
+        await firestore().collectionGroup('podcasts').where('podcasterID','==',userid).   
+          where('isChapterPodcast','==',true).orderBy('createdOn','desc').limit(this.state.limit)
+            .onSnapshot((querySnapshot) =>
+            {
+              var documentData_podcasts = [];
 
-                          querySnapshot.forEach(function(doc) {
-                            documentData_podcasts.push(doc.data());
-                        });
-                          var lastVisibleChapter = this.state.lastVisibleChapterPodcast;
-                          if(documentData_podcasts.length != 0)
-                            lastVisibleChapter = documentData_podcasts[documentData_podcasts.length - 1].createdOn;        
-        
-                        this.setState({
-                          chapterPodcasts: documentData_podcasts,
-                          lastVisibleChapterPodcast: lastVisibleChapter,
-                          loading:false
-                          });
-                       })
+              querySnapshot.forEach(function(doc) {
+                documentData_podcasts.push(doc.data());
+            });
+              var lastVisibleChapter = this.state.lastVisibleChapterPodcast;
+              if(documentData_podcasts.length != 0)
+                lastVisibleChapter = documentData_podcasts[documentData_podcasts.length - 1].createdOn;        
+
+            this.setState({
+              chapterPodcasts: documentData_podcasts,
+              lastVisibleChapterPodcast: lastVisibleChapter
+              });
+            },function(error) {
+            console.log("Error in onSnapshot Listener in ProfileChapterPodcast: ",error);
+          })
       }
       catch (error) {
         console.log(error);
       }
+      finally {
+        this.setState({
+          loading: false
+        });
+      }
+     
     };
 
     retrieveMoreChapterPodcasts = async () => {
-      try
-       {
- 
-       this.setState({
-         refreshing: true
-          }); 
- 
-          const  userid = this.props.firebase._getUid();
-          let additionalQuery = null;
-          try{
-            additionalQuery = await firestore().collectionGroup('podcasts')
-                             .where('podcasterID','==',userid).where('isChapterPodcast','==',true)
-                             .orderBy('createdOn','desc')
-                             .startAfter(this.state.lastVisibleChapterPodcast)
-                             .limit(this.state.limit);
-         
-      console.log("retrieveMoreChapterPodcasts afterQuery()")
+      
+      this.setState({
+          refreshing: true
+        }); 
+
+      try{
+        const  userid = this.props.firebase._getUid();
+        let chapterPodcasts = await firestore().collectionGroup('podcasts').where('podcasterID','==',userid).where('isChapterPodcast','==',true)
+                          .orderBy('createdOn','desc').startAfter(this.state.lastVisibleChapterPodcast).limit(this.state.limit).get();
           
-         }
-         catch(error)
-         {
-           console.log(error);
-         }
-         let documentSnapshots = null;
-         try{
-          documentSnapshots = await additionalQuery.get();
-         }
-         catch(error)
-         {
-           console.log(error);
-         }
-         
-       let documentData = documentSnapshots.docs.map(document => document.data());
-       if(documentData.length != 0)
-       {
+        let documentData = chapterPodcasts.docs.map(document => document.data());
+        if(documentData.length != 0)
+        {
             let lastVisibleChapter = documentData[documentData.length - 1].createdOn;
-          if(this.state.lastVisibleChapterPodcast === lastVisibleChapter)
-          {
+            if(this.state.lastVisibleChapterPodcast !== lastVisibleChapter)
+            {
               this.setState({
-                  refreshing:false
+                chapterPodcasts: [...this.state.chapterPodcasts, ...documentData],
+                lastVisibleChapterPodcast : lastVisibleChapter,
               });
-          }
-          else
-          {
-            this.setState({
-              chapterPodcasts: [...this.state.chapterPodcasts, ...documentData],
-              lastVisibleChapterPodcast : lastVisibleChapter,
-              refreshing:false
-            });
-          }
-       }
-       else
-       {
-          this.setState({
-            refreshing:false
-            });
-       }
+            }
+        }
        }
        catch(error){
-       console.log(error);
+        console.log(error);
        }
+       finally {
+        this.setState({
+          refreshing: false
+        });
+      }
      }
 
     renderData=({item,index})=>
@@ -143,30 +121,25 @@ class ProfileChapterPodcast extends React.Component {
     }
 
     renderFooter = () => {
-      try {
-        if (this.state.refreshing===true) {
-          return (
-            <ActivityIndicator />
-          )
-        }
-        else {
-          return null;
-        }
+      if (this.state.refreshing == true) {
+        return (
+          <ActivityIndicator />
+        )
       }
-      catch (error) {
-        console.log(error);
+      else {
+        return null;
       }
     }
 
     onEndReached = ({ distanceFromEnd }) => {
       if(this.state.chapterPodcasts.length > (this.state.limit - 1))
       {
-      if(!this.onEndReachedCalledDuringMomentum){
-          this.retrieveMoreChapterPodcasts()
-          this.onEndReachedCalledDuringMomentum = true;
+        if(!this.onEndReachedCalledDuringMomentum){
+            this.retrieveMoreChapterPodcasts()
+            this.onEndReachedCalledDuringMomentum = true;
+        }
       }
-  }
-}
+    }
 
     render() {
       const { navigation } = this.props;

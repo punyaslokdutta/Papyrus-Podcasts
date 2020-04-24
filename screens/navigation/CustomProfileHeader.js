@@ -17,12 +17,21 @@ const CustomProfileHeader = props => {
     {console.log(props)}
 
     const name = useSelector(state=>state.userReducer.name);
+    var lastCharacter = null;
+    if(name != null)
+      lastCharacter = name[name.length-1];
     const profilePicURL = useSelector(state=>state.userReducer.displayPictureURL)
     return (
   
         <View style={{alignItems:'center',justifyContent:'center',paddingTop: 30,paddingBottom:15, flexDirection:'column'}}>
-          <View style={{flexDirection:'column'}}>
-    <Text style={{fontSize:theme.sizes.h3}}>{name}'s</Text>
+          <View style={{alignItems:'center',flexDirection:'column'}}>
+            {
+              lastCharacter == 's'
+              ?
+              <Text style={{fontSize:theme.sizes.h3}}>{name}'</Text>
+              :
+              <Text style={{fontSize:theme.sizes.h3}}>{name}'s</Text>
+            }
             <View style = {{alignItems:'center'}}>
             <Text style={{fontWeight:"bold",fontSize:theme.sizes.h2,paddingRight:5}}>Collections</Text>
             </View>

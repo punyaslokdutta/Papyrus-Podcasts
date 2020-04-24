@@ -156,27 +156,19 @@ class RecordBook extends Component {
 
 
   retrieveData = async () => {
-    try {
-      
-      console.log('Retrieving Data');
-      // Cloud Firestore: Query
-      console.log(this.props);
-      //const { navigation } = this.props;
-      const bookid = this.props.navigation.state.params;
-      console.log(bookid)
-      let book_data = await firestore().collection('books').doc(bookid.book).get();
-      // let data = await book_data.get();
-      console.log(book_data)
-      console.log(book_data._data)
-     // let data = book_data.map(document => document.data());
+  
+    console.log('[Record Book] Retrieving Data');
+    try{
+      const bookID = this.props.navigation.state.params.bookID;
+      let bookDoc = await firestore().collection('books').doc(bookID).get();
       this.setState({
-        article : book_data._data
-       // loading: false
+        article : bookDoc._data
       });
     }
-    catch (error) {
-      console.log(error);
+    catch(error){
+      console.log(error)
     }
+    
   };
 
 

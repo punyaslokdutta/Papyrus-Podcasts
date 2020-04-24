@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
         <Image source={{ uri: props.item.displayPicture }} style={{borderRadius:50,width:width/8,height:width/8}}/>
         </View>
         <View style={{alignItems:'center',justifyContent:'center'}}>
-        <Text style={{fontWeight:'bold',fontSize:18}}>{props.item.name}</Text>
+        <Text style={{fontWeight:'bold',fontSize:18,paddingRight:5}}>{props.item.name}</Text>
         </View>
         </View>
         {/* </TouchableOpacity> */}
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
         <Image source={{ uri: props.item.displayPicture }} style={{borderRadius:50,width:width/8,height:width/8}}/>
         </View>
         <View style={{alignItems:'center',justifyContent:'center'}}>
-        <Text style={{fontWeight:'bold',fontSize:18}}>{props.item.name}</Text>
+        <Text style={{fontWeight:'bold',fontSize:18,paddingRight:5}}>{props.item.name}</Text>
         </View>
         </View>
               {/* </TouchableOpacity> */}

@@ -39,6 +39,9 @@ const TopChapters = React.memo((props)=> {
        <View style={[styles.shadow,{height:height/4, width:width/3, marginLeft:20, borderwidth:5, borderColor:'#dddddd',overflow:'hidden', paddingRight:10,borderRadius:5}]}>
        <TouchableOpacity onPress={(()=>
         {
+          dispatch({type:"SET_CURRENT_TIME", payload:0})
+          dispatch({type:"SET_DURATION", payload:props.item.duration});
+          dispatch({type:"SET_PAUSED", payload:false});
           dispatch({type:"SET_PODCAST", payload: props.item})
           dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
           dispatch({type:"SET_NUM_LIKES", payload: props.item.numUsersLiked})

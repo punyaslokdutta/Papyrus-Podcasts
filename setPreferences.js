@@ -219,14 +219,22 @@ const setPreferences =(props)=> {
               if(categorySelectedMap[categories[i].label] == true)
                 categorySelectedArray.push(categories[i].label);
             }
-
+            if(categorySelectedArray.length<3)
+            {
+              alert('Please select atleast 2 categories');
+              return;
+            }
             var languageSelectedArray = [];
             for(i=0;i<languageData.length;i++)
             {
               if(languageSelectedMap[languageData[i].label] == true)
                 languageSelectedArray.push(languageData[i].label)
             }
-            
+            if(categorySelectedArray.length == 0)
+            {
+              alert('Please select atleast 1 language');
+              return; 
+            }
             createUser(props, fullName,categorySelectedArray,languageSelectedArray);
 
             }} 

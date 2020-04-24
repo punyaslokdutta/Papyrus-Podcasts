@@ -29,7 +29,7 @@ var {width, height}=Dimensions.get('window')
           <TouchableOpacity onPress={() => {
               console.log("fromSearchChapterScreen : ",props.fromSearchChapterScreen)
             if(props.fromSearchChapterScreen === false)
-              props.navigation.navigate('RecordBook', {book : props.book.objectID })
+              props.navigation.navigate('RecordBook', {bookID : props.book.objectID })
              else
               refRBSheet.current.open()
           }
@@ -66,8 +66,8 @@ var {width, height}=Dimensions.get('window')
 
                <View style={[styles.flex, styles.column, styles.shadow, { width:(width*2)/3,paddingLeft:theme.sizes.padding, paddingTop: theme.sizes.padding / 4 }]}>
                  <View style={{height:(height)/16}}>
-                  <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.book.bookName.slice(0,60)}
-                       {(props.book.bookName.length > 60) ? ".." : ""}</Text> 
+                  <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.book.bookName.slice(0,50)}
+                       {(props.book.bookName.length > 50) ? ".." : ""}</Text> 
                  </View>
                <View style ={{height:(height)/20}}>
                {

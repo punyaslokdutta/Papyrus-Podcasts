@@ -1,6 +1,6 @@
 
 
-import React, {Component, useEffect} from 'react';
+import React, {Component, useEffect,useState} from 'react';
 import {SafeAreaView,
   ActivityIndicator,
   TouchableOpacity, StyleSheet, Text, View, AsyncStorage, Dimensions, ImageBackground, Button, Image} from 'react-native';
@@ -16,6 +16,7 @@ import firebaseApi from './config/Firebase/firebaseApi'
 import {withFirebaseHOC} from '../screens/config/Firebase'
 import {useDispatch,useSelector} from 'react-redux'
 import Toast from 'react-native-simple-toast';
+import { Container } from 'native-base';
 
 var {width:WIDTH, height:HEIGHT}=Dimensions.get('window')
 
@@ -37,6 +38,9 @@ const validationSchema = yup.object().shape({
 
   
   const SignInScreen = (props) => {
+
+     const [userEmail,setUserEmail] = useState(null);
+     const [loading,setLoading] = useState(false);
 
   onFBLoginOrRegister = async () => {
     LoginManager.logInWithPermissions(['public_profile', 'email',])
@@ -72,6 +76,10 @@ const validationSchema = yup.object().shape({
         console.log(message);
       });
   }
+ async function handleLogin(formikProps){
+  formikProps.handleSubmit();
+ }
+  
   /*signIn=async()=>
   {
     await AsyncStorage.setItem('userToken', 'punyaslok') // This AsyncStorage store the token on the device, so that a user can be signed in when he/she revisits
@@ -100,7 +108,7 @@ const validationSchema = yup.object().shape({
                     Toast.show('Sign up')
                     console.log("SignUp")
                     //actions.setSubmitting(false);
-                    props.navigation.navigate('SignUpScreen')
+                    props.navigation.navigate('SignUpScreen',{userEmail : userEmail})
 
                 }
                 else if(errorCode==="auth/wrong-password")
@@ -122,14 +130,19 @@ const validationSchema = yup.object().shape({
       initialValues={{ email: '', password: '' }}
       onSubmit={(values, actions) => {
         //alert(JSON.stringify(values));
+        
+        console.log("EMAIL : ",values.email)
+        setUserEmail(values.email);
+        
         _loginWithEmail(values.email, values.password, props)
         actions.setSubmitting(false);
-
+        setLoading(false);
               }  
       }
       validationSchema={validationSchema}
     >   
-    {formikProps => (
+    {
+      formikProps => (
       
 
       <SafeAreaView  style={styles.backgroundContainer} >
@@ -145,8 +158,8 @@ const validationSchema = yup.object().shape({
          </View>
         <View style={styles.positions}>
           <TextInput style={styles.Input}   placeholder={'Email'} placeholderTextColor={'black'} underlineColorAndroid='transparent'
-          onChangeText={formikProps.handleChange('email')}
-          /> 
+            onChangeText={formikProps.handleChange('email')
+                         }/> 
           <Text style={{ color: 'rgba(255, 255, 255, 0.5)', paddingLeft:45 ,fontFamily:'sans-serif-light' , fontSize:12 }}>
           {formikProps.touched.email && formikProps.errors.email}
           </Text>
@@ -164,17 +177,43 @@ const validationSchema = yup.object().shape({
             <ActivityIndicator />
           ) : (
             <View>
-            <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:45, width:WIDTH -55, borderRadius:15, backgroundColor:'rgba(0, 0, 0, 0.7)', borderColor:'rgb(218,165,32)', borderWidth: 0.4 }}
-        onPress={formikProps.handleSubmit} >
-            <Text style={{ alignItems: 'center', fontFamily:'century-gothic', color:'rgb(218,165,32)', justifyContent:'center'}} >Login</Text>
+              {
+                loading == true
+                ?
+                <ActivityIndicator/>
+                :
+                <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:45, width:WIDTH -55, borderRadius:15, backgroundColor:'rgba(0, 0, 0, 0.7)', borderColor:'rgb(218,165,32)', borderWidth: 0.4 }}
+                 onPress={() => {
+                   //setLoading(true); 
+                 handleLogin(formikProps)}} >
+                 <Text style={{ alignItems: 'center', fontFamily:'century-gothic', color:'rgb(218,165,32)', justifyContent:'center'}} >Login</Text>
                 </TouchableOpacity>
-             
+
+              }             
               </View>
           )}
         
 
             <View>
-            <TouchableOpacity style={{paddingTop:10, }}>
+            <TouchableOpacity onPress={() => {
+              try{
+             userEmail &&  props.firebase._passwordReset(userEmail.trim())
+             {userEmail ? Toast.show('A password reset mail has been sent to your emailID.'):Toast.show('Please enter your email ID') }
+              }
+              catch(error)
+              {
+                var errorCode = error.code;
+                if(errorCode==="auth/user-not-found")
+                {
+                    Toast.show('Sign up')
+                    console.log("SignUp")
+                    
+                    //actions.setSubmitting(false);
+                    props.navigation.navigate('SignUpScreen',{userEmail : userEmail})
+
+                }
+              }
+              }} style={{paddingTop:10 }}>
            <Text style={{ fontFamily:'sans-serif-light', color:'rgb(218,165,32)', fontSize:12 }}>Forgot your Password?</Text>
          </TouchableOpacity>
             </View>
@@ -194,15 +233,12 @@ const validationSchema = yup.object().shape({
           <View style={{ paddingRight:5}}>
           <Text style={{ fontFamily:'sans-serif-light', color:'white', fontSize:13 }}>Not a Papyrus member yet?</Text>
           </View>
-        <TouchableOpacity	onPress={()=>{props.navigation.navigate('SignUpScreen')}}>
+        <TouchableOpacity	onPress={()=>{props.navigation.navigate('SignUpScreen', {userEmail:null})}}>
         <Text style={{ fontFamily:'sans-serif-light', color:'rgb(218,165,32)', fontSize:13 }}>Signup</Text>
        </TouchableOpacity>
         </View>
          </SafeAreaView>)}
          </Formik>
-         
-         
-       
       );
     
   }

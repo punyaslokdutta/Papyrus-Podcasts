@@ -138,28 +138,42 @@ const styles = StyleSheet.create({
 
   async function retrievePodcast(podcastID)
   {
-    const podcastCollection = await firestore().collectionGroup('podcasts').where('podcastID','==',podcastID).get();
-    console.log("[ActivityItem] podcastCollection : ", podcastCollection);
-    const podcastDocumentData = podcastCollection.docs[0]._data;
-    console.log("[ActivityItem] podcastDocumentData : ", podcastDocumentData);
-    dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
-    dispatch({type:"SET_PODCAST", payload: podcastDocumentData})
-    dispatch({type:"SET_NUM_LIKES", payload: podcastDocumentData.numUsersLiked})
+    try{
+      const podcastCollection = await firestore().collectionGroup('podcasts').where('podcastID','==',podcastID).get();
+      console.log("[ActivityItem] podcastCollection : ", podcastCollection);
+      const podcastDocumentData = podcastCollection.docs[0]._data;
+      console.log("[ActivityItem] podcastDocumentData : ", podcastDocumentData);
+      dispatch({type:"SET_CURRENT_TIME", payload:0})
+      dispatch({type:"SET_PAUSED", payload:false})
+      dispatch({type:"SET_DURATION", payload:podcastDocumentData.duration})
+      dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
+      dispatch({type:"SET_PODCAST", payload: podcastDocumentData})
+      dispatch({type:"SET_NUM_LIKES", payload: podcastDocumentData.numUsersLiked})
+    }
+    catch(error){
+      console.log("Error in retrievePodcast() in ActivityItem: ",error);
+    }
   }
 
   async function retrieveUser(props,userID)
   {
-    const privateDataID = "private" + userID;
-    const userDocument = await firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).get();
-    console.log("[ActivityItem] userDocument : ", userDocument);
-    const userDocumentData = userDocument.data();
-    console.log("[ActivityItem] userDocumentData : ", userDocumentData);
+    try{
+      const privateDataID = "private" + userID;
+      const userDocument = await firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).get();
+      console.log("[ActivityItem] userDocument : ", userDocument);
+      const userDocumentData = userDocument.data();
+      console.log("[ActivityItem] userDocumentData : ", userDocumentData);
+      
+      const isUserSame = (userID == realUserID);
+      isUserSame ?
+      props.navigation.navigate('ProfileTabNavigator')
+      :
+      props.navigation.navigate('ExploreTabNavigator', {userData:userDocumentData})
+    }
+    catch(error){
+      console.log("Error in retrieveUser() in ActivityItem: ",error);
+    }
     
-    const isUserSame = (userID == realUserID);
-    isUserSame ?
-    props.navigation.navigate('ProfileTabNavigator')
-    :
-    props.navigation.navigate('ExploreTabNavigator', {userData:userDocumentData})
 
   }
 

@@ -44,23 +44,27 @@ var {width, height}=Dimensions.get('window')
     };
 
     retrieveData = async () => {
+      
+      this.setState({
+        loading: true
+      });
+      
       try {
-        this.setState({
-          loading: true
-        });
-
         console.log("[UserStatsScreen] Retrieving Data");
         const id_user = this.props.navigation.state.params.item.id;
         const userPublicDoc = await firestore().collection('users').doc(id_user).get();
         
-      this.setState({
-            followersCount : userPublicDoc._data.followerCount,
-            loading : false
+        this.setState({
+            followersCount : userPublicDoc._data.followerCount
           });
-
       }
       catch (error) {
         console.log(error);
+      }
+      finally {
+        this.setState({
+          loading: false
+        });
       }
     };
 

@@ -31,11 +31,11 @@ const options = {
 };
 
 const searchClient = algoliasearch(
-  'BMHKOL10SE',
-  '8ab33c27b3ed311ee783cf9d91fee1c6'
+  'VSRFUPESVM',
+  '4d3be49cf4512e3579ea5b198a420f1d'
 );
 
-const index = searchClient.initIndex('books');
+const index = searchClient.initIndex('prod_books');
 
 var {width, height}=Dimensions.get('window')
 const SearchBookScreen=(props)=>

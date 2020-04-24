@@ -39,43 +39,53 @@ const firebaseApi={
 
         if(pictureURL === null)
             pictureURL = "https://storage.googleapis.com/papyrus-fa45c.appspot.com/users/DefaultProfilePictures/WhatsApp%20Image%202020-03-29%20at%205.51.24%20PM.jpeg";
-
-        const user1 = await firestore().collection('users').doc(`${user._user.uid}`)
         
         const privateDataID = "private" + user._user.uid;
-        const doc1 = await user1.collection('privateUserData').doc(privateDataID).set({
-                            id: user._user.uid,
-                            phoneNumber: user._user.phoneNumber,
-                            name: name,
-                            displayPicture: pictureURL,
-                            email: user._user.email,
-                            introduction: "",
-                            accountCreationTime: moment().format(),
-                            userName:userName,
-                            followingCount: 0,
-                            followingList: [],
-                            podcastsLiked: [],
-                            numCreatedBookPodcasts: 0, // On podcast upload
-                            numCreatedChapterPodcasts: 0,// On podcast upload
-                            numNotifications: 0,    
-                            languagesComfortableTalking: languagePreferences,
-                            listenedBookPodcastsCount: 0,
-                            listenedChapterPodcastsCount: 0,
-                            timespentByUserListening: 0,
-                            userPreferences: userPreferences,
-                            website : null        
-        });
-
-        const documentRef = await firestore().collection('users').doc(`${user._user.uid}`).set({
-            id: user._user.uid,
-            followerCount: 0,
-            followersList: [],
-            timespentTotalByUsersListening: 0,
-            name: name,
-            displayPicture: pictureURL
+        
+        try{
+            await firestore().collection('users').doc(`${user._user.uid}`).collection('privateUserData').doc(privateDataID).set({
+                id: user._user.uid,
+                phoneNumber: user._user.phoneNumber,
+                name: name,
+                displayPicture: pictureURL,
+                email: user._user.email,
+                introduction: "",
+                accountCreationTime: moment().format(),
+                userName:userName,
+                followingCount: 0,
+                followingList: [],
+                podcastsLiked: [],
+                numCreatedBookPodcasts: 0, // On podcast upload
+                numCreatedChapterPodcasts: 0,// On podcast upload
+                numNotifications: 0,    
+                languagesComfortableTalking: languagePreferences,
+                listenedBookPodcastsCount: 0,
+                listenedChapterPodcastsCount: 0,
+                timespentByUserListening: 0,
+                userPreferences: userPreferences,
+                website : null        
             });
+        }
+        catch(error){
+            console.log("Error in private Doc creation in createNewUser in firebaseApi: ",error)
+        }
+        
+        try{
+            await firestore().collection('users').doc(`${user._user.uid}`).set({
+                id: user._user.uid,
+                followerCount: 0,
+                followersList: [],
+                timespentTotalByUsersListening: 0,
+                name: name,
+                displayPicture: pictureURL
+                });
+        }
+        catch(error){
+            console.log("Error in public Doc creation in createNewUser in firebaseApi: ",error)
+        }
+
         console.log("Firestore mei Data ADD HO GAYA")
-    console.log(doc1);
+        console.log(doc1);
 
     },
 

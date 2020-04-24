@@ -19,7 +19,7 @@ class CategoryBook extends React.Component {
 
       this.state={
         books:[], 
-        limit:5,
+        limit:6,
         lastVisibleBook:null,
         refreshing:false,
         loading:false,
@@ -42,100 +42,72 @@ class CategoryBook extends React.Component {
 
      //retrieve data
      retrieveData = async () => {
+      
+      this.setState({
+        loading: true,
+      });
+      console.log('Retrieving Data');
+      
       try {
-        // Set State: Loading
-        this.setState({
-          loading: true,
-        });
-        console.log('Retrieving Data');
-        // Cloud Firestore: Query
+        
         const genre = this.props.navigation.state.params;
-        let query3 = await firestore().collection('books').where("genres","array-contains",genre.category);    
-        let documentBooks = await query3.orderBy('createdOn','desc').limit(this.state.limit).get();
+        let documentBooks = await firestore().collection('books').where("genres","array-contains",genre.category)
+                                  .orderBy('createdOn','desc').limit(this.state.limit).get();
         let documentDataBooks = documentBooks.docs.map(document => document.data());
 
         var lastVisible = this.state.lastVisibleBook;
-        lastVisible = documentDataBooks[documentDataBooks.length - 1].bookID;        
+        if(documentDataBooks.length != 0)
+          lastVisible = documentDataBooks[documentDataBooks.length - 1].createdOn;        
          
         this.setState({
-        books: documentDataBooks,
-        lastVisibleBook:lastVisible,
-        loading:false
+          books: documentDataBooks,
+          lastVisibleBook:lastVisible
         });
       }
       catch (error) {
         console.log(error);
       }
+      finally {
+        this.setState({
+          loading: false
+        });
+      }
     };
 
     retrieveMoreCategoryBooks = async () => {
-     try
-      {
-
-        {console.log("retrieveMoreCategoryBooks starts()")}
-
+     
+      console.log("retrieveMoreCategoryBooks starts()");
       this.setState({
         refreshing: true
-         }); 
-
-         //const  userid = this.props.firebase._getUid();
-         const genre = this.props.navigation.state.params;
-         let additionalQuery = null;
-         try{
-           additionalQuery = await firestore().collection('books').where('genres','array-contains',genre.category)
-                            .orderBy('createdOn','desc')
-                            .startAfter(this.state.lastVisibleBook)
-                            .limit(this.state.limit);
-        
-      // Cloud Firestore: Query Snapshot
-      {console.log("retrieveMoreCategoryBooks afterQuery()")}
-         
-        }
-        catch(error)
-        {
-          console.log(error);
-        }
-        let documentSnapshots = null;
-        try{
-         documentSnapshots = await additionalQuery.get();
-        }
-        catch(error)
-        {
-            console.log(error);
-        }
-        
-      // Cloud Firestore: Document Data
-      let documentData = documentSnapshots.docs.map(document => document.data());
-      // Cloud Firestore: Last Visible Document (Document ID To Start From For Proceeding Queries)
-      if(documentData.length != 0)
-      {
-      let lastVisibleBook = documentData[documentData.length - 1].bookID;
-       
-      if(this.state.lastVisibleBook===lastVisibleBook){
-          this.setState({
-                  refreshing:false
-              });
-      }
-      else
-      {
-        this.setState({
-            books: [...this.state.books, ...documentData],
-            //chapterPodcasts: documentData_chapterPodcasts,
-            lastVisibleBook : lastVisibleBook,
-            refreshing:false
-          });
-
-      }
-    }
-      else
-      {
-        this.setState({
-          refreshing:false
       });
-      }
+
+      try{
+
+        const genre = this.props.navigation.state.params;
+        let categoryBookQuery = await firestore().collection('books').where('genres','array-contains',genre.category)
+                          .orderBy('createdOn','desc').startAfter(this.state.lastVisibleBook).limit(this.state.limit).get();
+        
+        let documentData = categoryBookQuery.docs.map(document => document.data());
+        if(documentData.length != 0)
+        {
+          let lastVisibleBook = documentData[documentData.length - 1].createdOn;
+          if(this.state.lastVisibleBook != lastVisibleBook)
+          {
+            this.setState({
+                books: [...this.state.books, ...documentData],
+                lastVisibleBook : lastVisibleBook
+              });
+
+          }
+        }
       }
       catch(error){
-      console.log(error);
+        console.log(error);
+      }
+      finally {
+        this.setState({
+          refreshing: false
+        });
       }
     }
 
@@ -151,28 +123,25 @@ class CategoryBook extends React.Component {
    
 
     renderFooter = () => {
-      try {
-        if (this.state.refreshing===true) {
-          return (
-            <ActivityIndicator />
-          )
-        }
-        else {
-          return null;
-        }
+      
+      if (this.state.refreshing===true) {
+        return (
+          <ActivityIndicator />
+        )
       }
-      catch (error) {
-        console.log(error);
+      else {
+        return null;
       }
     }
 
     onEndReached = ({ distanceFromEnd }) => {
-      //if(this.state.books.length > 5)
-      if(!this.onEndReachedCalledDuringMomentum){
-          this.retrieveMoreCategoryBooks()
-          this.onEndReachedCalledDuringMomentum = true;
+      if(this.state.books.length > (this.state.limit - 1))
+      {
+        if(!this.onEndReachedCalledDuringMomentum ){
+            this.retrieveMoreCategoryBooks()
+            this.onEndReachedCalledDuringMomentum = true;
+        }
       }
-      
   }
 
   separator = () => <View style={[styles.separator,{paddingTop:height/96}]} />;

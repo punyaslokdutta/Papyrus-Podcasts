@@ -7,7 +7,7 @@ const serviceAccount = require('./serviceAccount.json');
   });
 
 
-exports.addActivity = functions.region("asia-northeast1").https.onCall((data, context) => {
+exports.addActivity = functions.region("asia-northeast1").https.onCall(async(data, context) => {
  
 
   const creationTimestamp = data.timestamp;
@@ -19,6 +19,10 @@ exports.addActivity = functions.region("asia-northeast1").https.onCall((data, co
   const type = data.type;
   const likerOrFollowerName = data.Name;
   const podcastName = data.podcastName;
+  const bookID = data.bookID;
+  const chapterID = data.chapterID;
+  const isChapterPodcast = data.isChapterPodcast;
+
 
   console.log("ACTIVITY DETAILS: ");
 
@@ -31,6 +35,9 @@ exports.addActivity = functions.region("asia-northeast1").https.onCall((data, co
   console.log("userID: ",userID);
   console.log("podcastPicture: ",podcastPicture);
   console.log("podcastName: ",podcastName);
+  console.log("bookID: ",bookID);
+  console.log("chapterID: ",chapterID);
+  console.log("isChapterPodcast: ",isChapterPodcast);
 
   console.log("context.auth = ",context.auth);
   
@@ -61,6 +68,30 @@ exports.addActivity = functions.region("asia-northeast1").https.onCall((data, co
     }
   else // LIKE activity
     {
+      try{
+        if(isChapterPodcast === true)// && props.podcast.chapterID !== undefined)
+        {
+          console.log("updating numUsersLiked in chapterpodcast")
+           await db.collection('books').doc(bookID).collection('chapters').doc(chapterID)
+                                .collection('podcasts').doc(podcastID).update({
+                    numUsersLiked : admin.firestore.FieldValue.increment(1)
+              })
+        }
+        else
+        {
+           console.log("updating numUsersLiked in bookpodcast")
+           await db.collection('books').doc(bookID).collection('podcasts').doc(podcastID)
+                     .update({
+              numUsersLiked : admin.firestore.FieldValue.increment(1)
+          })
+        }
+      }
+      catch(error){
+        console.log("Error in updating numUsersLiked: ",error)
+      }
+     
+
+
       db.collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('Activities').add({
         type : type,
         creationTimestamp: creationTimestamp,

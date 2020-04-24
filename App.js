@@ -16,7 +16,7 @@ import WelcomeScreen from './screens/WelcomeScreen'
   import { createStackNavigator } from 'react-navigation-stack';
   import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
   import { fromRight , fromLeft} from 'react-navigation-transitions';
-  
+
 import thunk from 'redux-thunk';
 import userReducer from './reducers/userReducer'
 import rootReducer from './reducers/rootReducer';
@@ -66,10 +66,10 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
 
 const AuthStackNavigator= createStackNavigator(
   {
-    
+
     SignInScreen: SignInScreen,
     SignUpScreen: SignUpScreen,
-    //WelcomeScreen:WelcomeScreen 
+    //WelcomeScreen:WelcomeScreen
   },
   {
     headerMode: 'none',
@@ -77,7 +77,7 @@ const AuthStackNavigator= createStackNavigator(
     transitionConfig: () => fromRight(),
     navigationOptions: {
       headerVisible: false,
-     
+
     }
    }
 )
@@ -88,18 +88,17 @@ const CategoryStackNavigator=createStackNavigator(
   {
     CategoryScreen : {screen : CategoryScreen,navigationOptions:{
       //header:null
-      title: 'Categories',
+      title: '    Categories  ',
       headerTintColor: 'white',
         headerStyle: {
-          
           backgroundColor: 'black'
         }
     }},
     CategoryTabNavigator : {screen : CategoryTabNavigator,navigationOptions:{
-    }} 
-  }, 
+    }}
+  },
   {
-    //headerMode:'none', 
+    //headerMode:'none',
     initialRouteName:'CategoryScreen',
     transitionConfig: () => fromRight(),
   }
@@ -112,7 +111,7 @@ const ExploreStackNavigator=createStackNavigator(
   {
      Explore : {screen : Explore,navigationOptions:{
        header:null
-     }}, 
+     }},
   //   SearchScreen : {screen : SearchScreen,navigationOptions: {
   //      SearchScreenheader: null,
   //  }},
@@ -129,9 +128,9 @@ const ExploreStackNavigator=createStackNavigator(
 
     //   }}
 
-  }, 
+  },
   {
-    //headerMode:'none', 
+    //headerMode:'none',
     //initialRouteName:'CategoryScreen',
     transitionConfig: () => fromRight(),
   }
@@ -141,12 +140,12 @@ const ExploreStackNavigator=createStackNavigator(
 
 const ProfileStackNavigator=createStackNavigator(
   {
-     ProfileTabNavigator : {screen : ProfileTabNavigator}, 
+     ProfileTabNavigator : {screen : ProfileTabNavigator},
     editProfile : {screen : editProfile,navigationOptions: {
        header: null,
-   }}, 
+   }},
     Profile_StatsScreen:{screen: Profile_StatsScreen, navigationOptions: {
-      title: 'Stats',
+      title: 'Stats  ',
       headerTintColor: 'white',
         headerStyle: {
           backgroundColor: 'black'
@@ -178,7 +177,7 @@ const ProfileStackNavigator=createStackNavigator(
     // ExploreTabNavigator : {screen : ExploreTabNavigator,navigationOptions:{
 
     // }}
-  }, 
+  },
 )
 
 const RecordStackNavigator= createStackNavigator(
@@ -188,10 +187,10 @@ const RecordStackNavigator= createStackNavigator(
     Tags : {screen:TagsScreen} ,
   },
   {
-    headerMode:'none', 
+    headerMode:'none',
     initialRouteName:'SelectScreen',
     transitionConfig: () => fromRight(),
-  }  
+  }
 )
 
 RecordStackNavigator.navigationOptions = ({ navigation }) => {
@@ -217,7 +216,7 @@ HomeStackNavigator.navigationOptions = ({ navigation }) => {
 
 const AppTabNavigator=createBottomTabNavigator(
   {
-    Home: {screen:HomeStackNavigator, 
+    Home: {screen:HomeStackNavigator,
     navigationOptions:{
       tabBarLabel:'Home',
       tabBarIcon:({tintColor})=>(
@@ -230,7 +229,7 @@ const AppTabNavigator=createBottomTabNavigator(
         tabBarIcon:({tintColor})=>(
           <Icon name="search" color={tintColor}  size={26}/>
         )
-      } 
+      }
     },
    Record: {screen:RecordStackNavigator,
       navigationOptions:{
@@ -238,7 +237,7 @@ const AppTabNavigator=createBottomTabNavigator(
         tabBarIcon:({tintColor})=>(
           <Icon name="microphone" color={tintColor} size={26}/>
         )
-      } 
+      }
    },
     Category: {screen: CategoryStackNavigator,
       navigationOptions:{
@@ -246,7 +245,7 @@ const AppTabNavigator=createBottomTabNavigator(
         tabBarIcon:({tintColor})=>(
           <Icon name="cubes" color={tintColor} size={24}/>
         )
-      } 
+      }
     },
     Profile: {screen:ProfileStackNavigator,
       navigationOptions:{
@@ -254,29 +253,29 @@ const AppTabNavigator=createBottomTabNavigator(
         tabBarIcon:({tintColor})=>(
           <Icon name="user-circle" color={tintColor} size={24}/>
         )
-      } 
-    }, 
+      }
+    },
   },{initialRouteName:'Explore',
   order:['Home', 'Explore', 'Record', 'Category', 'Profile'],
   headerMode: 'none',
   navigationOptions:
-  {    
+  {
     tabBarVisible: true,
     headerVisible: false
-  }, 
+  },
   tabBarOptions:{
     activeTintColor:'black',
     inactivetintcolor:'grey',
     backgroundColor:'white',
     borderTopWidth: 0,
     elevation :5,
-    adaptive: true, 
+    adaptive: true,
     style:
     {
       paddingBottom: SCREEN_HEIGHT/100,
-      height: SCREEN_HEIGHT/11, 
+      height: SCREEN_HEIGHT/11,
     },
-  }, 
+  },
   }
 )
 
@@ -321,10 +320,10 @@ const AppStackNavigator= createStackNavigator(
     //  header: props => <CustomUserHeader {...props} />
     }},
     CustomUserHeader : {screen : CustomUserHeader,navigationOptions:{
-             
+
     }},
      UserStatsScreen : {screen : UserStatsScreen,navigationOptions:{
-          title: 'Stats',
+          title: 'Stats  ',
           headerTintColor: 'white',
         headerStyle: {
           backgroundColor: 'black'
@@ -344,15 +343,15 @@ const AppStackNavigator= createStackNavigator(
             backgroundColor: 'black'
           }
      }},
-     Activity: {screen:ActivityScreen, 
-      navigationOptions: {
-       //header:null
-       title: 'Activities',
-       headerTintColor: 'white',
-       headerStyle: {
-          backgroundColor: 'black'
-        }
-      }},
+    //  Activity: {screen:ActivityScreen,
+    //   navigationOptions: {
+    //    //header:null
+    //    title: 'Activities',
+    //    headerTintColor: 'white',
+    //    headerStyle: {
+    //       backgroundColor: 'black'
+    //     }
+    //   }},
     PodcastPlayer: {screen :PodcastPlayer,
     navigationOptions:{
       header:null
@@ -360,7 +359,7 @@ const AppStackNavigator= createStackNavigator(
    RecordBook: {screen :RecordBook,
     navigationOptions:{
       header:null
-   }}, 
+   }},
    RecordChapter: {screen :RecordChapter,
     navigationOptions:{
       header:null
@@ -374,59 +373,59 @@ SearchScreen: {screen:SearchScreen,navigationOptions:{
    SearchTabNavigator: {screen: SearchTabNavigator,navigationOptions:{
          //header : null
    }}
-  }, 
+  },
   {
-    
+
     transitionConfig: () => fromRight(),
     navigationOptions: {
       headerVisible: false,
-      
+
     }
    }
-  
+
 )
 
 
 const AppDrawerNavigator=createDrawerNavigator(
  {
-    Home: {screen : AppStackNavigator, 
+    Home: {screen : AppStackNavigator,
       navigationOptions: {
         drawerLabel: "Home  ",
         drawerIcon: () => (<Icon name="home" size={24} style={{ color: 'white' }} />),
       }},
-    Drafts: {screen: StatisticsScreen, 
+    Drafts: {screen: StatisticsScreen,
       navigationOptions: {
         drawerLabel: "Drafts ",
         drawerIcon: () => (<TouchableOpacity onPress={()=>{NativeModules.ReactNativeRecorder.sampleMethodTwo()}}>
           <Icon name="hdd-o" size={22} style={{ color: 'white' }} />
           </TouchableOpacity>),
-      }}, 
-    Activity: {screen:ActivityScreen, 
+      }},
+    Activity: {screen:ActivityScreen,
       navigationOptions: {
         drawerLabel: "Activity  ",
         drawerIcon: () => (<Icon name="bell" size={22} style={{ color: 'white' }} />),
       }},
-    Settings: {screen:SettingsScreen, 
+    Settings: {screen:SettingsScreen,
       navigationOptions: {
         drawerLabel: "Settings ",
         drawerIcon: () => (<Icon name="cog" size={22} style={{ color: 'white' }} />),
       }}
-  }, 
+  },
   {
     drawerWidth: SCREEN_WIDTH/2,
     drawerPosition: 'left',
-    drawerType: 'slide', 
+    drawerType: 'slide',
     initialRouteName: 'Home',
-    overlayColor: 1, 
-    drawerOpenRoute:'DrawerOpen', 
-    drawerCloseRoute :'DrawerClose', 
-    drawerToggleRoute:'DrawerToggle', 
+    overlayColor: 1,
+    drawerOpenRoute:'DrawerOpen',
+    drawerCloseRoute :'DrawerClose',
+    drawerToggleRoute:'DrawerToggle',
     contentComponent: CustomDrawerContentComponent,
     contentOptions: {
       activeTintColor: '#dddd',
       inactiveTintColor: '#dddd'
-    }, 
-    
+    },
+
 
   }
 
@@ -436,21 +435,21 @@ const AppSwitchNavigator = createSwitchNavigator(
   {
     AuthLoading : AuthLoadingScreen,
     setUserDetails : setUserDetails,
-    Auth : AuthStackNavigator, 
-    App : AppDrawerNavigator ,  
-    setPreferences: setPreferences 
+    Auth : AuthStackNavigator,
+    App : AppDrawerNavigator ,
+    setPreferences: setPreferences
   },
   {
     initialRouteName:'AuthLoading'
   }
 )
 
- const AppContainer = createAppContainer(AppSwitchNavigator); 
+ const AppContainer = createAppContainer(AppSwitchNavigator);
  const mainReducer = combineReducers({
   recorderReducer,
   userReducer,
-  rootReducer, 
-  authReducer, 
+  rootReducer,
+  authReducer,
 })
 
 const store = createStore(mainReducer, applyMiddleware(thunk))
@@ -460,9 +459,9 @@ export default class App extends Component {
     console.log("REDUX_STORE_STATE: " + store.getState());
     return(
     <Provider store ={store}>
-    <FirebaseProvider value={firebaseApi}> 
+    <FirebaseProvider value={firebaseApi}>
     <PlayerProvider>
-    <AppContainer/> 
+    <AppContainer/>
     </PlayerProvider>
     </FirebaseProvider>
     </Provider>
@@ -495,11 +494,11 @@ const styles = StyleSheet.create({
     },
     drawerimage:
     {
-      height: 100, 
-      width:100, 
-      borderRadius:50, 
+      height: 100,
+      width:100,
+      borderRadius:50,
 
-    }, 
+    },
     contentContainer: {
       flexGrow: 1,
     },
@@ -527,14 +526,14 @@ const styles = StyleSheet.create({
       paddingHorizontal: theme.sizes.base * 2,
       paddingTop: theme.sizes.base * 2.5,
       paddingBottom :theme.sizes.base * 0.5,
-    }, 
+    },
      avatar: {
     height: theme.sizes.base * 2.2,
     width: theme.sizes.base * 2.2,
-    borderRadius: theme.sizes.base * 2.2, 
-    
-    
-    
+    borderRadius: theme.sizes.base * 2.2,
+
+
+
   }
 });
 

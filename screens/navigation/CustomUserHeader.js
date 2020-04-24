@@ -154,7 +154,7 @@ const CustomUserHeader = (props) => {
       console.log("[CustomUserHeader] isUserFollowing = ", printMessage)
       const [message,setMessage] = useState(wholestring);
       const dispatch=useDispatch();
- 
+      const lastCharacter = item.name[item.name.length - 1];
       return (
         <View>
         <View style={{alignItems:'flex-end',paddingRight:10,paddingTop:10}}>
@@ -194,10 +194,15 @@ const CustomUserHeader = (props) => {
 
                     }}></Button>
         </View>
-          <View style={{alignItems:'center',justifyContent:'center', flexDirection:'column'}}>
-            <View style={{flexDirection:'column'}}>
-      
-            <Text style={{fontSize:theme.sizes.h3}}>{item.name}'s</Text>
+          <View style={{alignItems:'center',justifyContent:'center', flexDirection:'column',paddingBottom:10}}>
+            <View style={{alignItems:'center',flexDirection:'column'}}>
+            {
+              lastCharacter == 's'
+              ?
+              <Text style={{fontSize:theme.sizes.h3}}>{item.name}'</Text>
+              :
+              <Text style={{fontSize:theme.sizes.h3}}>{item.name}'s</Text>
+            }
               <View style = {{alignItems:'center'}}>
               <Text style={{fontWeight:"bold",fontSize:theme.sizes.h2,paddingRight:5}}>Collections</Text>              
               </View>

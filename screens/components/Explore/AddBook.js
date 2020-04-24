@@ -18,6 +18,7 @@ const options = {
 var {width, height}=Dimensions.get('window')
 const AddBook=(props)=>{
 
+  const [tagsLength,setTagsLength] = useState(0);
   const initialAuthors = {
     tag: '',
     tagsArray: []
@@ -53,11 +54,21 @@ const AddBook=(props)=>{
       console.log(state);
       // if(state.tag.replace(/\s/g,'').length)
       
-      setAuthors(state);
-      var tagsArrayLength = state.tagsArray.length;
+      if(state.tagsArray.length != tagsLength)  // for trimming last selected author(tag)
+      {
+        var trimmedTagState = state;
+        const trimmedTag = state.tagsArray[state.tagsArray.length - 1].trim();
+        trimmedTagState.tagsArray[trimmedTagState.tagsArray.length - 1] = trimmedTag;
+        setAuthors(trimmedTagState);
+        setTagsLength(trimmedTagState.tagsArray.length);
+      }
+      else
+        setAuthors(state);
+
+        var tagsArrayLength = state.tagsArray.length;
       if(tagsArrayLength != 0)
       {
-        if(state.tagsArray[tagsArrayLength-1].length == 0 || !state.tagsArray[tagsArrayLength-1].replace(/\s/g,'').length)
+        if(state.tagsArray[tagsArrayLength-1].length == 0 || !state.tagsArray[tagsArrayLength-1].replace(/\s/g,'').length) // to check for whitespaces at right or left
         {
           var tagState = state;
           tagState.tagsArray.pop();
@@ -68,6 +79,8 @@ const AddBook=(props)=>{
     };
 
     async function uploadImage() {
+
+      try{
         ImagePicker.showImagePicker(options, async (response) => {
           console.log('Response URI = ', response.uri);
           console.log('Response PATH = ', response.path);
@@ -82,14 +95,14 @@ const AddBook=(props)=>{
             const source = { uri: response.uri };
             console.log("Before storageRef.putFile");
             setBookImage(source)
-            var refPath = "books/images/" + userID + "_" + Date.now() + ".jpg";
+            var refPath = "books/images/" + userID + "_" + moment().format() + ".jpg";
             var storageRef = storage().ref(refPath);
             console.log("Before storageRef.putFile");
     
             ImageResizer.createResizedImage(response.path, 720, 720, 'JPEG',100)
           .then(({path}) => {
     
-            const unsubscribe=storageRef.putFile(path)//: 'content://com.miui.gallery.open/raw/storage/emulated/DCIM/Camera/IMG_20200214_134628_1.jpg')
+            storageRef.putFile(path)//: 'content://com.miui.gallery.open/raw/storage/emulated/DCIM/Camera/IMG_20200214_134628_1.jpg')
               .on(
                 firebase.storage.TaskEvent.STATE_CHANGED,
                 snapshot => {
@@ -102,8 +115,7 @@ const AddBook=(props)=>{
                   }
                 },
                 error => {
-                  unsubscribe();
-                  console.log("image upload error: " + error.toString());
+                  console.log("Book image upload error: " + error.toString());
                 },
                 () => {
                   storageRef.getDownloadURL()
@@ -111,12 +123,19 @@ const AddBook=(props)=>{
                       console.log("File available at: " + downloadUrl);
                       setBookImageDownloadURL(downloadUrl);
                     })
+                    .catch(err => {
+                      console.log("Error in storageRef.getDownloadURL() in uploadImage in AddBook: ",err);
+                    })
                 }
               )
               });
             }
         });
       }
+      catch(error){
+        console.log("Error in AddBook while uploading & resizing Book Image: ",error);
+      }
+    }
 
 
 
@@ -128,7 +147,14 @@ const AddBook=(props)=>{
        <View style={{ paddingTop: 10, flexDirection: 'column' , paddingBottom:20}}>
          <TouchableOpacity onPress={uploadImage}>
          <View>
-           <Image source={bookImage} style={{ width: height / 6, height: height / 6, borderRadius: 20, borderColor: 'black', borderWidth: 1 }} />
+           {
+             bookImage == null
+             ?
+             <Image source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/Insert-Image.png"}} style={{ width: height / 6, height: height / 6, borderRadius: 20, borderColor: 'black', borderWidth: 1 }} />
+             :
+             <Image source={bookImage} style={{ width: height / 6, height: height / 6, borderRadius: 20, borderColor: 'black', borderWidth: 1 }} />
+           }
+           
          </View>
          </TouchableOpacity>
        </View>
@@ -146,6 +172,7 @@ const AddBook=(props)=>{
                   onChangeText={(text) => {setBookNameState(text)} }
                   placeholder="Book"
                   onBlur={() => {
+                    setBookNameState(bookNameState.trim());
                     if(bookNameState != null && bookNameState.length < 1)
                     {
                       setBookNameState(null);
@@ -207,6 +234,7 @@ const AddBook=(props)=>{
                     return;
                   }
                 setLoading(true);
+
                 firestore().collection('books').add({
                   bookName : bookNameState,
                   authors : authors.tagsArray,

@@ -27,7 +27,11 @@ const areEqual = (prevProps, nextProps) => true
       }
       
       const isUserSame = (props.item.id == userid);
-      
+      var exploreName = props.item.name;
+      if(exploreName.length > 10){
+        exploreName = exploreName.slice(0,10) + '...';
+      }
+        
    
       return (
         <View>
@@ -35,7 +39,7 @@ const areEqual = (prevProps, nextProps) => true
           isUserSame ? <TouchableOpacity onPress={() => props.navigation.navigate('ProfileTabNavigator')}>
               <View style={[styles.shadow,{marginLeft: 15}]}>
               <Image source={{ uri: props.item.displayPicture }} style={styles.storie} />
-              <Text style={styles.username}>{props.item.name}</Text>
+              <Text style={styles.username}>{exploreName}</Text>
               </View>
               </TouchableOpacity>
             :
@@ -44,7 +48,7 @@ const areEqual = (prevProps, nextProps) => true
               <TouchableOpacity onPress={() => props.navigation.navigate('ExploreTabNavigator', {userData:props.item,followsOrNot:text2})}>
               <View style={[styles.shadow,{marginLeft: 15}]}>
               <Image source={{ uri: props.item.displayPicture }} style={styles.storie} />
-              <Text style={styles.username}>{props.item.name}</Text>
+              <Text style={styles.username}>{exploreName}</Text>
               </View>
               </TouchableOpacity>
             )

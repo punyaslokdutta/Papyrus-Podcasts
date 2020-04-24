@@ -1,7 +1,7 @@
 const functions         = require('firebase-functions');
 const admin=require('firebase-admin');
 const algoliasearch=require('algoliasearch');
-const serviceAccount = require('./serviceAccount.json');//this one
+//const serviceAccount = require('./serviceAccount.json');//this one
 
 
  admin.initializeApp({
@@ -52,17 +52,4 @@ exports.changeUserNameInPodcastsAsiaEast = functions.region("asia-northeast1").h
 
      return true;
  });
-
-
-//     console.log(`Just resized ${newImgName} at size ${size}`);
-
-//     return bucket.upload(imgPath, {
-//       destination: join(bucketDir, newImgName)
-//     });
-
-//   });
-
-//   await Promise.all(uploadPromises);
-//   await fs.emptyDir(workingDir)
-//   await fs.remove(workingDir)
 
