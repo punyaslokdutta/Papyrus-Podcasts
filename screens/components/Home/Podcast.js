@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
                 <Text style={{ fontSize: theme.sizes.font * 0.8, color: theme.colors.gray_green }}>{props.podcast.bookName.slice(0,30)}
                 {(props.podcast.bookName.length > 30) ? ".." : ""}</Text>
               </View>
-              <View style ={{height:(height)/30}}>
+              <View style ={{paddingTop:5,height:(height)/30}}>
               <Text style={{ fontSize: theme.sizes.font * 0.9,color: theme.colors.gray_green }}>{props.podcast.podcasterName}</Text>
               </View>
           

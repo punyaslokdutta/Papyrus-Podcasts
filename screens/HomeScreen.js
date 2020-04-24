@@ -27,7 +27,8 @@ const HomeScreen = (props) => {
   const [headerPodcasts,setHeaderPodcasts] = useState([]);
   const [podcasts,setPodcasts] = useState([]);
   const limit = 8;
-  const headerPodcastsLimit = 40;
+  const headerPodcastsLimit = 8;
+  const bookLimit = 5;
   const [lastVisible,setLastVisible] = useState(null);
   const [loading,setLoading] = useState(false);
   const [refreshing,setRefreshing] = useState(false);
@@ -43,9 +44,11 @@ const HomeScreen = (props) => {
       setLoading(true);
       console.log("[HomeScreen] Retrieving Data");
       //For books in section list
-      // let bookDocuments =  await firestore().collection('users').doc(userid).collection('privateUserData')
-      // .doc(privateDataID).collection('bookRecommendations').get()
-      // let bookPodcasts = bookDocuments.docs.map(document => document.data());
+      let bookDocuments =  await firestore().collection('books').where('genres','array-contains-any',userPreferences)
+                           .orderBy('createdOn','desc').limit(bookLimit).get()
+      let bookData = bookDocuments.docs.map(document => document.data());
+      setBooks(bookData) 
+
 
       var initialLimit = headerPodcastsLimit + limit;
       let podcasts = await firestore().collectionGroup('podcasts').where('genres','array-contains-any',userPreferences)
@@ -147,46 +150,47 @@ const HomeScreen = (props) => {
   {     
     switch(title) {
       case "A":
+        return null;
+      case "B":
         return (<View>
-        
         <View style={{backgroundColor:'white'}}>  
         <Text h2 bold style={{paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Book Podcasts</Text>
-        <BookList navigation={props.navigation} destinations={books}/>
+        <BookList navigation={props.navigation} books={books}/>
         </View>
         </View>)
-      case "B":
-        return (<View style={{paddingTop:30,paddingBottom:30}}>
+      // case "B":
+      //   return (<View style={{paddingTop:30,paddingBottom:30}}>
           
-          <View style={{backgroundColor:'#c9aa88'}}>
-          <Text h2 bold style={{paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Chapter Podcasts</Text>
-        <BookList navigation={props.navigation} destinations={books}/>
-        </View>
-        </View>)
-      case "C":
-        return (
-        <View style={{paddingTop:30,paddingBottom:30}}>
+      //     <View style={{backgroundColor:'#c9aa88'}}>
+      //     <Text h2 bold style={{paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Chapter Podcasts</Text>
+      //   <BookList navigation={props.navigation} destinations={books}/>
+      //   </View>
+      //   </View>)
+      // case "C":
+      //   return (
+      //   <View style={{paddingTop:30,paddingBottom:30}}>
           
-          <View style={{backgroundColor:'#99AFD7'}}>
-          <Text h2 bold style={{paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Chapter Podcasts</Text>
-        <BookList navigation={props.navigation} destinations={books}/>
-        </View>
-        </View>)
-      case "D":
-        return (<View style={{paddingTop:30,paddingBottom:30}}>
+      //     <View style={{backgroundColor:'#99AFD7'}}>
+      //     <Text h2 bold style={{paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Chapter Podcasts</Text>
+      //   <BookList navigation={props.navigation} destinations={books}/>
+      //   </View>
+      //   </View>)
+      // case "D":
+      //   return (<View style={{paddingTop:30,paddingBottom:30}}>
           
-          <View style={{backgroundColor:'#C76E95'}}>
-          <Text h2 bold style={{paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Chapter Podcasts</Text>
-        <BookList navigation={props.navigation} destinations={books}/>
-        </View>
-        </View>)
-      case "E":
-        return (<View style={{paddingTop:30,paddingBottom:30}}>
+      //   <View style={{backgroundColor:'#C76E95'}}>
+      //   <Text h2 bold style={{paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Chapter Podcasts</Text>
+      //   <BookList navigation={props.navigation} destinations={books}/>
+      //   </View>
+      //   </View>)
+      // case "E":
+      //   return (<View style={{paddingTop:30,paddingBottom:30}}>
           
-          <View style={{backgroundColor:'#C6FC5F'}}>
-          <Text h2 bold style={{paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Chapter Podcasts</Text>
-        <BookList navigation={props.navigation} destinations={books}/>
-        </View>
-        </View>)
+      //     <View style={{backgroundColor:'#C6FC5F'}}>
+      //     <Text h2 bold style={{paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Chapter Podcasts</Text>
+      //   <BookList navigation={props.navigation} destinations={books}/>
+      //   </View>
+      //   </View>)
       }
   }
 
@@ -219,10 +223,10 @@ const HomeScreen = (props) => {
   function renderHeader()
   {
     var podcasts1 = headerPodcasts.slice(0,8);
-    var podcasts2 = headerPodcasts.slice(8,16);
-    var podcasts3 = headerPodcasts.slice(16,24);
-    var podcasts4 = headerPodcasts.slice(24,32);
-    var podcasts5 = headerPodcasts.slice(32,40);
+    //var podcasts2 = headerPodcasts.slice(8,16);
+    //var podcasts3 = headerPodcasts.slice(16,24);
+    //var podcasts4 = headerPodcasts.slice(24,32);
+    //var podcasts5 = headerPodcasts.slice(32,40);
     return(
       // <View><Text>PODCASTS</Text></View>
       <View style={{ paddingBottom:50, marginTop: Platform.OS == 'ios' ? 20 : 30 }}>
@@ -232,10 +236,10 @@ const HomeScreen = (props) => {
         //ItemSeparatorComponent={FlatListItemSeparator}
         sections={[
           { title: 'A', data: podcasts1},
-          { title: 'B', data: podcasts2 },
-          { title: 'C', data: podcasts3 },
-          { title: 'D', data: podcasts4 },
-          { title: 'E', data: podcasts5 },
+           { title: 'B', data: [] }
+          // { title: 'C', data: podcasts3 },
+          // { title: 'D', data: podcasts4 },
+          // { title: 'E', data: podcasts5 },
         ]}
         keyExtractor={item => item.podcastID}
         renderSectionHeader={({ section }) => (
@@ -244,7 +248,7 @@ const HomeScreen = (props) => {
               {console.log("[HomeScreen] SECTION DATA: ",section)}
               {console.log("[HomeScreen] SECTION TITLE: ",section.title)}
 
-          {/* {renderSectionBooks(section.title)} */}
+          {renderSectionBooks(section.title)}
           <Text h3 bold style={{paddingLeft: 30,   textShadowColor:'black'}}>Discover Podcasts
           </Text>
           </ScrollView>

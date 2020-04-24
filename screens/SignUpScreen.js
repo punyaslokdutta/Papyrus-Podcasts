@@ -136,7 +136,7 @@ const SignUpScreen=(props)=>{
           </Text>
           </View>
           <View style={styles.positions}>
-          <TextInput style={styles.Input}   placeholder={'Password'} placehoPodcastPlayerlderTextColor={'rgba(255, 255, 255, 0.5)'} underlineColorAndroid='transparent'
+          <TextInput style={styles.Input}   placeholder={'Password'} placeholderTextColor={'rgba(255, 255, 255, 0.5)'} underlineColorAndroid='transparent'
           onChangeText={formikProps.handleChange('password')}
           secureTextEntry
           /> 

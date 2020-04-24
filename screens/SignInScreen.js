@@ -158,7 +158,8 @@ const validationSchema = yup.object().shape({
          </View>
         <View style={styles.positions}>
           <TextInput style={styles.Input}   placeholder={'Email'} placeholderTextColor={'black'} underlineColorAndroid='transparent'
-            onChangeText={formikProps.handleChange('email')}/> 
+            onChangeText={formikProps.handleChange('email')
+                         }/> 
           <Text style={{ color: 'rgba(255, 255, 255, 0.5)', paddingLeft:45 ,fontFamily:'sans-serif-light' , fontSize:12 }}>
           {formikProps.touched.email && formikProps.errors.email}
           </Text>
@@ -183,7 +184,7 @@ const validationSchema = yup.object().shape({
                 :
                 <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:45, width:WIDTH -55, borderRadius:15, backgroundColor:'rgba(0, 0, 0, 0.7)', borderColor:'rgb(218,165,32)', borderWidth: 0.4 }}
                  onPress={() => {
-                   setLoading(true); 
+                   //setLoading(true); 
                  handleLogin(formikProps)}} >
                  <Text style={{ alignItems: 'center', fontFamily:'century-gothic', color:'rgb(218,165,32)', justifyContent:'center'}} >Login</Text>
                 </TouchableOpacity>
@@ -195,8 +196,23 @@ const validationSchema = yup.object().shape({
 
             <View>
             <TouchableOpacity onPress={() => {
-              props.firebase._passwordReset(userEmail.trim())
-              Toast.show('A password reset mail has been sent to your emailID.')
+              try{
+             userEmail &&  props.firebase._passwordReset(userEmail.trim())
+             {userEmail ? Toast.show('A password reset mail has been sent to your emailID.'):Toast.show('Please enter your email ID') }
+              }
+              catch(error)
+              {
+                var errorCode = error.code;
+                if(errorCode==="auth/user-not-found")
+                {
+                    Toast.show('Sign up')
+                    console.log("SignUp")
+                    
+                    //actions.setSubmitting(false);
+                    props.navigation.navigate('SignUpScreen',{userEmail : userEmail})
+
+                }
+              }
               }} style={{paddingTop:10 }}>
            <Text style={{ fontFamily:'sans-serif-light', color:'rgb(218,165,32)', fontSize:12 }}>Forgot your Password?</Text>
          </TouchableOpacity>
@@ -217,7 +233,7 @@ const validationSchema = yup.object().shape({
           <View style={{ paddingRight:5}}>
           <Text style={{ fontFamily:'sans-serif-light', color:'white', fontSize:13 }}>Not a Papyrus member yet?</Text>
           </View>
-        <TouchableOpacity	onPress={()=>{props.navigation.navigate('SignUpScreen')}}>
+        <TouchableOpacity	onPress={()=>{props.navigation.navigate('SignUpScreen', {userEmail:null})}}>
         <Text style={{ fontFamily:'sans-serif-light', color:'rgb(218,165,32)', fontSize:13 }}>Signup</Text>
        </TouchableOpacity>
         </View>

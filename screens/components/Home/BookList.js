@@ -20,91 +20,7 @@ import * as theme from '../constants/theme';
 import RecordBook from '../../RecordBook'
 //const AnimatedFlatList = Animated.createAnimatedComponent(FlatList)
 const { width, height } = Dimensions.get('window');
-const mocks = [
-  {
-    id: 1,
-    user: {
-      name: 'Lelia Chavez',
-      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-    },
-    saved: true,
-    location: 'punyaslok_dutta',
-    temperature: 34,
-    title: 'The Deception Point ',
-    description: 'Santorini is one of the Cyclades islands in the Aegean Sea. It was devastated by a volcanic eruption in the 16th century BC, forever shaping its rugged landscape. The whitewashed, cubiform houses of its 2 principal towns, Fira and Oia, cling to cliffs above an underwater caldera (crater). They overlook the sea, small islands to the west and beaches made up of black, red and white lava pebbles.',
-    rating: 4.3,
-    date: "12/07/2019",
-    reviews: 3212,
-    preview: 'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-    images: [
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-    ]
-  },
-  {
-    id: 2,
-    user: {
-      name: 'Lelia Chavez',
-      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-    },
-    saved: false,
-    location: 'may_davis',
-    temperature: 34,
-    title: 'Pursuit of Happiness',
-    description: 'This attractive small town, 80 kilometers from Athens',
-    rating: 4.6,
-    date: "12/07/2019",
-    reviews: 3212,
-    preview: 'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
-    images: [
-      'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1446903572544-8888a0e60687?auto=format&fit=crop&w=800&q=80',
-    ]
-  },
-  {
-    id: 3,
-    user: {
-      name: 'Lelia Chavez',
-      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-    },
-    saved: true,
-    location: 'Santorini, Greece',
-    temperature: 34,
-    title: 'Santorini',
-    description: 'Santorini - Description',
-    rating: 3.2,
-    reviews: 3212,
-    date: "12/07/2019",
-    preview: 'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-    images: [
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1507501336603-6e31db2be093?auto=format&fit=crop&w=800&q=80',
-    ]
-  },
-  {
-    id: 4,
-    user: {
-      name: 'Lelia Chavez',
-      avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-    },
-    location: 'Loutraki, Greece',
-    temperature: 34,
-    title: 'Loutraki',
-    description: 'This attractive small town, 80 kilometers from Athens',
-    rating: 5,
-    date: "12/07/2019",
-    reviews: 3212,
-    preview: 'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
-    images: [
-      'https://images.unsplash.com/photo-1458906931852-47d88574a008?auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1446903572544-8888a0e60687?auto=format&fit=crop&w=800&q=80',
-    ]
-  },
-]
+
 const styles = StyleSheet.create({
   flex: {
     flex: 0,
@@ -125,7 +41,7 @@ const styles = StyleSheet.create({
   },
   articles: {
   },
-  destinations: {
+  books: {
     flex: 1,
     justifyContent: 'space-between',
     paddingBottom: 30,
@@ -233,10 +149,10 @@ class BookList extends Component {
   scrollX = new Animated.Value(0);
 
   renderDots() {
-    console.log(this.props.destinations)
-    const  destinations  = this.props.destinations;
+    console.log(this.props.books)
+    const  books  = this.props.books;
       console.log("Swayam")
-      console.log(destinations)
+      console.log(books)
     
     const dotPosition = Animated.divide(this.scrollX, width);
     return (
@@ -244,7 +160,7 @@ class BookList extends Component {
         styles.flex, styles.row,
         { justifyContent: 'center', alignItems: 'center', marginTop: 10 }
       ]}>
-        {   destinations.map((item, index) => {
+        {   books.map((item, index) => {
           const borderWidth = dotPosition.interpolate({
             inputRange: [index -1, index, index + 1],
             outputRange: [0, 2.5, 0],
@@ -282,7 +198,7 @@ class BookList extends Component {
 
   renderBooks = () => {
     return (
-      <View style={[ styles.column, styles.destinations ]}>
+      <View style={[ styles.column, styles.books ]}>
         <FlatList
           horizontal
           //pagingEnabled
@@ -293,7 +209,7 @@ class BookList extends Component {
           snapToInterval={width - 50} 
           snapToAlignment={"center"}
           style={{ overflow:'visible', height: 280 }}
-          data={this.props.destinations}
+          data={this.props.books}
           keyExtractor={(item, index) => `${item.bookID}`}
           //onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX }} }])}
           renderItem={({ item }) => this.renderBook(item)}
@@ -317,7 +233,7 @@ class BookList extends Component {
           <View style={[styles.row, { justifyContent: 'space-between' }]}>
           <View style={[styles.column, { flex: 1, paddingHorizontal: theme.sizes.padding / 10 }]}>
           {
-                    props.book.authors.map((item) => (
+                    item.authors.map((item) => (
                       <Text style={{ color: theme.colors.gray_green }}>{item}</Text>
                     ))
           }
@@ -361,7 +277,7 @@ class BookList extends Component {
 }
 
 // BookList.defaultProps = {
-//   destinations: mocks
+//   books: mocks
 // };
 
 export default BookList;
