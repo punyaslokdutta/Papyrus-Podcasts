@@ -1,40 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import {View,FlatList,ActivityIndicator,BackHandler,StyleSheet,  SafeAreaView,Image,  TextInput, Dimensions, TouchableOpacity} from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome'
-import firestore from '@react-native-firebase/firestore';
-import storage, { firebase } from '@react-native-firebase/storage'
-import Toast from 'react-native-simple-toast';
-import BottomSheet from 'reanimated-bottom-sheet'
 
-import SearchResults from './SearchResults';
-import { InstantSearch, Index ,  Configure} from "react-instantsearch/dom";
-//import algoliasearch from 'algoliasearch/lite';
 import ItemSeperator from "./ItemSeperator";
 import algoliasearch from "algoliasearch";
 import {withFirebaseHOC} from '../../config/Firebase'
-import TagInput from 'react-native-tags-input';
-
-import Text from '../categories/components/Text'
-import ImagePicker from 'react-native-image-picker'
-import ImageResizer from 'react-native-image-resizer';
-
 import {useSelector,useDispatch} from 'react-redux';
-import { createIconSetFromFontello } from 'react-native-vector-icons';
 import SearchChapterItem from './SearchChapterItem';
-import { ScrollView } from 'react-native-gesture-handler';
-import { FirebaseStorageTypes } from '@react-native-firebase/storage';
-
-const options = {
-  title: 'Select Podcast Cover',
-  chooseFromLibraryButtonTitle: 'Select from Library'
-};
 
 const searchClient = algoliasearch(
   'VSRFUPESVM',
   '4d3be49cf4512e3579ea5b198a420f1d'
 );
 
-const index = searchClient.initIndex('prod_chapters');
+const index = searchClient.initIndex('dev_chapters');
 //const replicaIndex = searchClient.initIndex('chapters');
 
 var {width, height}=Dimensions.get('window')

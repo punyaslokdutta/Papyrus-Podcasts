@@ -37,12 +37,32 @@ import {useSelector} from 'react-redux'
   );
 
   function getMinutesFromSeconds(time) {
-    const minutes = time >= 60 ? Math.floor(time / 60) : 0;
-    const seconds = Math.floor(time - minutes * 60);
+    
+    var hours = null;
+    var minutes = null;
+    var seconds = null;
+    if(time >= 3600)
+    {
+      hours = Math.floor(time / 3600);
+      time = time % 3600;
+    }
+    
+    minutes = time >= 60 ? Math.floor(time / 60) : 0;
+    seconds = Math.floor(time - minutes * 60);
 
-    return `${minutes >= 10 ? minutes : '0' + minutes}:${
-      seconds >= 10 ? seconds : '0' + seconds
-    }`;
+    if(hours === null)
+    {  
+      return `${minutes >= 10 ? minutes : '0' + minutes}:${
+        seconds >= 10 ? seconds : '0' + seconds
+      }`;
+    }
+    else
+    {
+      return `${hours >= 10 ? hours : '0' + hours}:${
+                minutes >= 10 ? minutes : '0' + minutes}:${
+                seconds >= 10 ? seconds : '0' + seconds
+      }`;
+    }
   }
 
   function handleOnSlide(time) {

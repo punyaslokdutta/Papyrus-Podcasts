@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
   console.log("Inside Follower Item")
   console.log(props);
 
-  //const dispatch=useDispatch();
+  const dispatch=useDispatch();
   const realUserID = props.firebase._getUid();
     const userid = props.item.id;
   const item = props.item
@@ -182,6 +182,8 @@ const styles = StyleSheet.create({
         
         (
           <TouchableOpacity onPress={() => {
+
+            dispatch({type:"SET_OTHER_PRIVATE_USER_ITEM",payload:props.item})
             // [1] props.navigation.navigate shall update the props in CustomUserHeader
             props.navigation.navigate({
               routeName: 'ExploreTabNavigator',

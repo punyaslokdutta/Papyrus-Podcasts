@@ -3,9 +3,6 @@ import firestore from '@react-native-firebase/firestore';
 import { Text, StyleSheet, View, Animated, Image, Dimensions, ScrollView, TouchableOpacity } from 'react-native'
 import {Card, CardItem,  Body} from 'native-base'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import SelectScreen from '../screens/SelectScreen'
-import PodcastPlayer from '../screens/PodcastPlayer'
-import AddModal from '../screens/components/Record/AddModal'
 import { withNavigation } from 'react-navigation';
 //import Animated, { Easing } from 'react-native-reanimated';
 
@@ -225,7 +222,7 @@ class RecordBook extends Component {
     { 
       return (
         <ScrollView  scrollEventThrottle={16} >
-        <View style={styles.flex}>
+        <View style={styles.flex,{paddingBottom:height*2/11}}>
           <View style={[styles.flex]}>
             <ScrollView
             horizontal

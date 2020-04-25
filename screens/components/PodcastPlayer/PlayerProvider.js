@@ -2,20 +2,12 @@
 import React, {Component, useState, createContext, useReducer, useCallback, useEffect} from 'react';
 import {withFirebaseHOC} from '../../config/Firebase';
 import {View, StyleSheet, Dimensions, StatusBar, Platform} from 'react-native';
-import {withNavigation} from 'react-navigation';
 //import { DangerZone } from 'expo';
 import PodcastPlayer from '../../PodcastPlayer'; //instead of Video Modal 
-import podcasts from './podcasts';
 import Animated, { Easing } from 'react-native-reanimated';
 import PlayerContext from './PlayerContext';
-import setGlobalPodcastContext from './setGlobalPodcastContext'
-import PlayerReducer from './PlayerReducer'
-import {SET_PODCAST} from './actionTypes'
-import {SET_GLOBAL_FROM_PODCAST} from './actionTypes'
 import {useSelector} from "react-redux"
-//import { withFirebaseHOC } from '../../config/Firebase';
 const { height } = Dimensions.get('window');
-//const { Animated, Easing } = DangerZone;
 const { Value, timing } = Animated;
 const isOS = Platform.OS === 'ios';
 

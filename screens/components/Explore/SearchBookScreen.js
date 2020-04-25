@@ -7,7 +7,6 @@ import Toast from 'react-native-simple-toast';
 import AddBook from '../Explore/AddBook';
 
 import RBSheet from "react-native-raw-bottom-sheet";
-import SearchResults from './SearchResults';
 import { InstantSearch, Index ,  Configure} from "react-instantsearch/dom";
 //import algoliasearch from 'algoliasearch/lite';
 import ItemSeperator from "./ItemSeperator";
@@ -35,7 +34,7 @@ const searchClient = algoliasearch(
   '4d3be49cf4512e3579ea5b198a420f1d'
 );
 
-const index = searchClient.initIndex('prod_books');
+const index = searchClient.initIndex('dev_books');
 
 var {width, height}=Dimensions.get('window')
 const SearchBookScreen=(props)=>

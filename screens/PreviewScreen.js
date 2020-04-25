@@ -1,7 +1,6 @@
 import React, { Component, useState, useEffect } from 'react';
 import { TouchableOpacity, StyleSheet, Text, View, Button, SafeAreaView, Dimensions, Image,  TextInput, Platform , BackHandler} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
-import FontAwesome, { Icons } from 'react-native-fontawesome';
 import storage, { firebase } from '@react-native-firebase/storage'
 import { withFirebaseHOC } from '../screens/config/Firebase'
 import ImagePicker from 'react-native-image-picker'
@@ -12,7 +11,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import ImageResizer from 'react-native-image-resizer';
 import * as Progress from 'react-native-progress';
 import Toast from 'react-native-simple-toast';
-import HomeScreen from './HomeScreen';
 import moment from 'moment';
 //import { firebase } from '@react-native-firebase/functions';
 
@@ -478,10 +476,15 @@ const PreviewScreen = (props) => {
           placeholderTextColor={"gray"}
           value={podcastName}
           onBlur={() => {
-            setPodcastName(podcastName.trim());
-            if(podcastName != null && (podcastName.length < 6 || podcastName.length > 50))
+            if(podcastName !== null)
             {
-              setPodcastName(null);
+              const trimmedPodcastName = podcastName.trim();
+              setPodcastName(trimmedPodcastName);
+            }
+            if(podcastName !== null && (podcastName.length < 6 || podcastName.length > 50))
+            {
+              const slicedPodcastName = podcastName.slice(0,50);
+              setPodcastName(slicedPodcastName);
               alert('The name of the podcast should follow the given limits.\nMin characters required: 6\nMax characters allowed: 50');
             }
             
@@ -503,12 +506,15 @@ const PreviewScreen = (props) => {
           placeholder={"How should your listeners approach this podcast?" }
           placeholderTextColor={"gray"}
           onBlur={() => {
-            setPodcastDescription(podcastDescription.trim());
-            console.log(podcastDescription.length);
+            if(podcastDescription !== null)
+            {
+              const trimmedPodcastDescription = podcastDescription.trim();
+              setPodcastDescription(trimmedPodcastDescription);
+            }
             if(podcastDescription != null && (podcastDescription.length < 6 || podcastDescription.length > 1000))
             {
-              console.log(podcastDescription.length);
-              setPodcastDescription(null);
+              const slicedPodcastDescription = podcastDescription.slice(0,1000);
+              setPodcastDescription(slicedPodcastDescription);
               alert('The description of the podcast should follow the given limits.\nMin characters required: 6\nMax characters allowed: 1000');
             }
             
@@ -559,7 +565,7 @@ const PreviewScreen = (props) => {
        <View style={{ paddingTop: height /16, alignItems: 'center', paddingBottom:10 }}>
 
         <TouchableOpacity onPress={() => {
-          if(podcastName === null)
+          if(podcastName === null || (podcastName !== null && (podcastName.length < 6 || podcastName.length > 50)))
           {
             alert("Please enter the name of your podcast as per the given limits.\nMin characters required: 6\nMax characters allowed: 50");
             return;
@@ -570,9 +576,9 @@ const PreviewScreen = (props) => {
             alert("Please enter some text in Podcast Name field");
             return;
           }
-          else if(podcastDescription === null)
+          else if(podcastDescription === null || (podcastDescription != null && (podcastDescription.length < 6 || podcastDescription.length > 1000)))
           {
-            alert("Please enter a description of your podcast");
+            alert("Please enter the description of your podcast as per the given limits.\nMin characters required: 6\nMax characters allowed: 1000");
             return;
           }
           else if(!podcastDescription.replace(/\s/g,'').length)

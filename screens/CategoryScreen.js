@@ -3,10 +3,8 @@ import firestore from '@react-native-firebase/firestore';
 import {withFirebaseHOC} from './config/Firebase'
 
 import { Dimensions, Image,NativeEventEmitter, NativeModules,ActivityIndicator,StyleSheet, ScrollView, TouchableOpacity,View } from 'react-native';
-import CategoryPodcast from './components/categories/CategoryPodcast';
 import { Card, Badge, Block, Text } from './components/categories/components';
 import { theme, mocks } from './components/categories/constants';
-import CategoryTabNavigator from './navigation/CategoryTabNavigator'
 
 const { width,height } = Dimensions.get('window');
 

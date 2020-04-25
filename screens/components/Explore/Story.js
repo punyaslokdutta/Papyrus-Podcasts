@@ -1,13 +1,9 @@
 import React, {Component} from 'react';
 import { StyleSheet, Text, View, Image,Dimensions} from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome'
-import FontAwesome, { Icons } from 'react-native-fontawesome';
 import * as theme from '../constants/theme'
-import ProfileTabNavigator from '../../navigation/ProfileTabNavigator'
-import ExploreTabNavigator from '../../navigation/ExploreTabNavigator'
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import Explore from '../../Explore'
 import { withFirebaseHOC } from '../../config/Firebase';
+import { useDispatch } from 'react-redux';
 
 
 var {width, height}=Dimensions.get('window')
@@ -15,6 +11,7 @@ const areEqual = (prevProps, nextProps) => true
 
   const Story = React.memo((props)=> {
   
+    const dispatch = useDispatch();
     console.log("Inside [Story]")
     //console.log(props.item);
     const  userid = props.firebase._getUid();
@@ -45,7 +42,9 @@ const areEqual = (prevProps, nextProps) => true
             :
 
             (
-              <TouchableOpacity onPress={() => props.navigation.navigate('ExploreTabNavigator', {userData:props.item,followsOrNot:text2})}>
+              <TouchableOpacity onPress={() => {
+                dispatch({type:"SET_OTHER_PRIVATE_USER_ITEM",payload:props.item})
+                props.navigation.navigate('ExploreTabNavigator',{userData:props.item})}}>
               <View style={[styles.shadow,{marginLeft: 15}]}>
               <Image source={{ uri: props.item.displayPicture }} style={styles.storie} />
               <Text style={styles.username}>{exploreName}</Text>

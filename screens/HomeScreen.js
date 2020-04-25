@@ -2,18 +2,12 @@ import React, {Component,useState,useEffect} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import { StyleSheet, View,SafeAreaView, TextInput, Platform, StatusBar,NativeModules,TouchableOpacity, ScrollView, Image,Dimensions, Animated,SectionList,ActivityIndicator , NativeEventEmitter} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
-import FontAwesome, { Icons } from 'react-native-fontawesome';
-import {Container, Content, Card, Button} from 'native-base'
-import PodcastPlayer from './PodcastPlayer'
 import { FlatList } from 'react-native-gesture-handler';
 import BookList from './components/Home/BookList'
 import * as theme from '../screens/components/constants/theme';
 import Podcast from './components/Home/Podcast'
-import firebaseApi from './config/Firebase/firebaseApi'
 import {Text} from './components/categories/components';
-import {withFirebaseHOC} from '../screens/config/Firebase'
-import { withNavigation } from 'react-navigation';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector} from 'react-redux';
 import { Badge } from 'react-native-elements'
 
 
@@ -32,7 +26,7 @@ const HomeScreen = (props) => {
   const [lastVisible,setLastVisible] = useState(null);
   const [loading,setLoading] = useState(false);
   const [refreshing,setRefreshing] = useState(false);
-  const [onEndReachedCalledDuringMomentum,setOnEndReachedCalledDuringMomentum] = useState(false);
+  const [onEndReachedCalledDuringMomentum,setOnEndReachedCalledDuringMomentum] = useState(true);
 
   useEffect(() => {
     retrieveData();
@@ -40,11 +34,11 @@ const HomeScreen = (props) => {
 
   async function retrieveData() 
   {
+    setLoading(true);
     try{
-      setLoading(true);
       console.log("[HomeScreen] Retrieving Data");
       //For books in section list
-      let bookDocuments =  await firestore().collection('books').where('genres','array-contains-any',userPreferences)
+      let bookDocuments =  await firestore().collection('books').where('genres','array-contains-any',userPreferences).where('reviewPending','==',false)
                            .orderBy('createdOn','desc').limit(bookLimit).get()
       let bookData = bookDocuments.docs.map(document => document.data());
       setBooks(bookData) 
@@ -55,18 +49,20 @@ const HomeScreen = (props) => {
                     .orderBy('createdOn','desc').limit(initialLimit).get()
 
       let documentData_podcasts = podcasts.docs.map(document => document.data());
-      var lastVisiblePodcast = null;
+      var lastVisiblePodcast = lastVisible;
       if(documentData_podcasts.length != 0)      
           lastVisiblePodcast = documentData_podcasts[documentData_podcasts.length - 1].createdOn; 
 
       setHeaderPodcasts(documentData_podcasts.slice(0,headerPodcastsLimit));
       setPodcasts(documentData_podcasts.slice(headerPodcastsLimit,initialLimit))
       setLastVisible(lastVisiblePodcast);
-      setLoading(false);
-      setOnEndReachedCalledDuringMomentum(true);
+      //setOnEndReachedCalledDuringMomentum(true);
     }
     catch (error) {
       console.log(error);
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -74,30 +70,28 @@ const HomeScreen = (props) => {
   async function retrieveMorePodcasts()
   {
     console.log("[HomeScreen] retrieveMorePodcasts starts()")
+    setRefreshing(true);
     try{   
-      setRefreshing(true);
       let additionalPodcastDocuments =  await firestore().collectionGroup('podcasts').where("genres","array-contains-any",userPreferences)
-        .orderBy('createdOn','desc').startAfter(lastVisiblePodcast).limit(limit).get()
+        .orderBy('createdOn','desc').startAfter(lastVisible).limit(limit).get()
       
       let documentData = additionalPodcastDocuments.docs.map(document => document.data());
-      if(documentData.length != 0) {
+      if(documentData.length != 0) 
+      {
         let lastVisiblePodcast = documentData[documentData.length - 1].createdOn;
-        if(lastVisible == lastVisiblePodcast) {      // if the set of podcasts retrieved is same as the last set, then do nothing
-            setRefreshing(false);
-        }
-        else {
-          setRefreshing(false);
+        if(lastVisible != lastVisiblePodcast) 
+        {
           setPodcasts([...podcasts, ...documentData]);
           setLastVisible(lastVisiblePodcast);
-          setOnEndReachedCalledDuringMomentum(true);
+          //setOnEndReachedCalledDuringMomentum(true);
         }
-      }
-      else {
-        setRefreshing(false);
       }
     }
     catch(error) {
       console.log(error);
+    }
+    finally {
+      setRefreshing(false);
     }
   }
 
@@ -105,6 +99,7 @@ const HomeScreen = (props) => {
     
 
   function onEndReached({ distanceFromEnd }) {
+    console.log("\n\nON END REACHED\n\n")
     if(!onEndReachedCalledDuringMomentum){
       retrieveMorePodcasts();
       setOnEndReachedCalledDuringMomentum(true);
@@ -152,45 +147,14 @@ const HomeScreen = (props) => {
       case "A":
         return null;
       case "B":
-        return (<View>
-        <View style={{backgroundColor:'white'}}>  
-        <Text h2 bold style={{paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Book Podcasts</Text>
-        <BookList navigation={props.navigation} books={books}/>
-        </View>
-        </View>)
-      // case "B":
-      //   return (<View style={{paddingTop:30,paddingBottom:30}}>
-          
-      //     <View style={{backgroundColor:'#c9aa88'}}>
-      //     <Text h2 bold style={{paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Chapter Podcasts</Text>
-      //   <BookList navigation={props.navigation} destinations={books}/>
-      //   </View>
-      //   </View>)
-      // case "C":
-      //   return (
-      //   <View style={{paddingTop:30,paddingBottom:30}}>
-          
-      //     <View style={{backgroundColor:'#99AFD7'}}>
-      //     <Text h2 bold style={{paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Chapter Podcasts</Text>
-      //   <BookList navigation={props.navigation} destinations={books}/>
-      //   </View>
-      //   </View>)
-      // case "D":
-      //   return (<View style={{paddingTop:30,paddingBottom:30}}>
-          
-      //   <View style={{backgroundColor:'#C76E95'}}>
-      //   <Text h2 bold style={{paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Chapter Podcasts</Text>
-      //   <BookList navigation={props.navigation} destinations={books}/>
-      //   </View>
-      //   </View>)
-      // case "E":
-      //   return (<View style={{paddingTop:30,paddingBottom:30}}>
-          
-      //     <View style={{backgroundColor:'#C6FC5F'}}>
-      //     <Text h2 bold style={{paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Chapter Podcasts</Text>
-      //   <BookList navigation={props.navigation} destinations={books}/>
-      //   </View>
-      //   </View>)
+        return (
+          <View>
+          <View style={{backgroundColor:'white'}}>  
+          <Text h2 bold style={{paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Book Podcasts</Text>
+          <BookList navigation={props.navigation} books={books}/>
+          </View>
+          </View>
+        )
       }
   }
 
@@ -205,7 +169,7 @@ const HomeScreen = (props) => {
       if (i >= section.data.length) {
         break;
       }
-      items.push(<Podcast isHomeScreen={true} podcast={section.data[i]} key={section.data[i].podcastID}  navigation={props.navigation}  />);
+      items.push(<Podcast podcast={section.data[i]} key={section.data[i].podcastID}  navigation={props.navigation}  />);
     }
     return (
       <View
@@ -222,26 +186,17 @@ const HomeScreen = (props) => {
   
   function renderHeader()
   {
-    var podcasts1 = headerPodcasts.slice(0,8);
-    //var podcasts2 = headerPodcasts.slice(8,16);
-    //var podcasts3 = headerPodcasts.slice(16,24);
-    //var podcasts4 = headerPodcasts.slice(24,32);
-    //var podcasts5 = headerPodcasts.slice(32,40);
+    var podcasts1 = headerPodcasts.slice(0,4);
+    var podcasts2 = headerPodcasts.slice(4,8);
     return(
-      // <View><Text>PODCASTS</Text></View>
-      <View style={{ paddingBottom:50, marginTop: Platform.OS == 'ios' ? 20 : 30 }}>
-        
+      <View style={{ paddingBottom:30, marginTop: Platform.OS == 'ios' ? 20 : 30 }}>
       <SectionList
         showsVerticalScrollIndicator={false}
-        //ItemSeparatorComponent={FlatListItemSeparator}
         sections={[
           { title: 'A', data: podcasts1},
-           { title: 'B', data: [] }
-          // { title: 'C', data: podcasts3 },
-          // { title: 'D', data: podcasts4 },
-          // { title: 'E', data: podcasts5 },
+           { title: 'B', data: podcasts2 }
         ]}
-        keyExtractor={item => item.podcastID}
+        keyExtractor={item => item.createdOn}
         renderSectionHeader={({ section }) => (
           <ScrollView>
               
@@ -272,9 +227,10 @@ const HomeScreen = (props) => {
   function renderFooter() 
   {
     try {
-      if (refreshing) {
+      if (refreshing === true) {
         return (
           <ActivityIndicator />
+           
         )
       }
       else {
@@ -298,7 +254,7 @@ const HomeScreen = (props) => {
       ListHeaderComponent={renderHeader}
       ListFooterComponent={renderFooter}
       onEndReached={onEndReached}
-      onEndReachedThreshold={0.5}
+      onEndReachedThreshold={0.001}
       refreshing={refreshing}
       onMomentumScrollBegin={() => { setOnEndReachedCalledDuringMomentum(false); }}
     />   
@@ -325,9 +281,9 @@ const HomeScreen = (props) => {
   else
   {
     return (
-      <View>
+      <View style = {{paddingBottom:30}}>
           {renderMainHeader()}
-    <View style = {{paddingBottom:50}}>
+    <View style = {{paddingBottom:100}}>
       {renderPodcasts()}
       </View>
       </View>

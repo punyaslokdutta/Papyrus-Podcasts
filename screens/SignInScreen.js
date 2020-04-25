@@ -8,15 +8,10 @@ import { TextInput } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { Formik } from 'formik';
 import * as yup from 'yup';
-import SignUpScreen from './SignUpScreen'
 import { AccessToken, LoginManager } from 'react-native-fbsdk';
 import { firebase } from '@react-native-firebase/auth';
-import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
-import firebaseApi from './config/Firebase/firebaseApi'
 import {withFirebaseHOC} from '../screens/config/Firebase'
-import {useDispatch,useSelector} from 'react-redux'
 import Toast from 'react-native-simple-toast';
-import { Container } from 'native-base';
 
 var {width:WIDTH, height:HEIGHT}=Dimensions.get('window')
 

@@ -137,13 +137,16 @@ const styles = StyleSheet.create({
   const realUserID = props.firebase._getUid();
   const isUserSame = (props.item.id == realUserID); 
   console.log("isUserSame : ",isUserSame);
+  const dispatch = useDispatch();
 
   async function retrievePrivateUserData(props,userid){
 
+    
     try{
       const privateDataID = "private" + userid;
       const privateUserDoc = await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).get();
       const privateItem = privateUserDoc._data;
+      dispatch({type:"SET_OTHER_PRIVATE_USER_ITEM",payload:privateItem})
       props.navigation.navigate({
         routeName: 'ExploreTabNavigator',
         params : {userData:privateItem},
@@ -152,7 +155,9 @@ const styles = StyleSheet.create({
       // [2] Move to top of stack,i.e, pop all screens until the last one
       props.navigation.popToTop();
       // [3] props.navigation.push will move us towards updated ExploreTabNavigator with updated CustomUserHeader
-      props.navigation.push('ExploreTabNavigator', {userData:privateItem})
+      props.navigation.push('ExploreTabNavigator',{userData:privateItem})
+     
+
     }
     catch(error){
       console.log("Error in retrievePrivateUserData in FollowingItem: ",error);

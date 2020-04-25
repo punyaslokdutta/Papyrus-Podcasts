@@ -1,22 +1,13 @@
 import React, {Component, useState,useEffect, useRef, createRef} from 'react';
-import SearchScreen from './components/Explore/SearchScreen'
-import * as theme from '../screens/components/constants/theme';
 import firestore from '@react-native-firebase/firestore';
 import { StyleSheet, Text, View, SafeAreaView, ActivityIndicator, TextInput, Platform, StatusBar,TouchableOpacity,Dimensions, ScrollView, Image, NativeModules, NativeEventEmitter} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
-import FontAwesome, { Icons } from 'react-native-fontawesome';
 import TrendingPodcast from './components/Explore/TrendingPodcast'
-import BrowseBooks from './components/Explore/ExploreBook';
 import TopChapters from './components/Explore/TopChapters';
 import Story from './components/Explore/Story'
-import CategoryScreen from './CategoryScreen'
-import Podcast from './components/Home/Podcast'
 import ExploreBook from './components/Explore/ExploreBook'
-import searchIcon from '../assets/searchIcon.png';
-import PreviewScreen from './PreviewScreen';
 import { Badge } from 'react-native-elements'
 import {useSelector, useDispatch} from "react-redux"
-import { ActionSheet } from 'native-base';
 
 const {width,height} = Dimensions.get('window')
 
@@ -202,13 +193,13 @@ const Explore = (props) => {
             props.navigation.navigate('SearchTabNavigator',{fromExplore:true})}}>
         <View style={{flexDirection:'row',height:startHeaderHeight, backgroundColor: 'white', paddingRight: 13, paddingVertical:10}}>
        
-            <Text style={{ flex:1, fontWeight:'400',borderRadius:2,backgroundColor:'#dddd',fontSize:15,
+            <Text style={{ flex:1, fontWeight:'400',borderRadius:2,backgroundColor:'#dddd',fontSize:13,
               paddingTop: 7, paddingHorizontal: 10 }}>
            
-              <Icon style={{paddingHorizontal:10,paddingTop:20 }} name="search" size={20} />
+              <Icon style={{paddingHorizontal:10,paddingTop:20 }} name="search" size={15} />
              
 
-              {"  "}Search books, Chapters, Authors
+              {"  "}Search Podcasts, Books, Chapters, Authors,
                </Text>
 
         </View>

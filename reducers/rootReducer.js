@@ -12,19 +12,20 @@ const INITIAL_STATE = {
   resizeMode:'contain', 
   isMiniPlayer:false,
   numLikes: 0,
-  isHomeScreen:null
+  loadingPodcast: false
 };
 
 function rootReducer(state = INITIAL_STATE, action)  {
   switch (action.type) {
+      case "SET_LOADING_PODCAST":
+        console.log("SET_LOADING_PODCAST")
+          return {...state, loadingPodcast:action.payload}
       case "TOGGLE_MINI_PLAYER":
         console.log("TOGGLE_MINI_PLAYER")
           return {...state, isMiniPlayer:!state.isMiniPlayer}
       case "SET_PODCAST":
         console.log("SET_PODCAST"+" " +action.payload)
           return {...state, podcast:action.payload}
-      case "SET_IS_HOME_SCREEN":
-        return {...state, isHomeScreen:action.payload}
       case "SET_VOLUME":
           return {...state, volume:action.payload}
       case "SET_RATE":

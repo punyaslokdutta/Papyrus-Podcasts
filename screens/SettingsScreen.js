@@ -32,23 +32,16 @@ const SettingsScreen = (props) => {
   const [editing,setEditing] = useState(null);
   const [notifications,setNotifications] =useState(true);
 
-  function myTrim(x) {
-    return x.replace(/^\s+|\s+$/gm,'');
-  }
-
   function handleEdit(name, text) {
     console.log("IN Handle Edit function");
     switch(name)
     {
       case 'account':
-        trimmedText = text.trim();
-        //trimmedText = myTrim(text);
+        const trimmedText = text.trim();
         setAccountNameState(trimmedText);
-        //dispatch({type:'CHANGE_NAME',payload:text});
         break;
       case 'username':
         setUserNameState(text)
-        //dispatch({type:'CHANGE_USER_NAME',payload:text});
         break;
       default:
         break;
@@ -63,10 +56,18 @@ const SettingsScreen = (props) => {
       {
         case 'account':
           {
-            if(accountNameState!= null && (accountNameState.length < 2 || accountNameState.length > 20))
+            if(accountNameState !== null)
             {
-              alert('Min 2 characters required for account name')
-              return;
+              if(accountNameState.length < 2)
+              {
+                alert('Min 2 characters required for account name');
+                return;
+              }
+              else if(accountNameState.length > 20)
+              {
+                alert('Max 20 characters allowed for account name')
+                return;
+              }
             }
             else if(accountNameState == null)
             {
@@ -155,6 +156,7 @@ const SettingsScreen = (props) => {
         dispatch({type:'ADD_NUM_NOTIFICATIONS',payload: 0});
         dispatch({type:"SET_USER_PREFERENCES",payload:[]});
 
+        dispatch({type:"SET_PODCAST",payload:null})
         props.firebase._signOutUser();
       }
       catch(error){
