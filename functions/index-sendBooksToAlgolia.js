@@ -1,16 +1,12 @@
-const functions         = require('firebase-functions');
+const functions = require('firebase-functions');
 const admin=require('firebase-admin');
 const algoliasearch=require('algoliasearch');
 
 
-//const ALGOLIA_APP_ID = "BJ2O4N6NAY"
-//const ALGOLIA_ADMIN_KEY="c169c60de08aa43d881bf81c223dda06"
-//const ALGOLIA_INDEX_NAME='books'
-
 admin.initializeApp();
 const db = admin.firestore();
 const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
-const collectionIndexName='books';
+const collectionIndexName='dev_books';
 const collectionIndex = algoliaClient.initIndex(collectionIndexName);
 
 exports.sendBooksToAlgolia = functions
@@ -23,17 +19,23 @@ exports.sendBooksToAlgolia = functions
 		const document = doc.data();
         // Essentially, you want your records to contain any information that facilitates search, 
         // display, filtering, or relevance. Otherwise, you can leave it out.
+          console.log("bookID = ",document.bookID);
+          console.log("bookName = ",document.bookName);
+          console.log("bookPictures = ",document.bookPictures);
+          console.log("authors = ",document.authors);
+          console.log("language = ",document.language);
+          console.log("publicationYear = ",document.publicationYear);
 
         const record = {
             objectID: document.bookID,
             bookName: (document.bookName===undefined)?null:document.bookName,
-			authors: (document.authors===undefined)? null:document.authors,
+		      	authors: (document.authors===undefined)? null:document.authors,
             language: (document.language===undefined)?null:document.language,
             bookCover:(document.bookPictures===undefined)?null:document.bookPictures[0],
             publicationYear: (document.publicationYear===undefined || document.publicationYear===null) ? null : document.publicationYear
         };
 
-        if((document.bookName !== undefined))
+        if(document.bookName !== undefined && document.bookID !== undefined && document.bookID !== null)
         {
             algoliaRecords.push(record);
         }

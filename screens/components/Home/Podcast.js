@@ -4,9 +4,7 @@ import { StyleSheet, Text, View, Image, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import * as theme from '../constants/theme'
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import InnerPodcast from './InnerPodcast'
-import {useDispatch} from "react-redux"
-import Menu, { MenuItem, MenuDivider } from 'react-native-material-menu';
+import {useDispatch,useSelector} from "react-redux"
 import moment from 'moment';
 
 var {width, height}=Dimensions.get('window')
@@ -143,20 +141,19 @@ const styles = StyleSheet.create({
   if(props.podcast.createdOn)
     timeDiff = moment(props.podcast.createdOn).fromNow();
   const dispatch=useDispatch();
-
- const _menu = useRef(null);
+//  const _menu = useRef(null);
  
-  setMenuRef = ref => {
-    _menu = ref;
-  };
+//   setMenuRef = ref => {
+//     _menu = ref;
+//   };
  
-  hideMenu = () => {
-    _menu.hide();
-  };
+//   hideMenu = () => {
+//     _menu.hide();
+//   };
  
-  showMenu = () => {
-    _menu.show();
-  };
+//   showMenu = () => {
+//     _menu.show();
+//   };
 
   /*useEffect(() => {
     //setPodcastState(props);
@@ -172,10 +169,10 @@ const styles = StyleSheet.create({
              dispatch({type:"SET_CURRENT_TIME", payload:0})
              dispatch({type:"SET_DURATION", payload:props.podcast.duration});
              dispatch({type:"SET_PAUSED", payload:false})
+             dispatch({type:"SET_LOADING_PODCAST", payload:true});
              dispatch({type:"SET_PODCAST", payload: props.podcast}) 
              dispatch({type:"SET_NUM_LIKES", payload: props.podcast.numUsersLiked})
-             if(props.isHomeScreen)
-                dispatch({type:"SET_IS_HOME_SCREEN", payload: props.isHomeScreen})
+            
 
             })}>
            <Image style={[styles.recommendationImage]} source={ {uri: props.podcast.podcastPictures["0"]}} />

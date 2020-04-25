@@ -1,7 +1,7 @@
 // @flow
 import  React, {useState,useEffect,useRef} from 'react';
 import {
-  View, StyleSheet, Text, Image, ScrollView,TouchableOpacity, TouchableWithoutFeedback,Dimensions, 
+  View, StyleSheet, Text, Image, ScrollView,TouchableOpacity, TouchableWithoutFeedback,Dimensions, ActivityIndicator
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import moment from "moment";
@@ -26,8 +26,7 @@ const { width,height } = Dimensions.get('window');
   const video = useRef();
   const userID = props.userID;
   const privateDataID = "private" + userID;
-  const isHomeScreen = useSelector(state=>state.rootReducer.isHomeScreen)
-  //const 
+  //const
   const rate=useSelector(state=>state.rootReducer.rate);
   const currentTime=useSelector(state=>state.rootReducer.currentTime)
 
@@ -36,7 +35,7 @@ const { width,height } = Dimensions.get('window');
   const liked = useSelector(state=>state.userReducer.isPodcastLiked[props.podcast.podcastID]);
   const userDisplayPictureURL = useSelector(state=>state.userReducer.displayPictureURL);
   const name = useSelector(state=>state.userReducer.name);
-  
+  const loadingPodcast = useSelector(state=>state.rootReducer.loadingPodcast)
   //const duration=useSelector(state=>state.rootReducer.duration)
   const dispatch=useDispatch();
 
@@ -53,6 +52,7 @@ const { width,height } = Dimensions.get('window');
   function onLoadEnd(data) {
     dispatch({type:"SET_DURATION", payload: props.podcast.duration})
     dispatch({type:"RESET_TO_INITIAL"})
+    dispatch({type:"SET_LOADING_PODCAST", payload:false});
   }
 
  function onSeek(data) {
@@ -163,10 +163,15 @@ async function updatePodcastsLiked(props){
                     <TouchableOpacity  onPress={skipBackward}>
                     <Icon name="undo"  size={28} label="10" color="white" />
                     </TouchableOpacity>
-                    {!paused  && <TouchableOpacity style={styles.playButtonContainer}  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
+                    {loadingPodcast && <TouchableOpacity style={styles.playButtonContainer}  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
+                      <ActivityIndicator/>
+                      </TouchableOpacity>}
+        
+                    {!loadingPodcast && !paused  && <TouchableOpacity style={styles.playButtonContainer}  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
+                      
                    <Icon name="pause"  size={24} label="10" color="black"  style={[styles.playButton, { marginLeft: 2 }]}/>
                    </TouchableOpacity>}
-                   {paused && <TouchableOpacity style={styles.playButtonContainer}  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
+                   {!loadingPodcast && paused && <TouchableOpacity style={styles.playButtonContainer}  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
                    <Icon name="play"  size={28} label="10" color="black"  style={[styles.playButton, { marginLeft: 6 }]}/>
                    </TouchableOpacity> }
   

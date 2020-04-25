@@ -94,7 +94,7 @@ const editProfile = (props) => {
         break;
       case 'introduction':
         console.log("Setting introductionState --> ",text);
-        setIntroductionState(text);
+        setIntroductionState(text.slice(0,150));
     }
   }
 
@@ -311,7 +311,7 @@ const editProfile = (props) => {
             <Block row space="between" margin={[10, 0]} style={{ flex:1, fontWeight:'400',borderRadius:10,borderColor:"black",borderWidth:1, backgroundColor:'#dddd',fontSize:15,
               paddingTop: 10, paddingHorizontal: 10 }}>
               <Block>
-                <Text>Introduction</Text>
+                <Text>Introduction (in less than 150 characters)</Text>
                 {renderEdit('introduction')}
               </Block>
               <TouchableOpacity onPress={() => toggleEdit('introduction')}>

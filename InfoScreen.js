@@ -1,4 +1,5 @@
-import React, { Component, useState } from "react";
+import React, { Component, useState,useEffect } from "react";
+import firestore from '@react-native-firebase/firestore';
 import {
   Dimensions,
   Image,
@@ -12,25 +13,37 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import { Button, Divider, Block, Text } from "./screens/components/categories/components";
 import { theme, mocks } from "./screens/components/categories/constants";
 import LikersScreen from './screens/components/PodcastPlayer/LikersScreen'
-import {useSelector } from 'react-redux'
+import {useSelector,useDispatch } from 'react-redux'
+import { withFirebaseHOC } from "./screens/config/Firebase";
 
 const { width, height } = Dimensions.get("window");
 
- InfoScreen=(props)=> {
+ const InfoScreen=(props)=> {
+  
+  const realUserID = props.firebase._getUid();
   const podcast=useState(props.navigation.state.params.podcast)
   const numUsersLiked=useSelector(state=>state.rootReducer.numLikes)
+  const [userPrivateDoc,setUserPrivateDoc] = useState(null)
   //console.log(podcast[0].podcastPictures)
-    
-   const navigationOptions = ({ navigation }) => {
-    return {
-      headerRight: (
-        <Button onPress={() => {}}>
-          <Icon name="ellipsis-h" color={theme.colors.black} />
-        </Button>
-      )
-    };
-  };
+  const dispatch = useDispatch();
+  useEffect(() => {
+    fetchUserPrivateDoc(podcast[0].podcasterID)
+  },[])
 
+  async function fetchUserPrivateDoc(userID)
+  {
+    try{
+      const privateDataID = "private" + userID;
+      const userDocument = await firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).get();
+      console.log("[InfoScreen] userDocument : ", userDocument);
+      const userDocumentData = userDocument.data();
+      console.log("[InfoScreen] userDocumentData : ", userDocumentData);
+      setUserPrivateDoc(userDocumentData);
+    }
+    catch(error){
+      console.log("Error in fetchUserPrivateDoc() in InfoScreen: ",error);
+    }
+  }
 
    function renderGallery() {
     const { product } = props;
@@ -84,23 +97,73 @@ const { width, height } = Dimensions.get("window");
           </View>
         </TouchableOpacity>
 
-          <Divider margin={[theme.sizes.padding * 0.9, 0]} />
-         
+          <Divider margin={[theme.sizes.padding * 0.5,0]} />
+        
+              <TouchableOpacity onPress={() => {
+                if(realUserID == userPrivateDoc.id)
+                {
+                  props.navigation.navigate('ProfileTabNavigator');
+                }
+                else
+                {
+                  dispatch({type:"SET_OTHER_PRIVATE_USER_ITEM",payload:userPrivateDoc})
+                  props.navigation.navigate('ExploreTabNavigator',{userData:userPrivateDoc});
+                }
+                }}>
+              {
+                userPrivateDoc !== null && 
+                <View style={{flexDirection:'row',paddingRight:theme.sizes.base*1.5}}>
+                  <View style={{alignItems:'center',justifyContent:'center'}}>
+                <Image source={{uri:userPrivateDoc.displayPicture}} style={{borderRadius:30,width:width/8,height:width/8}}/>
+                </View>
+                <View style={{paddingLeft:10,flexDirection:'column'}}>
+                <Text style={{fontSize:15,fontWeight:'bold'}}>{userPrivateDoc.name}{"  "}</Text>
+                <Text>{userPrivateDoc.introduction}</Text>
+                </View>
+                </View>
+              }
+              
+              </TouchableOpacity>
+              
+           
+           <Divider margin={[theme.sizes.padding * 0.5, 0]} />
+           <View style={{flexDirection:'row',paddingBottom:height*2/11}}>
+             {
+               podcast[0].isChapterPodcast == true 
+               ?
+               <View>
+               <Text>Chapter</Text> 
+               <TouchableOpacity onPress={() => props.navigation.navigate('RecordChapter',{bookID:podcast[0].bookID,chapterID:podcast[0].chapterID})}>
+               <Text style={{fontSize:20,fontWeight:'bold'}}>{podcast[0].chapterName} {" "}{"\n"}</Text>
+               </TouchableOpacity>
+               <Divider margin={[theme.sizes.padding * 0.5, 0]} />
+               <Text>Book</Text>
+               <TouchableOpacity onPress={() => props.navigation.navigate('RecordBook',{bookID:podcast[0].bookID})}>
+               <Text style={{fontSize:20,fontWeight:'bold'}}>{podcast[0].bookName}{" "}</Text>
+               </TouchableOpacity>
+               </View>
+               :
+               <View>
+               <Text>Book</Text>
+               <TouchableOpacity onPress={() => props.navigation.navigate('RecordBook',{bookID:podcast[0].bookID})}>
+               <Text style={{fontSize:20,fontWeight:'bold'}}>{podcast[0].bookName}{" "}</Text>
+               </TouchableOpacity>
+               </View>
+             }
+           
+           </View>
         </Block>
       </ScrollView>
     );
   
 }
 
-InfoScreen.defaultProps = {
-  product: mocks.products[0]
-};
 
-export default InfoScreen;
+export default withFirebaseHOC(InfoScreen);
 
 const styles = StyleSheet.create({
   product: {
-    paddingHorizontal: theme.sizes.base * 2,
+    paddingHorizontal: theme.sizes.base * 1.5,
     paddingVertical: theme.sizes.padding
   },
   tag: {

@@ -143,6 +143,7 @@ const styles = StyleSheet.create({
     dispatch({type:"SET_CURRENT_TIME", payload:0})
     dispatch({type:"SET_DURATION", payload:podcastDocumentData.duration})
     dispatch({type:"SET_PAUSED", payload:false})
+    dispatch({type:"SET_LOADING_PODCAST", payload:true});
     dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
     dispatch({type:"SET_PODCAST", payload: podcastDocumentData})
     dispatch({type:"SET_NUM_LIKES", payload: podcastDocumentData.numUsersLiked})

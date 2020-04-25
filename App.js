@@ -1,6 +1,5 @@
 import ProfileFollowerScreen from './screens/components/Profile/ProfileFollowerScreen'
 import ProfileFollowingScreen from './screens/components/Profile/ProfileFollowingScreen'
-// import {Text} from './screens/components/categories/components'
 import React, {Component} from 'react';
 import CustomDrawerContentComponent from './screens/navigation/CustomDrawerContentComponent';
 import setUserDetails from './screens/setUserDetails'
@@ -8,11 +7,9 @@ import { StyleSheet, View, TouchableOpacity, Image, Text,Dimensions, Button, Scr
 import {createSwitchNavigator,
   createAppContainer,
   } from 'react-navigation'
-import NavigationService from './screens/navigation/NavigationService';
 import LikersScreen from './screens/components/PodcastPlayer/LikersScreen'
 import setPreferences from './setPreferences'
-import WelcomeScreen from './screens/WelcomeScreen'
-  import { createBottomTabNavigator, createMaterialTopTabNavigator } from 'react-navigation-tabs';
+  import { createBottomTabNavigator } from 'react-navigation-tabs';
   import { createStackNavigator } from 'react-navigation-stack';
   import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
   import { fromRight , fromLeft} from 'react-navigation-transitions';
@@ -21,18 +18,14 @@ import thunk from 'redux-thunk';
 import userReducer from './reducers/userReducer'
 import rootReducer from './reducers/rootReducer';
 import recorderReducer from './reducers/recorderReducer'
-import authReducer from './reducers/authReducer'
 import AuthLoadingScreen from './screens/AuthLoadingScreen'
 import SignInScreen from './screens/SignInScreen'
 import SignUpScreen from './screens/SignUpScreen'
-import SignOut from './screens/SignOut'
 import HomeScreen from './screens/HomeScreen'
 import Explore from './screens/Explore'
-import SearchScreen from './screens/components/Explore/SearchScreen'
 import PodcastPlayer from './screens/PodcastPlayer'
 import SelectScreen from './screens/SelectScreen'
 import PreviewScreen from './screens/PreviewScreen'
-import TagsScreen from './screens/TagsScreen'
 import CategoryScreen from './screens/CategoryScreen'
 import RecordBook from './screens/RecordBook'
 import RecordChapter from './screens/RecordChapter'
@@ -111,23 +104,7 @@ const ExploreStackNavigator=createStackNavigator(
   {
      Explore : {screen : Explore,navigationOptions:{
        header:null
-     }},
-  //   SearchScreen : {screen : SearchScreen,navigationOptions: {
-  //      SearchScreenheader: null,
-  //  }},
-    // ExploreTabNavigator : {screen : ExploreTabNavigator,navigationOptions:{
-
-    // }},
-    //   UserStatsScreen : {screen : UserStatsScreen,navigationOptions:{
-
-    //   }},
-    //   UserFollowingScreen : {screen : UserFollowingScreen,navigationOptions:{
-
-    //   }},
-    //   UserFollowerScreen : {screen : UserFollowerScreen,navigationOptions:{
-
-    //   }}
-
+     }}
   },
   {
     //headerMode:'none',
@@ -164,27 +141,13 @@ const ProfileStackNavigator=createStackNavigator(
         headerStyle: {
           backgroundColor: 'black'
         }
-    }},
-    // UserFollowingScreen : {screen : UserFollowingScreen,navigationOptions:{
-
-    // }},
-    // UserFollowerScreen : {screen : UserFollowerScreen,navigationOptions:{
-
-    // }},
-    // UserStatsScreen:{screen : UserStatsScreen,navigationOptions:{
-
-    // }},
-    // ExploreTabNavigator : {screen : ExploreTabNavigator,navigationOptions:{
-
-    // }}
+    }}
   },
 )
 
 const RecordStackNavigator= createStackNavigator(
   {
     SelectScreen: {screen:SelectScreen},
-    //PreviewScreen: {screen:PreviewScreen},
-    Tags : {screen:TagsScreen} ,
   },
   {
     headerMode:'none',
@@ -367,9 +330,6 @@ const AppStackNavigator= createStackNavigator(
    PreviewScreen: {screen:PreviewScreen,navigationOptions:{
     header : null
 }},
-SearchScreen: {screen:SearchScreen,navigationOptions:{
-  header : null
-}},
    SearchTabNavigator: {screen: SearchTabNavigator,navigationOptions:{
          //header : null
    }}
@@ -448,8 +408,7 @@ const AppSwitchNavigator = createSwitchNavigator(
  const mainReducer = combineReducers({
   recorderReducer,
   userReducer,
-  rootReducer,
-  authReducer,
+  rootReducer
 })
 
 const store = createStore(mainReducer, applyMiddleware(thunk))

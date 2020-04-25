@@ -1,14 +1,8 @@
 // @flow
 import React ,{ useState, useEffect , useRef, useCallback} from 'react';
 import { StyleSheet , Image, StatusBar,BackHandler, SafeAreaView,  TouchableNativeFeedback,TouchableOpacity , View,Text, ScrollView, Alert, Dimensions } from 'react-native';
-import Slider from "react-native-slider";
-import Moment from "moment";
-
-import { HeaderBackButton } from 'react-navigation';
-import HomeScreen from './HomeScreen'
 import {useSelector, useDispatch} from "react-redux"
 import ExtraDimensions from 'react-native-extra-dimensions-android';
-import { withNavigation } from 'react-navigation';
 import Animated, { Easing } from 'react-native-reanimated';
 import PodcastContent from '../screens/components/PodcastPlayer/PodcastContent';
 import PlayerControls, { PLACEHOLDER_WIDTH } from './components/PodcastPlayer/PlayerControl';

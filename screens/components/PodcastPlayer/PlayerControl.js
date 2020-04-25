@@ -45,7 +45,7 @@ const paused=useSelector(state=>state.rootReducer.paused);
             <Icon name="pause" size={24} style={styles.icon}/></TouchableOpacity>}
                 <TouchableOpacity onPress={(()=>{dispatch({type:"TOGGLE_PLAY_PAUSED"})
                   dispatch({type:"SET_PODCAST", payload: null})
-                  dispatch({type:"SET_IS_HOME_SCREEN", payload: null})})}>
+                  })}>
                 <Icon name="times-circle" size={24} style={styles.icon}/>
                 </TouchableOpacity>
         </View>

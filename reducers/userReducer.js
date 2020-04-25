@@ -22,11 +22,14 @@ const INITIAL_STATE = {
     bookAdded: null,
     isExplorePreviousScreen: false,
     userPreferences: [],
-    fromSearchChapterScreen: false
+    fromSearchChapterScreen: false,
+    otherPrivateUserItem: null,
   };
   
   function userReducer(state = INITIAL_STATE, action)  {
     switch (action.type) {
+        case "SET_OTHER_PRIVATE_USER_ITEM":
+            return {...state,otherPrivateUserItem:action.payload}
         case "SET_USER_ITEM":
             return {...state,userItem:action.payload}
         case "ADD_NAVIGATION":

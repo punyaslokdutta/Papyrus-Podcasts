@@ -114,37 +114,37 @@ const CustomUserHeader = (props) => {
       console.log("[CustomUserHeader] props.navigation.state.routes = ",props.navigation.state.routes);
       const userItem = useSelector(state=>state.userReducer.userItem);
       //props.navigation.popToTop();
+      const otherPrivateUserItem = useSelector(state=>state.userReducer.otherPrivateUserItem);
       const userDisplayPictureURL = useSelector(state=>state.userReducer.displayPictureURL);
       const name = useSelector(state=>state.userReducer.name);
       let item = "W";
       const userid =  props.firebase._getUid();
       const privateDataID = "private" + userid;
-      
-      if(props.navigation.state.routes[2] != undefined && props.navigation.state.routes[2].params != undefined && 
-        props.navigation.state.routes[2].params.userData != undefined)
-      {
-      item = props.navigation.state.routes[2].params.userData;
-      console.log("[CustomUserHeader] Got item from ROUTES[2]");
-      }
-      else if(props.navigation.state.routes[3] && props.navigation.state.routes[3].params && 
-                (props.navigation.state.routes[1].params === undefined || props.navigation.state.routes[1].params.userData === undefined))
-      {
-      item = props.navigation.state.routes[3].params.userData;
-      console.log("[CustomUserHeader] Got item from ROUTES[3]");
-      }  
-      if(props.navigation.state.routes[1] && props.navigation.state.routes[1].params && 
-              (props.navigation.state.routes[3] === undefined || props.navigation.state.routes[3].params === undefined || 
-                props.navigation.state.routes[3].params.userData === undefined))
-      {
-      item = props.navigation.state.routes[1].params.userData;
-      console.log("[CustomUserHeader] Got item from ROUTES[1]");
-      }
+      item = otherPrivateUserItem;
+      // if(props.navigation.state.routes[2] != undefined && props.navigation.state.routes[2].params != undefined && 
+      //   props.navigation.state.routes[2].params.userData != undefined)
+      // {
+      // item = props.navigation.state.routes[2].params.userData;
+      // console.log("[CustomUserHeader] Got item from ROUTES[2]");
+      // }
+      // else if(props.navigation.state.routes[3] && props.navigation.state.routes[3].params && 
+      //           (props.navigation.state.routes[1].params === undefined || props.navigation.state.routes[1].params.userData === undefined))
+      // {
+      // item = props.navigation.state.routes[3].params.userData;
+      // console.log("[CustomUserHeader] Got item from ROUTES[3]");
+      // }  
+      // if(props.navigation.state.routes[1] && props.navigation.state.routes[1].params && 
+      //         (props.navigation.state.routes[3] === undefined || props.navigation.state.routes[3].params === undefined || 
+      //           props.navigation.state.routes[3].params.userData === undefined))
+      // {
+      // item = props.navigation.state.routes[1].params.userData;
+      // console.log("[CustomUserHeader] Got item from ROUTES[1]");
+      // }
       
 
       
     
       let wholestring = 'FOLLOW ';
-       
       console.log("[CustomUserHeader] item = ",item);
       let initialMessage = useSelector(state=>state.userReducer.isUserFollowing[item.id])
       let printMessage = useSelector(state=>state.userReducer.isUserFollowing)
