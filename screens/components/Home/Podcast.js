@@ -180,10 +180,13 @@ const styles = StyleSheet.create({
            </TouchableOpacity>
           
         </View>
-            <View style={[styles.flex, styles.column, styles.shadow, { padding: theme.sizes.padding / 4 }]}>
-              <View style={{height:(height)/12}}>
-              <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.podcast.podcastName.slice(0,30)}
-                {(props.podcast.podcastName.length > 30) ? ".." : ""}</Text> 
+        <View style={[styles.flex, styles.column, styles.shadow, { padding: theme.sizes.padding / 8 }]}>
+              <View style={{height:(height*3)/40}}>
+                
+              <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.podcast.podcastName.slice(0,50)}
+                {(props.podcast.podcastName.length > 50) ? ".." : ""}</Text> 
+                </View>
+                <View>
                 <Text style={{ fontSize: theme.sizes.font * 0.8, color: theme.colors.gray_green }}>{props.podcast.bookName.slice(0,30)}
                 {(props.podcast.bookName.length > 30) ? ".." : ""}</Text>
               </View>
@@ -199,15 +202,13 @@ const styles = StyleSheet.create({
                 <Text style={{  fontSize: theme.sizes.font * 0.9,color: theme.colors.gray_green }}>
                   {timeDiff}
                 </Text>
-                <View style={{alignItems: 'flex-end',paddingRight:5}}>
+                {/* <View style={{alignItems: 'flex-end',paddingRight:5}}>
             <Icon
               name="ellipsis-v"
               color={theme.colors.black}
               size={theme.sizes.font * 1.25}
             />
-          </View>
-
-          
+          </View> */}
               </View>
               <View>
               <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>

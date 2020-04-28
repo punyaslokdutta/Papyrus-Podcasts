@@ -4,34 +4,38 @@ import React from 'react';
 import {
   ActivityIndicator,
   TouchableOpacity, StyleSheet, Text, View, AsyncStorage, Dimensions, ImageBackground, Button, Image} from 'react-native';
-import bgImage from '../assets/bgImage.jpg'
+
 import { TextInput } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { Formik } from 'formik';
 import {withFirebaseHOC} from '../screens/config/Firebase'
 import * as yup from 'yup';
 import {firebase} from '@react-native-firebase/auth';
-import {useDispatch} from 'react-redux'
+import {useDispatch,useSelector} from 'react-redux'
 import { AccessToken, LoginManager } from 'react-native-fbsdk';
 
 const validationSchema = yup.object().shape({ 
   fullName: yup
     .string()
+    .trim()
     .label('Fullname')
     .required("*Name is a required field"),
 
   email: yup
     .string()
+    .trim()
     .label('Email')
     .email()
     .required("*Email is a required field"),
   password: yup
     .string()
+    .trim()
     .label('Password')
     .required("*Password is a required field")
     .min(6, 'Password must be atleast 6 characters'),
   confirmPassword: yup
     .string()
+    .trim()
     .oneOf([yup.ref('password'), null], 'Password must match')
     .required("*Confirm Password is a required field")
     .label('Confirm password')
@@ -56,8 +60,9 @@ var {width:WIDTH, height:HEIGHT}=Dimensions.get('window')
 
 const SignUpScreen=(props)=>{
 
-  const userEmail = props.navigation.state.params.userEmail;
+  const userEmail = useSelector(state=>state.userReducer.signupEmail);
   console.log("[SIGN UP Screen] userEmail: ", userEmail);
+  const dispatch=useDispatch();
 
   onFBLoginOrRegister = async () => {
     LoginManager.logInWithPermissions(['public_profile', 'email',])
@@ -85,6 +90,7 @@ const SignUpScreen=(props)=>{
         console.log(user.user.photoURL); 
         console.log(user.user.phoneNumber);
         console.log(user.user.displayName);
+        dispatch({type:"CHANGE_NAME", payload: user.user.displayName})
         console.log(user.user.email);
       })
       .catch((error) => {
@@ -94,14 +100,17 @@ const SignUpScreen=(props)=>{
       });
   }
 
-  const dispatch=useDispatch();
+  
       return (
         <Formik
-      initialValues={{ fullName: '', email: '', password: '',confirmPassword:'' }}
+      initialValues={{ fullName: '', email: userEmail, password: '',confirmPassword:'' }}
       onSubmit={(values, actions) => {
          // alert(JSON.stringify(values));
-         dispatch({type:"CHANGE_NAME", payload: values.fullName})
-         _signupWithEmail( values.email, values.password, values.fullName)
+         const trimmedFullName = values.fullName.trim();
+         dispatch({type:"CHANGE_NAME", payload:trimmedFullName })
+         const trimmedEmail = values.email.trim();
+         const trimmedPassword = values.password.trim();
+         _signupWithEmail( trimmedEmail, trimmedPassword, values.fullName)
           actions.setSubmitting(false);
       }}
       validationSchema={validationSchema}

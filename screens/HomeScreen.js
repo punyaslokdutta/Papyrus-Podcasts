@@ -204,8 +204,11 @@ const HomeScreen = (props) => {
               {console.log("[HomeScreen] SECTION TITLE: ",section.title)}
 
           {renderSectionBooks(section.title)}
+          {(section.data === null) ?
+          null :
           <Text h3 bold style={{paddingLeft: 30,   textShadowColor:'black'}}>Discover Podcasts
-          </Text>
+          </Text> }
+          
           </ScrollView>
         )}
         renderItem={renderData}

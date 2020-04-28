@@ -84,9 +84,13 @@ class  AuthLoadingScreen extends Component {
                   else
                   {
                         unsubscribe(); // unsubscribe the firestore onSnapshot listener
+                        //this.props.navigation.navigate('Home');
+
                         this.props.navigation.navigate('setUserDetails',{user : doc.data()});
+                        
                         this.props.navigation.navigate('CategoryScreen');
                         this.props.navigation.navigate('Explore');
+
 
                   }
                 },function(error) {

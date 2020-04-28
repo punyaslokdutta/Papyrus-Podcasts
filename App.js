@@ -179,7 +179,7 @@ HomeStackNavigator.navigationOptions = ({ navigation }) => {
 
 const AppTabNavigator=createBottomTabNavigator(
   {
-    Home: {screen:HomeStackNavigator,
+    Home: {screen:HomeScreen,
     navigationOptions:{
       tabBarLabel:'Home',
       tabBarIcon:({tintColor})=>(
@@ -218,7 +218,7 @@ const AppTabNavigator=createBottomTabNavigator(
         )
       }
     },
-  },{initialRouteName:'Explore',
+  },{initialRouteName:'Home',
   order:['Home', 'Explore', 'Record', 'Category', 'Profile'],
   headerMode: 'none',
   navigationOptions:

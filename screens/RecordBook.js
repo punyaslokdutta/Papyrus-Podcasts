@@ -238,8 +238,8 @@ class RecordBook extends Component {
                 <Image
                   key={`${index}-${img}`}
                   source={{ uri: img }}
-                  resizeMode='cover'
-                  style={{ width, height: width }}
+                  resizeMode='contain'
+                  style={{ width:width, height: width }}
                 />
               )
             }

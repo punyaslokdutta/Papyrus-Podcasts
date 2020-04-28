@@ -18,9 +18,14 @@ const Explore = (props) => {
   var [books,setBooks] = useState([]);
   var [chapters,setChapters] = useState([]);
   var [loading,setLoading] = useState(false);
+  var [sections,setSections] = useState([]);
   const dispatch=useDispatch();
   //const eventEmitter=useRef(new NativeEventEmitter(NativeModules.ReactNativeRecorder));
  
+  var navigationState = props.navigation.state;
+
+  console.log("NAVIGATION STATE IN EXPLORE SCREEN: ",navigationState);
+
   var startHeaderHeight  = 60;
 
   const numNotifications = useSelector(state=>state.userReducer.numNotifications);
@@ -34,6 +39,16 @@ const Explore = (props) => {
   {
     console.log('[Explore] useEffect in Explore Screen[componentDidMount]');
     setLoading(true);
+
+    try{
+      let sectionsQuery = await firestore().collection('exploreSections').orderBy('screenPosition').get();
+      let documentSections = sectionsQuery._docs.map(document => document.data());
+      setSections(documentSections);
+    }
+    catch(error){
+      console.log("Error in fetching exploreSection names ",error);
+    }
+
 
     //Top Storytellers
     try{
@@ -80,9 +95,42 @@ const Explore = (props) => {
       useEffect(
         () => {
           fetchExploreItems();
-         
+          //console.log("EXPLORE USE EFFECT - props.navigation.state.params : ",props.navigation.state);
+          if(props.navigation.state.params !== undefined && props.navigation.state.params.podcastID !== undefined 
+                   && props.navigation.state.params.podcastID !== null)
+                   {
+                    console.log("podcast to be played: ",props.navigation.state.params.podcastID);
+                    fetchPodcastItem(props.navigation.state.params.podcastID);
+                   }
+            
+
+          console.log("Explore Use EFFECT Ends");
           //const eventEmitter=new NativeEventEmitter(NativeModules.ReactNativeRecorder);
       },[])
+
+      async function fetchPodcastItem(podcastID)
+      {
+        let podcastItem = await firestore().collectionGroup('podcasts').where('podcastID','==',podcastID).get();
+        let podcastData = podcastItem.docs[0]._data;
+
+        dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
+        dispatch({type:"SET_CURRENT_TIME", payload:0})
+        dispatch({type:"SET_DURATION", payload:podcastData.duration});
+        dispatch({type:"SET_PAUSED", payload:false})
+        dispatch({type:"SET_LOADING_PODCAST", payload:true});
+        dispatch({type:"SET_PODCAST", payload: podcastData}) 
+        dispatch({type:"SET_NUM_LIKES", payload: podcastData.numUsersLiked})
+      }
+
+      useEffect( () => {
+        if(props.navigation.state.params !== undefined && props.navigation.state.params.podcastID !== undefined 
+          && props.navigation.state.params.podcastID !== null)
+          {
+            console.log("[Use Effect of props.navigation.state] podcast to be played: ",props.navigation.state.params.podcastID);
+            fetchPodcastItem(props.navigation.state.params.podcastID);
+          }
+            
+      },[props.navigation.state])
 
     function renderStoryTellers()
     {
@@ -230,7 +278,7 @@ const Explore = (props) => {
           <View style={{height:120}}>
           <View style={{flex:1}}>
           <Text style={{fontSize:20, fontWeight:'200', paddingHorizontal: 20, textShadowColor:'black',fontFamily:'sans-serif-light'}}>
-                          Top StoryTellers
+                          {sections.length != 0 && sections[0].sectionName}
                       </Text>
           </View>
           <View style={{flex:3,paddingTop:10}}>
@@ -244,7 +292,7 @@ const Explore = (props) => {
              
               <View style={{flex:1 , backgroundColor:'white', paddingTop:10}}>
                       <Text style={{fontSize:20, fontWeight:'normal', paddingHorizontal: 20, textShadowColor:'black',fontFamily:'sans-serif-light'}}>
-                          Trending Podcasts
+                      {sections.length != 0 && sections[1].sectionName}
                       </Text>
               </View>  
                   <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{paddingTop:10}}>
@@ -253,7 +301,7 @@ const Explore = (props) => {
                   </ScrollView>
                   <View style={{flex:1 , backgroundColor:'white', paddingTop:10}}>
                   <Text style={{fontSize:20, fontWeight:'normal', paddingHorizontal: 20, textShadowColor:'black', fontFamily:'sans-serif-light'}}>
-                          Short Stories
+                  {sections.length != 0 && sections[2].sectionName}
                       </Text>
               </View>
               <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{paddingTop:10}}>
@@ -262,7 +310,7 @@ const Explore = (props) => {
                   </ScrollView>
                   <View style={{flex:1 , backgroundColor:'white', paddingTop:10}}>
                   <Text style={{fontSize:20, fontWeight:'normal', paddingHorizontal: 20,  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
-                          Classic Novels
+                  {sections.length != 0 && sections[3].sectionName}
                       </Text>
                       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{paddingTop:10}}>
                       {renderSectionChapters()}                
@@ -316,5 +364,3 @@ badgeStyle: {
   right: -4
 }
 });
-
-

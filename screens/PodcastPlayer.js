@@ -313,6 +313,7 @@ const PodcastPlayer=(props)=>{
               </Animated.View>
               <Animated.Image
                 source={{uri:props.podcast.podcastPictures[0]}}
+                resizeMode='contain'
                 style={{ width: videoWidth, height: videoHeight, borderColor:'black' }}
               />
 

@@ -34,7 +34,7 @@ const searchClient = algoliasearch(
   '4d3be49cf4512e3579ea5b198a420f1d'
 );
 
-const index = searchClient.initIndex('dev_books');
+const index = searchClient.initIndex('prod_books');
 
 var {width, height}=Dimensions.get('window')
 const SearchBookScreen=(props)=>

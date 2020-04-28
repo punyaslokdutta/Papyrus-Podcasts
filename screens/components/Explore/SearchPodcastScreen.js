@@ -10,7 +10,7 @@ const searchClient = algoliasearch(
   'VSRFUPESVM',
   '4d3be49cf4512e3579ea5b198a420f1d'
 );
-const index = searchClient.initIndex('dev_podcasts');
+const index = searchClient.initIndex('prod_podcasts');
 
 var {width, height}=Dimensions.get('window')
 const SearchPodcastScreen=(props)=>

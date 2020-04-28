@@ -2,6 +2,7 @@ const INITIAL_STATE = {
     userItem: null,
     name: null,
     email: null,
+    signupEmail: null,
     userName: null, 
     numFollowers: 0,
     numFollowing: 0,
@@ -42,6 +43,8 @@ const INITIAL_STATE = {
             return {...state,numNotifications:action.payload}
         case "CHANGE_EMAIL":
             return {...state,email:action.payload}
+        case "SET_SIGNUP_MAIL":
+            return {...state,signupEmail:action.payload}
         case "SET_ALGOLIA_QUERY":
             return {...state,algoliaQuery:action.payload}
         case "SET_ALGOLIA_BOOK_QUERY":

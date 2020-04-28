@@ -175,7 +175,7 @@ const SelectScreen = (props)=> {
         
         </View>
 
-        <View style={{paddingVertical:height/40, paddingLeft:width/11}}>
+        <View style={{paddingTop:height/40,paddingBottom:height/15, paddingLeft:width/11}}>
         <TagSelect itemStyle={styles.item}
           itemLabelStyle={styles.label}
           itemStyleSelected={styles.itemSelected}
@@ -201,7 +201,7 @@ const SelectScreen = (props)=> {
         
         </View>
 
-        <View style={{paddingVertical:height/10, flexDirection:'row', paddingLeft:width/6 }}>
+        <View style={{paddingBottom:height/10, flexDirection:'row', paddingLeft:width/6 }}>
         <View>
             <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/20, width:(width*7)/24, borderRadius:15, borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }} 
             onPress={() => {
@@ -253,7 +253,7 @@ const SelectScreen = (props)=> {
             <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Upload</Text>
                 </TouchableOpacity>
         </View>
-        <View style={{paddingLeft:width/12}}>
+        <View style={{paddingLeft:width/12,}}>
 
                 <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/20, width:(width*7)/24, borderRadius:15, backgroundColor:'rgba(0, 0, 0, 0.7)', borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }} 
                  onPress={() => {
