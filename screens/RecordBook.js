@@ -233,16 +233,20 @@ class RecordBook extends Component {
             scrollEventThrottle={16}
             //onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX } } }])}
           >
+            {/* <View style={{width:width*25/26,height:width,padding:5}}> */}
             {
                this.state.article.bookPictures && this.state.article.bookPictures.map((img, index) => 
+                
                 <Image
                   key={`${index}-${img}`}
                   source={{ uri: img }}
-                  resizeMode='cover'
-                  style={{ width, height: width }}
+                  resizeMode='contain'
+                  style={{ width:width,height: width }}
                 />
+                
               )
             }
+            {/* </View> */}
           </ScrollView>
           {this.renderDots()}
         </View>

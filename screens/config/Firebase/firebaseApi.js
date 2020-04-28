@@ -10,7 +10,7 @@ const firebaseApi={
       _signOutUser : async () => {
         try {
             await firebase.auth().signOut();
-            navigate('Auth');
+            //navigate('Auth');
         } catch (e) {
             console.log(e);
         }

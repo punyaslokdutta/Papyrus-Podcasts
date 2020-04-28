@@ -303,7 +303,7 @@ const SettingsScreen = (props) => {
             <Block row center space="between" >
               <Text black>Follow us on Instagram</Text>
               <TouchableOpacity onPress={() => {
-                Linking.openURL('https://www.instagram.com/papyrus_podcast/').catch(err => {
+                Linking.openURL('https://www.instagram.com/papyrus_podcast/').catch(err => { //https://www.instagram.com/papyrus_podcast/
                   console.log("Instagram Page Linking error: ",err);
                 })
               }}>

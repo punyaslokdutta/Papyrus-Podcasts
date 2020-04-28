@@ -415,26 +415,56 @@ const store = createStore(mainReducer, applyMiddleware(thunk))
 
 export default class App extends Component {
 
-  componentDidMount() {
-    if (Platform.OS === 'android') {
-      Linking.getInitialURL().then(url => {
-        console.log("URL: ",url);
+  // componentDidMount() {
+  //   if (Platform.OS === 'android') {
+  //     Linking.getInitialURL().then(url => {
+  //       console.log("URL: ",url);
         
-       // this.navigate(url);
-      });
-    } 
-    else
-      Linking.addEventListener('url', this.handleOpenURL);
+  //      //this.navigate(url);
+  //     });
+  //   } 
+  //   else
+  //     Linking.addEventListener('url', this.handleOpenURL);
     
-  }
+  // }
 
-  componentWillUnmount() {
-    Linking.removeEventListener('url', this._handleOpenURL);
-  }
+  // componentWillUnmount() {
+  //   Linking.removeEventListener('url', this.handleOpenURL);
+  // }
 
-  _handleOpenURL = (event) => {
-    console.log("\n\nINCOMING URL: \n\n",event.url);
-  }
+  // handleOpenURL = (event) => {
+  //   const route = event.url.replace(/.*?:\/\//g, '');
+  //   console.log("\n\nINCOMING URL: \n\n",event.url);
+  // }
+
+
+
+
+
+
+  // componentDidMount() {
+  //   Linking.addEventListener("url", this.handleOpenURL);
+  //   this.handleDeepLinkingRequests();
+  //   }
+
+  //   handleDeepLinkingRequests = () => {
+      
+  //     Linking.getInitialURL().then(url => {
+  //       if (url) {
+  //         this.handleOpenURL(url);
+  //       }
+  //     })
+  //     .catch(error => { // Error handling });
+  //     console.log(error);
+  //     })
+  //   }
+    
+  //   handleOpenURL = (url) => {
+  //     console.log("INCOMING URL: ",url);
+
+  //   // your navigation logic goes here
+  //   }
+
 
   render(){
 

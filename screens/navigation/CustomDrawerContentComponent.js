@@ -23,6 +23,7 @@ const CustomDrawerContentComponent = (props) =>
     const name = useSelector(state=>state.userReducer.name);
     const username = useSelector(state=>state.userReducer.userName);
     const photoURL = useSelector(state=>state.userReducer.displayPictureURL);
+    const numNotifications = useSelector(state=>state.userReducer.numNotifications);
     const dispatch = useDispatch();
 
 return(  
@@ -68,7 +69,21 @@ return(
           } 
           activeBackgroundColor='#101010'   style={{backgroundColor: '#ffffff', }} labelStyle={{color: '#ffffff', fontSize: SCREEN_HEIGHT/35}}/>
           
-          <Text style={{textAlign:'center', paddingTop:SCREEN_HEIGHT/4,color:'#dddd'}}>v1.0.5</Text>
+          {
+           (numNotifications != 0) 
+           ? 
+           <View>
+           <View style={{paddingTop:10, paddingBottom:SCREEN_HEIGHT/5,alignItems:'center',justifyContent:'center'}}>
+             <Text style={{color:'white'}}>You have new activities.</Text>
+           </View>
+           <Text style={{textAlign:'center',paddingBottom:10,color:'#dddd'}}>v1.0.5</Text>
+           </View>
+           :
+           <Text style={{textAlign:'center', paddingTop:SCREEN_HEIGHT/4,paddingBottom:10,color:'#dddd'}}>v1.0.5</Text>
+
+          }
+          
+          
     
     </Content>
     </Body>

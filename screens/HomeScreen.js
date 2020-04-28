@@ -38,7 +38,7 @@ const HomeScreen = (props) => {
     try{
       console.log("[HomeScreen] Retrieving Data");
       //For books in section list
-      let bookDocuments =  await firestore().collection('books').where('genres','array-contains-any',userPreferences).where('reviewPending','==',false)
+      let bookDocuments =  await firestore().collection('books').where('genres','array-contains-any',userPreferences)//.where('reviewPending','==',false)
                            .orderBy('createdOn','desc').limit(bookLimit).get()
       let bookData = bookDocuments.docs.map(document => document.data());
       setBooks(bookData) 

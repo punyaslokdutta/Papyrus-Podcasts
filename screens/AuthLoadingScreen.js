@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ActivityIndicator, NativeEventEmitter, AsyncStorage,NativeModules,TouchableOpacity, Dimensions} from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator, NativeEventEmitter, AsyncStorage,NativeModules,TouchableOpacity, Dimensions,Linking} from 'react-native';
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import {createSwitchNavigator} from 'react-navigation'
 import firebaseApi from './config/Firebase/firebaseApi'
@@ -16,17 +16,66 @@ class  AuthLoadingScreen extends Component {
         {
           this.state={
             isAssetsLoadingComplete: false, 
+            deepLinkURL: null
           }
         }
         this.props.firebase._checkUserAuth=this.props.firebase._checkUserAuth.bind(this)
     }
 
-    
+  
+  
+      handleDeepLinkingRequests = () => {
+        
+        Linking.getInitialURL().then(url => { //
+          if (url) {
+            console.log("Linking.getInitialURL() : ",url);
+            this.setState({
+              deepLinkURL : url
+            })
+            
+            //this.handleOpenURL(url);
+          }
+        })
+        .catch(error => { // Error handling });
+        console.log(error);
+        })
+      }
+      
+      handleOpenURL = (url) => {
+        console.log("[AUTH LOADING] INCOMING URL: ",url);
+        switch(url["url"])
+        {
+          case "https://www.papyruspodcasts.com/categories":
+            this.props.navigation.navigate('CategoryScreen');
+            break;
+          case "https://www.papyruspodcasts.com/podcasts/iJTWjonBiJQyG2wbUL0m":
+            //console.log("\n\n PODCAST SWITCH CASE")
+            this.props.navigation.navigate('Explore',{podcastID:"iJTWjonBiJQyG2wbUL0m"});
+            break;
+          default:
+            this.props.navigation.navigate('Explore');
+        }
+        
+      
+      // your navigation logic goes here
+      }
+
+//    Linking Notes:
+// -> Linking.getInitialURL() method should only be called for the first time when the app is launched via app-swap
+// -> For subsequent app-swap calls, handleOpenURL() method will be called as it is configured with linking event listener.
+// -> remember to unsubscribe linking events in componentwillunmount()
+
+
 
     componentDidMount=async()=>{
     
         console.log(this)
         console.log(this.props)
+
+        Linking.addEventListener("url", this.handleOpenURL);
+        this.handleDeepLinkingRequests();
+
+
         //this.props.navigation.navigate('setPreferences')
      try{   
        await this.props.firebase._checkUserAuth(async (user)=>
@@ -85,8 +134,26 @@ class  AuthLoadingScreen extends Component {
                   {
                         unsubscribe(); // unsubscribe the firestore onSnapshot listener
                         this.props.navigation.navigate('setUserDetails',{user : doc.data()});
-                        this.props.navigation.navigate('CategoryScreen');
-                        this.props.navigation.navigate('Explore');
+                         this.props.navigation.navigate('CategoryScreen');
+                         this.props.navigation.navigate('Explore');
+                        
+                        console.log("Auth Loading State ==> ",this.state);
+
+                          switch(this.state.deepLinkURL)
+                          {
+                            case "https://www.papyruspodcasts.com/categories":
+                              this.props.navigation.navigate('CategoryScreen');
+                              break;
+                            case "https://www.papyruspodcasts.com/podcasts/iJTWjonBiJQyG2wbUL0m":
+                              console.log("\n\n PODCAST SWITCH CASE");
+                              //this.props.navigation.navigate('CategoryScreen');
+                              this.props.navigation.navigate('Explore',{podcastID:"iJTWjonBiJQyG2wbUL0m"});
+                              console.log("PODCAST SWITCH CASE END");
+                              break;
+                            default:
+                              console.log("DEFAULT DEEP LINK ---- DO NOTHING");
+                          }
+                      
 
                   }
                 },function(error) {

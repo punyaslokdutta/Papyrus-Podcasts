@@ -230,19 +230,7 @@ class BookList extends Component {
           imageStyle={{ borderRadius: theme.sizes.radius }}
           source={{ uri: item.bookPictures['0'] }}
         >
-          <View style={[styles.row, { justifyContent: 'space-between' }]}>
-          <View style={[styles.column, { flex: 1, paddingHorizontal: theme.sizes.padding / 10 }]}>
-          {
-                    item.authors.map((item) => (
-                      <Text style={{ color: theme.colors.gray_green }}>{item}</Text>
-                    ))
-          }
-          </View>
-            
-            <View style={{ flex: 2, justifyContent: 'center', alignItems: 'flex-end', }}>
-              <Text style={styles.rating}>{item.bookRating}</Text>
-            </View>
-          </View>
+         
         </ImageBackground>
           <View style={[styles.column, styles.destinationInfo, styles.shadow]}>
             <Text style={{ fontSize: theme.sizes.font * 1.25, fontWeight: '500', paddingBottom: 8, }}>
