@@ -265,8 +265,7 @@ const HomeScreen = (props) => {
   }
 
   
-  if(loading == true)
-  {
+  if(loading == true || (loading == false && podcasts.length == 0 && headerPodcastsLimit.length == 0))  {
     return (
       <View >
         <View style={{paddingBottom: (height*4)/12}}>

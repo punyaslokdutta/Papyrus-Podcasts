@@ -12,7 +12,7 @@ import { AccessToken, LoginManager } from 'react-native-fbsdk';
 import { firebase } from '@react-native-firebase/auth';
 import {withFirebaseHOC} from '../screens/config/Firebase'
 import Toast from 'react-native-simple-toast';
-import { useDispatch } from 'react-redux';
+import { useDispatch,useSelector } from 'react-redux';
 
 var {width:WIDTH, height:HEIGHT}=Dimensions.get('window')
 
@@ -29,8 +29,7 @@ const validationSchema = yup.object().shape({
     .trim()
     .label('Password')
     .required("*Password is a required field")
-    .min(6, 'Password must be atleast 6 characters'),
-    
+    .min(6, 'Password must be atleast 6 characters'), 
 });
 
 
@@ -39,6 +38,8 @@ const validationSchema = yup.object().shape({
 
      const dispatch = useDispatch();
      const [loading,setLoading] = useState(false);
+     const userEmail = useSelector(state=>state.userReducer.signupEmail);
+
 
   onFBLoginOrRegister = async () => {
     LoginManager.logInWithPermissions(['public_profile', 'email',])
@@ -92,6 +93,7 @@ const validationSchema = yup.object().shape({
        .signInWithEmailAndPassword(email, password)
        .then(res => {
            console.log(res.user.email);
+          
     });
 } catch (error) {
    
@@ -112,7 +114,7 @@ const validationSchema = yup.object().shape({
                 else if(errorCode==="auth/wrong-password")
                 {
                   //actions.setSubmitting(false);
-                  Toast.show('wrong password (or) previously loggedIn(through Fb/Google)')
+                  Toast.show('wrong password (OR) Previously logged In with FB')
                 }
                 else if(errorCode==='auth/user-disabled')
                 {
@@ -121,12 +123,16 @@ const validationSchema = yup.object().shape({
                   
                 }
   }
+  finally {
+    setLoading(false);
+  }
 }
       return (
         
         <Formik
       initialValues={{ email: '', password: '' }}
       onSubmit={(values, actions) => {
+        setLoading(true);
         //alert(JSON.stringify(values));
         const trimmedEmail = values.email.trim();
         const trimmedPassword = values.password.trim();
@@ -135,7 +141,7 @@ const validationSchema = yup.object().shape({
         dispatch({type:"SET_SIGNUP_MAIL",payload:trimmedEmail});
         _loginWithEmail(trimmedEmail, trimmedPassword, props)
         actions.setSubmitting(false);
-        setLoading(false);
+        
               }  
       }
       validationSchema={validationSchema}
@@ -176,19 +182,22 @@ const validationSchema = yup.object().shape({
             <ActivityIndicator />
           ) : (
             <View>
-              {
-                loading == true
-                ?
-                <ActivityIndicator/>
-                :
+              
+                
                 <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:45, width:WIDTH -55, borderRadius:15, backgroundColor:'rgba(0, 0, 0, 0.7)', borderColor:'rgb(218,165,32)', borderWidth: 0.4 }}
                  onPress={() => {
                    //setLoading(true); 
                  handleLogin(formikProps)}} >
-                 <Text style={{ alignItems: 'center', fontFamily:'century-gothic', color:'rgb(218,165,32)', justifyContent:'center'}} >Login</Text>
+                   {
+                     loading === true
+                     ?
+                     <ActivityIndicator/>
+                     :
+                     <Text style={{ alignItems: 'center', fontFamily:'century-gothic', color:'rgb(218,165,32)', justifyContent:'center'}} >Login</Text>
+                   }
                 </TouchableOpacity>
 
-              }             
+                          
               </View>
           )}
         
@@ -196,8 +205,14 @@ const validationSchema = yup.object().shape({
             <View>
             <TouchableOpacity onPress={() => {
               try{
-             userEmail &&  props.firebase._passwordReset(userEmail.trim())
-             {userEmail ? Toast.show('A password reset mail has been sent to your emailID.'):Toast.show('Please enter your email ID') }
+                const trimmedEmail = userEmail.trim();
+                console.log("userEmail: ",userEmail);
+                console.log("trimmedEmail: ",trimmedEmail);
+             
+                props.firebase._passwordReset(trimmedEmail)
+             Toast.show('A password reset mail has been sent to your emailID.')
+            //   :
+            //  Toast.show('Please enter your email ID') }
               }
               catch(error)
               {
@@ -211,13 +226,15 @@ const validationSchema = yup.object().shape({
                     props.navigation.navigate('SignUpScreen',{userEmail : userEmail})
 
                 }
+                
+                  console.log("ERROR IN FORGOT PASSWORD",error);
               }
               }} style={{paddingTop:10 }}>
            <Text style={{ fontFamily:'sans-serif-light', color:'rgb(218,165,32)', fontSize:12 }}>Forgot your Password?</Text>
          </TouchableOpacity>
             </View>
             <View style={{ paddingTop:10 }}>
-          
+            
            <Text style={{ fontFamily:'sans-serif-light', color:'white',  fontSize:12 }}>OR Login with </Text>
          
             </View>

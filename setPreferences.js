@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import {StyleSheet, Text, View, SafeAreaView, Dimensions,BackHandler, TouchableOpacity, Image, ScrollView} from 'react-native';
+import {StyleSheet, Text, View, ActivityIndicator,SafeAreaView, Dimensions,BackHandler, TouchableOpacity, Image, ScrollView} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { TagSelect } from 'react-native-tag-select'
 import {withFirebaseHOC} from './screens/config/Firebase'
@@ -35,8 +35,10 @@ const languageData = [
 const { width, height } = Dimensions.get('window');
 const setPreferences =(props)=> {
 
+
     const dispatch = useDispatch();
     const [bookPreferences, setbookPreferences]=useState({});
+    const [submitting,setSubmitting] = useState(false);
     const categoriesSelected = React.createRef(null);
     const languagesSelected = React.createRef(null);
     const fullName=useSelector(state=>state.userReducer.name)
@@ -44,63 +46,29 @@ const setPreferences =(props)=> {
     const [categories,setCategories] = useState([])
     const [categorySelectedMap,setCategorySelectedMap] = useState({})
     const [languageSelectedMap,setLanguageSelectedMap] = useState({})  
-
-
-    function back_Button_Press()
-  {
-    console.log("Inside BackButton Press");
-    // if(!warningMessage)
-    // {
-    //   Toast.show("Warning: Changes will be discarded on BackPress")
-    //   setWarningMessage(true);
-    //   return true;
-    // }
-    props.navigation.navigate('SignUpScreen')
-    return true;
-  }
-
-    useEffect(
-      () => {
-        console.log("Inside useEffect - componentDidMount of setPreferences");
-        BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
-        return () => {
-          console.log(" back_Button_Press Unmounted");
-          BackHandler.removeEventListener("hardwareBackPress",  back_Button_Press);
-          //props.navigation.navigate('SignInScreen');
-  
-        };
-    }, [back_Button_Press])
-
     
 
     async function createUser(props, fullName,userPreferences,languagePreferences)
-    {    
+    {   
+      setSubmitting(true); 
       try
       {
       const user = props.navigation.getParam('user');
       console.log("user:" + user);
       const uId=user._user.uid;
       console.log("fullName,uid - " + fullName + " " + uId);
-      if(fullName === null)
-        props.navigation.navigate('SignUpScreen');
-      else
-      {
-        var splittedString = fullName.split(" ");
-        var i;
-        var userName = "";
-        for(i=0;i<splittedString.length;i++)
-          userName = userName + splittedString[i] + "_";
-          
-        userName= userName + uId.substring(3,9)
-        const addNewUser= await props.firebase._createNewUser(user,fullName, userName,userPreferences,languagePreferences);
-        console.log("User Document created in Firestore from setPreferences"); 
-      }
+      
+      const addNewUser= await props.firebase._createNewUser(user,fullName,userPreferences,languagePreferences);
+      console.log("User Document created in Firestore from setPreferences"); 
+      
       
       
       }
-      catch(error)
-      {
+      catch(error){
       console.log(error);
+      }
+      finally{
+        setSubmitting(false);
       }
     }
 
@@ -178,6 +146,7 @@ const setPreferences =(props)=> {
       {
         return (
         <SafeAreaView style={{flex:1, backgroundColor:'#120d02',paddingTop:20,paddingBottom:height/20,paddingHorizontal:10, alignItems:'center',justifyContent:'center'}}>
+          <ActivityIndicator/>
         </SafeAreaView>
         )
       }
@@ -280,7 +249,14 @@ const setPreferences =(props)=> {
             }} 
             style={{ alignItems: 'center', justifyContent:'center', height:height/20, width:(width*7)/24, borderRadius:15, borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }}
             >
-          <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Next</Text>
+          {
+            submitting === true
+            ?
+            <ActivityIndicator/>
+            :
+            <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Next</Text>
+          }
+          
           </TouchableOpacity>
           </View>
           </ScrollView>

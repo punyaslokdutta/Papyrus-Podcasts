@@ -20,6 +20,7 @@ import android.content.Context;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Random;
 
 import timber.log.Timber;
 
@@ -61,6 +62,8 @@ public class FileRepositoryImpl implements FileRepository {
 		} else {
 			recordName = FileUtil.generateRecordNameDate();
 		}
+		int unique= new Random().nextInt(1000000);
+            recordName=recordName+unique;
 		if (prefs.getFormat() == AppConstants.RECORDING_FORMAT_WAV) {
 			recordFile = FileUtil.createFile(recordDirectory, FileUtil.addExtension(recordName, AppConstants.WAV_EXTENSION));
 		} else {

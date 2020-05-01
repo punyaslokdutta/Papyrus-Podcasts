@@ -112,15 +112,12 @@ const SelectScreen = (props)=> {
             dispatch({type:"SET_FROM_SEARCH_CHAPTER_SCREEN",payload:false});
             props.navigation.navigate('SearchTabNavigator',{fromExplore:false})
             }}>
-        <View style={{flexDirection:'row',height:height/12, backgroundColor: '#101010', paddingRight: 13, paddingVertical:10, width:((width*7)/8)-10 }}>
+        <View style={{flexDirection:'row',height:height/20,borderRadius:20, backgroundColor: 'white', paddingVertical:height/100, width:width*6/8}}>
         
-            <Text style={{ flex:1, fontWeight:'500',borderRadius:20,backgroundColor:'white',fontSize:15,borderColor:'white', 
-              paddingTop: 7, paddingHorizontal: 10 }}>
-            
-              <Icon style={{paddingHorizontal:10,paddingTop:20 }} name="search" size={20} />
-              
+        <Icon style={{paddingHorizontal:10,paddingTop:0 }} name="search" size={20} />
+            <Text style={{ flex:1, fontWeight:'500',fontSize:15,borderColor:'white'}}> 
 
-              {"  "}Search Content, books, Chapters
+              {"  "}Search book/chapter to record podcast
                </Text> 
 
         </View>
@@ -203,7 +200,7 @@ const SelectScreen = (props)=> {
 
         <View style={{paddingBottom:height/10, flexDirection:'row', paddingLeft:width/6 }}>
         <View>
-            <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/20, width:(width*7)/24, borderRadius:15, borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }} 
+            <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center',backgroundColor:'rgba(0, 0, 0, 0.7)', height:height/20, width:(width*7)/24, borderRadius:15, borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }} 
             onPress={() => {
               console.log("[SelectScreen] bookName : ",bookName);
                          

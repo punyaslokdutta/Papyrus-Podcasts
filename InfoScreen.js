@@ -97,7 +97,7 @@ const { width, height } = Dimensions.get("window");
           </View>
         </TouchableOpacity>
 
-          <Divider margin={[theme.sizes.padding * 0.5,0]} />
+          <Divider margin={[theme.sizes.padding * 0.5,0]} /> 
         
               <TouchableOpacity onPress={() => {
                 if(realUserID == userPrivateDoc.id)
@@ -134,12 +134,12 @@ const { width, height } = Dimensions.get("window");
                <View>
                <Text>Chapter</Text> 
                <TouchableOpacity onPress={() => props.navigation.navigate('RecordChapter',{bookID:podcast[0].bookID,chapterID:podcast[0].chapterID})}>
-               <Text style={{fontSize:20,fontWeight:'bold'}}>{podcast[0].chapterName} {" "}{"\n"}</Text>
+               <Text style={{fontSize:20,fontWeight:'bold'}}>{podcast[0].chapterName} {"  "}{"\n"}</Text>
                </TouchableOpacity>
                <Divider margin={[theme.sizes.padding * 0.5, 0]} />
                <Text>Book</Text>
                <TouchableOpacity onPress={() => props.navigation.navigate('RecordBook',{bookID:podcast[0].bookID})}>
-               <Text style={{fontSize:20,fontWeight:'bold'}}>{podcast[0].bookName}{" "}</Text>
+               <Text style={{fontSize:20,fontWeight:'bold'}}>{podcast[0].bookName}{"  "}</Text>
                </TouchableOpacity>
                </View>
                :
@@ -152,6 +152,13 @@ const { width, height } = Dimensions.get("window");
              }
            
            </View>
+
+           {
+              (podcast[0].podcasterID == "UoTnf7dgzvQL7GUaPCwIGlXReGS2") &&
+              <View>
+              <Text style={{fontSize:10}}> This podcast/audiobook is in the public domain.</Text>
+              </View>
+            }
         </Block>
       </ScrollView>
     );
@@ -163,7 +170,8 @@ export default withFirebaseHOC(InfoScreen);
 
 const styles = StyleSheet.create({
   product: {
-    paddingHorizontal: theme.sizes.base * 1.5,
+    paddingRight: theme.sizes.base * 4,
+    paddingLeft: theme.sizes.base * 1.5,
     paddingVertical: theme.sizes.padding
   },
   tag: {

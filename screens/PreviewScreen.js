@@ -12,7 +12,6 @@ import ImageResizer from 'react-native-image-resizer';
 import * as Progress from 'react-native-progress';
 import Toast from 'react-native-simple-toast';
 import moment from 'moment';
-//import { firebase } from '@react-native-firebase/functions';
 
 
 const { width, height } = Dimensions.get('window');
@@ -39,17 +38,6 @@ const PreviewScreen = (props) => {
   const bookID=useSelector(state=>state.recorderReducer.bookID)
   const chapterID=useSelector(state=>state.recorderReducer.chapterID)
   const genres = useSelector(state=>state.recorderReducer.genres)
-  //BOOK_ID to be returned from recorderReducer which will be dispatched by Algolia 
-  //For Now, books which are not present in our database is handled. 
-  // 1. Create a Book Document , Get the Doc RefId . Make Podcast Collection and Document. 
-  // 2. Add a Review : "Pending" to these books .
-  // 3. Cloud Function for Image Resizing 
-  // 4. Cloud Function for indexing the podcast , Pending books are not indexed.
-  // 5. OverAll PodcastCountUpdate 
-  // 6. Build a unique path in Google storage for podcasts and images while uploading
-  // 7. 50K books 2lac podcasts 50K users (3 lac documents) [Algolia Indexing]
-  // 8. 
-
   const [recordedFilePath, setrecordedFilePath] = useState(props.navigation.getParam('recordedFilePath'));
   const [podcastDescription, setPodcastDescription] = useState(null);
   const [podcastName, setPodcastName]=useState(null);
@@ -310,6 +298,7 @@ const PreviewScreen = (props) => {
 
   async function uploadAudio(FilePath) {
 
+    console.log(FilePath);
     var refPath = "podcasts/audio/" + userID + "_" + bookID + "_" + moment().format() + ".m4a";
     var storageRef = storage().ref(refPath);
     console.log("Before storageRef.putFile in uploadAudio ");
@@ -413,13 +402,10 @@ const PreviewScreen = (props) => {
     <SafeAreaView style={{ flex: 1, backgroundColor: '#101010' }}>
     
      <View>
-      <View style={styles.AppHeader}>
-        <TouchableOpacity onPress={() => props.navigation.goBack(null)}>
-          <View style={{ paddingLeft: width / 12, paddingVertical: height / 20, flexDirection: 'row' }}>
-            <Icon name="times" size={20} style={{ color: 'white' }} />
-            <Text style={{ fontFamily: 'san-serif-light', color: 'white', paddingLeft: (width * 7) / 35, fontSize: 20 }}>New Podcast</Text>
-          </View>
-        </TouchableOpacity>
+      <View style={styles.AppHeader,{paddingHorizontal:width/3}}>
+        <View style={{paddingVertical: height / 20}}>
+          <Text style={{ fontFamily: 'san-serif-light', color: 'white', fontSize: 20 }}>New Podcast</Text>
+        </View>  
       </View>
 
       <View style={{ alignItems: 'center' }}>
@@ -429,7 +415,7 @@ const PreviewScreen = (props) => {
             {
               podcastImage == "https://storage.googleapis.com/papyrus-fa45c.appspot.com/podcasts/Waves.jpg"
               ?
-              <Image source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/Insert-Image.png"}} style={{ width: height / 6, height: height / 6, borderRadius: 20, borderColor: 'white', borderWidth: 1 }} />
+              <Image source={{uri:"https://storage.googleapis.com/papyrus-274618.appspot.com/books/addpic.png"}} style={{ width: height / 6, height: height / 6, borderRadius: 20, borderColor: 'white', borderWidth: 1 }} />
               :
               <Image source={podcastImage} style={{ width: height / 6, height: height / 6, borderRadius: 20, borderColor: 'white', borderWidth: 1 }} />
             }

@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     borderRadius: theme.sizes.radius,
     paddingHorizontal: theme.sizes.padding,
     paddingVertical: theme.sizes.padding / 2,
-    bottom: 20,
+    bottom: height/100,
     left: (width - (theme.sizes.padding * 4)) / (Platform.OS === 'ios' ? 3.2 : 3),
     backgroundColor: theme.colors.white,
     width: width - (theme.sizes.padding * 4),
@@ -237,7 +237,8 @@ class BookList extends Component {
             </Text>
             <View style={[ styles.row, { justifyContent: 'space-between', alignItems: 'flex-end', }]}>
               <Text style={{ color: theme.colors.caption }}>
-                {item.bookDescription.split('').slice(0, 50)}...
+                {item.bookDescription.split('').slice(0, 30)}
+                {(item.bookDescription.length > 30) ? "..." : ""}
               </Text>
               <FontAwesome
                 name="chevron-right"

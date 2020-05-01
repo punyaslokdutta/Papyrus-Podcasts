@@ -34,6 +34,7 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
       }}
     },
     {tabBarOptions:{
+    
       showIcon: true,
       showLabel: true,
       activeTintColor:'black',
@@ -44,8 +45,7 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
       style:
       {
         height: 60, 
-        backgroundColor: 'white',
-        
+        backgroundColor: 'white'
       },
       indicatorStyle: {
         borderBottomColor: 'black',
@@ -59,7 +59,8 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
        {
          tabBarVisible: true,
          headerVisible: true,
-           header: props => <CustomUserHeader {...props} />, 
+         initialRouteName:'UserChapterPodcast',
+        header: props => <CustomUserHeader {...props} />, 
          
        }
       }

@@ -129,14 +129,14 @@ const ProfileStackNavigator=createStackNavigator(
         }
   }},
     ProfileFollowingScreen:{screen:ProfileFollowingScreen,navigationOptions: {
-      title: 'Following',
+      title: 'Following   ',
       headerTintColor: 'white',
         headerStyle: {
           backgroundColor: 'black'
         }
     }},
     ProfileFollowerScreen: {screen:ProfileFollowerScreen,navigationOptions: {
-      title: 'Followers',
+      title: 'Followers   ',
       headerTintColor: 'white',
         headerStyle: {
           backgroundColor: 'black'
@@ -179,7 +179,7 @@ HomeStackNavigator.navigationOptions = ({ navigation }) => {
 
 const AppTabNavigator=createBottomTabNavigator(
   {
-    Home: {screen:HomeScreen,
+    Home: {screen:HomeStackNavigator,
     navigationOptions:{
       tabBarLabel:'Home',
       tabBarIcon:({tintColor})=>(
@@ -261,7 +261,7 @@ const AppStackNavigator= createStackNavigator(
     LikersScreen: {
       screen: LikersScreen,
       navigationOptions:{
-        title: 'Likes',
+        title: 'Likes   ',
         headerTintColor: 'white',
         headerStyle: {
           backgroundColor: 'black'
@@ -272,7 +272,7 @@ const AppStackNavigator= createStackNavigator(
       screen: InfoScreen,
       navigationOptions:{
         //header:null
-        title: 'About this podcast',
+        title: 'About this podcast   ',
         headerTintColor: 'white',
         headerStyle: {
           backgroundColor: 'black'
@@ -293,14 +293,14 @@ const AppStackNavigator= createStackNavigator(
         }
      }},
      UserFollowingScreen : {screen : UserFollowingScreen,navigationOptions:{
-          title: 'Following',
+          title: 'Following   ',
           headerTintColor: 'white',
           headerStyle: {
             backgroundColor: 'black'
           }
      }},
      UserFollowerScreen : {screen : UserFollowerScreen,navigationOptions:{
-          title: 'Followers',
+          title: 'Followers   ',
           headerTintColor: 'white',
           headerStyle: {
             backgroundColor: 'black'

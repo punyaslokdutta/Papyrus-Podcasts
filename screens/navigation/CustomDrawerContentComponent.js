@@ -28,18 +28,15 @@ const CustomDrawerContentComponent = (props) =>
 return(  
   <Container style={{backgroundColor:'#101010'}}>
    
-    <Body style={{alignItems:'center', paddingTop: SCREEN_HEIGHT/8}}>
+    <Body style={{alignItems:'center',justifyContent:'center', paddingTop: SCREEN_HEIGHT/8}}>
      <Image style={styles.drawerimage}
        source={{uri : photoURL}}
      />
-     <Block flex={false} row center space="between" style={{paddingTop:30, paddingLeft:5}}>
-<Text style={{color:'white', fontSize:SCREEN_HEIGHT/40 }}>{name}</Text>
+     <Block flex={false} row center space="between" style={{paddingTop:SCREEN_HEIGHT/50, paddingLeft:SCREEN_WIDTH/20}}>
+<Text style={{color:'white',alignItems:'center',justifyContent:'center', fontSize:SCREEN_HEIGHT/45 }}>{name}</Text>
           
     </Block>
-    <Block flex={false} row center space="between" style={{ paddingLeft:5}}>
-<Text style={{color:'white', fontFamily:'san-serif',textAlign:'center'}}>{username}</Text>
-          
-    </Block>
+    
 
 
     <Content style={{ paddingTop: SCREEN_HEIGHT/18}}>

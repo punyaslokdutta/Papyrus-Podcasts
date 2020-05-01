@@ -147,7 +147,7 @@ async function updatePodcastsLiked(props){
         <View style={styles.content}>
         <View style={{ alignItems: "center"}}>
         <View style={{ alignItems: "center", marginTop: 8}}>
-        <Text style={[styles.textDark, { fontSize: 16, fontWeight: "500" }]}>{props.podcast.podcastName}</Text>
+    <Text style={[styles.textDark, { fontSize: 16, fontWeight: "500" }]}>{props.podcast.podcastName}{"  "}</Text>
     
                     </View>
                     <View style={{ alignItems: "center", marginTop: 2}}>

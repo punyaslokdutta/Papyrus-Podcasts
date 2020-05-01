@@ -10,7 +10,6 @@ const firebaseApi={
       _signOutUser : async () => {
         try {
             await firebase.auth().signOut();
-            navigate('Auth');
         } catch (e) {
             console.log(e);
         }
@@ -25,7 +24,7 @@ const firebaseApi={
       },
 
 
-     _createNewUser:async(user,fullName,userName,userPreferences,languagePreferences) => {
+     _createNewUser:async(user,fullName,userPreferences,languagePreferences) => {
 
         //const query11 = await firestore().collection('users').doc("656523232").get();
         console.log("createNewUser QQUUEERRYY");
@@ -36,6 +35,16 @@ const firebaseApi={
             name = user._user.displayName;
         else
             name = fullName;
+            const uId=user._user.uid;
+        ////// username generation
+        var splittedString = name.split(" ");
+        var i;
+        var userName = "";
+        for(i=0;i<splittedString.length;i++)
+            userName = userName + splittedString[i] + "_";
+            
+        userName= userName + uId.substring(3,9)
+        //////
 
         if(pictureURL === null)
             pictureURL = "https://storage.googleapis.com/papyrus-fa45c.appspot.com/users/DefaultProfilePictures/WhatsApp%20Image%202020-03-29%20at%205.51.24%20PM.jpeg";

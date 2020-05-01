@@ -227,11 +227,6 @@ public class FileUtil {
 					Log.e(LOG_TAG, "Failed to create the file.", e);
 					return null;
 				}
-			} else {
-				Log.e(LOG_TAG, "File already exists!! Please rename file!");
-				Log.i(LOG_TAG, "Renaming file");
-//				TODO: Find better way to rename file.
-				return createFile(path, "1" + fileName);
 			}
 			if (!file.canWrite()) {
 				Log.e(LOG_TAG, "The file can not be written.");

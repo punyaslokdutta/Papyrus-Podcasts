@@ -247,7 +247,7 @@ const Explore = (props) => {
               <Icon style={{paddingHorizontal:10,paddingTop:20 }} name="search" size={15} />
              
 
-              {"  "}Search Podcasts, Books, Chapters, Authors,
+              {"  "}Search by podcasts,books,chapters,authors
                </Text>
 
         </View>

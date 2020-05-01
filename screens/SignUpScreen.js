@@ -1,10 +1,11 @@
 
 
-import React from 'react';
+import React ,{useState} from 'react';
 import {
   ActivityIndicator,
   TouchableOpacity, StyleSheet, Text, View, AsyncStorage, Dimensions, ImageBackground, Button, Image} from 'react-native';
 
+import Toast from 'react-native-simple-toast';
 import { TextInput } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { Formik } from 'formik';
@@ -43,26 +44,54 @@ const validationSchema = yup.object().shape({
     
 });
 
-
-
-async function _signupWithEmail (email, password, fullName){
-
-  try {
-    const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-    console.log("USER CREDENTIAL = ",userCredential);
-
-  } catch (e) {
-    console.error(e.message);
-  }
-}
-
 var {width:WIDTH, height:HEIGHT}=Dimensions.get('window')
 
 const SignUpScreen=(props)=>{
 
+  const [loading,setLoading] = useState(false);
   const userEmail = useSelector(state=>state.userReducer.signupEmail);
   console.log("[SIGN UP Screen] userEmail: ", userEmail);
   const dispatch=useDispatch();
+
+  async function _signupWithEmail (email, password, fullName){
+    try {
+      const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+      
+  
+    } catch (error) {
+      
+      var errorCode = error.code;
+    var errorMessage = error.message;
+    console.log("ERROR_CODE"+errorCode);
+    console.log("ERROR_MESSAGE"+errorMessage);
+
+    //props.navigation.navigate('SignUpScreen')
+                if(errorCode==="auth/email-already-in-use")
+                {
+                    Toast.show('This email is already in use');
+                }
+                else if(errorCode==="auth/invalid-email")
+                {
+                  Toast.show('The email you have entered is invalid')
+                }
+                else if(errorCode==='auth/operation-not-allowed')
+                {
+                  //actions.setSubmitting(false);
+                  console.log("Email/Password login/signup is not enabled");
+                  
+                }
+                else if(errorCode === "auth/weak-password")
+                {
+                    Toast.show('This password is too weak');
+                }
+
+
+    }
+    finally {
+      setLoading(false);
+    }
+  }
+
 
   onFBLoginOrRegister = async () => {
     LoginManager.logInWithPermissions(['public_profile', 'email',])
@@ -106,6 +135,7 @@ const SignUpScreen=(props)=>{
       initialValues={{ fullName: '', email: userEmail, password: '',confirmPassword:'' }}
       onSubmit={(values, actions) => {
          // alert(JSON.stringify(values));
+         setLoading(true);
          const trimmedFullName = values.fullName.trim();
          dispatch({type:"CHANGE_NAME", payload:trimmedFullName })
          const trimmedEmail = values.email.trim();
@@ -168,7 +198,14 @@ const SignUpScreen=(props)=>{
             <View>
             <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:45, width:WIDTH -55, borderRadius:15, backgroundColor:'rgba(0, 0, 0, 0.7)', borderColor:'rgb(218,165,32)', borderWidth: 1 }}
         onPress={formikProps.handleSubmit} >
+          {
+            loading === true
+            ?
+            <ActivityIndicator/>
+            :
             <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'rgb(218,165,32)', justifyContent:'center'}} >Submit</Text>
+          }
+            
                 </TouchableOpacity>
              
               </View>

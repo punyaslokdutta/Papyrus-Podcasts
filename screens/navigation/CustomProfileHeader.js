@@ -33,7 +33,7 @@ const CustomProfileHeader = props => {
               <Text style={{fontSize:theme.sizes.h3}}>{name}'s</Text>
             }
             <View style = {{alignItems:'center'}}>
-            <Text style={{fontWeight:"bold",fontSize:theme.sizes.h2,paddingRight:5}}>Collections</Text>
+          <Text style={{fontWeight:"bold",fontSize:theme.sizes.h2,paddingRight:5}}>Collections{"  "}</Text>
             </View>
             </View>
             
