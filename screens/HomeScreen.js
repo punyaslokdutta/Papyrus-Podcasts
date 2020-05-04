@@ -9,7 +9,7 @@ import Podcast from './components/Home/Podcast'
 import {Text} from './components/categories/components';
 import { useSelector} from 'react-redux';
 import { Badge } from 'react-native-elements'
-
+import Shimmer from 'react-native-shimmer';
 
 var {width, height}=Dimensions.get('window')
 
@@ -204,8 +204,11 @@ const HomeScreen = (props) => {
               {console.log("[HomeScreen] SECTION TITLE: ",section.title)}
 
           {renderSectionBooks(section.title)}
+          {(section.data === null) ?
+          null :
           <Text h3 bold style={{paddingLeft: 30,   textShadowColor:'black'}}>Discover Podcasts
-          </Text>
+          </Text> }
+          
           </ScrollView>
         )}
         renderItem={renderData}
@@ -262,20 +265,24 @@ const HomeScreen = (props) => {
   }
 
   
-  if(loading == true)
+  if(loading == true || (loading == false && podcasts.length == 0 && headerPodcastsLimit.length == 0))
   {
     return (
+      
       <View >
         <View style={{paddingBottom: (height*4)/12}}>
       {renderMainHeader()}
           </View>
+          <Shimmer>
           <View style={{alignItems:'center'}}>
           
       <Image 
       source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/HomeScreen/WhatsApp%20Image%202020-03-29%20at%206.17.51%20PM.jpeg"}}
       style={{height: height/3,width: width/3}}/>
+      </View>
+      </Shimmer>  
       </View>  
-      </View>    
+       
     )
   }
   else

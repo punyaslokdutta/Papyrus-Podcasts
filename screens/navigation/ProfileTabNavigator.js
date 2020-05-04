@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import ProfileBookPodcast from '../components/Profile/ProfileBookPodcast';
 import ProfileChapterPodcast from '../components/Profile/ProfileChapterPodcast';
+import BookmarkScreen from '../BookmarkScreen';
 import {createMaterialTopTabNavigator} from 'react-navigation-tabs';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView} from 'react-native';
@@ -17,8 +18,14 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
 
 const ProfileTabNavigator =createMaterialTopTabNavigator(
     {
+      BookmarkScreen: {screen:BookmarkScreen, navigationOptions:{
+        tabBarLabel:'Saved    ',
+        tabBarIcon:({tintColor})=>(
+          <Icon name="bookmark" color={tintColor} size={20}/>
+        )
+      }},
        ProfileBookPodcast:{ screen: ProfileBookPodcast,navigationOptions:{
-        tabBarLabel:'books',
+        tabBarLabel:'Books',
         tabBarIcon:({tintColor})=>(
           <Icon name="book" color={tintColor} size={20}/>
         )
@@ -28,7 +35,8 @@ const ProfileTabNavigator =createMaterialTopTabNavigator(
         tabBarIcon:({tintColor})=>(
           <Icon name="newspaper-o" color={tintColor} size={20}/>
         )
-      }}, 
+      }}
+      
     
     },
     {tabBarOptions:{
@@ -66,9 +74,7 @@ const ProfileTabNavigator =createMaterialTopTabNavigator(
     )
 
     
-      
-    
-    export default ProfileTabNavigator;
+export default ProfileTabNavigator;
 
     const styles = StyleSheet.create({
         container: {

@@ -1,11 +1,12 @@
 
 import React, {Component, useState, useEffect, useContext} from 'react';
-import { StyleSheet, Text, View, Image, Dimensions} from 'react-native';
+import { StyleSheet, Text, View, Image, Dimensions,TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import * as theme from '../../constants/theme'
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import {useDispatch} from "react-redux"
 import moment from 'moment'
+import { withFirebaseHOC } from '../../../config/Firebase';
+import firestore from '@react-native-firebase/firestore';
 
 var {width, height}=Dimensions.get('window')
 
@@ -132,55 +133,96 @@ const styles = StyleSheet.create({
  const CategoryPodcastItem = React.memo((props)=> {
   console.log("Inside Category Podcast")
   console.log(props);
-
+  const  realUserID = props.firebase._getUid(); 
   const dispatch=useDispatch();
 
-        return (
-          <TouchableOpacity  onPress={(()=>{
-            dispatch({type:"SET_CURRENT_TIME", payload:0})
-            dispatch({type:"SET_DURATION", payload:props.podcast.duration})
-            dispatch({type:"SET_PAUSED", payload:false})
-            dispatch({type:"SET_LOADING_PODCAST", payload:true});
-            dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
-            dispatch({type:"SET_PODCAST", payload: props.podcast})
-            dispatch({type:"SET_NUM_LIKES", payload: props.podcast.numUsersLiked})
-          })}>
-             <View style={{flex:1,flexDirection:"row",paddingLeft:width/64,width:width,height:height/5}}>
-               
-               <View style={[styles.flex, styles.column, styles.shadow, { width:(width)/2,padding: theme.sizes.padding / 4 }]}>
-                 <View style={{height:(height)/16}}>
-                  <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.podcast.podcastName.slice(0,40)}
-                       {(props.podcast.podcastName.length > 40) ? ".." : ""}</Text> 
-                 </View>
-               <View style ={{height:(height)/20}}>
-                  <Text style={{ color: theme.colors.gray_green }}>{props.podcast.podcasterName}</Text>
-               </View>
-          
-              <View style={[
-              styles.row,
-              { alignItems: 'center', justifyContent: 'space-between'}
-              ]}>
-                
-                <Text style={{  fontSize: theme.sizes.font * 0.9,color: theme.colors.gray_green }}>
-                  {moment(props.podcast.createdOn).fromNow()}
-                </Text>
-                
-              </View>
-              <View>
-              <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
-                  {props.podcast.duration}
-                </Text>
-                </View>
-            </View>
+  async function retrieveUserPrivateDoc(userID)
+  {
+    try{
+      const privateDataID = "private" + userID;
+      const userDocument = await firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).get();
+      console.log("[CategoryPodcastItem] userDocument : ", userDocument);
+      const userDocumentData = userDocument.data();
+      console.log("[CategoryPodcastItem] userDocumentData : ", userDocumentData);
+      
+      const isUserSame = (userID == realUserID);
 
-            <View style={{flexDirection: 'row', justifyContent: 'flex-end',paddingTop:height/48,paddingLeft:width/8}}>
-              <Image style={{width:width/4,height:height/8}} source={ {uri: props.podcast.podcastPictures["0"]}} />
-            </View>
+      if(isUserSame)
+      {
+        props.navigation.navigate('ProfileTabNavigator')
+      }
+      else
+      {
+        dispatch({type:"SET_OTHER_PRIVATE_USER_ITEM",payload:userDocumentData});
+        props.navigation.navigate('ExploreTabNavigator',{userData:userDocumentData});
+      }
         
+      
+    }
+    catch(error){
+      console.log("Error in retrieveUser() in CategoryPodcastItem: ",error);
+    }
+    
+  }
+
+      return (
+        <TouchableOpacity  onPress={(()=>{
+          dispatch({type:"SET_CURRENT_TIME", payload:0})
+          dispatch({type:"SET_DURATION", payload:props.podcast.duration})
+          dispatch({type:"SET_PAUSED", payload:false})
+          dispatch({type:"SET_LOADING_PODCAST", payload:true});
+          dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
+          dispatch({type:"SET_PODCAST", payload: props.podcast})
+          dispatch({type:"SET_NUM_LIKES", payload: props.podcast.numUsersLiked})
+        })}>
+            <View style={{flex:1,flexDirection:"row",paddingLeft:width/64,width:width,height:height/5}}>
+              
+              <View style={[styles.flex, styles.column, styles.shadow, { width:(width)/2,padding: theme.sizes.padding / 4 }]}>
+                <View style={{height:(height)/20}}>
+                <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.podcast.podcastName.slice(0,40)}
+                      {(props.podcast.podcastName.length > 40) ? ".." : ""}</Text> 
+                </View>
+
+                <View style={{height:(height)/20}}>
+                <TouchableOpacity onPress={() => props.navigation.navigate('RecordBook',{bookID:props.podcast.bookID})}>
+                <Text style={{ color: theme.colors.gray_green,fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.podcast.bookName.slice(0,40)}
+                      {(props.podcast.bookName.length > 40) ? ".." : ""}</Text>
+                </TouchableOpacity> 
+                </View>
+
+              <View style ={{height:(height)/25}}>
+              <TouchableOpacity onPress={() => {
+                retrieveUserPrivateDoc(props.podcast.podcasterID);
+              }}>
+                <Text style={{  fontSize: theme.sizes.font * 1.0,color: theme.colors.gray_green }}>{props.podcast.podcasterName}</Text>
+                </TouchableOpacity>
+              </View>
+        
+            <View style={[
+            styles.row,
+            { alignItems: 'center', justifyContent: 'space-between'}
+            ]}>
+              
+              <Text style={{  fontSize: theme.sizes.font * 0.9,color: theme.colors.gray_green }}>
+                {moment(props.podcast.createdOn).fromNow()}
+              </Text>
+              
+            </View>
+            <View>
+            <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
+                {props.podcast.duration}
+              </Text>
+              </View>
           </View>
-      </TouchableOpacity>
-        );
+
+          <View style={{flexDirection: 'row', justifyContent: 'flex-end',paddingTop:height/48,paddingLeft:width/8}}>
+            <Image style={{width:width/4,height:height/8}} source={ {uri: props.podcast.podcastPictures["0"]}} />
+          </View>
+      
+        </View>
+    </TouchableOpacity>
+      );
       
   }, areEqual);
 
-export default CategoryPodcastItem;
+export default withFirebaseHOC(CategoryPodcastItem);

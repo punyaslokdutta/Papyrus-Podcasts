@@ -35,6 +35,8 @@ target 'Papyrus_60' do
 
   pod 'react-native-video', :path => '../node_modules/react-native-video'
 
+  pod 'react-native-shimmer', :path => '../node_modules/react-native-shimmer'
+
   target 'Papyrus_60Tests' do
     inherit! :search_paths
     # Pods for testing

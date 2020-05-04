@@ -8,8 +8,23 @@ import Story from './components/Explore/Story'
 import ExploreBook from './components/Explore/ExploreBook'
 import { Badge } from 'react-native-elements'
 import {useSelector, useDispatch} from "react-redux"
+import Shimmer from 'react-native-shimmer';
+
+import DetectNavbar from 'react-native-detect-navbar-android';
+// or
+//import {DetectNavbar} from 'react-native-detect-navbar-android';
 
 const {width,height} = Dimensions.get('window')
+
+// methods (Android Only, don't call on iOS)
+DetectNavbar.hasSoftKeys().then((bool) => {
+  if(bool) {
+    console.log('Has Soft NavBar');
+  } else {
+    console.log('Has Hard Key NavBar');
+  }
+});
+
 
 const Explore = (props) => {
 
@@ -247,7 +262,7 @@ const Explore = (props) => {
               <Icon style={{paddingHorizontal:10,paddingTop:20 }} name="search" size={15} />
              
 
-              {"  "}Search Podcasts, Books, Chapters, Authors,
+              {"  "}Search podcasts, books, chapters, authors{"  "}
                </Text>
 
         </View>
@@ -260,12 +275,97 @@ const Explore = (props) => {
       if(loading == true)
       {
         return (
-          <View>
-          <View style={{paddingBottom: (height*5)/12}}>
+          
+          <View style={{flexDirection:'column'}}>
+          
+            
         {renderMainHeader()}
+          
+           
+              <View>
+              <View><Text>{"\n"}</Text></View>
+            <View style={{color:'#dddd',flexDirection:'row'}}>
+              <View style={{width:width/20}}/>
+              <Shimmer>
+              <View style={{backgroundColor :'#dddd', height:width/6,width:width/6,borderRadius:100}}/>
+              </Shimmer>
+              <View style={{width:width/15}}/>
+              <Shimmer>
+              <View style={{backgroundColor :'#dddd', height:width/6,width:width/6,borderRadius:100}}/>
+              </Shimmer>
+              <View style={{width:width/15}}/>
+              <Shimmer>
+              <View style={{backgroundColor :'#dddd', height:width/6,width:width/6,borderRadius:100}}/>
+              </Shimmer>
+              <View style={{width:width/15}}/>
+              <Shimmer>
+              <View style={{backgroundColor :'#dddd', height:width/6,width:width/6,borderRadius:100}}/>
+              </Shimmer>
             </View>
-        <ActivityIndicator/>
+
+            <View><Text>{"\n\n"}</Text></View>
+
+            <View style={{color:'#dddd',flexDirection:'row'}}>
+            <View style={{width:width/20}}/>
+            <Shimmer>
+            <View style={{backgroundColor :'#dddd', height:height/5,width:width/2}}/>
+            </Shimmer>
+            
+            <View style={{width:width/12}}/>
+            <Shimmer>
+            <View style={{backgroundColor :'#dddd', height:width/5,width:width/2}}/>
+            </Shimmer>
+            
+            <View style={{width:width/12}}/>
+            <Shimmer>
+            <View style={{backgroundColor :'#dddd', height:width/5,width:width/2}}/>
+            </Shimmer>
+            </View>
+
+            <View><Text>{"\n\n"}</Text></View>
+
+            <View style={{color:'#dddd',flexDirection:'row'}}>
+            
+            <View style={{width:width/20}}/>
+            <Shimmer>
+            <View style={{backgroundColor :'#dddd', height:height/7, width:(width*5)/12 + 10}}/>
+            </Shimmer>
+            
+            <View style={{width:width/12}}/>
+            <Shimmer>
+            <View style={{backgroundColor :'#dddd', height:height/7, width:(width*5)/12 + 10}}/>
+            </Shimmer>
+            
+            <View style={{width:width/12}}/>
+            <Shimmer>
+            <View style={{backgroundColor :'#dddd', height:height/7, width:(width*5)/12 + 10}}/>
+            </Shimmer>
+            </View>
+            <View><Text>{"\n\n"}</Text></View>
+            <View style={{color:'#dddd',flexDirection:'row'}}>
+            
+            <View style={{width:width/20}}/>
+            <Shimmer>
+            <View style={{backgroundColor :'#dddd', height:height/4, width:width/3}}/>
+            </Shimmer>
+            
+            <View style={{width:width/12}}/>
+            <Shimmer>
+            <View style={{backgroundColor :'#dddd', height:height/4, width:width/3}}/>
+            </Shimmer>
+            
+            <View style={{width:width/12}}/>
+            <Shimmer>
+            <View style={{backgroundColor :'#dddd', height:height/4, width:width/3}}/>
+            </Shimmer>
+            </View>
+
+            
+            </View>
+              
+            
         </View>    
+        
         )
       }
       else
@@ -364,5 +464,3 @@ badgeStyle: {
   right: -4
 }
 });
-
-

@@ -140,8 +140,8 @@ android {
         applicationId "com.papyrus_60"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 5
-        versionName "1.0.4"
+        versionCode 8
+        versionName "1.0.7"
         multiDexEnabled true
     }
     splits {
@@ -222,6 +222,7 @@ dependencies {
    // implementation 'com.google.firebase:firebase-firestore:21.1.0'
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation "com.facebook.react:react-native:+"  // From node_modules
+    compile project(':react-native-detect-navbar-android')
     compile 'com.facebook.android:facebook-android-sdk:[4,5)' 
     if (enableHermes) {
       def hermesPath = "../../node_modules/hermesvm/android/";

@@ -7,7 +7,8 @@ import com.facebook.react.PackageList;
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.ReactApplication;
-
+import com.oblador.shimmer.RNShimmerPackage;
+import com.rndetectnavbarandroid.RNDetectNavbarAndroidPackage;
 import com.brentvatne.react.ReactVideoPackage;
 //import com.reactnativecommunity.statusbar.RNCStatusBarPackage;
 
@@ -40,6 +41,7 @@ public class MainApplication extends Application implements ReactApplication {
       //packages.add(new RNCStatusBarPackage());
       //packages.add(new ReactNativeRecorderPackage());
       packages.add(new ReactVideoPackage() );
+      //packages.add(new RNDetectNavbarAndroidPackage());
       return packages;
     }
 

@@ -12,11 +12,15 @@ const INITIAL_STATE = {
   resizeMode:'contain', 
   isMiniPlayer:false,
   numLikes: 0,
-  loadingPodcast: false
+  loadingPodcast: false,
+  videoRef: null
 };
 
 function rootReducer(state = INITIAL_STATE, action)  {
   switch (action.type) {
+    case "SET_VIDEO_REF":
+      console.log("SET_VIDEO_REF")
+        return {...state, videoRef:action.payload}
       case "SET_LOADING_PODCAST":
         console.log("SET_LOADING_PODCAST")
           return {...state, loadingPodcast:action.payload}

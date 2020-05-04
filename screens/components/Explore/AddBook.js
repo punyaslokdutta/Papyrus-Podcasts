@@ -57,10 +57,13 @@ const AddBook=(props)=>{
       if(state.tagsArray.length != tagsLength)  // for trimming last selected author(tag)
       {
         var trimmedTagState = state;
-        const trimmedTag = state.tagsArray[state.tagsArray.length - 1].trim();
-        trimmedTagState.tagsArray[trimmedTagState.tagsArray.length - 1] = trimmedTag;
-        setAuthors(trimmedTagState);
-        setTagsLength(trimmedTagState.tagsArray.length);
+        // if(state.tagsArray.length != 0)
+        // {
+          const trimmedTag = state.tagsArray[state.tagsArray.length - 1].trim();
+          trimmedTagState.tagsArray[trimmedTagState.tagsArray.length - 1] = trimmedTag;
+          setAuthors(trimmedTagState);
+          setTagsLength(trimmedTagState.tagsArray.length);
+        
       }
       else
         setAuthors(state);
@@ -199,12 +202,12 @@ const AddBook=(props)=>{
          placeholder="Author(s)" 
          label='Press comma to add an author'
          labelStyle={{color: 'black'}}
-         containerStyle={{width:(width * 3) / 4}}
+         containerStyle={{width:(width * 49) / 60}}
          inputContainerStyle={styles.textInput}
          tagStyle={styles.tag}
          tagTextStyle={styles.tagText}
          inputStyle={styles.TextInputStyleClass2}
-         keysForTag={','}
+         //keysForTag={}
          autoCorrect={false}
 
          />

@@ -2,12 +2,14 @@ const INITIAL_STATE = {
     userItem: null,
     name: null,
     email: null,
+    signupEmail: null,
     userName: null, 
     numFollowers: 0,
     numFollowing: 0,
     displayPictureURL: null,
     followingList:[],
     isPodcastLiked: {},
+    isPodcastBookmarked : {},
     isUserFollowing: {},
     introduction : null,
     numCreatedBookPodcasts : 0,
@@ -24,10 +26,19 @@ const INITIAL_STATE = {
     userPreferences: [],
     fromSearchChapterScreen: false,
     otherPrivateUserItem: null,
+    userLanguages: [],
+    algoliaAPPID: null,
+    algoliaAPIKey: null
   };
   
   function userReducer(state = INITIAL_STATE, action)  {
     switch (action.type) {
+        case "SET_ALGOLIA_API_KEY":
+            return {...state,algoliaAPIKey:action.payload}
+        case "SET_ALGOLIA_APP_ID":
+            return {...state,algoliaAPPID:action.payload}
+        case "SET_USER_LANUAGES":
+            return {...state,userLanguages:action.payload}
         case "SET_OTHER_PRIVATE_USER_ITEM":
             return {...state,otherPrivateUserItem:action.payload}
         case "SET_USER_ITEM":
@@ -42,6 +53,8 @@ const INITIAL_STATE = {
             return {...state,numNotifications:action.payload}
         case "CHANGE_EMAIL":
             return {...state,email:action.payload}
+        case "SET_SIGNUP_MAIL":
+            return {...state,signupEmail:action.payload}
         case "SET_ALGOLIA_QUERY":
             return {...state,algoliaQuery:action.payload}
         case "SET_ALGOLIA_BOOK_QUERY":
@@ -63,9 +76,22 @@ const INITIAL_STATE = {
                 state.isPodcastLiked[liker_list[i]] = true;
               }
             return state;
+        case "SET_PODCASTS_BOOKMARKED":
+            let bookmark_list = action.payload;
+            let length_bookmark_list = bookmark_list.length;
+            for (i = 0; i < length_bookmark_list; i++) {
+                state.isPodcastBookmarked[bookmark_list[i]] = true;
+                }
+            return state;
         case "ADD_TO_PODCASTS_LIKED":
             state.isPodcastLiked[action.payload] = true;
             return state;
+        case "ADD_TO_PODCASTS_BOOKMARKED":
+            state.isPodcastBookmarked[action.payload] = true;
+            return state;
+        case "REMOVE_FROM_PODCASTS_BOOKMARKED":
+            state.isPodcastBookmarked[action.payload] = false;
+            return state;    
         case "CHANGE_USER_NAME":
             return {...state, userName:action.payload}
         case "CHANGE_DISPLAY_PICTURE":

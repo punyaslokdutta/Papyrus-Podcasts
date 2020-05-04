@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import {StyleSheet, Text, View, SafeAreaView, Dimensions, TouchableOpacity, Image, ScrollView} from 'react-native';
+import {StyleSheet, Text, View, SafeAreaView, Dimensions,BackHandler, TouchableOpacity, Image, ScrollView} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { TagSelect } from 'react-native-tag-select'
 import {withFirebaseHOC} from './screens/config/Firebase'
@@ -45,18 +45,58 @@ const setPreferences =(props)=> {
     const [categorySelectedMap,setCategorySelectedMap] = useState({})
     const [languageSelectedMap,setLanguageSelectedMap] = useState({})  
 
+
+    function back_Button_Press()
+  {
+    console.log("Inside BackButton Press");
+    // if(!warningMessage)
+    // {
+    //   Toast.show("Warning: Changes will be discarded on BackPress")
+    //   setWarningMessage(true);
+    //   return true;
+    // }
+    props.navigation.navigate('SignUpScreen')
+    return true;
+  }
+
+    useEffect(
+      () => {
+        console.log("Inside useEffect - componentDidMount of setPreferences");
+        BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
+        return () => {
+          console.log(" back_Button_Press Unmounted");
+          BackHandler.removeEventListener("hardwareBackPress",  back_Button_Press);
+          //props.navigation.navigate('SignInScreen');
+  
+        };
+    }, [back_Button_Press])
+
+    
+
     async function createUser(props, fullName,userPreferences,languagePreferences)
     {    
       try
       {
       const user = props.navigation.getParam('user');
-      console.log(user);
+      console.log("user:" + user);
       const uId=user._user.uid;
-      console.log(uId);
-      const userName= fullName+"_" + uId.substring(3,9)
+      console.log("fullName,uid - " + fullName + " " + uId);
+      if(fullName === null)
+        props.navigation.navigate('SignUpScreen');
+      else
+      {
+        var splittedString = fullName.split(" ");
+        var i;
+        var userName = "";
+        for(i=0;i<splittedString.length;i++)
+          userName = userName + splittedString[i] + "_";
+          
+        userName= userName + uId.substring(3,9)
+        const addNewUser= await props.firebase._createNewUser(user,fullName, userName,userPreferences,languagePreferences);
+        console.log("User Document created in Firestore from setPreferences"); 
+      }
       
-      const addNewUser= await props.firebase._createNewUser(user,fullName, userName,userPreferences,languagePreferences);
-      console.log("User Document created in Firestore from setPreferences");
+      
       }
       catch(error)
       {
@@ -137,7 +177,7 @@ const setPreferences =(props)=> {
       if( loading == true)
       {
         return (
-        <SafeAreaView style={{flex:1, backgroundColor:'#120d02',paddingTop:20,paddingHorizontal:10, alignItems:'center',justifyContent:'center'}}>
+        <SafeAreaView style={{flex:1, backgroundColor:'#120d02',paddingTop:20,paddingBottom:height/20,paddingHorizontal:10, alignItems:'center',justifyContent:'center'}}>
         </SafeAreaView>
         )
       }
@@ -221,7 +261,7 @@ const setPreferences =(props)=> {
             }
             if(categorySelectedArray.length<3)
             {
-              alert('Please select atleast 2 categories');
+              alert('Please select atleast 3 categories');
               return;
             }
             var languageSelectedArray = [];

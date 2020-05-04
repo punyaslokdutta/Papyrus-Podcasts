@@ -6,6 +6,8 @@ import ExtraDimensions from 'react-native-extra-dimensions-android';
 import Animated, { Easing } from 'react-native-reanimated';
 import PodcastContent from '../screens/components/PodcastPlayer/PodcastContent';
 import PlayerControls, { PLACEHOLDER_WIDTH } from './components/PodcastPlayer/PlayerControl';
+import IconAntDesign from 'react-native-vector-icons/AntDesign'
+
 import { PanGestureHandler, State, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 var {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window');
 const height =ExtraDimensions.getRealWindowHeight();
@@ -73,7 +75,7 @@ const PodcastPlayer=(props)=>{
       position: new Value(0),
       time: new Value(0),
     };
-  
+
     const config = {
       damping: 20,
       mass: 1,
@@ -83,7 +85,7 @@ const PodcastPlayer=(props)=>{
       restDisplacementThreshold: 0.5,
       toValue: new Value(0),
     };
-  
+
     return [
       cond(clockRunning(clock), 0, [
         set(state.finished, 0),
@@ -97,14 +99,14 @@ const PodcastPlayer=(props)=>{
       state.position,
     ];
   }
-  
+
 
   //onGestureEvent: $Call<event>;
 
   //translateY: Value;
-  
-    
-    
+
+
+
     // const {
     //   translationY, velocityY, offsetY, gestureState: state, offsetY2,
     // } = this;
@@ -120,10 +122,10 @@ const PodcastPlayer=(props)=>{
         },
       ],
       { useNativeDriver: true },
-      
+
     )
 
-    
+
       );
 
 
@@ -154,7 +156,7 @@ const PodcastPlayer=(props)=>{
         add(offsetY, translationY),
       ],
     )).current;
-  
+
 
 
 
@@ -181,17 +183,17 @@ const PodcastPlayer=(props)=>{
           {
           slideUp();
           }
-          
+
         }, [props.podcast])
-    
-      
+
+
     //componentDidUpdate
   function slideDown()
   {
     if(!isMiniPlayer)
     {
       dispatch({type:"TOGGLE_MINI_PLAYER"})
-      
+
       timing(offsetY, {
         toValue: upperBound,
         duration: 800,
@@ -201,17 +203,17 @@ const PodcastPlayer=(props)=>{
 
      // dispatch({type:"TOGGLE_MINI_PLAYER"})
 
-      
+
       //return true;
       //dispatch({type:"TOGGLE_MINI_PLAYER"})
-      
+
   }
   else
   {
     //dispatch({type:"TOGGLE_MINI_PLAYER"})
     slideUp();
   }
-    
+
   }
   function back_Button_Press()
   {
@@ -219,7 +221,7 @@ const PodcastPlayer=(props)=>{
     if(!isMiniPlayer)
     {
       dispatch({type:"TOGGLE_MINI_PLAYER"})
-      
+
       timing(offsetY, {
         toValue: upperBound,
         duration: 1000,
@@ -229,12 +231,12 @@ const PodcastPlayer=(props)=>{
 
      // dispatch({type:"TOGGLE_MINI_PLAYER"})
       return true;
-      //dispatch({type:"TOGGLE_MINI_PLAYER"})   
+      //dispatch({type:"TOGGLE_MINI_PLAYER"})
   }
   return false;
     //BackHandler.removeEventListener('hardwareBackPress', this.back_Buttton_Press);
   }
- 
+
   function slideUp(){
     dispatch({type:"TOGGLE_MINI_PLAYER"})
     timing(offsetY, {
@@ -249,8 +251,8 @@ const PodcastPlayer=(props)=>{
     //const  onGestureEvent, translateY, offsetY2 ;
      //const translateY = add(y, offsetY2);
     // const { podcast } = this.props;
- 
-   
+
+
     const tY = interpolate(translateY, {
       inputRange: [0, midBound],
       outputRange: [0, midBound],
@@ -286,7 +288,7 @@ const PodcastPlayer=(props)=>{
       outputRange: [0, 10, 2],
       extrapolate: Extrapolate.CLAMP,
     });
-    
+
     const containerHeight = interpolate(translateY, {
       inputRange: [0, midBound],
       outputRange: [height, 0],
@@ -299,7 +301,7 @@ const PodcastPlayer=(props)=>{
     });
     console.log("In THIS of PodcastPlayer : ",this);
     return (
-    
+
       <Animated.View
       style={{
         transform: [{ translateY: tY }],
@@ -307,33 +309,59 @@ const PodcastPlayer=(props)=>{
       }}
     >
           <TouchableNativeFeedback onPress={slideDown}>
-            <Animated.View style={{ backgroundColor: 'white', width: videoContainerWidth }}>
+            <View>
+               {/* {
+                !isMiniPlayer &&
+                <View style={{height:height/10,backgroundColor:'#2E2327',paddingTop:height/100}}>
+                <IconAntDesign name="down" size={25} color='white' style={{paddingTop:height/100, paddingLeft:width/25}}/>
+                </View>
+
+              } */}
+            <Animated.View style={{ backgroundColor: '#2E2327', width: videoContainerWidth }}>
+              {/* <TouchableOpacity>
+              <View style={{height:height/20,borderColor:'black',borderWidth:1,backgroundColor:'black'}}>
+              <IconAntDesign name="down" size={25} color='white' style={{padding:height/200}}/>
+              </View>
+              </TouchableOpacity> */}
+
               <Animated.View style={{ ...StyleSheet.absoluteFillObject, opacity: playerControlOpaciy }}>
-                <PlayerControls title={props.podcast.podcastName} onPress={slideUp}      />
+                <PlayerControls podcastName={props.podcast.podcastName} bookName={props.podcast.bookName} onPress={slideUp}      />
               </Animated.View>
+              
+
               <Animated.Image
                 source={{uri:props.podcast.podcastPictures[0]}}
                 resizeMode='contain'
-                style={{ width: videoWidth, height: videoHeight, borderColor:'black' }}
+                style={{ width: videoWidth, height: videoHeight, borderColor:'black',borderRadius:5 }}
               />
-
+                {
+                !isMiniPlayer && <IconAntDesign name="downcircleo" size={30} color='black' style={{
+                  //width: width/15,  
+                  //height: width/10,   
+                  borderRadius: 30,            
+                  backgroundColor: '#dddd',                                    
+                  position: 'absolute',                                          
+                  top: height/50,                                                    
+                  left: width/20, }}/>
+              }
                </Animated.View>
+               </View>
                </TouchableNativeFeedback>
-               
+
                <View>
-              
-            
+
+
             <Animated.View style={{ backgroundColor: 'white', width: videoContainerWidth, height: containerHeight }}>
               <Animated.View style={{ opacity }}>
               <PodcastContent userID={props.userID} podcast={props.podcast} navigation={navigation} slideDown={slideDown} />
               </Animated.View>
             </Animated.View>
-            </View> 
+            </View>
 
 
-            </Animated.View>    
+            </Animated.View>
     );
-  
+
 }
 
 export default PodcastPlayer;

@@ -31,6 +31,8 @@ import RecordBook from './screens/RecordBook'
 import RecordChapter from './screens/RecordChapter'
 import StatisticsScreen from './screens/StatisticsScreen'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons'
+import SimpleLineIcon from 'react-native-vector-icons/SimpleLineIcons'
 import { theme } from './screens/components/categories/constants';
 import ActivityScreen from './screens/ActivityScreen'
 import SettingsScreen from './screens/SettingsScreen'
@@ -196,9 +198,9 @@ const AppTabNavigator=createBottomTabNavigator(
     },
    Record: {screen:RecordStackNavigator,
       navigationOptions:{
-        tabBarLabel:'Record',
+        tabBarLabel:' ',
         tabBarIcon:({tintColor})=>(
-          <Icon name="microphone" color={tintColor} size={26}/>
+          <SimpleLineIcon style={{paddingTop:15}} name="microphone" color={'black'} size={SCREEN_HEIGHT/15}/>
         )
       }
    },
@@ -321,11 +323,19 @@ const AppStackNavigator= createStackNavigator(
    }},
    RecordBook: {screen :RecordBook,
     navigationOptions:{
-      header:null
+      //header:null
+      headerTintColor: 'white',
+      headerStyle: {
+        backgroundColor: 'black'
+      }
    }},
    RecordChapter: {screen :RecordChapter,
     navigationOptions:{
-      header:null
+      //header:null
+      headerTintColor: 'white',
+      headerStyle: {
+        backgroundColor: 'black'
+      }
    }},
    PreviewScreen: {screen:PreviewScreen,navigationOptions:{
     header : null
@@ -351,24 +361,24 @@ const AppDrawerNavigator=createDrawerNavigator(
     Home: {screen : AppStackNavigator,
       navigationOptions: {
         drawerLabel: "Home  ",
-        drawerIcon: () => (<Icon name="home" size={24} style={{ color: 'white' }} />),
+        //drawerIcon: () => (<Icon name="home" size={25} style={{ color: 'white' }} />),
       }},
     Drafts: {screen: StatisticsScreen,
       navigationOptions: {
         drawerLabel: "Drafts ",
-        drawerIcon: () => (<TouchableOpacity onPress={()=>{NativeModules.ReactNativeRecorder.sampleMethodTwo()}}>
-          <Icon name="hdd-o" size={22} style={{ color: 'white' }} />
-          </TouchableOpacity>),
+        // drawerIcon: () => (<TouchableOpacity onPress={()=>{NativeModules.ReactNativeRecorder.sampleMethodTwo()}}>
+        //   <Icon name="hdd-o" size={25} style={{ color: 'white' }} />
+        //   </TouchableOpacity>),
       }},
     Activity: {screen:ActivityScreen,
       navigationOptions: {
         drawerLabel: "Activity  ",
-        drawerIcon: () => (<Icon name="bell" size={22} style={{ color: 'white' }} />),
+       // drawerIcon: () => (<Icon name="bell" size={25} style={{ color: 'white' }} />),
       }},
     Settings: {screen:SettingsScreen,
       navigationOptions: {
         drawerLabel: "Settings ",
-        drawerIcon: () => (<Icon name="cog" size={22} style={{ color: 'white' }} />),
+       // drawerIcon: () => (<Icon name="cog" size={25} style={{ color: 'white' }} />),
       }}
   },
   {

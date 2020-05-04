@@ -10,7 +10,8 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 const {width,height} = Dimensions.get('window')
 
 class  AuthLoadingScreen extends Component {
-    constructor(props)
+    
+  constructor(props)
     {
         super(props)
         {
@@ -133,28 +134,13 @@ class  AuthLoadingScreen extends Component {
                   else
                   {
                         unsubscribe(); // unsubscribe the firestore onSnapshot listener
+                        //this.props.navigation.navigate('Home');
+
                         this.props.navigation.navigate('setUserDetails',{user : doc.data()});
-                         this.props.navigation.navigate('CategoryScreen');
-                         this.props.navigation.navigate('Explore');
                         
-                        console.log("Auth Loading State ==> ",this.state);
-
-                          switch(this.state.deepLinkURL)
-                          {
-                            case "https://www.papyruspodcasts.com/categories":
-                              this.props.navigation.navigate('CategoryScreen');
-                              break;
-                            case "https://www.papyruspodcasts.com/podcasts/iJTWjonBiJQyG2wbUL0m":
-                              console.log("\n\n PODCAST SWITCH CASE");
-                              //this.props.navigation.navigate('CategoryScreen');
-                              this.props.navigation.navigate('Explore',{podcastID:"iJTWjonBiJQyG2wbUL0m"});
-                              console.log("PODCAST SWITCH CASE END");
-                              break;
-                            default:
-                              console.log("DEFAULT DEEP LINK ---- DO NOTHING");
-                          }
-                      
-
+                        this.props.navigation.navigate('CategoryScreen');
+                        this.props.navigation.navigate('Explore');
+                        
                   }
                 },function(error) {
                   console.log("Error in onSnapshot Listener in AuthLoadingScreen: ",error);
@@ -217,7 +203,7 @@ class  AuthLoadingScreen extends Component {
         <View style={{paddingBottom: height/3}}>
       {this.renderMainHeader()}
           </View>
-      <ActivityIndicator/>
+      <ActivityIndicator size={"large"} color={"black"}/>
       </View>     
       );
     }

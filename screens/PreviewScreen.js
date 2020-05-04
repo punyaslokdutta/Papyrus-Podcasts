@@ -94,7 +94,7 @@ const PreviewScreen = (props) => {
         try{
           firestore().collection('users').doc(userID).collection('privateUserData').
                       doc(privateDataID).set({
-            numCreatedBookPodcasts : incrementedValue
+            numCreatedBookPodcasts : incrementedValue//firestore.FieldValue.increment(1)
               },{merge:true})
               
           dispatch({type:"ADD_NUM_CREATED_BOOK_PODCASTS", payload: incrementedValue}) 
@@ -216,7 +216,6 @@ const PreviewScreen = (props) => {
           console.log(e);
         }
         
-        props.navigation.navigate('HomeScreen');
       }
   }
   
@@ -242,6 +241,7 @@ const PreviewScreen = (props) => {
         dispatch({type:"UPDATE_TOTAL_MINUTES_RECORDED",payload:updatedMinutesRecorded});
         updateTotalMinutesRecorded(updatedMinutesRecorded);
         setTags(initialTags);
+        props.navigation.navigate('HomeScreen');
       }
     },[uploadPodcastSuccess]
   )
@@ -329,6 +329,7 @@ const PreviewScreen = (props) => {
         },
         error => {
           //unsubscribe();
+          console.log("File upload error code: " + error.code);
           console.log("File upload error: " + error.toString()); 
         },
         () => {
@@ -416,7 +417,7 @@ const PreviewScreen = (props) => {
       <View style={styles.AppHeader}>
         <TouchableOpacity onPress={() => props.navigation.goBack(null)}>
           <View style={{ paddingLeft: width / 12, paddingVertical: height / 20, flexDirection: 'row' }}>
-            <Icon name="times" size={20} style={{ color: 'white' }} />
+          <Icon name="arrow-left" size={20} style={{color:'white'}}/>
             <Text style={{ fontFamily: 'san-serif-light', color: 'white', paddingLeft: (width * 7) / 35, fontSize: 20 }}>New Podcast</Text>
           </View>
         </TouchableOpacity>
@@ -684,8 +685,7 @@ const styles = StyleSheet.create({
     width: (width * 3) / 4,
     paddingLeft: 10,
     height: height / 18,
-    paddingRight: 10,
-
+    paddingRight: 10
   }, 
   tagcontainer: {
     flex: 1,

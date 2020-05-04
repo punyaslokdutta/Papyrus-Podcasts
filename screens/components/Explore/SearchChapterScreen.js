@@ -7,18 +7,20 @@ import {withFirebaseHOC} from '../../config/Firebase'
 import {useSelector,useDispatch} from 'react-redux';
 import SearchChapterItem from './SearchChapterItem';
 
-const searchClient = algoliasearch(
-  'VSRFUPESVM',
-  '4d3be49cf4512e3579ea5b198a420f1d'
-);
-
-const index = searchClient.initIndex('dev_chapters');
-//const replicaIndex = searchClient.initIndex('chapters');
 
 var {width, height}=Dimensions.get('window')
 const SearchChapterScreen=(props)=>
 {
     const dispatch=useDispatch();
+    const algoliaAPPID = useSelector(state=>state.userReducer.algoliaAPPID);
+    const algoliaAPIKey = useSelector(state=>state.userReducer.algoliaAPIKey);
+
+    const searchClient = algoliasearch(
+      algoliaAPPID,
+      algoliaAPIKey
+    );
+    const index = searchClient.initIndex('dev_chapters');
+    
     const initialAuthors  ={
       tag: '',
       tagsArray: []

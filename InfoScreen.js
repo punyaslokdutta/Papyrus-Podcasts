@@ -93,7 +93,13 @@ const { width, height } = Dimensions.get("window");
           <TouchableOpacity onPress={() => {props.navigation.navigate('LikersScreen',
               {podcastID:podcast[0].podcastID})}}>
           <View>
-            <Text>{"\n"}{numUsersLiked} Likes</Text>
+            {
+              numUsersLiked == 1 && <Text>{numUsersLiked} Like</Text>
+            }
+            {
+              numUsersLiked > 1 && <Text>{numUsersLiked} Likes</Text>
+            }
+            
           </View>
         </TouchableOpacity>
 
@@ -152,6 +158,14 @@ const { width, height } = Dimensions.get("window");
              }
            
            </View>
+            {
+              (podcast[0].podcasterID == "mBjYEDQOzXfKVu1SnzAaYE1D4jO2" || podcast[0].podcasterID == "UoTnf7dgzvQL7GUaPCwIGlXReGS2" || podcast[0].podcasterID == "gST4i5x62KNU6i6AVK0VPnzO6A42" 
+               || podcast[0].podcasterID == "Jwn42rgBZZPbvnWIdlxKZyRcl8U2") &&
+              <View>
+              <Text style={{fontSize:10}}> This podcast/audiobook is in the public domain. Content is not monetisable.</Text>
+              </View>
+            }
+           
         </Block>
       </ScrollView>
     );

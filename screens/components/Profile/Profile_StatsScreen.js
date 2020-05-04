@@ -60,7 +60,9 @@ const Profile_StatsScreen = (props) => {
                       </Text>
         </View>
         <View style={{justifyContent:'center',flexDirection:'row'}}>
-        <TouchableOpacity onPress={()=>props.navigation.navigate('ProfileFollowingScreen', { id : userid })}>
+        <TouchableOpacity onPress={()=>{
+          numFollowings!=0 && props.navigation.navigate('ProfileFollowingScreen', { id : userid })
+          }}>
         <View style={{justifyContent:'center',alignItems:'center'}}>
           <Text style={{paddingTop:height/20, paddingHorizontal:width/10, fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
             {numFollowings}
@@ -69,7 +71,9 @@ const Profile_StatsScreen = (props) => {
           </View>
     </TouchableOpacity>
 
-    <TouchableOpacity onPress={()=>props.navigation.navigate('ProfileFollowerScreen', { id : userid })}>
+    <TouchableOpacity onPress={()=>{
+       numFollowers!=0 &&  props.navigation.navigate('ProfileFollowerScreen', { id : userid })
+      }}>
             <View style={{justifyContent:'center',alignItems:'center'}}>
             <Text style={{paddingTop:height/20 , paddingHorizontal:width/10,  fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
             {numFollowers}

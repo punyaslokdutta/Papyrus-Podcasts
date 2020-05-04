@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import firestore from '@react-native-firebase/firestore';
-import { Text, StyleSheet, View, Animated, Image, Dimensions, ScrollView, TouchableOpacity } from 'react-native'
+import { Text, StyleSheet, View, Animated, Image, Dimensions, ScrollView,ActivityIndicator, TouchableOpacity } from 'react-native'
 import {Card, CardItem,  Body} from 'native-base'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { withNavigation } from 'react-navigation';
 //import Animated, { Easing } from 'react-native-reanimated';
+import Shimmer from 'react-native-shimmer';
 
 import * as theme from './components/constants/theme';
 
@@ -21,7 +22,12 @@ const styles = StyleSheet.create({
     right: 30,
     bottom: 30,
   },
- 
+  activeDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 6.25,
+    borderColor: theme.colors.active,
+  },
   FloatingButtonStyle: {
     resizeMode: 'contain',
     width: 50,
@@ -187,7 +193,7 @@ class RecordBook extends Component {
           return (
             <Animated.View
               key={`step-${item}-${index}`}
-              style={[styles.dots, { opacity }]}
+              style={[styles.dots, styles.activeDot,{ opacity }]}
             />
           )
         })}
@@ -231,7 +237,8 @@ class RecordBook extends Component {
             showsHorizontalScrollIndicator={false}
             decelerationRate={0.998}
             scrollEventThrottle={16}
-            //onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX } } }])}
+            onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX } } }])}
+            useNativeDriver={true}
           >
             {/* <View style={{width:width*25/26,height:width,padding:5}}> */}
             {
@@ -241,7 +248,7 @@ class RecordBook extends Component {
                   key={`${index}-${img}`}
                   source={{ uri: img }}
                   resizeMode='contain'
-                  style={{ width:width,height: width }}
+                  style={{ width:width, height: width }}
                 />
                 
               )
@@ -316,7 +323,23 @@ class RecordBook extends Component {
   else
   {
     return (
-    <View></View>
+    <View style={{paddingTop:height*5/12}}>
+       <ActivityIndicator size={"large"} color={"black"}/>
+      {/* <Shimmer>
+      <View style={{backgroundColor:'#dddd', height:height/2}}/>
+      </Shimmer>
+    
+       <View style={{paddingTop:height/6,alignItems:'center'}}>  
+        <FontAwesome name="microphone" color={theme.colors.black} size={theme.sizes.font * 1.5} />
+        <Text style={{fontSize:12}}>Record</Text>
+       </View>
+   
+      <Shimmer>   
+      <View style={{paddingTop:height/24,paddingLeft:width/10,color:'#dddd',flexDirection:'row'}}>
+      <View style={{backgroundColor:'#dddd', height:height,width:width*4/5}}/>
+         </View>
+        </Shimmer> */}
+    </View>
     );
   }
   }

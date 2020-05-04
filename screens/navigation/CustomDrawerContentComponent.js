@@ -5,6 +5,8 @@ import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollVi
 import {Container, Content, Header, Body} from 'native-base'
 import { theme } from '../components/categories/constants';
 import { Block, Text } from '../components/categories/components/';
+import Icon from 'react-native-vector-icons/FontAwesome'
+import { Badge } from 'react-native-elements'
 
 import ActivityScreen from '../ActivityScreen';
 import SettingsScreen from '../SettingsScreen';
@@ -30,9 +32,11 @@ return(
   <Container style={{backgroundColor:'#101010'}}>
    
     <Body style={{alignItems:'center', paddingTop: SCREEN_HEIGHT/8}}>
+      <TouchableOpacity onPress={() => props.navigation.navigate('Profile_StatsScreen')}>
      <Image style={styles.drawerimage}
        source={{uri : photoURL}}
      />
+     </TouchableOpacity>
      <Block flex={false} row center space="between" style={{paddingTop:30, paddingLeft:5}}>
 <Text style={{color:'white', fontSize:SCREEN_HEIGHT/40 }}>{name}</Text>
           
@@ -45,7 +49,60 @@ return(
 
     <Content style={{ paddingTop: SCREEN_HEIGHT/18}}>
     
-    <DrawerItems {...props} onItemPress = {
+    <DrawerItems {...props} 
+       getLabel = {(scene) => {
+        
+           switch(scene.route.routeName)
+           {
+             case "Home":
+                return (
+                  <View style={{flexDirection:'row',paddingBottom:SCREEN_HEIGHT/35}}>
+                  <Icon name="home" size={25} style={{ color: 'white',paddingTop:SCREEN_HEIGHT/150,paddingLeft:SCREEN_WIDTH/20,paddingRight:SCREEN_WIDTH/20 }} />
+                  <Text style={{color:'white',fontSize:22,fontWeight:'bold'}}>{props.getLabel(scene)}{"    "}</Text>
+                  </View>
+                  )
+              case "Drafts":
+                return (
+                  <View style={{flexDirection:'row',paddingBottom:SCREEN_HEIGHT/35}}>
+                  <Icon name="hdd-o" size={25} style={{ color: 'white',paddingTop:SCREEN_HEIGHT/150,paddingLeft:SCREEN_WIDTH/20,paddingRight:SCREEN_WIDTH/20 }} />
+                  <Text style={{color:'white',fontSize:22,fontWeight:'bold'}}>{props.getLabel(scene)}{"    "}</Text>
+                  </View>
+                )
+              case "Activity":
+                return (
+                  <View style={{flexDirection:'row',paddingBottom:SCREEN_HEIGHT/35}}>
+                   <View style={{flowDirection:'row'}}>
+                  <Icon name="bell" size={25} style={{ color: 'white',paddingTop:SCREEN_HEIGHT/150,paddingLeft:SCREEN_WIDTH/20,paddingRight:SCREEN_WIDTH/20 }} />
+                  {
+                    numNotifications!=0 &&  
+                    <Badge
+                    width={5}
+                    textStyle={{fontSize:8}}
+                    value={numNotifications}
+                    status="error"
+                    containerStyle={styles.badgeStyle}
+                    />
+                  }
+                  
+                    </View>
+                  <Text style={{color:'white',fontSize:22,fontWeight:'bold'}}>{props.getLabel(scene)}{"    "}</Text>
+                  
+                  </View>
+                )
+              case "Settings":
+                return (
+                  <View style={{flexDirection:'row',paddingBottom:SCREEN_HEIGHT/25}}>
+                  <Icon name="cog" size={25} style={{ color: 'white',paddingTop:SCREEN_HEIGHT/150,paddingLeft:SCREEN_WIDTH/20,paddingRight:SCREEN_WIDTH/20 }} />
+                  <Text style={{color:'white',fontSize:22,fontWeight:'bold'}}>{props.getLabel(scene)}{"    "}</Text>
+                  </View>
+                )
+              default:
+                return null   
+           }   
+        
+       }}
+
+      onItemPress = {
           ( route ) =>       
           {    
             switch(route.route.routeName)
@@ -69,21 +126,7 @@ return(
           } 
           activeBackgroundColor='#101010'   style={{backgroundColor: '#ffffff', }} labelStyle={{color: '#ffffff', fontSize: SCREEN_HEIGHT/35}}/>
           
-          {
-           (numNotifications != 0) 
-           ? 
-           <View>
-           <View style={{paddingTop:10, paddingBottom:SCREEN_HEIGHT/5,alignItems:'center',justifyContent:'center'}}>
-             <Text style={{color:'white'}}>You have new activities.</Text>
-           </View>
-           <Text style={{textAlign:'center',paddingBottom:10,color:'#dddd'}}>v1.0.5</Text>
-           </View>
-           :
-           <Text style={{textAlign:'center', paddingTop:SCREEN_HEIGHT/4,paddingBottom:10,color:'#dddd'}}>v1.0.5</Text>
-
-          }
-          
-          
+          <Text style={{textAlign:'center', paddingTop:SCREEN_HEIGHT/4,color:'#dddd'}}>v1.0.7</Text>
     
     </Content>
     </Body>
@@ -99,6 +142,11 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: '#F5FCFF',
+    },
+    badgeStyle: {
+      position: 'absolute',
+      top: 5,
+      right: 20
     },
     welcome: {
       fontSize: 20,

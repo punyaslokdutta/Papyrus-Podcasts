@@ -12,6 +12,7 @@ import { AccessToken, LoginManager } from 'react-native-fbsdk';
 import { firebase } from '@react-native-firebase/auth';
 import {withFirebaseHOC} from '../screens/config/Firebase'
 import Toast from 'react-native-simple-toast';
+import { useDispatch } from 'react-redux';
 
 var {width:WIDTH, height:HEIGHT}=Dimensions.get('window')
 
@@ -19,11 +20,13 @@ var {width:WIDTH, height:HEIGHT}=Dimensions.get('window')
 const validationSchema = yup.object().shape({
   email: yup
     .string()
+    .trim()
     .label('Email')
     .email()
     .required("*Email is a required field"),
   password: yup
     .string()
+    .trim()
     .label('Password')
     .required("*Password is a required field")
     .min(6, 'Password must be atleast 6 characters'),
@@ -34,7 +37,7 @@ const validationSchema = yup.object().shape({
   
   const SignInScreen = (props) => {
 
-     const [userEmail,setUserEmail] = useState(null);
+     const dispatch = useDispatch();
      const [loading,setLoading] = useState(false);
 
   onFBLoginOrRegister = async () => {
@@ -72,6 +75,7 @@ const validationSchema = yup.object().shape({
       });
   }
  async function handleLogin(formikProps){
+   setLoading(true);
   formikProps.handleSubmit();
  }
   
@@ -103,19 +107,23 @@ const validationSchema = yup.object().shape({
                     Toast.show('Sign up')
                     console.log("SignUp")
                     //actions.setSubmitting(false);
-                    props.navigation.navigate('SignUpScreen',{userEmail : userEmail})
+                    props.navigation.navigate('SignUpScreen');
 
                 }
                 else if(errorCode==="auth/wrong-password")
                 {
                   //actions.setSubmitting(false);
-                  Toast.show('wrong password (or) previously loggedIn(through Fb/Google)')
+                  Toast.show('wrong password (or) previously loggedIn(through Facebook)')
                 }
                 else if(errorCode==='auth/user-disabled')
                 {
                   //actions.setSubmitting(false);
                   Toast.show("You have been temporarily disabled")
                   
+                }
+                else if(errorCode === "auth/unknown")
+                {
+                  Toast.show("Too many unsuccessful attempts.Please try again later");
                 }
   }
 }
@@ -125,11 +133,13 @@ const validationSchema = yup.object().shape({
       initialValues={{ email: '', password: '' }}
       onSubmit={(values, actions) => {
         //alert(JSON.stringify(values));
-        
+        setLoading(true);
+        const trimmedEmail = values.email.trim();
+        const trimmedPassword = values.password.trim();
         console.log("EMAIL : ",values.email)
-        setUserEmail(values.email);
-        
-        _loginWithEmail(values.email, values.password, props)
+        //setUserEmail(trimmedEmail);
+        dispatch({type:"SET_SIGNUP_MAIL",payload:trimmedEmail});
+        _loginWithEmail(trimmedEmail, trimmedPassword, props)
         actions.setSubmitting(false);
         setLoading(false);
               }  
@@ -143,13 +153,13 @@ const validationSchema = yup.object().shape({
       <SafeAreaView  style={styles.backgroundContainer} >
       <View style={{ }}>
 
-      <TouchableOpacity>
+      {/* <TouchableOpacity> */}
           <Image
             resizeMode="contain"
             source={require('../assets/images/papyrusLogo.png')}
-            style={{ width: 180, height: 240 }}
+            style={{ width: WIDTH/3, height: HEIGHT/20,paddingBottom:HEIGHT/4 }}
           />
-        </TouchableOpacity>      
+        {/* </TouchableOpacity>       */}
          </View>
         <View style={styles.positions}>
           <TextInput style={styles.Input}   placeholder={'Email'} placeholderTextColor={'black'} underlineColorAndroid='transparent'
@@ -161,6 +171,7 @@ const validationSchema = yup.object().shape({
 
         </View>
         <View style={styles.positions}>
+        {/* <PasswordTextBox icon="lock" label="Old Password" onChange={(v) => this._updateState('old', v)} /> */}
         <TextInput style={styles.Input} placeholder={'Password'} placeholderTextColor={'black'} underlineColorAndroid='transparent'
           onChangeText={formikProps.handleChange('password')}
           secureTextEntry/> 
@@ -181,7 +192,13 @@ const validationSchema = yup.object().shape({
                  onPress={() => {
                    //setLoading(true); 
                  handleLogin(formikProps)}} >
-                 <Text style={{ alignItems: 'center', fontFamily:'century-gothic', color:'rgb(218,165,32)', justifyContent:'center'}} >Login</Text>
+                   {
+                     loading ?
+                     <ActivityIndicator/>
+                     :
+                     <Text style={{ alignItems: 'center', fontFamily:'century-gothic', color:'rgb(218,165,32)', justifyContent:'center'}}>Login</Text>
+                   } 
+                 
                 </TouchableOpacity>
 
               }             
@@ -218,13 +235,13 @@ const validationSchema = yup.object().shape({
          
             </View>
 
-            <View style={{flexDirection:'row' ,justifyContent:'center'}}>
+            <View style={{paddingBottom:HEIGHT/40,flexDirection:'row' ,justifyContent:'center'}}>
             <TouchableOpacity style={{paddingTop:20 }} onPress={()=>{onFBLoginOrRegister()}}>
          <Icon name="facebook-square" size={30} style={{color:'rgba(255, 255, 255, 0.6)'}}/>
          </TouchableOpacity>
          
             </View>
-        <View style={{ paddingTop:HEIGHT/12, flexDirection:'row'}}>
+        <View style={{ flexDirection:'row'}}>
           <View style={{ paddingRight:5}}>
           <Text style={{ fontFamily:'sans-serif-light', color:'white', fontSize:13 }}>Not a Papyrus member yet?</Text>
           </View>

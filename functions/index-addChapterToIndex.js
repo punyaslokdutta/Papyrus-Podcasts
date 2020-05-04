@@ -29,7 +29,7 @@ exports.addChapterToIndex = functions.region("asia-northeast1").https.onCall((da
   const chapterID = data.objectID;
   const bookID = data.bookID;
 
-  console.log("addChapterToIndex cloud function");
+  console.log("AddToPodcastsIndex cloud function");
 
  
   console.log("bookName: ",bookName);
@@ -48,9 +48,11 @@ exports.addChapterToIndex = functions.region("asia-northeast1").https.onCall((da
     bookID: bookID,
     chapterCover:chapterCover,
     bookName:bookName, 
+    chapterName:chapterName,
     language :language,
     authors: authors,
     publicationYear : publicationYear,
+    createdOn :createdOn
 };
 
 

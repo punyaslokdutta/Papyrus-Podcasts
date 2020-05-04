@@ -6,17 +6,20 @@ import {withFirebaseHOC} from '../../config/Firebase'
 import {useSelector,useDispatch} from 'react-redux';
 import SearchPodcastItem from './SearchPodcastItem';
 
-const searchClient = algoliasearch(
-  'VSRFUPESVM',
-  '4d3be49cf4512e3579ea5b198a420f1d'
-);
-const index = searchClient.initIndex('dev_podcasts');
 
 var {width, height}=Dimensions.get('window')
 const SearchPodcastScreen=(props)=>
 {
     const dispatch=useDispatch();
-    
+    const algoliaAPPID = useSelector(state=>state.userReducer.algoliaAPPID);
+    const algoliaAPIKey = useSelector(state=>state.userReducer.algoliaAPIKey);
+    const searchClient = algoliasearch(
+      algoliaAPPID,
+      algoliaAPIKey
+    );
+    const index = searchClient.initIndex('dev_podcasts');
+
+
     const initialAuthors  ={
       tag: '',
       tagsArray: []

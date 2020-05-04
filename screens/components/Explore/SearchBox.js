@@ -47,7 +47,7 @@ const SearchBox=(props)=>{
         returnKeyType='search'
         onChangeText={(text)=>{setQuery(text)}}
         onSubmitEditing={()=>{  dispatch({type:"SET_ALGOLIA_QUERY", payload: Query})}}
-        placeholder="Search books, Podcasts, Chapters"
+        placeholder="Search by books, chapters, authors"
         placeholderTextColor={'black'}
       />
     );

@@ -1,9 +1,8 @@
 
 import React, {Component, useState, useEffect, useContext} from 'react';
-import { StyleSheet, Text, View, Image, Dimensions} from 'react-native';
+import { StyleSheet, Text, View, Image, Dimensions,TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import * as theme from '../../constants/theme'
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import RecordBook from '../../../RecordBook' 
 
 
@@ -135,15 +134,23 @@ const styles = StyleSheet.create({
              <View style={{flex:1,flexDirection:"row",paddingLeft:width/64,width:width,height:height/5}}>
                
                <View style={[styles.flex, styles.column, styles.shadow, { width:(width)/2,padding: theme.sizes.padding / 4 }]}>
-                 <View style={{height:(height)/16}}>
+                 <View style={{height:(height)/20}}>
                   <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.chapter.chapterName.slice(0,40)}
                        {(props.chapter.chapterName.length > 40) ? ".." : ""}</Text> 
                  </View>
+
+                 <View style={{height:(height)/18}}>
+                 <TouchableOpacity onPress={() => props.navigation.navigate('RecordBook',{bookID:props.chapter.bookID})}>
+                  <Text style={{ color: theme.colors.gray_green,fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.chapter.bookName.slice(0,40)}
+                       {(props.chapter.bookName.length > 40) ? ".." : ""}</Text> 
+                       </TouchableOpacity>
+                 </View>
+
                <View style ={{height:(height)/20}}>
                  {
                     props.chapter.authors.map((item,index) => (
                       (index<=1) &&
-                      <Text style={{ color: theme.colors.gray_green }}>{item}</Text>
+                      <Text style={{ fontSize: theme.sizes.font * 0.9,color: theme.colors.gray_green }}>{item}</Text>
                     ))
                  }
                </View>

@@ -20,21 +20,17 @@ exports.addBookToIndex = functions.region("asia-northeast1").https.onCall((data,
 
   
   const bookName=data.bookName;
-  const bookCover= data.bookPictures[0];
-  const timestamp=data.timestamp;
+  const bookCover= data.bookCover;
   const language =data.language;
   const authors=data.authors;
   const publicationYear = data.publicationYear;
-  const bookID = data.bookID;
+  const bookID = data.objectID;
 
-  console.log("AddToPodcastsIndex cloud function");
+  console.log("addBookToIndex cloud function");
 
  
   console.log("bookName: ",bookName);
   console.log("bookPicture:" , bookCover)
-  console.log("podcastID: ",podcastID);
-  console.log("podcasterName: ",podcasterName);
-  console.log("timestamp: ",timestamp);
   console.log("language: ",language);
 
   console.log("context.auth = ",context.auth);
@@ -43,19 +39,14 @@ exports.addBookToIndex = functions.region("asia-northeast1").https.onCall((data,
     objectID: bookID,
     bookCover:bookCover,
     bookName:bookName, 
-    timestamp:timestamp, 
     language :language,
     authors: authors,
     publicationYear : publicationYear,
-    bookID : bookID
 };
 
+//algoliaRecords.push(record);
 
-
-
-algoliaRecords.push(record);
-
-collectionIndex.saveObjects(algoliaRecords, (_error, content) => {
+collectionIndex.saveObject(record, (_error, content) => {
   console.log("content : ",content);
   console.log("ERROR LOG : ",_error);
 

@@ -13,17 +13,33 @@ import ProgressBar from './ProgressBar'
 import InfoScreen from '../../../InfoScreen'
 import firestore from '@react-native-firebase/firestore';
 import { firebase } from '@react-native-firebase/functions';
+import { Button } from '../categories/components';
+import Toast from 'react-native-simple-toast';
+
+import * as Animatable from 'react-native-animatable'
+import IconAntDesign from 'react-native-vector-icons/AntDesign'
 
 //import videos, { type Video } from './videos';
-
+const colors = {
+  transparent: 'transparent',
+  white: '#fff',
+  heartColor: '#e92f3c',
+  textPrimary: '#515151',
+  black: '#000', 
+}
 
 const { width,height } = Dimensions.get('window');
 /*type VideoContentProps = 
   video: Video,
 };*/
 
+const AnimatedIconAntDesign = Animatable.createAnimatableComponent(IconAntDesign)
+const AnimatedIcon = Animatable.createAnimatableComponent(Icon)
+
  const PodcastContent=(props)=> {
   const video = useRef();
+  var smallAnimatedHeartIcon = useRef();
+  var smallAnimatedBookmarkIcon = useRef();
   const userID = props.userID;
   const privateDataID = "private" + userID;
   //const
@@ -32,12 +48,52 @@ const { width,height } = Dimensions.get('window');
 
   const paused=useSelector(state=>state.rootReducer.paused);
   const volume=useSelector(state=>state.rootReducer.volume);
+
   const liked = useSelector(state=>state.userReducer.isPodcastLiked[props.podcast.podcastID]);
+  const [likedState,setLikedState] = useState(liked);
+
+  const bookmarked = useSelector(state=>state.userReducer.isPodcastBookmarked[props.podcast.podcastID]);
+  const [bookmarkedState,setBookmarkedState] = useState(bookmarked);
+
   const userDisplayPictureURL = useSelector(state=>state.userReducer.displayPictureURL);
   const name = useSelector(state=>state.userReducer.name);
   const loadingPodcast = useSelector(state=>state.rootReducer.loadingPodcast)
   //const duration=useSelector(state=>state.rootReducer.duration)
   const dispatch=useDispatch();
+
+  function handleSmallAnimatedHeartIconRef  (ref) {
+    smallAnimatedHeartIcon = ref
+  }
+
+  function handleSmallAnimatedBookmarkIconRef  (ref) {
+    smallAnimatedBookmarkIcon = ref
+  }
+  
+
+  function handleOnPressLike() {
+    smallAnimatedHeartIcon.bounceIn();
+    setLikedState(!likedState);
+    }
+
+  function handleOnPressBookmark() {
+    //smallAnimatedBookmarkIcon.bounceIn();
+    if(bookmarked != true)
+    {
+      smallAnimatedBookmarkIcon.bounceIn();
+      setBookmarkedState(true);
+      addToBookmarks();
+    }
+    else
+    {
+      smallAnimatedBookmarkIcon.bounceIn();
+      setBookmarkedState(false);
+      removeFromBookmarks();
+      
+    }
+    //setBookmarkedState(!bookmarkedState);
+  }
+
+  
 
   function skipForward() {
     video.current.seek(currentTime + 15);
@@ -81,6 +137,105 @@ function parentSlideDown(){
   props.slideDown();
 }
 
+
+async function removeFromBookmarks() {
+
+ firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('bookmarks')
+    .where("podcastID",'==',props.podcast.podcastID).get().then(function(querySnapshot){
+      querySnapshot.forEach(function(doc) {
+        doc.ref.delete().then(function() {
+          //Toast.show("Unsaved");
+        }).catch(function(error){
+          console.log("Error in removing bookmarks from user's bookmarks collection: ",error);
+        });
+      });
+    });
+ 
+  firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).set({
+      podcastsBookmarked : firestore.FieldValue.arrayRemove(props.podcast.podcastID)
+    },{merge:true}).catch(function(error){
+      console.log("Error in removing podcastID from podcastsBookmarked in user's private document: ",error);
+    })
+
+  dispatch({type:"REMOVE_FROM_PODCASTS_BOOKMARKED",payload:props.podcast.podcastID});
+
+}
+
+
+
+
+
+async function addToBookmarks() {
+   const picturesArray = [];
+   picturesArray.push(props.podcast.podcastPictures[0]);
+
+  firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('bookmarks').add({
+    bookmarkedOn : moment().format(),
+    bookName : props.podcast.bookName,
+    bookID : props.podcast.bookID,  
+    chapterName : props.podcast.chapterName,
+    podcastID : props.podcast.podcastID, 
+    podcastName : props.podcast.podcastName,
+    podcastPictures : picturesArray,
+    podcasterName : props.podcast.podcasterName,
+    podcasterID : props.podcast.podcasterID,
+    createdOn : props.podcast.createdOn,
+    isChapterPodcast : props.podcast.isChapterPodcast,
+    duration: props.podcast.duration
+  }).then(function(docRef){
+    firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('bookmarks').doc(docRef.id).set({
+      bookmarkID : docRef.id
+    },{merge:true})
+    
+    Toast.show("Saved to Collections");
+  }).catch(function(error){
+    console.log("Error in adding bookmarks to user's bookmarks collection: ",error);
+  })
+  
+   firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).set({
+    podcastsBookmarked : firestore.FieldValue.arrayUnion(props.podcast.podcastID)
+   },{merge:true}).catch(function(error){
+     console.log("Error in adding podcastID to podcastsBookmarked in user's private document: ",error);
+   })
+
+  dispatch({type:"ADD_TO_PODCASTS_BOOKMARKED",payload:props.podcast.podcastID});
+
+}
+
+
+async function retrieveUserPrivateDoc()
+  {
+    try{
+      const privateDataID = "private" + props.podcast.podcasterID;
+      const userDocument = await firestore().collection('users').doc(props.podcast.podcasterID).collection('privateUserData').doc(privateDataID)
+                                .get();
+      console.log("[PodcastContent] userDocument : ", userDocument);
+      const userDocumentData = userDocument.data();
+      console.log("[PodcastContent] userDocumentData : ", userDocumentData);
+      
+      const isUserSame = (props.podcast.podcasterID == userID);
+
+      if(isUserSame)
+      {
+        props.navigation.navigate('ProfileTabNavigator')
+      }
+      else
+      {
+        dispatch({type:"SET_OTHER_PRIVATE_USER_ITEM",payload:userDocumentData});
+        props.navigation.navigate('ExploreTabNavigator',{userData:userDocumentData});
+      }
+        
+      
+    }
+    catch(error){
+      console.log("Error in retrieveUser() in PodcastContent: ",error);
+    }
+    
+  }
+
+
+
+
 async function updatePodcastsLiked(props){
 
   //setLikedState(true);
@@ -94,22 +249,6 @@ async function updatePodcastsLiked(props){
   },{merge:true})
   
   console.log("[PodcastContent] In function updatePodcastsLiked, numUsers = ",numUsers);
-
-  // if(props.podcast.isChapterPodcast == true)// && props.podcast.chapterID !== undefined)
-  // {
-  //    await firestore().collection('books').doc(props.podcast.bookID).collection('chapters').doc(props.podcast.chapterID)
-  //                         .collection('podcasts').doc(props.podcast.podcastID).update({
-  //             numUsersLiked : firestore.FieldValue.increment(1)
-  //       })
-  // }s
-  // else
-  // {
-  //    await firestore().collection('books').doc(props.podcast.bookID).collection('podcasts').doc(props.podcast.podcastID)
-  //              .update({
-  //       numUsersLiked : firestore.FieldValue.increment(1)
-  //   })
-  // }
-
 
   console.log("props.podcast = ",props.podcast);
 
@@ -146,12 +285,29 @@ async function updatePodcastsLiked(props){
       
         <View style={styles.content}>
         <View style={{ alignItems: "center"}}>
-        <View style={{ alignItems: "center", marginTop: 8}}>
-        <Text style={[styles.textDark, { fontSize: 16, fontWeight: "500" }]}>{props.podcast.podcastName}</Text>
+        <View style={{ alignItems: "center"}}>
+        <TouchableOpacity style={styles.rateButton} onPress={()=>{
+                  //dispatch({type:"TOGGLE_MINI_PLAYER"})
+                  parentSlideDown()
+                  props.navigation.navigate('InfoScreen', {podcast:props.podcast})
+               }}>
+                  <Text style={{color:'white', fontSize:12, alignItems: 'center'}}>
+                    Read
+              {/* READ ABOUT THIS PODCAST HERE */}
+             </Text>
+
+                </TouchableOpacity>
+                       
+        <Text style={[styles.textDark, { paddingTop:10,fontSize: 16, fontWeight: "500" }]}>{props.podcast.podcastName}</Text>
     
                     </View>
                     <View style={{ alignItems: "center", marginTop: 2}}>
+                      <TouchableOpacity onPress={() => {
+                        parentSlideDown();
+                        retrieveUserPrivateDoc();
+                        }}>
                     <Text style={[styles.text, { fontSize: 15, marginTop: 2}]}>{props.podcast.podcasterName}</Text>
+                    </TouchableOpacity>
                     </View>
 
         <View  style={{paddingLeft:10}}>
@@ -163,16 +319,16 @@ async function updatePodcastsLiked(props){
                     <TouchableOpacity  onPress={skipBackward}>
                     <Icon name="undo"  size={28} label="10" color="white" />
                     </TouchableOpacity>
-                    {loadingPodcast && <TouchableOpacity style={styles.playButtonContainer}  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
-                      <ActivityIndicator/>
-                      </TouchableOpacity>}
+                    {loadingPodcast && <View style={styles.playButtonContainer}>
+                      <ActivityIndicator size={'large'} color={'black'}/>
+                      </View>}
         
                     {!loadingPodcast && !paused  && <TouchableOpacity style={styles.playButtonContainer}  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
                       
-                   <Icon name="pause"  size={24} label="10" color="black"  style={[styles.playButton, { marginLeft: 2 }]}/>
+                   <IconAntDesign name="pause"  size={28} label="10" color="black"  style={[styles.playButton, { marginLeft: 0 }]}/>
                    </TouchableOpacity>}
                    {!loadingPodcast && paused && <TouchableOpacity style={styles.playButtonContainer}  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
-                   <Icon name="play"  size={28} label="10" color="black"  style={[styles.playButton, { marginLeft: 6 }]}/>
+                   <IconAntDesign name="play"  size={28} label="10" color="black"  style={[styles.playButton, { marginLeft: 0 }]}/>
                    </TouchableOpacity> }
   
                     <TouchableOpacity  onPress={skipForward}>
@@ -217,7 +373,7 @@ async function updatePodcastsLiked(props){
             </View>
          
  
-          <View> 
+          <View style={{paddingTop:height/50}}> 
           <ProgressBar
                 duration={props.podcast.duration}
                 onSlideStart={handlePlayPause}
@@ -229,27 +385,37 @@ async function updatePodcastsLiked(props){
          <View style={styles.icons}>
          <TouchableOpacity onPress={() => {
                 if(liked != true)
-                updatePodcastsLiked(props);
-         }}>
+                {
+                  handleOnPressLike();
+                  updatePodcastsLiked(props);  
+                }         
+            }}>
 
-               {
-               liked ? 
-                 <Icon name="heart" size={20} style={{color:'rgb(218,165,32)'} }/> :
-                 <Icon name="heart" size={20} style={{color:'white'} }/> 
-               }
+              <AnimatedIconAntDesign
+                ref={handleSmallAnimatedHeartIconRef}
+                name={liked ? 'heart' : 'hearto'}
+                color={liked ? colors.heartColor : 'white'}
+                size={20}
+                //style={{}}
+              />
+
                 </TouchableOpacity>
-                <TouchableOpacity onPress={()=>{
-                   //dispatch({type:"TOGGLE_MINI_PLAYER"})
-                   parentSlideDown()
-                   props.navigation.navigate('InfoScreen', {podcast:props.podcast})
-                }}>
-                <Icon name="info-circle" size={24} style={{color:'white'}}/>
+               
+                <View style={{paddingLeft:width/4}}>
+                <TouchableOpacity onPress={() => handleOnPressBookmark()}>
+                  <AnimatedIcon
+                    ref={handleSmallAnimatedBookmarkIconRef}
+                    name={bookmarked ? 'bookmark' : 'bookmark-o'}
+                    color={bookmarked ? 'white' : 'white'}
+                    size={20}
+                  />
                 </TouchableOpacity>
-                <TouchableOpacity >
-                <Icon name="bookmark-o" size={20} style={{color:'white'}}/>
-                </TouchableOpacity>
+                </View>
+
                 <TouchableOpacity>
+                <View style={{paddingLeft:width/4}}>
                 <Icon name="share" size={20} style={{color:'white'}}/>
+                </View>
                 </TouchableOpacity>
               </View>
 
@@ -263,8 +429,8 @@ async function updatePodcastsLiked(props){
   
 const styles = StyleSheet.create({
   content: {
-    padding: 16,
-    backgroundColor:'black',
+    padding: 8,
+    backgroundColor:'#2E2327',
     height:height*15/24
   },
   title: {
@@ -280,9 +446,9 @@ const styles = StyleSheet.create({
 },
   icons: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    //paddingRight:30,
-    paddingTop:height/10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop:height/12,
   },
   upNext: {
     borderTopWidth: 1,
@@ -301,7 +467,7 @@ const styles = StyleSheet.create({
     justifyContent:'center', 
     height:height/30, 
     width:(width*7)/70, 
-    borderRadius:3, 
+    borderRadius:10, 
     borderColor:'rgba(255, 255, 255, 0.5)', 
     borderWidth: 1
 

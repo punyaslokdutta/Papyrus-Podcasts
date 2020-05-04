@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import firestore from '@react-native-firebase/firestore';
-import { Text, StyleSheet, View, Animated, Image, Dimensions, ScrollView, TouchableOpacity } from 'react-native'
+import { Text, StyleSheet, View, Animated, Image, Dimensions, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native'
 import {Card, CardItem,  Body} from 'native-base'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
@@ -309,7 +309,9 @@ class RecordChapter extends Component {
   else
   {
     return (
-    <View></View>
+      <View style={{paddingTop:height*5/12}}>
+      <ActivityIndicator size={"large"} color={"black"}/>
+    </View>
     );
   }
   }

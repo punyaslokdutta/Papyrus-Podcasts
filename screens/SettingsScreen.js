@@ -155,6 +155,7 @@ const SettingsScreen = (props) => {
         dispatch({type:'UPDATE_TOTAL_MINUTES_RECORDED',payload: 0})
         dispatch({type:'ADD_NUM_NOTIFICATIONS',payload: 0});
         dispatch({type:"SET_USER_PREFERENCES",payload:[]});
+        dispatch({type:'SET_USER_LANUAGES',payload: []});
 
         dispatch({type:"SET_PODCAST",payload:null})
         props.firebase._signOutUser();

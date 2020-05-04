@@ -155,6 +155,7 @@ class BookList extends Component {
       console.log(books)
     
     const dotPosition = Animated.divide(this.scrollX, width);
+    console.log("dorPosition: ",dotPosition);
     return (
       <View style={[
         styles.flex, styles.row,
@@ -164,11 +165,11 @@ class BookList extends Component {
           const borderWidth = dotPosition.interpolate({
             inputRange: [index -1, index, index + 1],
             outputRange: [0, 2.5, 0],
-            extrapolate: 'clamp'
+           // extrapolate: 'clamp'
           });
           return (
             <Animated.View
-              key={`step-${item.bookID}`}
+              key={`step-${index}`}
               style={[styles.dots, styles.activeDot, { borderWidth: borderWidth } ]}
             />
           )
@@ -211,7 +212,7 @@ class BookList extends Component {
           style={{ overflow:'visible', height: 280 }}
           data={this.props.books}
           keyExtractor={(item, index) => `${item.bookID}`}
-          //onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX }} }])}
+          onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX }} }])}
           renderItem={({ item }) => this.renderBook(item)}
         />
         {this.renderDots()}
@@ -230,7 +231,6 @@ class BookList extends Component {
           imageStyle={{ borderRadius: theme.sizes.radius }}
           source={{ uri: item.bookPictures['0'] }}
         >
-         
         </ImageBackground>
           <View style={[styles.column, styles.destinationInfo, styles.shadow]}>
             <Text style={{ fontSize: theme.sizes.font * 1.25, fontWeight: '500', paddingBottom: 8, }}>

@@ -66,6 +66,7 @@ var {width, height}=Dimensions.get('window')
 
                <View style={[styles.flex, styles.column, styles.shadow, { width:(width*2)/3,paddingLeft:theme.sizes.padding, paddingTop: theme.sizes.padding / 4 }]}>
                  <View style={{height:(height)/16}}>
+                   
                   <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.book.bookName.slice(0,50)}
                        {(props.book.bookName.length > 50) ? ".." : ""}</Text> 
                  </View>

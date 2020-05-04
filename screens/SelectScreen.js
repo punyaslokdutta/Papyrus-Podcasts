@@ -3,8 +3,9 @@ import React, { useState, useRef, useEffect, useCallback} from 'react';
 import { TouchableOpacity,StyleSheet, Text, Image,View, SafeAreaView, Dimensions, NativeModules,NativeEventEmitter} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { TagSelect } from 'react-native-tag-select'
-import { useDispatch} from 'react-redux'
+import { useDispatch, useSelector} from 'react-redux'
 import { theme } from './components/categories/constants';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const { width, height } = Dimensions.get('window');
 const data = [
@@ -37,6 +38,9 @@ const SelectScreen = (props)=> {
   var itemSelected = null;
   var itemPictureURL = null;
   var genres = null;
+  const userLanguages = useSelector(state=>state.userReducer.userLanguages);
+
+
 
   if(props.navigation.state.params !== undefined)
   {
@@ -64,9 +68,19 @@ const SelectScreen = (props)=> {
   const [authors, setAuthorName]=useState(null);
   const [languageSelected, setLanguageSelected]=useState(null);
   const tagSelected=React.createRef(null);
-  
+  const [languageDataArray,setLanguageDataArray] = useState([]);
   
   const dispatch=useDispatch();
+
+  useEffect( () => {
+    var i;
+    var tempLangArray = [];
+    console.log(userLanguages);
+    for(i=0;i<userLanguages.length;i++)
+      tempLangArray.push({id:i+1,label:userLanguages[i]});
+    
+    setLanguageDataArray(tempLangArray);
+  },[userLanguages])
 
   useEffect(
     ()=>
@@ -94,12 +108,13 @@ const SelectScreen = (props)=> {
      }
       
       return (
-        <SafeAreaView style={{flex:1, backgroundColor:'#101010'}}>
 
+        <SafeAreaView style={{flex:1, backgroundColor:'#101010'}}>
+        <ScrollView >
         <View style={styles.AppHeader}>
         <View style={{paddingLeft: width/12 ,paddingVertical:height/20, flexDirection:'row'}}>
         <TouchableOpacity onPress={()=>props.navigation.goBack(null)}>
-          <Icon name="times" size={20} style={{color:'white'}}/>
+          <Icon name="arrow-left" size={20} style={{color:'white'}}/>
           </TouchableOpacity>
 
           <Text style={{fontFamily:'san-serif-light', color:'white', paddingLeft:(width*7)/24, fontSize:20}}>Select</Text>
@@ -120,7 +135,7 @@ const SelectScreen = (props)=> {
               <Icon style={{paddingHorizontal:10,paddingTop:20 }} name="search" size={20} />
               
 
-              {"  "}Search Content, books, Chapters
+              {"  "}Search by books, chapters, authors
                </Text> 
 
         </View>
@@ -175,12 +190,12 @@ const SelectScreen = (props)=> {
         
         </View>
 
-        <View style={{paddingVertical:height/40, paddingLeft:width/11}}>
+        <View style={{paddingTop:height/40,paddingBottom:height/15, paddingLeft:width/11}}>
         <TagSelect itemStyle={styles.item}
           itemLabelStyle={styles.label}
           itemStyleSelected={styles.itemSelected}
           itemLabelStyleSelected={styles.labelSelected}
-          data={data}
+          data={languageDataArray}
           max={1}
           ref={tagSelected}
           onMaxError={() => {
@@ -201,7 +216,7 @@ const SelectScreen = (props)=> {
         
         </View>
 
-        <View style={{paddingVertical:height/10, flexDirection:'row', paddingLeft:width/6 }}>
+        <View style={{paddingBottom:height/10, flexDirection:'row', paddingLeft:width/6 }}>
         <View>
             <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/20, width:(width*7)/24, borderRadius:15, borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }} 
             onPress={() => {
@@ -253,7 +268,7 @@ const SelectScreen = (props)=> {
             <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Upload</Text>
                 </TouchableOpacity>
         </View>
-        <View style={{paddingLeft:width/12}}>
+        <View style={{paddingLeft:width/12,}}>
 
                 <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/20, width:(width*7)/24, borderRadius:15, backgroundColor:'rgba(0, 0, 0, 0.7)', borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }} 
                  onPress={() => {
@@ -303,6 +318,7 @@ const SelectScreen = (props)=> {
                 </TouchableOpacity>
         </View>     
         </View>
+        </ScrollView>
         </SafeAreaView> 
         
       );

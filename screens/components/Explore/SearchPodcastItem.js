@@ -1,8 +1,7 @@
 import React, {Component, useState, useEffect, useContext} from 'react';
-import { StyleSheet, Text, View, Image, Dimensions} from 'react-native';
+import { StyleSheet, Text, View, Image, Dimensions,TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import * as theme from '../constants/theme'
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import firestore from '@react-native-firebase/firestore';
 import moment from 'moment';
 import { useDispatch } from 'react-redux';
@@ -172,9 +171,11 @@ const styles = StyleSheet.create({
                   {props.podcast.chapterName}
                 </Text>
                 }
+                
               <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
                   {props.podcast.bookName}
                 </Text>
+               
                 </View>
                <View style={{paddingTop:5}}>
                   <Text style={{ fontSize:theme.sizes.font * 0.8,color: theme.colors.gray_green }}>{props.podcast.podcasterName}</Text>

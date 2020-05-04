@@ -77,40 +77,76 @@ const ActivityItem = React.memo((props)=> {
   <Text style={{fontWeight:"bold"}}>{props.activity.podcastName}.</Text>
   </Text>
   if(props.activity.type == "follow")
-  activityText = <Text>{props.activity.actorName} started following you.</Text>
+    activityText = <Text>{props.activity.actorName} started following you.</Text>
     
+
+
+      if(props.activity.type == "follow")
+      {
+        return (
+          <TouchableOpacity onPress={() => {
+            console.log("userClicked");
+
+            retrieveUser(props,props.activity.actorID);
+            
+          }}>
+          <View style={{flex:1,alignItems:'center',flexDirection:"row",height:height/8}}>
+          
+          <View style={{paddingLeft:width/25}}>
+            <Image style={{borderRadius:60,width:height/16,height:height/16}} source={{uri: props.activity.actorImage}} />
+          </View>
+         
+          <View style={{width:width*2/3,paddingLeft:width/25}}>
+      
+          {activityText}
+          <Text style={{color:'gray'}}>{timeDiff}</Text>
+          </View>
+          </View>
+          </TouchableOpacity>
+        );
+      }
+      else
+      {
         return (
           
-              
-            <View style={{flex:1,alignItems:'center',justifyContent:'center',flexDirection:"row",height:height/8}}>
-            <TouchableOpacity onPress={() => {
-              console.log("userClicked");
-
-              retrieveUser(props,props.activity.actorID);
-              
+          <View style={{flex:1,alignItems:'center',flexDirection:"row",height:height/8}}>
+         <View>
+          <TouchableOpacity onPress={() => {
+            console.log("userClicked");
+            retrieveUser(props,props.activity.actorID);
+          }}>
+            <View style={{paddingLeft:width/25}}>
+            <Image style={{borderRadius:60,paddingLeft:width/15,width:height/16,height:height/16}} source={{uri: props.activity.actorImage}} />
+            </View>
+          </TouchableOpacity>
+          </View>
+          <View style={{flexDirection:'row'}}>
+          <TouchableOpacity onPress={() => {
+            console.log("podcastClicked")
+            
+              retrievePodcast(props.activity.podcastID);
             }}>
-            <View>
-              <Image style={{borderRadius:60,width:height/16,height:height/16}} source={{uri: props.activity.actorImage}} />
+               <View style={{flexDirection:'row'}}>
+          <View style={{width:width*2/3,paddingLeft:width/25}}>
+      
+          {activityText}
+          <Text style={{color:'gray'}}>{timeDiff}</Text>
+          </View>
+         
+          
+            <View style={{paddingLeft:width/30}}>
+            <Image style={{borderRadius:10,width:height/16,height:height/16}} source={{uri: props.activity.podcastPicture}} />
+            </View>
             </View>
             </TouchableOpacity>
-            <View style={{width:width/2,paddingLeft:width/25}}>
-        
-            {activityText}
-            <Text style={{color:'gray'}}>{timeDiff}</Text>
+
             </View>
-            <TouchableOpacity onPress={() => {
-              console.log("podcastClicked")
-              
-                retrievePodcast(props.activity.podcastID);
-              }}>
-              
-              <View style={{paddingLeft:20}}>
-              <Image style={{borderRadius:10,width:height/16,height:height/16}} source={{uri: props.activity.podcastPicture}} />
-              </View>
-              </TouchableOpacity>
-          </View>
-      
-        );
+           
+        </View>
+    
+      );
+      }
+        
     
 }, areEqual);
 

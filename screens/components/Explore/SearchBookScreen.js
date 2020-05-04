@@ -29,12 +29,9 @@ const options = {
   chooseFromLibraryButtonTitle: 'Select from Library'
 };
 
-const searchClient = algoliasearch(
-  'VSRFUPESVM',
-  '4d3be49cf4512e3579ea5b198a420f1d'
-);
 
-const index = searchClient.initIndex('dev_books');
+
+
 
 var {width, height}=Dimensions.get('window')
 const SearchBookScreen=(props)=>
@@ -42,6 +39,16 @@ const SearchBookScreen=(props)=>
     const dispatch=useDispatch();
     const refRBSheet = useRef();
     const userID = props.firebase._getUid();
+
+    const algoliaAPPID = useSelector(state=>state.userReducer.algoliaAPPID);
+    const algoliaAPIKey = useSelector(state=>state.userReducer.algoliaAPIKey);
+
+    const searchClient = algoliasearch(
+      algoliaAPPID,
+      algoliaAPIKey
+    );
+    const index = searchClient.initIndex('dev_books');
+    
     const fromSearchChapterScreen = useSelector(state=>state.userReducer.fromSearchChapterScreen)
     console.log("FROM_SEARCH_CHAPTER_SCREEN : ",fromSearchChapterScreen)
 
