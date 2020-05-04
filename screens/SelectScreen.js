@@ -44,7 +44,7 @@ const SelectScreen = (props)=> {
 
   if(props.navigation.state.params !== undefined)
   {
-    if(props.navigation.state.params.bookItem === null) //itemSelected is chapterItem
+    if (props.navigation.state.params.bookItem === null) //itemSelected is chapterItem
     {
       itemSelected = props.navigation.state.params.chapterItem;
       itemPictureURL = itemSelected.chapterPictures[0];
@@ -120,29 +120,50 @@ const SelectScreen = (props)=> {
           <Text style={{fontFamily:'san-serif-light', color:'white', paddingLeft:(width*7)/24, fontSize:20}}>Select</Text>
         </View>
         </View>
-
+        <View style={{paddingTop:height/40,paddingBottom:height/40, paddingLeft:width/11}}>
+        <TagSelect itemStyle={styles.item}
+          itemLabelStyle={styles.label}
+          itemStyleSelected={styles.itemSelected}
+          itemLabelStyleSelected={styles.labelSelected}
+          data={languageDataArray}
+          max={1}
+          ref={tagSelected}
+          onMaxError={() => {
+            alert('Multiple Languages Error', 'You can select only one language while recording a Book or Chapter podcast');
+          }}
+          onItemPress={(tag)=>{
+             console.log(tag)
+             if(languageSelected===null)
+             {
+                setLanguage(tag.label)
+             }
+             else
+             {
+                setLanguage(null)
+             }
+          }}
+        />
+        
+        </View>
         <View style={{paddingVertical:30, paddingBottom: height/20, flexDirection:'column', paddingLeft:width/8, paddingRight:width/8} }>
           <TouchableOpacity onPress={()=>{
             dispatch({type:"SET_EXPLORE_SCREEN_AS_PREVIOUS_SCREEN", payload:false})
             dispatch({type:"SET_FROM_SEARCH_CHAPTER_SCREEN",payload:false});
             props.navigation.navigate('SearchTabNavigator',{fromExplore:false})
             }}>
-        <View style={{flexDirection:'row',height:height/12, backgroundColor: '#101010', paddingRight: 13, paddingVertical:10, width:((width*7)/8)-10 }}>
+        <View style={{flexDirection:'row',height:height/20,borderRadius:20, backgroundColor: 'white', paddingVertical:height/100, width:width*6/8}}>
         
-            <Text style={{ flex:1, fontWeight:'500',borderRadius:20,backgroundColor:'white',fontSize:15,borderColor:'white', 
-              paddingTop: 7, paddingHorizontal: 10 }}>
-            
-              <Icon style={{paddingHorizontal:10,paddingTop:20 }} name="search" size={20} />
-              
+        <Icon style={{paddingHorizontal:10,paddingTop:0 }} name="search" size={20} />
+            <Text style={{ flex:1, fontWeight:'500',fontSize:15,borderColor:'white'}}> 
 
-              {"  "}Search by books, chapters, authors
+              {"  "}Search book/chapter to record podcast
                </Text> 
 
         </View>
         </TouchableOpacity>
         </View> 
       
-        <View style={{height:height*2/13,paddingLeft:width/5,paddingRight:width/5}}>
+        <View style={{height:height*2/13,paddingLeft:width/5,paddingRight:width/5,paddingBottom:height/10}}>
         
           {
             (itemSelected != null) ? 
@@ -190,35 +211,11 @@ const SelectScreen = (props)=> {
         
         </View>
 
-        <View style={{paddingTop:height/40,paddingBottom:height/15, paddingLeft:width/11}}>
-        <TagSelect itemStyle={styles.item}
-          itemLabelStyle={styles.label}
-          itemStyleSelected={styles.itemSelected}
-          itemLabelStyleSelected={styles.labelSelected}
-          data={languageDataArray}
-          max={1}
-          ref={tagSelected}
-          onMaxError={() => {
-            alert('Multiple Languages Error', 'You can select only one language while recording a Book or Chapter podcast');
-          }}
-          onItemPress={(tag)=>{
-             console.log(tag)
-             if(languageSelected===null)
-             {
-                setLanguage(tag.label)
-             }
-             else
-             {
-                setLanguage(null)
-             }
-          }}
-        />
         
-        </View>
 
-        <View style={{paddingBottom:height/10, flexDirection:'row', paddingLeft:width/6 }}>
+        <View style={{paddingTop:height/10,paddingBottom:height/10, flexDirection:'row', paddingLeft:width/6 }}>
         <View>
-            <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:height/20, width:(width*7)/24, borderRadius:15, borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }} 
+            <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center',backgroundColor:'rgba(0, 0, 0, 0.7)', height:height/20, width:(width*7)/24, borderRadius:15, borderColor:'rgba(255, 255, 255, 0.5)', borderWidth: 1 }} 
             onPress={() => {
               console.log("[SelectScreen] bookName : ",bookName);
                          

@@ -131,14 +131,14 @@ const ProfileStackNavigator=createStackNavigator(
         }
   }},
     ProfileFollowingScreen:{screen:ProfileFollowingScreen,navigationOptions: {
-      title: 'Following',
+      title: 'Following   ',
       headerTintColor: 'white',
         headerStyle: {
           backgroundColor: 'black'
         }
     }},
     ProfileFollowerScreen: {screen:ProfileFollowerScreen,navigationOptions: {
-      title: 'Followers',
+      title: 'Followers   ',
       headerTintColor: 'white',
         headerStyle: {
           backgroundColor: 'black'
@@ -200,7 +200,7 @@ const AppTabNavigator=createBottomTabNavigator(
       navigationOptions:{
         tabBarLabel:' ',
         tabBarIcon:({tintColor})=>(
-          <SimpleLineIcon style={{paddingTop:15}} name="microphone" color={'black'} size={SCREEN_HEIGHT/15}/>
+          <MaterialCommunityIcon style={{paddingTop:15}} name="microphone" color={'black'} size={SCREEN_HEIGHT/15}/>
         )
       }
    },
@@ -263,7 +263,7 @@ const AppStackNavigator= createStackNavigator(
     LikersScreen: {
       screen: LikersScreen,
       navigationOptions:{
-        title: 'Likes',
+        title: 'Likes   ',
         headerTintColor: 'white',
         headerStyle: {
           backgroundColor: 'black'
@@ -274,7 +274,7 @@ const AppStackNavigator= createStackNavigator(
       screen: InfoScreen,
       navigationOptions:{
         //header:null
-        title: 'About this podcast',
+        title: 'About this podcast   ',
         headerTintColor: 'white',
         headerStyle: {
           backgroundColor: 'black'
@@ -295,14 +295,14 @@ const AppStackNavigator= createStackNavigator(
         }
      }},
      UserFollowingScreen : {screen : UserFollowingScreen,navigationOptions:{
-          title: 'Following',
+          title: 'Following   ',
           headerTintColor: 'white',
           headerStyle: {
             backgroundColor: 'black'
           }
      }},
      UserFollowerScreen : {screen : UserFollowerScreen,navigationOptions:{
-          title: 'Followers',
+          title: 'Followers   ',
           headerTintColor: 'white',
           headerStyle: {
             backgroundColor: 'black'

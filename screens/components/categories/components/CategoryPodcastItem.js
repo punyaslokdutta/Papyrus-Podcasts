@@ -135,6 +135,10 @@ const styles = StyleSheet.create({
   console.log(props);
   const  realUserID = props.firebase._getUid(); 
   const dispatch=useDispatch();
+  var duration = parseInt((props.podcast.duration)/60);
+
+  if(duration == 0)
+    duration = 1;
 
   async function retrieveUserPrivateDoc(userID)
   {
@@ -209,9 +213,14 @@ const styles = StyleSheet.create({
               
             </View>
             <View>
-            <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
-                {props.podcast.duration}
-              </Text>
+            {
+                duration == 1
+                ?
+                <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}> {duration} min </Text>
+                :
+                <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}> {duration} mins </Text>
+              }
+            
               </View>
           </View>
 

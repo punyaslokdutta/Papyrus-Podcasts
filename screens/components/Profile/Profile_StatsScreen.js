@@ -90,7 +90,7 @@ const Profile_StatsScreen = (props) => {
         {/* <Block flex={false} row center space="between" style={styles.header}> */}
          <View style={{alignItems:'center'}}>
 
-    <Text h3 bold>{"\n"}Your Podcast Statistics</Text>
+   <Text h3 bold>{"\n"}Your Podcast Statistics {"   "}</Text>
         </View>
         {/* </Block> */}
         {renderRewards(numCreatedBookPodcasts,numCreatedChapterPodcasts,totalMinutesRecordedInteger)}

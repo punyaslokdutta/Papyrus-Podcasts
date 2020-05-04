@@ -45,6 +45,7 @@ return(
 <Text style={{color:'white', fontFamily:'san-serif',textAlign:'center'}}>{username}</Text>
           
     </Block>
+    
 
 
     <Content style={{ paddingTop: SCREEN_HEIGHT/18}}>

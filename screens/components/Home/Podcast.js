@@ -276,9 +276,14 @@ const styles = StyleSheet.create({
           </View> */}
               </View>
               <View>
-              <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
-                  {duration} mins
-                </Text>
+              {
+                duration == 1
+                ?
+                <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}> {duration} min </Text>
+                :
+                <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}> {duration} mins </Text>
+              }
+              
                 </View>
             </View>
           </View>

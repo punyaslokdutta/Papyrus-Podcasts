@@ -255,7 +255,7 @@ public class RecordsPresenter implements RecordsContract.UserActionsListener {
 			@Override
 			public void run() {
 				localRepository.deleteRecord((int) id);
-//				fileRepository.deleteRecordFile(path);
+				fileRepository.deleteRecordFile(path);
 				if (rec != null && rec.getId() == id) {
 					prefs.setActiveRecord(-1);
 					dpPerSecond = AppConstants.SHORT_RECORD_DP_PER_SECOND;

@@ -48,6 +48,7 @@ import java.io.FileDescriptor;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import timber.log.Timber;
 
@@ -847,18 +848,19 @@ public class MainPresenter implements MainContract.UserActionsListener {
 
 	private String extractFileName(Context context, Uri uri) {
 		Cursor cursor = context.getContentResolver().query(uri, null, null, null, null, null);
-		try {
+		int unique= new Random().nextInt(1000000);
+	/*	try {
 			if (cursor != null && cursor.moveToFirst()) {
 				String name = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
 //				TODO: find a better way to extract file extension.
 				if (!name.contains(".")) {
-					return name + ".m4a";
-				}
-				return name;
-			}
+					return "Upload" + unique+".m4a";
+				}*/
+				return "Upload"+unique+"."+"m4a";
+		/*	}
 		} finally {
 			cursor.close();
-		}
-		return null;
+		}*/
+		//return null;
 	}
 }

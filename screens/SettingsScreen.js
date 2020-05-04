@@ -204,7 +204,7 @@ const SettingsScreen = (props) => {
             style={{ width: 20, height: 24, marginRight: theme.sizes.base  }}
           />
         </TouchableOpacity>
-    <Text h1 bold paddingRight>Settings</Text>
+    <Text h1 bold paddingRight>Settings{"  "}</Text>
           <Button>
             <Image
               source={{uri:accountPicURI}}

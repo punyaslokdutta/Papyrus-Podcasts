@@ -4,8 +4,7 @@ import {withFirebaseHOC} from './config/Firebase'
 
 import { Dimensions, Image,NativeEventEmitter, NativeModules,ActivityIndicator,StyleSheet, ScrollView, TouchableOpacity,View } from 'react-native';
 import { Card, Badge, Block, Text } from './components/categories/components';
-import { theme, mocks } from './components/categories/constants';
-
+import { theme } from './components/categories/constants';
 const { width,height } = Dimensions.get('window');
 
 class CategoryScreen extends Component {
@@ -99,20 +98,18 @@ class CategoryScreen extends Component {
             showsVerticalScrollIndicator={false}
             style={{ paddingVertical: theme.sizes.base * 2}}>
             <Block flex={false} row space="between" style={styles.categories}>
+              
               {categories.map(category => (
                 <TouchableOpacity key={category.categoryName} onPress={() => 
                                   this.props.navigation.navigate('CategoryTabNavigator', {category : category.categoryName })}>
-                  <Card center middle shadow style={styles.category}> 
-                    <Badge margin={[0, 0, 15]} size={20} color="rgba(41,216,143,0.20)">
-                     
-                      <Image style={{height:50,width:50,borderRadius:72}} source={{uri:category.categoryImage}} />
+                  <Card style={{height:width/3,width:width/4}} center middle shadow> 
+                    {/* <Badge margin={[0, 0, 15]} size={20} color="rgba(41,216,143,0.20)"> */}
+                    
+                      <Image style={{height:width/4,width:width/4,borderRadius:0}} source={{uri:category.categoryImage}} />
+                <Text style={{fontWeight:'bold',textAlign:'center',fontSize:9.5}}>{"   "}{category.categoryName}{"  "}{"\n"}</Text>
+
                       
-                     </Badge>
-                     <View style={{alignItems:'center',justifyContent:'center'}}>
-                    <Text style={{textAlign:'center'}} medium height={20}>{category.categoryName}</Text>
-                    <Text gray caption>{category.numPodcasts} Podcasts </Text>
-                    <Text gray caption>{category.numBooks} books </Text>
-                    </View>
+                    
                   </Card>
                 </TouchableOpacity>
               ))}
@@ -126,8 +123,6 @@ class CategoryScreen extends Component {
 }
 
 CategoryScreen.defaultProps = {
-  profile: mocks.profile,
-  categories: mocks.categories,
 }
 
 export default withFirebaseHOC(CategoryScreen);

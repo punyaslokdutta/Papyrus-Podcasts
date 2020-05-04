@@ -128,7 +128,7 @@ const ActivityScreen = (props) => {
 
    function renderHeader() {
     return (
-      <View style={{flexDirection:'row',backgroundColor:'black',height:height/12,paddingLeft:theme.sizes.padding}}>
+      <View style={{flexDirection:'row',backgroundColor:'black',height:height/15,paddingLeft:theme.sizes.padding}}>
         
         <View style={{paddingTop:theme.sizes.padding*3/4}}>
         <TouchableOpacity onPress={() => props.navigation.toggleDrawer()}>

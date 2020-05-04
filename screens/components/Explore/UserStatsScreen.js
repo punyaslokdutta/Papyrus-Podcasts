@@ -147,7 +147,7 @@ var {width, height}=Dimensions.get('window')
         </View>
        <Block flex={false} row center style={styles.header}>
        
-          <Text h3 bold>Podcast Statistics</Text>
+    <Text h3 bold>Podcast Statistics {"   "}</Text>
         </Block>
         {this.renderMonthly()}
         <Text>{"\n\n"}</Text>
