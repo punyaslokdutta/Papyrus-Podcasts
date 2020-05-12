@@ -53,7 +53,12 @@ const AddBook=(props)=>{
     {
       console.log(state);
       // if(state.tag.replace(/\s/g,'').length)
-      
+      if(state.tagsArray.length == 0)
+      {
+        setAuthors(state);
+        setTagsLength(0);
+        return;
+      } 
       if(state.tagsArray.length != tagsLength)  // for trimming last selected author(tag)
       {
         var trimmedTagState = state;
@@ -63,7 +68,6 @@ const AddBook=(props)=>{
           trimmedTagState.tagsArray[trimmedTagState.tagsArray.length - 1] = trimmedTag;
           setAuthors(trimmedTagState);
           setTagsLength(trimmedTagState.tagsArray.length);
-        
       }
       else
         setAuthors(state);
@@ -207,7 +211,7 @@ const AddBook=(props)=>{
          tagStyle={styles.tag}
          tagTextStyle={styles.tagText}
          inputStyle={styles.TextInputStyleClass2}
-         //keysForTag={}
+         keysForTag={','}
          autoCorrect={false}
 
          />

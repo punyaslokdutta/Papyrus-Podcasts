@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, useState, useEffect} from 'react';
 import { StyleSheet, Text, View, ActivityIndicator, NativeEventEmitter, AsyncStorage,NativeModules,TouchableOpacity, Dimensions,Linking} from 'react-native';
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import {createSwitchNavigator} from 'react-navigation'
@@ -6,181 +6,147 @@ import firebaseApi from './config/Firebase/firebaseApi'
 import {withFirebaseHOC} from '../screens/config/Firebase'
 import setUserDetails from './setUserDetails';
 import Icon from 'react-native-vector-icons/FontAwesome'
+import { useDispatch } from 'react-redux';
 
 const {width,height} = Dimensions.get('window')
 
-class  AuthLoadingScreen extends Component {
+const  AuthLoadingScreen = (props) => {
     
-  constructor(props)
-    {
-        super(props)
-        {
-          this.state={
-            isAssetsLoadingComplete: false, 
-            deepLinkURL: null
-          }
+    const dispatch = useDispatch();
+    //const [isAssetsLoadingComplete,setIsAssetsLoadingComplete] = useState(false);
+  
+    async function handleDeepLinkingRequests ()
+    { 
+      Linking.getInitialURL().then(url => { //
+        if (url) {
+          console.log("Linking.getInitialURL() : ",url);
+          const prefix = "https://papyrusapp.page.link/player/";
+          const prefixLength = prefix.length;
+          const podcastID = url.slice(prefixLength);
+          console.log("[AUTH LOADING] Linking.getInitialURL() podcastID: ",podcastID);
+          dispatch({type:"PODCAST_ID_FROM_EXTERNAL_LINK",payload:podcastID});
         }
-        this.props.firebase._checkUserAuth=this.props.firebase._checkUserAuth.bind(this)
+      })
+      .catch(error => { // Error handling });
+      console.log(error);
+      })
     }
-
-  
-  
-      handleDeepLinkingRequests = () => {
-        
-        Linking.getInitialURL().then(url => { //
-          if (url) {
-            console.log("Linking.getInitialURL() : ",url);
-            this.setState({
-              deepLinkURL : url
-            })
-            
-            //this.handleOpenURL(url);
-          }
-        })
-        .catch(error => { // Error handling });
-        console.log(error);
-        })
-      }
       
-      handleOpenURL = (url) => {
-        console.log("[AUTH LOADING] INCOMING URL: ",url);
-        switch(url["url"])
-        {
-          case "https://www.papyruspodcasts.com/categories":
-            this.props.navigation.navigate('CategoryScreen');
-            break;
-          case "https://www.papyruspodcasts.com/podcasts/iJTWjonBiJQyG2wbUL0m":
-            //console.log("\n\n PODCAST SWITCH CASE")
-            this.props.navigation.navigate('Explore',{podcastID:"iJTWjonBiJQyG2wbUL0m"});
-            break;
-          default:
-            this.props.navigation.navigate('Explore');
-        }
-        
-      
-      // your navigation logic goes here
-      }
+    async function handleOpenURL(url){
+      console.log("[AUTH LOADING] handleOpenURL url: ",url["url"]);
+      const prefix = "https://papyrusapp.page.link/player/";
+      const prefixLength = prefix.length;
+      const podcastID = url["url"].slice(prefixLength);
+      console.log("[AUTH LOADING] handleOpenURL podcastID: ",podcastID);
+      dispatch({type:"PODCAST_ID_FROM_EXTERNAL_LINK",payload:podcastID});
+    }
 
 //    Linking Notes:
 // -> Linking.getInitialURL() method should only be called for the first time when the app is launched via app-swap
 // -> For subsequent app-swap calls, handleOpenURL() method will be called as it is configured with linking event listener.
 // -> remember to unsubscribe linking events in componentwillunmount()
 
+    // componentWillUnmount() {
+    //   Linking.removeEventListener('url', this.handleOpenURL);
+    // }
 
-
-    componentDidMount=async()=>{
-    
-        console.log(this)
-        console.log(this.props)
-
-        Linking.addEventListener("url", this.handleOpenURL);
-        this.handleDeepLinkingRequests();
-
-
-        //this.props.navigation.navigate('setPreferences')
-     try{   
-       await this.props.firebase._checkUserAuth(async (user)=>
-          {
-            console.log("Inside _checkUserAuth")
-            //console.log(this.props)
-            
-            if(user)
-            {
-              console.log(user)
-
-
-              // [1] For email verification, the below given code is to be used.
-              // [2] Have to use it before any payment related activities to block users from payment if email is not verified.
-              // [3] In payment screen, we shall have to include another checkUserAuth so as to listen to user state change as 
-              //     email is verified or not.
-
-              // if (user.emailVerified == false) 
-              // {
-              //   user.sendEmailVerification().then(function() {
-              //      console.log("Email sent.");
-              //     }, function(error) {
-              //      console.log(error)
-              //     });
-              // }
-              // else 
-              // {
-              //   console.log('User email is verified');
-              // }
-
-              
-                var unsubscribe = await firestore().collection('users').doc(user._user.uid).onSnapshot(
-                   (doc)=> {  
-                    var source = doc.metadata.hasPendingWrites ? "Local" : "Server";
-                    console.log(source, " data: ", doc.data());
-                    
-                  if(doc.data()===undefined){
-                    try{
-                      console.log(this)
-                      console.log(this.props)
-                      console.log(this.state.fullName)
-                      this.props.navigation.navigate('setPreferences',{
-                        user : user, 
-                        //fullName:this.state.fullName
-                      })
-
-                      //const addNewUser= await this.props.firebase._createNewUser(user)
-                        }
-                       catch(error)
-                       {
-                         console.log(error)
-                       }
-                      // this.props.navigation.navigate('setPreferences')
-                  }
-                  else
-                  {
-                        unsubscribe(); // unsubscribe the firestore onSnapshot listener
-                        //this.props.navigation.navigate('Home');
-
-                        this.props.navigation.navigate('setUserDetails',{user : doc.data()});
-                        
-                        this.props.navigation.navigate('CategoryScreen');
-                        this.props.navigation.navigate('Explore');
-                        
-                  }
-                },function(error) {
-                  console.log("Error in onSnapshot Listener in AuthLoadingScreen: ",error);
-                })        
-            }
-            else{
-             // this.props.navigation.navigate('setPreferences')
-              this.props.navigation.navigate('Auth')
-            }
-          })
-        }
-        catch(error)
-        {
-          console.log("Error in checkUserAuth in AuthLoadingScreen: ",error)
-        }
-      
-
-    
-  }
-
-
-    handleLoadingError = error => {
-      // In this case, you might want to report the error to your error
-      // reporting service, for example Sentry
-      console.warn(error)
-    }
-
-
-    loadApp= async()=>
+    async function check_User_Auth()
     {
-        const userToken= await AsyncStorage.getItem('userToken') //async /await  vs promises 
-        this.props.navigation.navigate(userToken? 'App' : 'Auth' )
+      try{   
+        await props.firebase._checkUserAuth(async (user)=>
+           {
+             console.log("Inside _checkUserAuth")
+             //console.log(this.props)
+             
+             if(user)
+             {
+               console.log(user)
+ 
+ 
+               // [1] For email verification, the below given code is to be used.
+               // [2] Have to use it before any payment related activities to block users from payment if email is not verified.
+               // [3] In payment screen, we shall have to include another checkUserAuth so as to listen to user state change as 
+               //     email is verified or not.
+ 
+               // if (user.emailVerified == false) 
+               // {
+               //   user.sendEmailVerification().then(function() {
+               //      console.log("Email sent.");
+               //     }, function(error) {
+               //      console.log(error)
+               //     });
+               // }
+               // else 
+               // {
+               //   console.log('User email is verified');
+               // }
+ 
+               
+                 var unsubscribe = await firestore().collection('users').doc(user._user.uid).onSnapshot(
+                    (doc)=> {  
+                     var source = doc.metadata.hasPendingWrites ? "Local" : "Server";
+                     console.log(source, " data: ", doc.data());
+                     
+                   if(doc.data()===undefined){
+                     try{
+                     
+                     props.navigation.navigate('setPreferences',{
+                         user : user, 
+                         //fullName:this.state.fullName
+                       })
+ 
+                       //const addNewUser= await this.props.firebase._createNewUser(user)
+                         }
+                        catch(error)
+                        {
+                          console.log(error)
+                        }
+                       // this.props.navigation.navigate('setPreferences')
+                   }
+                   else
+                   {
+                         unsubscribe(); 
+                         props.navigation.navigate('setUserDetails',{user : doc.data()});
+                         props.navigation.navigate('CategoryScreen');
+                         props.navigation.navigate('Explore');
+                         
+                   }
+                 },function(error) {
+                   console.log("Error in onSnapshot Listener in AuthLoadingScreen: ",error);
+                 })     
+                 
+             }
+             else{
+               props.navigation.navigate('Auth')
+             }
+           })
+         }
+         catch(error)
+         {
+           console.log("Error in checkUserAuth in AuthLoadingScreen: ",error)
+         }
     }
 
+    useEffect( () => {
+      Linking.addEventListener("url", handleOpenURL);
+      handleDeepLinkingRequests();
 
-    handleFinishLoading = () => {
-      this.setState({ isAssetsLoadingComplete: true })
-    }
+      check_User_Auth();
+    },[])
+
+
+    // loadApp= async()=>
+    // {
+    //     const userToken= await AsyncStorage.getItem('userToken') //async /await  vs promises 
+    //     this.props.navigation.navigate(userToken? 'App' : 'Auth' )
+    // }
+
+
+    // handleFinishLoading = () => {
+    //   this.setState({ isAssetsLoadingComplete: true })
+    // }
     
-    renderMainHeader=()=>
+    function renderMainHeader()
     {
       return(
       <View style={styles.AppHeader}>
@@ -197,16 +163,16 @@ class  AuthLoadingScreen extends Component {
       )
     }
 
-    render() {
-      return (
-        <View>
-        <View style={{paddingBottom: height/3}}>
-      {this.renderMainHeader()}
-          </View>
-      <ActivityIndicator size={"large"} color={"black"}/>
-      </View>     
-      );
-    }
+    
+    return (
+      <View>
+      <View style={{paddingBottom: height/3}}>
+    {renderMainHeader()}
+        </View>
+    <ActivityIndicator size={"large"} color={"black"}/>
+    </View>     
+    );
+  
   }
 
   

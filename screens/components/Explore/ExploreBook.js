@@ -1,14 +1,15 @@
 
 
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, Image, Dimensions} from 'react-native';
+import { StyleSheet, Text, View, Image, Dimensions, ImageBackground} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import Octicons from 'react-native-vector-icons/Octicons';
 import * as theme from '../constants/theme'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import RecordBook from '../../RecordBook';
-import {useDispatch} from "react-redux"
+import {useDispatch,useSelector} from "react-redux"
+import LinearGradient from 'react-native-linear-gradient';
 
 var {width, height}=Dimensions.get('window')
 const areEqual = (prevProps, nextProps) => true
@@ -18,8 +19,11 @@ const areEqual = (prevProps, nextProps) => true
     console.log("Inside ExploreBook")
     console.log(props);
     const dispatch=useDispatch();
+    const podcast = useSelector(state=>state.rootReducer.podcast);
 
-      const item = props.item
+      const item = props.item;
+      const podcastName = item.podcastName;
+
       console.log(item)
         return (
           
@@ -30,12 +34,25 @@ const areEqual = (prevProps, nextProps) => true
               dispatch({type:"SET_DURATION", payload:props.item.duration});
              dispatch({type:"SET_PAUSED", payload:false});
              dispatch({type:"SET_LOADING_PODCAST", payload:true});
-              dispatch({type:"SET_PODCAST", payload: props.item})
+             podcast === null && dispatch({type:"SET_MINI_PLAYER_FALSE"});
+             dispatch({type:"SET_PODCAST", payload: props.item})
               dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
               dispatch({type:"SET_NUM_LIKES", payload: props.item.numUsersLiked})
             })}>
-           <Image style={[{width:(width*5)/12, height:height/7, resizeMode:'cover',borderRadius:5,overflow:'hidden', paddingRight:10}]} source={{ uri: ((item === null || item === undefined)  ? null : item.podcastPictures[0]) }} />
-
+           <ImageBackground style={[{width:(width*5)/12 + 10, height:height/7, resizeMode:'cover',borderRadius:5,overflow:'hidden', paddingRight:10}]} source={{ uri: ((item === null || item === undefined)  ? null : item.podcastPictures[0]) }} >
+           <View style={{height:height*5/56}}/>
+       <LinearGradient  colors={['transparent','#383131','black']} >
+       <View style={{height:height*3/56,width:(width*5)/12 + 10}}>
+       <Text style={{color:'white',position:'absolute',bottom:2,left:5,right:10,fontSize:14,alignContent:'center'}}> 
+       <Icon name="play" size={13} style={styles.icon}/> 
+       {"  "}{podcastName.slice(0,30)}   
+        {
+          (podcastName.length > 30)  &&  ".."
+        }
+        </Text>       
+      </View>  
+      </LinearGradient>
+       </ImageBackground>
            </TouchableOpacity>
            </View>
           

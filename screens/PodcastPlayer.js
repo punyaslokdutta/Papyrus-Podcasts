@@ -14,10 +14,9 @@ const height =ExtraDimensions.getRealWindowHeight();
 const width=ExtraDimensions.getRealWindowWidth();
 const STATUS_BAR_HEIGHT= ExtraDimensions.getStatusBarHeight();
 //const isNotchEnabled= SCREEN_HEIGHT+
-const SOFT_MENU_BAR_HEIGHT =  (ExtraDimensions.getSoftMenuBarHeight() === 0) ? 0 :ExtraDimensions.getSoftMenuBarHeight() ;
-
+const SOFT_MENU_BAR_HEIGHT =  (ExtraDimensions.getSoftMenuBarHeight() === 0) ? 0 :ExtraDimensions.getSoftMenuBarHeight();
 const minHeight = height/12;
-const midBound = (height*10)/11 - (height/8 );
+const midBound = (height*10)/11 - (height*33/288 );
 const upperBound = midBound + minHeight;
 const {
   Extrapolate,
@@ -163,6 +162,8 @@ const PodcastPlayer=(props)=>{
     //BackHandler.addEventListener('hardwareBackPress', this.back_Buttton_Press);
    const  isMiniPlayer = useSelector(state=>state.rootReducer.isMiniPlayer);
    const navigation=useSelector(state=>state.userReducer.navigation)
+   const navBarHeight = useSelector(state=>state.userReducer.navBarHeight);
+   console.log("navBarHeight: ",navBarHeight)
    const  dispatch=useDispatch();
 
    //componentDidMount
@@ -179,10 +180,10 @@ const PodcastPlayer=(props)=>{
       useEffect(
         () => {
           console.log("Inside useEffect - componentDidUpdate of PodcastPlayer");
-          if(isMiniPlayer)
-          {
-          slideUp();
-          }
+          // if(isMiniPlayer)
+          // {
+          // slideUp();
+          // }
 
         }, [props.podcast])
 
@@ -193,7 +194,7 @@ const PodcastPlayer=(props)=>{
     if(!isMiniPlayer)
     {
       dispatch({type:"TOGGLE_MINI_PLAYER"})
-
+      dispatch({type:"REMOVE_ALL_HEARTS"});
       timing(offsetY, {
         toValue: upperBound,
         duration: 800,
@@ -207,20 +208,21 @@ const PodcastPlayer=(props)=>{
       //return true;
       //dispatch({type:"TOGGLE_MINI_PLAYER"})
 
+    }
+    else
+    {
+      //dispatch({type:"TOGGLE_MINI_PLAYER"})
+      slideUp();
+    }
   }
-  else
-  {
-    //dispatch({type:"TOGGLE_MINI_PLAYER"})
-    slideUp();
-  }
-
-  }
+  
   function back_Button_Press()
   {
     console.log("Inside BackButton Press");
     if(!isMiniPlayer)
     {
       dispatch({type:"TOGGLE_MINI_PLAYER"})
+      dispatch({type:"REMOVE_ALL_HEARTS"});
 
       timing(offsetY, {
         toValue: upperBound,
@@ -255,7 +257,7 @@ const PodcastPlayer=(props)=>{
 
     const tY = interpolate(translateY, {
       inputRange: [0, midBound],
-      outputRange: [0, midBound],
+      outputRange: [0, midBound-navBarHeight],
       extrapolate: Extrapolate.CLAMP,
     });
     const opacity = interpolate(translateY, {
@@ -310,32 +312,34 @@ const PodcastPlayer=(props)=>{
     >
           <TouchableNativeFeedback onPress={slideDown}>
             <View>
-               {/* {
-                !isMiniPlayer &&
-                <View style={{height:height/10,backgroundColor:'#2E2327',paddingTop:height/100}}>
-                <IconAntDesign name="down" size={25} color='white' style={{paddingTop:height/100, paddingLeft:width/25}}/>
-                </View>
-
-              } */}
-            <Animated.View style={{ backgroundColor: '#2E2327', width: videoContainerWidth }}>
-              {/* <TouchableOpacity>
-              <View style={{height:height/20,borderColor:'black',borderWidth:1,backgroundColor:'black'}}>
-              <IconAntDesign name="down" size={25} color='white' style={{padding:height/200}}/>
-              </View>
-              </TouchableOpacity> */}
-
-              <Animated.View style={{ ...StyleSheet.absoluteFillObject, opacity: playerControlOpaciy }}>
-                <PlayerControls podcastName={props.podcast.podcastName} bookName={props.podcast.bookName} onPress={slideUp}      />
-              </Animated.View>
+               
+            <Animated.View style={{ backgroundColor: '#212121', width: videoContainerWidth }}>
+            
+            <Animated.View style={{ ...StyleSheet.absoluteFillObject, opacity: playerControlOpaciy }}>
+            <PlayerControls podcastName={props.podcast.podcastName} bookName={props.podcast.bookName} onPress={slideUp}      />
+            </Animated.View>
               
+              
+              <TouchableNativeFeedback onPress={() => {
+                if(!isMiniPlayer)
+                {
+                  slideDown()
+                  props.navigation.navigate('InfoScreen', {podcast:props.podcast});
+                }
+                else
+                {
+                  slideUp();
+                }
 
+              }}>
               <Animated.Image
                 source={{uri:props.podcast.podcastPictures[0]}}
                 resizeMode='contain'
                 style={{ width: videoWidth, height: videoHeight, borderColor:'black',borderRadius:5 }}
               />
+              </TouchableNativeFeedback>
                 {
-                !isMiniPlayer && <IconAntDesign name="downcircleo" size={30} color='black' style={{
+                  !isMiniPlayer && <IconAntDesign name="downcircleo" size={30} color='black' style={{
                   //width: width/15,  
                   //height: width/10,   
                   borderRadius: 30,            
@@ -343,21 +347,19 @@ const PodcastPlayer=(props)=>{
                   position: 'absolute',                                          
                   top: height/50,                                                    
                   left: width/20, }}/>
-              }
+                }
+
                </Animated.View>
                </View>
                </TouchableNativeFeedback>
 
                <View>
-
-
             <Animated.View style={{ backgroundColor: 'white', width: videoContainerWidth, height: containerHeight }}>
               <Animated.View style={{ opacity }}>
               <PodcastContent userID={props.userID} podcast={props.podcast} navigation={navigation} slideDown={slideDown} />
               </Animated.View>
             </Animated.View>
             </View>
-
 
             </Animated.View>
     );

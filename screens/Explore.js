@@ -28,6 +28,8 @@ DetectNavbar.hasSoftKeys().then((bool) => {
 
 const Explore = (props) => {
 
+  const podcast = useSelector(state=>state.rootReducer.podcast);
+  const externalPodcastID = useSelector(state=>state.userReducer.externalPodcastID);
   var [storytellers,setStorytellers] = useState([]);
   var [podcasts,setPodcasts] = useState([]);
   var [books,setBooks] = useState([]);
@@ -111,20 +113,21 @@ const Explore = (props) => {
         () => {
           fetchExploreItems();
           //console.log("EXPLORE USE EFFECT - props.navigation.state.params : ",props.navigation.state);
-          if(props.navigation.state.params !== undefined && props.navigation.state.params.podcastID !== undefined 
-                   && props.navigation.state.params.podcastID !== null)
-                   {
-                    console.log("podcast to be played: ",props.navigation.state.params.podcastID);
-                    fetchPodcastItem(props.navigation.state.params.podcastID);
-                   }
+          // if(props.navigation.state.params !== undefined && props.navigation.state.params.podcastID !== undefined 
+          //          && props.navigation.state.params.podcastID !== null)
+          //          {
+          //           console.log("podcast to be played: ",props.navigation.state.params.podcastID);
+          //           fetchPodcastItem(props.navigation.state.params.podcastID);
+          //          }
             
 
-          console.log("Explore Use EFFECT Ends");
+          // console.log("Explore Use EFFECT Ends");
           //const eventEmitter=new NativeEventEmitter(NativeModules.ReactNativeRecorder);
       },[])
 
       async function fetchPodcastItem(podcastID)
       {
+
         let podcastItem = await firestore().collectionGroup('podcasts').where('podcastID','==',podcastID).get();
         let podcastData = podcastItem.docs[0]._data;
 
@@ -133,20 +136,33 @@ const Explore = (props) => {
         dispatch({type:"SET_DURATION", payload:podcastData.duration});
         dispatch({type:"SET_PAUSED", payload:false})
         dispatch({type:"SET_LOADING_PODCAST", payload:true});
+        podcast === null && dispatch({type:"SET_MINI_PLAYER_FALSE"});
         dispatch({type:"SET_PODCAST", payload: podcastData}) 
         dispatch({type:"SET_NUM_LIKES", payload: podcastData.numUsersLiked})
+
+        dispatch({type:"PODCAST_ID_FROM_EXTERNAL_LINK",payload:null});
+
       }
 
       useEffect( () => {
-        if(props.navigation.state.params !== undefined && props.navigation.state.params.podcastID !== undefined 
-          && props.navigation.state.params.podcastID !== null)
-          {
-            console.log("[Use Effect of props.navigation.state] podcast to be played: ",props.navigation.state.params.podcastID);
-            fetchPodcastItem(props.navigation.state.params.podcastID);
-          }
-            
-      },[props.navigation.state])
+        (externalPodcastID !== null) &&
+          (podcast === null || (podcast !== null && externalPodcastID != podcast.podcastID)) && 
+          fetchPodcastItem(externalPodcastID);
+      },[externalPodcastID])
 
+      function getWindowDimension(event) { 
+        const device_width = event.nativeEvent.layout.width;
+        const device_height = event.nativeEvent.layout.height;
+    
+        console.log ("height: ",height);
+        console.log ("nativeEventHeight: ",device_height);  // Yeah !! good value
+        if(height - device_height >= 48)
+          dispatch({type:"SET_NAV_BAR_HEIGHT",payload:48});
+        else
+          dispatch({type:"SET_NAV_BAR_HEIGHT",payload:0});
+        console.log ("nativeEventWidth: ",device_width); 
+      }
+    
     function renderStoryTellers()
     {
       console.log("storytellers: ",storytellers);
@@ -276,14 +292,14 @@ const Explore = (props) => {
       {
         return (
           
-          <View style={{flexDirection:'column'}}>
+          <View style={{flexDirection:'column'}} onLayout={(event) => getWindowDimension(event)}>
           
             
         {renderMainHeader()}
           
            
               <View>
-              <View><Text>{"\n"}</Text></View>
+              
             <View style={{color:'#dddd',flexDirection:'row'}}>
               <View style={{width:width/20}}/>
               <Shimmer>
@@ -303,7 +319,7 @@ const Explore = (props) => {
               </Shimmer>
             </View>
 
-            <View><Text>{"\n\n"}</Text></View>
+            <View><Text>{"\n"}</Text></View>
 
             <View style={{color:'#dddd',flexDirection:'row'}}>
             <View style={{width:width/20}}/>
@@ -322,7 +338,7 @@ const Explore = (props) => {
             </Shimmer>
             </View>
 
-            <View><Text>{"\n\n"}</Text></View>
+            <View><Text>{"\n"}</Text></View>
 
             <View style={{color:'#dddd',flexDirection:'row'}}>
             
@@ -341,7 +357,7 @@ const Explore = (props) => {
             <View style={{backgroundColor :'#dddd', height:height/7, width:(width*5)/12 + 10}}/>
             </Shimmer>
             </View>
-            <View><Text>{"\n\n"}</Text></View>
+            <View><Text>{"\n"}</Text></View>
             <View style={{color:'#dddd',flexDirection:'row'}}>
             
             <View style={{width:width/20}}/>
@@ -372,7 +388,7 @@ const Explore = (props) => {
       {
         return (
      
-          <SafeAreaView style={{flex:1, backgroundColor:'white'}}>
+          <SafeAreaView style={{flex:1, backgroundColor:'white'}} onLayout={(event) => getWindowDimension(event)}>
           {renderMainHeader()}
           <ScrollView  scrollEventThrottle={16}>
           <View style={{height:120}}>

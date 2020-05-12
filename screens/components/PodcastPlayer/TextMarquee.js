@@ -31,7 +31,7 @@ const TextMarquee = React.memo((props)=> {
           marqueeDelay={500}
           useNativeDriver={true} 
         >  
-          {props.podcastName} <Text style={{color:'#A9A9A9'}}> ~ {props.bookName}</Text>  
+          {props.podcastName}{" "} <Text style={{color:'#A9A9A9'}}>~ {props.bookName}{" "}</Text>  
         </TextTicker>  
         </View> 
     )

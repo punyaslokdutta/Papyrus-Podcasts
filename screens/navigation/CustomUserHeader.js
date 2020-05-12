@@ -121,69 +121,118 @@ const CustomUserHeader = (props) => {
   const dispatch=useDispatch();
   const lastCharacter = otherPrivateUserItem.name[otherPrivateUserItem.name.length - 1];
   return (
-    <View>
-    <View style={{alignItems:'flex-end',paddingRight:10,paddingTop:10}}>
-    <Button title={message} style={{flex:1, height:SCREEN_HEIGHT/25, width:SCREEN_WIDTH/3,
-                borderRadius:5, backgroundColor:theme.colors.primary}} onPress={() => {
-                  
-                  if(message === followText)
-                  {
-                    console.log("FoLLow")
-                    dispatch({
-                      type: "ADD_TO_FOLLOWING_MAP",
-                      payload: otherPrivateUserItem.id
-                    })
-                    setMessage(followingText)
-                    console.log(printMessage)
-                  }
-                    
-                  else if(message === followingText)
-                  {
-                    console.log("UnFOLLOW")
-                    console.log(message)
-                    dispatch({
-                      type: "REMOVE_FROM_FOLLOWING_MAP",
-                      payload: otherPrivateUserItem.id
-                    })
-                    setMessage(followText)
-                    console.log(printMessage)
-                  }
-                  else
-                  {
-                    console.log('UNDEFINEDDDDDDDDD')
-                    console.log(message);
-                  }
+    <TouchableOpacity onPress={() => props.navigation.navigate({
+      routeName : 'UserStatsScreen',
+      params : {item:otherPrivateUserItem},
+      key : 'user1' + otherPrivateUserItem.id
+  })}>
+    <View style={{flexDirection:'row'}}>
 
-                    console.log("Before retrieve data: ",message)
-                  retrieveData(message,userid,otherPrivateUserItem,userDisplayPictureURL,name,privateDataID);
-
-                }}></Button>
-    </View>
-      <View style={{alignItems:'center',justifyContent:'center', flexDirection:'column',paddingBottom:10}}>
-        <View style={{alignItems:'center',flexDirection:'column'}}>
-        {
-          lastCharacter == 's'
-          ?
-          <Text style={{fontSize:theme.sizes.h3}}>{otherPrivateUserItem.name}'</Text>
-          :
-          <Text style={{fontSize:theme.sizes.h3}}>{otherPrivateUserItem.name}'s</Text>
-        }
-          <View style = {{alignItems:'center'}}>
-      <Text style={{fontWeight:"bold",fontSize:theme.sizes.h2,paddingRight:5}}>{"   "}Collections{"   "}</Text>              
-          </View>
-          </View>
-          <TouchableOpacity style={{alignItems:'center'}} onPress={() => props.navigation.navigate({
-            routeName : 'UserStatsScreen',
-            params : {item:otherPrivateUserItem},
-            key : 'user1' + otherPrivateUserItem.id
-        })}>
+<View style={{flexDirection:'row',paddingTop:10,paddingBottom:10,paddingLeft:10}}>
+      
           <Image
               source={{uri : otherPrivateUserItem.displayPicture}}
               style={styles.avatar}
             />
-            </TouchableOpacity>
+            
+        <View style={{flexDirection:'column',paddingLeft:10,width:SCREEN_WIDTH*3/5}}>      
+<Text style={{fontSize:theme.sizes.h3,fontWeight:'bold'}}>{otherPrivateUserItem.name}{"   "}</Text>
+        <Text style={{fontSize:14,paddingRight:10}}>{otherPrivateUserItem.introduction}</Text>
+        
+        
           </View>
+         
           </View>
+
+    <View style={{position:'absolute',right:10,top:10}}>
+
+    {
+      message == followText
+      
+      ?
+
+      <TouchableOpacity style={{flex:1,fontSize:1,height:SCREEN_HEIGHT/30, width:SCREEN_WIDTH/6,
+        borderRadius:5,borderColor:'black',borderWidth:1, alignItems:'center',justifyContent:'center', backgroundColor:'white'}} onPress={() => {
+          
+          if(message === followText)
+          {
+            console.log("FoLLow")
+            dispatch({
+              type: "ADD_TO_FOLLOWING_MAP",
+              payload: otherPrivateUserItem.id
+            })
+            setMessage(followingText)
+            console.log(printMessage)
+          }
+            
+          else if(message === followingText)
+          {
+            console.log("UnFOLLOW")
+            console.log(message)
+            dispatch({
+              type: "REMOVE_FROM_FOLLOWING_MAP",
+              payload: otherPrivateUserItem.id
+            })
+            setMessage(followText)
+            console.log(printMessage)
+          }
+          else
+          {
+            console.log('UNDEFINEDDDDDDDDD')
+            console.log(message);
+          }
+
+            console.log("Before retrieve data: ",message)
+          retrieveData(message,userid,otherPrivateUserItem,userDisplayPictureURL,name,privateDataID);
+
+        }}><Text style={{fontSize:12,alignItems:'center',justifyContent:'center'}}>{message}</Text>
+        </TouchableOpacity>
+
+      :
+
+      <TouchableOpacity style={{flex:1,fontSize:1,height:SCREEN_HEIGHT/30, width:SCREEN_WIDTH/5 + 3,
+        borderRadius:5,alignItems:'center',justifyContent:'center', backgroundColor:theme.colors.primary}} onPress={() => {
+          
+          if(message === followText)
+          {
+            console.log("FoLLow")
+            dispatch({
+              type: "ADD_TO_FOLLOWING_MAP",
+              payload: otherPrivateUserItem.id
+            })
+            setMessage(followingText)
+            console.log(printMessage)
+          }
+            
+          else if(message === followingText)
+          {
+            console.log("UnFOLLOW")
+            console.log(message)
+            dispatch({
+              type: "REMOVE_FROM_FOLLOWING_MAP",
+              payload: otherPrivateUserItem.id
+            })
+            setMessage(followText)
+            console.log(printMessage)
+          }
+          else
+          {
+            console.log('UNDEFINEDDDDDDDDD')
+            console.log(message);
+          }
+
+            console.log("Before retrieve data: ",message)
+          retrieveData(message,userid,otherPrivateUserItem,userDisplayPictureURL,name,privateDataID);
+
+        }}><Text style={{fontSize:12,alignItems:'center',justifyContent:'center'}}>{message}</Text>
+        </TouchableOpacity>
+    }    
+
+    
+    </View>
+      
+          </View>
+          </TouchableOpacity>
   );   
 };
 
@@ -247,9 +296,9 @@ const styles = StyleSheet.create({
       paddingBottom :theme.sizes.base * 0.5,
     }, 
       avatar: {
-    height: theme.sizes.base * 2.2,
-    width: theme.sizes.base * 2.2,
-    borderRadius: theme.sizes.base * 2.2, 
-    
+    height: theme.sizes.base * 4,
+    width: theme.sizes.base * 4,
+    borderRadius: theme.sizes.base * 0.2, 
+    //paddingRight: 20
   }
 });

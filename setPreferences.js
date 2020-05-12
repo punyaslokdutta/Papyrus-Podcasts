@@ -35,7 +35,6 @@ const languageData = [
 const { width, height } = Dimensions.get('window');
 const setPreferences =(props)=> {
 
-
     const dispatch = useDispatch();
     const [bookPreferences, setbookPreferences]=useState({});
     const [submitting,setSubmitting] = useState(false);
@@ -146,7 +145,7 @@ const setPreferences =(props)=> {
       {
         return (
         <SafeAreaView style={{flex:1, backgroundColor:'#120d02',paddingTop:20,paddingBottom:height/20,paddingHorizontal:10, alignItems:'center',justifyContent:'center'}}>
-          <ActivityIndicator/>
+            <ActivityIndicator size={'large'} color={'rgb(218,165,32)'}/>
         </SafeAreaView>
         )
       }
@@ -252,7 +251,7 @@ const setPreferences =(props)=> {
           {
             submitting === true
             ?
-            <ActivityIndicator/>
+            <ActivityIndicator color={'white'}/>
             :
             <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'white', justifyContent:'center'}} >Next</Text>
           }
@@ -283,11 +282,11 @@ const styles = StyleSheet.create({
     item: {
       borderWidth: 1,
       borderColor: 'white',    
-      backgroundColor: 'transparent',
+      backgroundColor: 'transparent'
     },
     label: {
       color: 'white',
-      fontSize:9
+      fontSize:12
     },
     itemSelected: {
       backgroundColor: '#333',

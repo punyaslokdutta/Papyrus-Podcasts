@@ -13,17 +13,23 @@ const INITIAL_STATE = {
   isMiniPlayer:false,
   numLikes: 0,
   loadingPodcast: false,
-  videoRef: null
+  videoRef: null,
+  hearts: []
 };
 
 function rootReducer(state = INITIAL_STATE, action)  {
   switch (action.type) {
-    case "SET_VIDEO_REF":
-      console.log("SET_VIDEO_REF")
+    case "REMOVE_ALL_HEARTS":
+        console.log("REMOVE_ALL_HEARTS");
+        return {...state,hearts:[] }
+      case "SET_VIDEO_REF":
+        console.log("SET_VIDEO_REF")
         return {...state, videoRef:action.payload}
       case "SET_LOADING_PODCAST":
         console.log("SET_LOADING_PODCAST")
           return {...state, loadingPodcast:action.payload}
+      case "SET_MINI_PLAYER_FALSE":
+        return {...state, isMiniPlayer: false}
       case "TOGGLE_MINI_PLAYER":
         console.log("TOGGLE_MINI_PLAYER")
           return {...state, isMiniPlayer:!state.isMiniPlayer}

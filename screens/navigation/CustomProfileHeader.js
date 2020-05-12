@@ -22,7 +22,7 @@ const CustomProfileHeader = props => {
       lastCharacter = name[name.length-1];
     const profilePicURL = useSelector(state=>state.userReducer.displayPictureURL)
     return (
-  
+      <TouchableOpacity style={{alignItems:'center'}} onPress={() => props.navigation.navigate('Profile_StatsScreen')}>
         <View style={{alignItems:'center',justifyContent:'center',paddingTop: 30,paddingBottom:15, flexDirection:'column'}}>
           <View style={{alignItems:'center',flexDirection:'column'}}>
             {
@@ -37,13 +37,13 @@ const CustomProfileHeader = props => {
             </View>
             </View>
             
-            <TouchableOpacity style={{alignItems:'center'}} onPress={() => props.navigation.navigate('Profile_StatsScreen')}>
             <Image
                 source={{uri : profilePicURL}}
                 style={styles.avatar}
               />
-              </TouchableOpacity>
+              
             </View>
+            </TouchableOpacity>
     );
   };
 

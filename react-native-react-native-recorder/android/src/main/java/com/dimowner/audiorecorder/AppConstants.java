@@ -97,3 +97,5 @@ public class AppConstants {
 	public final static int RECORD_BYTES_PER_SECOND = RECORD_ENCODING_BITRATE_48000 /8; //bits per sec converted to bytes per sec.
 
 }
+
+

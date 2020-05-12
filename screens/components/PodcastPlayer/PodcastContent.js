@@ -1,7 +1,7 @@
 // @flow
 import  React, {useState,useEffect,useRef} from 'react';
 import {
-  View, StyleSheet, Text, Image, ScrollView,TouchableOpacity, TouchableWithoutFeedback,Dimensions, ActivityIndicator
+  View, StyleSheet, Text, Image, ScrollView,TouchableOpacity, TouchableWithoutFeedback,Dimensions, ActivityIndicator,Share
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import moment from "moment";
@@ -18,6 +18,10 @@ import Toast from 'react-native-simple-toast';
 
 import * as Animatable from 'react-native-animatable'
 import IconAntDesign from 'react-native-vector-icons/AntDesign'
+import Animated,{Easing} from 'react-native-reanimated';
+import dynamicLinks from '@react-native-firebase/dynamic-links';
+
+//import { styles } from '../categories/components/Block';
 
 //import videos, { type Video } from './videos';
 const colors = {
@@ -33,8 +37,19 @@ const { width,height } = Dimensions.get('window');
   video: Video,
 };*/
 
+const animationEndY = Math.ceil(height);
+const negativeEndY = animationEndY * -1;
+
 const AnimatedIconAntDesign = Animatable.createAnimatableComponent(IconAntDesign)
 const AnimatedIcon = Animatable.createAnimatableComponent(Icon)
+
+let heartCount = 0;
+
+function getRandomNumber(min,max) {
+  return Math.random() * (max - min) + min;
+}
+
+
 
  const PodcastContent=(props)=> {
   const video = useRef();
@@ -42,9 +57,12 @@ const AnimatedIcon = Animatable.createAnimatableComponent(Icon)
   var smallAnimatedBookmarkIcon = useRef();
   const userID = props.userID;
   const privateDataID = "private" + userID;
-  //const
+
+  
+  const navBarHeight = useSelector(state=>state.userReducer.navBarHeight);
+
   const rate=useSelector(state=>state.rootReducer.rate);
-  const currentTime=useSelector(state=>state.rootReducer.currentTime)
+  const currentTime=useSelector(state=>state.rootReducer.currentTime) 
 
   const paused=useSelector(state=>state.rootReducer.paused);
   const volume=useSelector(state=>state.rootReducer.volume);
@@ -60,6 +78,77 @@ const AnimatedIcon = Animatable.createAnimatableComponent(Icon)
   const loadingPodcast = useSelector(state=>state.rootReducer.loadingPodcast)
   //const duration=useSelector(state=>state.rootReducer.duration)
   const dispatch=useDispatch();
+
+  const heartsStore = useSelector(state=>state.rootReducer.hearts);
+  const [hearts,setHearts] = useState([]);
+
+
+
+  function onShare(){
+    //
+  }
+
+  async function buildDynamicURL() {
+    const link = await dynamicLinks().buildShortLink({
+      //link: 'https://newpodcast.com/' + props.podcast.podcastID,
+      link: 'https://papyrusapp.page.link/player/' + props.podcast.podcastID,
+      // domainUriPrefix is created in your firebase console
+      domainUriPrefix: 'https://papyrusapp.page.link/',
+      // optional set up which updates firebase analytics campaign
+      // "banner". This also needs setting up before hand
+      analytics: {
+        campaign: 'banner',
+      },
+      android: {
+        packageName: 'com.papyrus_60',
+        minimumVersion: '8',
+        fallbackUrl: 'http://www.papyruspodcasts.com'
+      },
+      social: {
+        title: props.podcast.podcastName,
+        descriptionText: props.podcast.podcastDescription,
+        imageUrl: props.podcast.podcastPictures[0]
+      }
+    });
+  
+    console.log("dynamicURL created for the link: ",link);
+    Share.share({
+      title : props.podcast.podcastName,
+      //url : link,
+      message: link
+    },{
+      dialogTitle: 'Share Podcast'
+    })
+    return link;
+  }
+
+
+  useEffect(() => {
+    setHearts([]);
+  },[heartsStore])
+
+  function addHearts(){
+    console.log("[addHearts] prevHearts : ",hearts);
+    setHearts([...hearts,{id : heartCount , paddingRight : getRandomNumber(20,100)}]);
+    console.log("[addHearts] nextHearts : ",hearts);
+    heartCount++;
+    console.log("[addHearts] heartCount : ",heartCount);
+  }
+
+  function removeHeart(id){
+    console.log("[removeHeart] hearts: ",hearts);
+    console.log("[removeHeart] id to be removed: ",id);
+
+    // var newHearts = hearts;
+
+    // // newHearts.pop();
+    
+    // newHearts.filter(heart => {
+    //   return heart.id !== id
+    // });
+    // console.log("[removeHeart] newHearts: ",newHearts);
+    // setHearts(newHearts);
+  }
 
   function handleSmallAnimatedHeartIconRef  (ref) {
     smallAnimatedHeartIcon = ref
@@ -134,8 +223,13 @@ function handlePlayPause() {
 }
 
 function parentSlideDown(){
+  //removeHeart(1);
+  setHearts([]);
   props.slideDown();
+  
 }
+
+
 
 
 async function removeFromBookmarks() {
@@ -144,7 +238,7 @@ async function removeFromBookmarks() {
     .where("podcastID",'==',props.podcast.podcastID).get().then(function(querySnapshot){
       querySnapshot.forEach(function(doc) {
         doc.ref.delete().then(function() {
-          //Toast.show("Unsaved");
+          Toast.show("Removed from Collections");
         }).catch(function(error){
           console.log("Error in removing bookmarks from user's bookmarks collection: ",error);
         });
@@ -382,13 +476,22 @@ async function updatePodcastsLiked(props){
               />
           
          </View>
-         <View style={styles.icons}>
+         <View style={{paddingBottom:navBarHeight + 20,flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop:height/12}}>
+
+           
+
          <TouchableOpacity onPress={() => {
+                addHearts();
                 if(liked != true)
                 {
                   handleOnPressLike();
                   updatePodcastsLiked(props);  
-                }         
+                }
+                
+
             }}>
 
               <AnimatedIconAntDesign
@@ -396,7 +499,7 @@ async function updatePodcastsLiked(props){
                 name={liked ? 'heart' : 'hearto'}
                 color={liked ? colors.heartColor : 'white'}
                 size={20}
-                //style={{}}
+                style={{height:30,width:30}}
               />
 
                 </TouchableOpacity>
@@ -408,29 +511,109 @@ async function updatePodcastsLiked(props){
                     name={bookmarked ? 'bookmark' : 'bookmark-o'}
                     color={bookmarked ? 'white' : 'white'}
                     size={20}
+                    style={{height:30,width:30}}
                   />
                 </TouchableOpacity>
                 </View>
 
-                <TouchableOpacity>
+
+                <View>
+            
+            {
+              hearts.length != 0 &&
+              hearts.map(
+                heart => {
+                  console.log("heart.id: ",heart.id);
+                  return <HeartContainer item={heart.id} style={{ right : heart.paddingRight}} onComplete={() => {removeHeart(heart.id)}}/>;
+                }
+              )
+            }
+            </View>
+
                 <View style={{paddingLeft:width/4}}>
-                <Icon name="share" size={20} style={{color:'white'}}/>
-                </View>
+                <TouchableOpacity onPress={() => {
+                  //onShare();
+                  buildDynamicURL();
+                }}>
+                
+                <Icon name="share" size={20} style={{color:'white',height:30,width:30}}/>
                 </TouchableOpacity>
+                </View>
               </View>
-
-              
-
         </View>
       
     );
   }
 
+
+  
+// PODCAST CONTENT ENDS
+//---------------------------------------------------------------
+
+
+const areEqual = (prevProps, nextProps) => {
+  //console.log("prevProps: ",prevProps);
+  //console.log("nextProps: ",nextProps);
+  return (prevProps.item == nextProps.item);
+};
+
+const HeartContainer = React.memo((props)=> {
+  const [position,setPosition] = useState(new Animated.Value(0));
+  // var [yAnimation,setYAnimation] = useState();
+    //var [opacityAnimation,setOpacityAnimation] = useState();
+  useEffect(() => {
+      position.interpolate({
+      inputRange : [negativeEndY, 0],
+      outputRange : [animationEndY,0]
+    });
+    
+    // setOpacityAnimation(position.interpolate({
+    //   inputRange : [0, animationEndY],
+    //   outputRange : [1,0]
+    // }));
+
+  
+
+    Animated.timing(position, {
+      duration : 2000,
+      toValue : negativeEndY,
+      easing : Easing.ease,
+      useNativeDriver : true
+    }).start(props.onComplete);
+  },[])
+
+  function getHeartStyle() {
+    return {
+      transform: [{ translateY : position}],
+      opacity: 0.7
+    };
+  }
+
+  console.log("[HeartContainer] props.key: ",props.item);
+  return (
+    <Animated.View style={[styles.heartContainer,getHeartStyle(), props.style]}>
+      <Heart color="red"/>
+    </Animated.View>
+  );
+},areEqual)
+
+///////////////////////////////////
+
+const Heart = props => {
+
+  return(
+  <View {...props} style={[styles.heart,props.style]}>
+  <IconAntDesign name="heart" size={48} color={props.color}/>
+</View>
+  )
+}
+
+//-----><><><------
   
 const styles = StyleSheet.create({
   content: {
     padding: 8,
-    backgroundColor:'#2E2327',
+    backgroundColor:'#212121',
     height:height*15/24
   },
   title: {
@@ -449,6 +632,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingTop:height/12,
+    //paddingBottom:48
   },
   upNext: {
     borderTopWidth: 1,
@@ -534,7 +718,22 @@ progress: {
   flexDirection: 'row',
   borderRadius: 3,
   overflow: 'hidden',
-}
+},
+container: {
+  flex: 1,
+},
+  heartContainer: {
+    position : 'absolute',
+    bottom : 30,
+    backgroundColor : "transparent"
+  },
+  heart: {
+    width : 50,
+    height : 50,
+    alignItems : "center",
+    justifyContent : "center",
+    backgroundColor: "transparent"  
+  }
 });
 
 export default PodcastContent;

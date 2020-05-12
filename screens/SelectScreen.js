@@ -39,7 +39,7 @@ const SelectScreen = (props)=> {
   var itemPictureURL = null;
   var genres = null;
   const userLanguages = useSelector(state=>state.userReducer.userLanguages);
-
+  itemPictureURL = "https://previews.123rf.com/images/pavelstasevich/pavelstasevich1902/pavelstasevich190200120/124934975-no-image-available-icon-vector-flat.jpg";
 
 
   if(props.navigation.state.params !== undefined)
@@ -120,7 +120,7 @@ const SelectScreen = (props)=> {
           <Text style={{fontFamily:'san-serif-light', color:'white', paddingLeft:(width*7)/24, fontSize:20}}>Select</Text>
         </View>
         </View>
-        <View style={{paddingTop:height/40,paddingBottom:height/40, paddingLeft:width/11}}>
+        <View style={{paddingTop:height/40,paddingBottom:0, alignItems:'center'}}>
         <TagSelect itemStyle={styles.item}
           itemLabelStyle={styles.label}
           itemStyleSelected={styles.itemSelected}
@@ -145,7 +145,7 @@ const SelectScreen = (props)=> {
         />
         
         </View>
-        <View style={{paddingVertical:30, paddingBottom: height/20, flexDirection:'column', paddingLeft:width/8, paddingRight:width/8} }>
+        <View style={{paddingVertical:10,paddingBottom: height/20, flexDirection:'column', paddingLeft:width/8, paddingRight:width/8} }>
           <TouchableOpacity onPress={()=>{
             dispatch({type:"SET_EXPLORE_SCREEN_AS_PREVIOUS_SCREEN", payload:false})
             dispatch({type:"SET_FROM_SEARCH_CHAPTER_SCREEN",payload:false});
@@ -154,16 +154,16 @@ const SelectScreen = (props)=> {
         <View style={{flexDirection:'row',height:height/20,borderRadius:20, backgroundColor: 'white', paddingVertical:height/100, width:width*6/8}}>
         
         <Icon style={{paddingHorizontal:10,paddingTop:0 }} name="search" size={20} />
-            <Text style={{ flex:1, fontWeight:'500',fontSize:15,borderColor:'white'}}> 
+            <Text style={{ flex:1, fontWeight:'500',fontSize:12,borderColor:'white'}}> 
 
-              {"  "}Search book/chapter to record podcast
+              {"  "}Tap here to select book or chapter
                </Text> 
 
         </View>
         </TouchableOpacity>
         </View> 
       
-        <View style={{height:height*2/13,paddingLeft:width/5,paddingRight:width/5,paddingBottom:height/10}}>
+        <View style={{height:height*2/13, paddingLeft:width/5,paddingRight:width/5,paddingBottom:height/10}}>
         
           {
             (itemSelected != null) ? 
@@ -205,7 +205,21 @@ const SelectScreen = (props)=> {
             </View>
              </View>
              :
-            <View></View>
+             <TouchableOpacity onPress={()=>{
+              dispatch({type:"SET_EXPLORE_SCREEN_AS_PREVIOUS_SCREEN", payload:false})
+              dispatch({type:"SET_FROM_SEARCH_CHAPTER_SCREEN",payload:false});
+              props.navigation.navigate('SearchTabNavigator',{fromExplore:false})
+              }}>
+             <View style={{flexDirection:'row',width:width*9/16,borderColor:'white',paddingRight:width/15,height:height*2/13 + 3}}>
+             <View style={{flexDirection:'row',width:width*9/32 ,borderColor:'white',borderWidth:2,paddingRight:width/15,height:height*2/13 + 3}}>
+             <Image style={{width:width/4,height:height*2/13,borderColor:'white',borderWidth:2}} source={{uri: itemPictureURL}}/>
+             </View>
+             <View style={{paddingLeft:5,flexDirection:'column',width:width*9/25,height:height*2/13}}>
+            <Text style={{paddingVertical:height/18,color:'white'}}>No book or chapter selected.{"\n\n"}</Text>
+             
+             </View>
+              </View>
+              </TouchableOpacity>
           }  
          
         
@@ -355,11 +369,11 @@ const styles = StyleSheet.create({
     item: {
       borderWidth: 1,
       borderColor: '#333',    
-      backgroundColor: 'transparent',
+      backgroundColor: 'transparent'
     },
     label: {
       color: 'white',
-      fontSize:9
+      fontSize:12
     },
     itemSelected: {
       backgroundColor: '#333',

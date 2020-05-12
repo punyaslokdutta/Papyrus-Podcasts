@@ -2,7 +2,7 @@
 import React, {Component, useState, useEffect, useContext} from 'react';
 import { StyleSheet, Text, View, Image, Dimensions} from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import {useDispatch} from "react-redux"
+import {useDispatch, useSelector} from "react-redux"
 import firestore from '@react-native-firebase/firestore';
 import { withFirebaseHOC } from './config/Firebase';
 import moment from 'moment';
@@ -10,7 +10,7 @@ var {width, height}=Dimensions.get('window')
 
  const areEqual = (prevProps, nextProps) => true
 const ActivityItem = React.memo((props)=> {
-
+  const podcast = useSelector(state=>state.rootReducer.podcast);
   const realUserID = props.firebase._getUid();
   const dispatch = useDispatch();
   var currentDateTime = moment().format();
@@ -31,6 +31,7 @@ const ActivityItem = React.memo((props)=> {
       dispatch({type:"SET_LOADING_PODCAST", payload:true});
       dispatch({type:"SET_DURATION", payload:podcastDocumentData.duration})
       dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
+      podcast === null && dispatch({type:"SET_MINI_PLAYER_FALSE"});
       dispatch({type:"SET_PODCAST", payload: podcastDocumentData})
       dispatch({type:"SET_NUM_LIKES", payload: podcastDocumentData.numUsersLiked})
     }

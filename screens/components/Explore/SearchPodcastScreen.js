@@ -17,7 +17,7 @@ const SearchPodcastScreen=(props)=>
       algoliaAPPID,
       algoliaAPIKey
     );
-    const index = searchClient.initIndex('dev_podcasts');
+    const index = searchClient.initIndex('prod_podcasts');
 
 
     const initialAuthors  ={

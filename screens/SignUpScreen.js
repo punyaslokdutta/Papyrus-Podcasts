@@ -192,24 +192,20 @@ const SignUpScreen=(props)=>{
           {formikProps.touched.confirmPassword && formikProps.errors.confirmPassword}
           </Text>
           </View>
-          {formikProps.isSubmitting ? (
-            <ActivityIndicator />
-          ) : (
+         
             <View>
             <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:45, width:WIDTH -55, borderRadius:15, backgroundColor:'rgba(0, 0, 0, 0.7)', borderColor:'rgb(218,165,32)', borderWidth: 1 }}
         onPress={formikProps.handleSubmit} >
           {
             loading === true
             ?
-            <ActivityIndicator/>
+            <ActivityIndicator color={'rgb(218,165,32)'}/>
             :
             <Text style={{ alignItems: 'center', fontFamily:'sans-serif-light', color:'rgb(218,165,32)', justifyContent:'center'}} >Submit</Text>
           }
-            
-                </TouchableOpacity>
-             
-              </View>
-          )}
+            </TouchableOpacity>
+            </View>
+        
             <View>
             <TouchableOpacity style={{paddingTop:10, }}>
            <Text style={{ fontFamily:'sans-serif-light', color:'rgba(255, 255, 255, 0.8)', fontSize:12 }}>OR SignUp with </Text>

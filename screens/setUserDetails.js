@@ -63,7 +63,7 @@ const setUserDetails = (props) => {
     }
   }
 
-  async function retrieveDataPublic(dispatch,userid){
+  async function retrieveDataPublic(){
 
     let doc = null;
   try{

@@ -3,7 +3,7 @@ import React, {Component, useState, useEffect, useContext} from 'react';
 import { StyleSheet, Text, View, Image, Dimensions,TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import * as theme from '../../constants/theme'
-import {useDispatch} from "react-redux"
+import {useDispatch,useSelector} from "react-redux"
 import moment from 'moment'
 import { withFirebaseHOC } from '../../../config/Firebase';
 import firestore from '@react-native-firebase/firestore';
@@ -136,6 +136,7 @@ const styles = StyleSheet.create({
   const  realUserID = props.firebase._getUid(); 
   const dispatch=useDispatch();
   var duration = parseInt((props.podcast.duration)/60);
+  const podcast = useSelector(state=>state.rootReducer.podcast);
 
   if(duration == 0)
     duration = 1;
@@ -176,6 +177,7 @@ const styles = StyleSheet.create({
           dispatch({type:"SET_PAUSED", payload:false})
           dispatch({type:"SET_LOADING_PODCAST", payload:true});
           dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
+          podcast === null && dispatch({type:"SET_MINI_PLAYER_FALSE"});
           dispatch({type:"SET_PODCAST", payload: props.podcast})
           dispatch({type:"SET_NUM_LIKES", payload: props.podcast.numUsersLiked})
         })}>

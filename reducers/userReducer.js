@@ -28,11 +28,18 @@ const INITIAL_STATE = {
     otherPrivateUserItem: null,
     userLanguages: [],
     algoliaAPPID: null,
-    algoliaAPIKey: null
+    algoliaAPIKey: null,
+    externalPodcastID: null,
+    navBarHeight:0
   };
   
   function userReducer(state = INITIAL_STATE, action)  {
     switch (action.type) {
+        case "SET_NAV_BAR_HEIGHT":
+            console.log("state.navBarHeight: ",action.payload);
+            return {...state,navBarHeight:action.payload}
+        case "PODCAST_ID_FROM_EXTERNAL_LINK":
+            return {...state,externalPodcastID:action.payload}
         case "SET_ALGOLIA_API_KEY":
             return {...state,algoliaAPIKey:action.payload}
         case "SET_ALGOLIA_APP_ID":
@@ -131,6 +138,8 @@ const INITIAL_STATE = {
             return {...state,isUserFollowing:{}}
         case "CLEAR_PODCASTS_LIKED":
             return {...state,isPodcastLiked:{}}
+        case "CLEAR_PODCASTS_BOOKMARKED":
+            return {...state,isPodcastBookmarked:{}}
         default:
             return state;
     }

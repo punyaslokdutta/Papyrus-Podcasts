@@ -133,6 +133,7 @@ const styles = StyleSheet.create({
  const Podcast= React.memo((props)=> {
   console.log("Inside Podcast")
   console.log(props);
+  const podcast = useSelector(state=>state.rootReducer.podcast);
 
   const  realUserID = props.firebase._getUid();
   //const privateDataID = "private" + userid; 
@@ -188,9 +189,10 @@ const styles = StyleSheet.create({
       dispatch({type:"SET_CURRENT_TIME", payload:0})
       dispatch({type:"SET_PAUSED", payload:false})
       dispatch({type:"SET_LOADING_PODCAST", payload:true});
-      dispatch({type:"SET_DURATION", payload:podcastDocumentData.duration})
-      dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
-      dispatch({type:"SET_PODCAST", payload: podcastDocumentData})
+      dispatch({type:"SET_DURATION", payload:podcastDocumentData.duration});
+      dispatch({type:"ADD_NAVIGATION", payload:props.navigation});
+      podcast === null && dispatch({type:"SET_MINI_PLAYER_FALSE"});
+      dispatch({type:"SET_PODCAST", payload: podcastDocumentData});
       dispatch({type:"SET_NUM_LIKES", payload: podcastDocumentData.numUsersLiked})
     }
     catch(error){
@@ -213,6 +215,7 @@ const styles = StyleSheet.create({
               dispatch({type:"SET_DURATION", payload:props.podcast.duration});
               dispatch({type:"SET_PAUSED", payload:false})
               dispatch({type:"SET_LOADING_PODCAST", payload:true});
+              podcast === null && dispatch({type:"SET_MINI_PLAYER_FALSE"});
               dispatch({type:"SET_PODCAST", payload: props.podcast}) 
               dispatch({type:"SET_NUM_LIKES", payload: props.podcast.numUsersLiked})
             }

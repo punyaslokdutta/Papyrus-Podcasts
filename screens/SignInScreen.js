@@ -76,7 +76,6 @@ const validationSchema = yup.object().shape({
       });
   }
  async function handleLogin(formikProps){
-   setLoading(true);
   formikProps.handleSubmit();
  }
   
@@ -137,7 +136,6 @@ const validationSchema = yup.object().shape({
         <Formik
       initialValues={{ email: '', password: '' }}
       onSubmit={(values, actions) => {
-        setLoading(true);
         //alert(JSON.stringify(values));
         setLoading(true);
         const trimmedEmail = values.email.trim();
@@ -185,37 +183,32 @@ const validationSchema = yup.object().shape({
           {formikProps.touched.password && formikProps.errors.password}
           </Text>
           </View>
-          {formikProps.isSubmitting ? (
-            <ActivityIndicator />
-          ) : (
-            <View>
-              
-                
-                <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:45, width:WIDTH -55, borderRadius:15, backgroundColor:'rgba(0, 0, 0, 0.7)', borderColor:'rgb(218,165,32)', borderWidth: 0.4 }}
-                 onPress={() => {
-                   //setLoading(true); 
-                 handleLogin(formikProps)}} >
-                   {
-                     loading === true
-                     ?
-                     <ActivityIndicator/>
-                     :
-                     <Text style={{ alignItems: 'center', fontFamily:'century-gothic', color:'rgb(218,165,32)', justifyContent:'center'}} >Login</Text>
-                   }
-                </TouchableOpacity>
-
-                          
-              </View>
-          )}
+          
+          <View>            
+            <TouchableOpacity style={{ alignItems: 'center', justifyContent:'center', height:45, width:WIDTH -55, borderRadius:15, backgroundColor:'rgba(0, 0, 0, 0.7)', borderColor:'rgb(218,165,32)', borderWidth: 0.4 }}
+              onPress={() => {
+                //setLoading(true); 
+              handleLogin(formikProps)}} >
+                {
+                  loading === true
+                  ?
+                  <ActivityIndicator color={'rgb(218,165,32)'}/>
+                  :
+                  <Text style={{ alignItems: 'center', fontFamily:'century-gothic', color:'rgb(218,165,32)', justifyContent:'center'}} >Login</Text>
+                }
+            </TouchableOpacity>
+          </View>
+          
         
 
             <View>
             <TouchableOpacity onPress={() => {
               try{
-                const trimmedEmail = userEmail.trim();
-                console.log("userEmail: ",userEmail);
+                var email = formikProps.values.email;
+                
+                const trimmedEmail = email.trim();
+                console.log("userEmail: ",email);
                 console.log("trimmedEmail: ",trimmedEmail);
-             
                 props.firebase._passwordReset(trimmedEmail)
              Toast.show('A password reset mail has been sent to your emailID.')
             //   :

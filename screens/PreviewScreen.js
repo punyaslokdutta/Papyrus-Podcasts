@@ -251,7 +251,7 @@ const PreviewScreen = (props) => {
   function updateTagState(state)
   {
     console.log(state);
-      
+    
     if(state.tagsArray.length != tagsLength)  // for trimming last selected tag
     {
       var trimmedTagState = state;

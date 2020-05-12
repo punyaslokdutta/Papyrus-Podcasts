@@ -37,14 +37,16 @@ return(
        source={{uri : photoURL}}
      />
      </TouchableOpacity>
-     <Block flex={false} row center space="between" style={{paddingTop:30, paddingLeft:5}}>
+     <TouchableOpacity onPress={() => props.navigation.navigate('Profile_StatsScreen')}>
+     <Block flex={false} row center space="between" style={{paddingTop:10, paddingLeft:5}}>
 <Text style={{color:'white', fontSize:SCREEN_HEIGHT/40 }}>{name}</Text>
           
     </Block>
-    <Block flex={false} row center space="between" style={{ paddingLeft:5}}>
+    </TouchableOpacity>
+    {/* <Block flex={false} row center space="between" style={{ paddingLeft:5}}>
 <Text style={{color:'white', fontFamily:'san-serif',textAlign:'center'}}>{username}</Text>
           
-    </Block>
+    </Block> */}
     
 
 
@@ -127,7 +129,7 @@ return(
           } 
           activeBackgroundColor='#101010'   style={{backgroundColor: '#ffffff', }} labelStyle={{color: '#ffffff', fontSize: SCREEN_HEIGHT/35}}/>
           
-          <Text style={{textAlign:'center', paddingTop:SCREEN_HEIGHT/4,color:'#dddd'}}>v1.0.7</Text>
+          <Text style={{textAlign:'center', paddingTop:SCREEN_HEIGHT/4,color:'#dddd'}}>v1.0.10</Text>
     
     </Content>
     </Body>

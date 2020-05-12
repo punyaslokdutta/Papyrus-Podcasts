@@ -31,6 +31,7 @@ import RecordBook from './screens/RecordBook'
 import RecordChapter from './screens/RecordChapter'
 import StatisticsScreen from './screens/StatisticsScreen'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5'
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons'
 import SimpleLineIcon from 'react-native-vector-icons/SimpleLineIcons'
 import { theme } from './screens/components/categories/constants';
@@ -145,6 +146,11 @@ const ProfileStackNavigator=createStackNavigator(
         }
     }}
   },
+  {
+    //headerMode:'none',
+    //initialRouteName:'CategoryScreen',
+    transitionConfig: () => fromRight(),
+  }
 )
 
 const RecordStackNavigator= createStackNavigator(
@@ -200,7 +206,7 @@ const AppTabNavigator=createBottomTabNavigator(
       navigationOptions:{
         tabBarLabel:' ',
         tabBarIcon:({tintColor})=>(
-          <MaterialCommunityIcon style={{paddingTop:15}} name="microphone" color={'black'} size={SCREEN_HEIGHT/15}/>
+          <FontAwesome5Icon style={{paddingTop:15}} name="microphone-alt" color={'black'} size={SCREEN_HEIGHT/15}/>
         )
       }
    },

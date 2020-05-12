@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react'
-import { Image, StyleSheet, ScrollView, TextInput, TouchableOpacity , View,ActivityIndicator, Linking} from 'react-native'
+import { Image, StyleSheet, ScrollView, TextInput, TouchableOpacity , View,ActivityIndicator, Linking,Dimensions} from 'react-native'
 import Slider from 'react-native-slider';
 import firestore from '@react-native-firebase/firestore'
 //import { Divider, Button, Block, Text, Switch } from '../components';
@@ -9,9 +9,11 @@ import {withFirebaseHOC} from './config/Firebase'
 import { theme, mocks } from '../screens/components/categories/constants/';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { firebase } from '@react-native-firebase/functions';
+var {width, height}=Dimensions.get('window')
 
 
 import {useSelector,useDispatch} from 'react-redux'
+import Toast from 'react-native-simple-toast';
 
 const SettingsScreen = (props) => {
 
@@ -142,7 +144,9 @@ const SettingsScreen = (props) => {
       console.log("[SettingsScreen] logoutFromApp")
       try{
         dispatch({type:'CLEAR_PODCASTS_LIKED',payload:null})
+        dispatch({type:'CLEAR_PODCASTS_BOOKMARKED',payload:null})
         dispatch({type:'ADD_NUM_FOLLOWERS',payload:0})
+        dispatch({type:"SET_SIGNUP_MAIL",payload:null});
         dispatch({type:'CHANGE_EMAIL',payload:null})
         dispatch({type:'CHANGE_NAME',payload:null})
         dispatch({type:'CHANGE_USER_NAME',payload:null})
@@ -156,9 +160,12 @@ const SettingsScreen = (props) => {
         dispatch({type:'ADD_NUM_NOTIFICATIONS',payload: 0});
         dispatch({type:"SET_USER_PREFERENCES",payload:[]});
         dispatch({type:'SET_USER_LANUAGES',payload: []});
-
+        dispatch({type:'SET_ALGOLIA_API_KEY',payload:null});
+        dispatch({type:'SET_ALGOLIA_APP_ID',payload:null});
         dispatch({type:"SET_PODCAST",payload:null})
         props.firebase._signOutUser();
+        Toast.show("Logged out");
+        
       }
       catch(error){
         console.log("Logout error: ",error);
@@ -197,20 +204,14 @@ const SettingsScreen = (props) => {
     return (
       <Block>
         <Block flex={false} row center space="between" style={styles.header}>
-        <TouchableOpacity onPress={() => props.navigation.goBack()}>
-          <Image
-            resizeMode="contain"
-            source={"../assets/icons/Back.png"}
-            style={{ width: 20, height: 24, marginRight: theme.sizes.base  }}
-          />
-        </TouchableOpacity>
-    <Text h1 bold paddingRight>Settings{"  "}</Text>
-          <Button>
+    <Text h1 bold paddingRight style={{alignItems:'center',justifyContent:'center',paddingLeft:width*7/24}}>Settings{"  "}</Text>
+    <TouchableOpacity onPress={() => props.navigation.navigate('Profile_StatsScreen')}>
+
             <Image
               source={{uri:accountPicURI}}
               style={styles.avatar}
             />
-          </Button>
+          </TouchableOpacity>
         </Block>
 
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -406,12 +407,13 @@ export default withFirebaseHOC(SettingsScreen);
 const styles = StyleSheet.create({
   header: {
     paddingHorizontal: theme.sizes.base * 2,
+    paddingVertical: 10
   },
   avatar: {
     height: theme.sizes.base * 2.2,
     width: theme.sizes.base * 2.2,
     borderRadius: theme.sizes.base * 2.2, 
-    
+    paddingTop:5
     
   },
   inputs: {

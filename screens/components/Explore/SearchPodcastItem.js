@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import * as theme from '../constants/theme'
 import firestore from '@react-native-firebase/firestore';
 import moment from 'moment';
-import { useDispatch } from 'react-redux';
+import { useDispatch,useSelector} from 'react-redux';
 
 var {width, height}=Dimensions.get('window')
 
@@ -126,7 +126,8 @@ const styles = StyleSheet.create({
   console.log("Inside SearchPodcastItem");
   console.log("props.podcast : ",props.podcast);
   const dispatch = useDispatch();
-  
+  const podcast = useSelector(state=>state.rootReducer.podcast);
+
   var createdOn = moment(props.podcast.createdOn).fromNow();
 
   if(createdOn === null)
@@ -144,6 +145,7 @@ const styles = StyleSheet.create({
     dispatch({type:"SET_PAUSED", payload:false})
     dispatch({type:"SET_LOADING_PODCAST", payload:true});
     dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
+    podcast === null && dispatch({type:"SET_MINI_PLAYER_FALSE"});
     dispatch({type:"SET_PODCAST", payload: podcastDocumentData})
     dispatch({type:"SET_NUM_LIKES", payload: podcastDocumentData.numUsersLiked})
     }

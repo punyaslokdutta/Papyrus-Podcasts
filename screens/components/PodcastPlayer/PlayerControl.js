@@ -97,7 +97,7 @@ const paused=useSelector(state=>state.rootReducer.paused);
         
         <TextMarquee podcastName={props.podcastName} bookName={props.bookName}/>
         
-      <View style={{paddingTop:height/500}}>
+      <View style={{paddingLeft:10,paddingTop:height/500}}>
         <Slider
         value={currentTime}
         minimumValue={1}
@@ -115,9 +115,9 @@ const paused=useSelector(state=>state.rootReducer.paused);
       </View>
       </View>
           {/* <Text style={styles.title} numberOfLine={3}>{props.title}</Text> */}
-          {loadingPodcast && <ActivityIndicator color={'white'}/>}
+          {loadingPodcast && <ActivityIndicator style={styles.icon} color={'white'}/>}
           {!loadingPodcast && paused && <TouchableOpacity  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
-            <IconAntDesign name="play" size={50} style={styles.icon}/></TouchableOpacity>}
+            <IconAntDesign name="play" size={40} style={styles.icon}/></TouchableOpacity>}
           {!loadingPodcast && !paused && <TouchableOpacity  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
             <IconAntDesign name="pause" size={70} style={styles.icon}/></TouchableOpacity>}
                 <TouchableOpacity onPress={(()=>{dispatch({type:"TOGGLE_PLAY_PAUSED"})
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     borderWidth:0.25, 
-    backgroundColor:'#2E2327'
+    backgroundColor:'#212121'
   },
   title: {
     flex: 1,

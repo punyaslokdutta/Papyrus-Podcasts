@@ -133,12 +133,12 @@ const ActivityScreen = (props) => {
         <View style={{paddingTop:theme.sizes.padding*3/4}}>
         <TouchableOpacity onPress={() => props.navigation.toggleDrawer()}>
           <View> 
-        <Icon name="bars" size={22} style={{color:'white'}}/>
+        <Icon name="bars" size={20} style={{color:'white'}}/>
           </View>
         </TouchableOpacity>
         </View>
         <View>
-        <Text style={{paddingTop:theme.sizes.padding/2,color:'white',fontSize:theme.sizes.font*1.7,paddingLeft:theme.sizes.padding/2,paddingRight:5}}> Activities </Text> 
+        <Text style={{paddingTop:theme.sizes.padding/2,color:'white',fontSize:theme.sizes.font*1.4,paddingLeft:theme.sizes.padding/2,paddingRight:5}}> Activities </Text> 
       </View>
       </View>
       );
