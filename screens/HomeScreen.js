@@ -10,6 +10,7 @@ import {Text} from './components/categories/components';
 import { useSelector} from 'react-redux';
 import { Badge } from 'react-native-elements'
 import Shimmer from 'react-native-shimmer';
+import HomeAnimation from './components/Home/HomeAnimation';
 
 var {width, height}=Dimensions.get('window')
 
@@ -21,7 +22,7 @@ const HomeScreen = (props) => {
   const [headerPodcasts,setHeaderPodcasts] = useState([]);
   const [podcasts,setPodcasts] = useState([]);
   const limit = 8;
-  const headerPodcastsLimit = 8;
+  const headerPodcastsLimit = 12;
   const bookLimit = 5;
   const [lastVisible,setLastVisible] = useState(null);
   const [loading,setLoading] = useState(false);
@@ -143,18 +144,41 @@ const HomeScreen = (props) => {
   
   function renderSectionBooks(title)
   {     
+    const totalBooksLength = Math.min(10,books.length);
     switch(title) {
       case "A":
-        return null;
+        return (
+          <View>
+          <HomeAnimation/>
+          </View>
+        );
       case "B":
         return (
           <View>
           <View style={{backgroundColor:'white'}}>  
-          <Text h2 bold style={{paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Book Podcasts</Text>
-          <BookList navigation={props.navigation} books={books}/>
+          <Text h2 style={{fontFamily:'Proxima-Nova-Bold',paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Book Podcasts</Text>
+          <BookList navigation={props.navigation} books={books.slice(0,5)}/>
           </View>
           </View>
-        )
+        );
+      case "C":
+        if(totalBooksLength > 5)
+        {
+          return (
+            <View>
+            <View style={{backgroundColor:'white'}}>  
+            <Text h2 style={{fontFamily:'Proxima-Nova-Bold',paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Book Podcasts</Text>
+            <BookList navigation={props.navigation} books={books.slice(5,totalBooksLength)}/>
+            </View>
+            <Text h3 style={{fontFamily:'Proxima-Nova-Bold',paddingLeft: 30,   textShadowColor:'black'}}>Discover Podcasts
+            </Text>
+            </View>
+          )
+        }
+        else
+          return null
+        
+
       }
   }
 
@@ -188,13 +212,15 @@ const HomeScreen = (props) => {
   {
     var podcasts1 = headerPodcasts.slice(0,4);
     var podcasts2 = headerPodcasts.slice(4,8);
+    var podcasts3 = headerPodcasts.slice(8,12); 
     return(
       <View style={{ paddingBottom:30, marginTop: Platform.OS == 'ios' ? 20 : 30 }}>
       <SectionList
         showsVerticalScrollIndicator={false}
         sections={[
           { title: 'A', data: podcasts1},
-           { title: 'B', data: podcasts2 }
+           { title: 'B', data: podcasts2 },
+           { title: 'C', data: podcasts3}
         ]}
         keyExtractor={item => item.createdOn}
         renderSectionHeader={({ section }) => (
@@ -204,10 +230,10 @@ const HomeScreen = (props) => {
               {console.log("[HomeScreen] SECTION TITLE: ",section.title)}
 
           {renderSectionBooks(section.title)}
-          {(section.data === null) ?
+          {/* {(section.data === null || section.data.length == 0 || section.data === undefined) ?
           null :
-          <Text h3 bold style={{paddingLeft: 30,   textShadowColor:'black'}}>Discover Podcasts
-          </Text> }
+          <Text h3 style={{fontFamily:'Proxima-Nova-Bold',paddingLeft: 30,   textShadowColor:'black'}}>Discover Podcasts
+          </Text> } */}
           
           </ScrollView>
         )}

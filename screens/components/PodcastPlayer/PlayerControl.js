@@ -11,6 +11,8 @@ import {useDispatch, useSelector} from "react-redux"
 import TextTicker from 'react-native-text-ticker'
 import TextMarquee from './TextMarquee'
 import IconAntDesign from 'react-native-vector-icons/AntDesign'
+import firestore from '@react-native-firebase/firestore';
+
 
 const { width,height } = Dimensions.get('window');
 export const PLACEHOLDER_WIDTH = width / 4;
@@ -85,6 +87,23 @@ const paused=useSelector(state=>state.rootReducer.paused);
     }
   }
 
+  async function setLastPlayingPodcastInUserPrivateDoc(podcastID)
+  {
+    console.log("Inside setLastPlayingPodcastInUserPrivateDoc");
+    const  userID = props.userID;
+    const privateUserID = "private" + userID;
+    console.log("podcastID: ",podcastID);
+    await firestore().collection('users').doc(userID).collection('privateUserData').
+          doc(privateUserID).set({
+            lastPlayingPodcastID : podcastID,
+            lastPlayingCurrentTime : null
+          },{merge:true}).then(function(){
+            console.log("lastPlayingPodcastID set to NULL");
+          })
+          .catch((error) => {
+            console.log("Error in setting lastPlayingPodcastID: ",error);
+          })
+  }
 
 
   
@@ -120,7 +139,11 @@ const paused=useSelector(state=>state.rootReducer.paused);
             <IconAntDesign name="play" size={40} style={styles.icon}/></TouchableOpacity>}
           {!loadingPodcast && !paused && <TouchableOpacity  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
             <IconAntDesign name="pause" size={70} style={styles.icon}/></TouchableOpacity>}
-                <TouchableOpacity onPress={(()=>{dispatch({type:"TOGGLE_PLAY_PAUSED"})
+                <TouchableOpacity onPress={(()=>{
+                  setLastPlayingPodcastInUserPrivateDoc(null);
+                  dispatch({type:"SET_LAST_PLAYING_CURRENT_TIME",payload:null});
+                  dispatch({type:"SET_LAST_PLAYING_PODCASTID",payload:null});
+                  dispatch({type:"TOGGLE_PLAY_PAUSED"})
                   dispatch({type:"SET_PODCAST", payload: null})
                   })}>
                 <Icon name="times-circle" size={24} style={styles.icon}/>

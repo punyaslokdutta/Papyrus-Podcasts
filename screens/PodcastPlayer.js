@@ -5,8 +5,10 @@ import {useSelector, useDispatch} from "react-redux"
 import ExtraDimensions from 'react-native-extra-dimensions-android';
 import Animated, { Easing } from 'react-native-reanimated';
 import PodcastContent from '../screens/components/PodcastPlayer/PodcastContent';
+import firestore from '@react-native-firebase/firestore';
 import PlayerControls, { PLACEHOLDER_WIDTH } from './components/PodcastPlayer/PlayerControl';
 import IconAntDesign from 'react-native-vector-icons/AntDesign'
+import {withFirebaseHOC} from './config/Firebase';
 
 import { PanGestureHandler, State, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 var {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window');
@@ -57,7 +59,7 @@ const PodcastPlayer=(props)=>{
 
   //const [state, changeState]=useState(0)
   //Animation values
-   const   translationY =useRef(new Value(0)).current;
+   const translationY =useRef(new Value(0)).current;
 
   const velocityY = useRef(new Value(0)).current;
 
@@ -160,9 +162,13 @@ const PodcastPlayer=(props)=>{
 
 
     //BackHandler.addEventListener('hardwareBackPress', this.back_Buttton_Press);
+   const currentTime=useSelector(state=>state.rootReducer.currentTime); 
+   const [currentTimeState,setCurrentTimeState] = useState(currentTime);
    const  isMiniPlayer = useSelector(state=>state.rootReducer.isMiniPlayer);
    const navigation=useSelector(state=>state.userReducer.navigation)
    const navBarHeight = useSelector(state=>state.userReducer.navBarHeight);
+   const lastPlayingPodcastID = useSelector(state=>state.userReducer.lastPlayingPodcastID);
+
    console.log("navBarHeight: ",navBarHeight)
    const  dispatch=useDispatch();
 
@@ -170,6 +176,8 @@ const PodcastPlayer=(props)=>{
     useEffect(
       () => {
         console.log("Inside useEffect - componentDidMount of PodcastPlayer");
+        
+        setLastPlayingPodcastInUserPrivateDoc(null);
         BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
         return () => {
           console.log(" back_Button_Press Unmounted");
@@ -184,6 +192,14 @@ const PodcastPlayer=(props)=>{
           // {
           // slideUp();
           // }
+          // if(!isMiniPlayer)
+          // slideDown();
+          if(lastPlayingPodcastID != null)
+          {
+            dispatch({type:"SET_PAUSED",payload:true})
+            slideDown();
+            dispatch({type:"SET_LAST_PLAYING_PODCASTID",payload:null});
+          }
 
         }, [props.podcast])
 
@@ -216,6 +232,26 @@ const PodcastPlayer=(props)=>{
     }
   }
   
+    async function setLastPlayingPodcastInUserPrivateDoc(podcastID)
+      {
+        console.log("Inside setLastPlayingPodcastInUserPrivateDoc");
+        const  userID = props.userID;
+        const privateUserID = "private" + userID;
+        console.log("podcastID: ",podcastID);
+        if(podcastID === null)
+          return;
+        await firestore().collection('users').doc(userID).collection('privateUserData').
+              doc(privateUserID).set({
+                lastPlayingPodcastID : podcastID,
+                lastPlayingCurrentTime : currentTime
+              },{merge:true}).then(function(){
+                console.log("lastPlayingPodcastID set to NULL");
+              })
+              .catch((error) => {
+                console.log("Error in setting lastPlayingPodcastID: ",error);
+              })
+      }
+
   function back_Button_Press()
   {
     console.log("Inside BackButton Press");
@@ -234,6 +270,12 @@ const PodcastPlayer=(props)=>{
      // dispatch({type:"TOGGLE_MINI_PLAYER"})
       return true;
       //dispatch({type:"TOGGLE_MINI_PLAYER"})
+  }
+  console.log("Back Butttttton: ",props.podcast.podcastID);
+  if(props.podcast!==null)
+  {
+    setLastPlayingPodcastInUserPrivateDoc(props.podcast.podcastID);
+    //dispatch({type:"SET_PODCAST", payload: null});
   }
   return false;
     //BackHandler.removeEventListener('hardwareBackPress', this.back_Buttton_Press);
@@ -282,7 +324,7 @@ const PodcastPlayer=(props)=>{
     });
     const videoHeight = interpolate(translateY, {
       inputRange: [0, midBound, upperBound],
-      outputRange: [height*12/24, minHeight * 1.3, minHeight],
+      outputRange: [height*6/24, minHeight * 1.3, minHeight],
       extrapolate: Extrapolate.CLAMP,
     });
     const videoBorderRadius = interpolate(translateY, {
@@ -293,7 +335,7 @@ const PodcastPlayer=(props)=>{
 
     const containerHeight = interpolate(translateY, {
       inputRange: [0, midBound],
-      outputRange: [height, 0],
+      outputRange: [height*4/4, 0],
       extrapolate: Extrapolate.CLAMP,
     });
     const playerControlOpaciy = interpolate(translateY, {
@@ -316,7 +358,7 @@ const PodcastPlayer=(props)=>{
             <Animated.View style={{ backgroundColor: '#212121', width: videoContainerWidth }}>
             
             <Animated.View style={{ ...StyleSheet.absoluteFillObject, opacity: playerControlOpaciy }}>
-            <PlayerControls podcastName={props.podcast.podcastName} bookName={props.podcast.bookName} onPress={slideUp}      />
+            <PlayerControls setLastPlayingPodcastInUserPrivateDoc={setLastPlayingPodcastInUserPrivateDoc} podcastName={props.podcast.podcastName} bookName={props.podcast.bookName} userID={props.userID} onPress={slideUp}      />
             </Animated.View>
               
               
@@ -354,7 +396,7 @@ const PodcastPlayer=(props)=>{
                </TouchableNativeFeedback>
 
                <View>
-            <Animated.View style={{ backgroundColor: 'white', width: videoContainerWidth, height: containerHeight }}>
+            <Animated.View style={{ backgroundColor: '#212121', width: videoContainerWidth, height: containerHeight }}>
               <Animated.View style={{ opacity }}>
               <PodcastContent userID={props.userID} podcast={props.podcast} navigation={navigation} slideDown={slideDown} />
               </Animated.View>
@@ -366,4 +408,4 @@ const PodcastPlayer=(props)=>{
 
 }
 
-export default PodcastPlayer;
+export default withFirebaseHOC(PodcastPlayer);

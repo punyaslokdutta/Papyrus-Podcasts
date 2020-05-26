@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { Image, ScrollView, StyleSheet, TouchableOpacity, View,Dimensions } from 'react-native'
 import firestore from '@react-native-firebase/firestore';
-import rgba from 'hex-to-rgba';
 import {Button} from 'native-base';
 //import Icon from 'react-native-vector-icons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';

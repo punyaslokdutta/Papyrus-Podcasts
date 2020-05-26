@@ -22,18 +22,21 @@ const CustomProfileHeader = props => {
       lastCharacter = name[name.length-1];
     const profilePicURL = useSelector(state=>state.userReducer.displayPictureURL)
     return (
-      <TouchableOpacity style={{alignItems:'center'}} onPress={() => props.navigation.navigate('Profile_StatsScreen')}>
+      <TouchableOpacity style={{alignItems:'center'}} onPress={() => {
+        console.log("TouchableOpacity clicked");
+        props.navigation.navigate('Profile_StatsScreen')
+      }}>
         <View style={{alignItems:'center',justifyContent:'center',paddingTop: 30,paddingBottom:15, flexDirection:'column'}}>
           <View style={{alignItems:'center',flexDirection:'column'}}>
             {
               lastCharacter == 's'
               ?
-              <Text style={{fontSize:theme.sizes.h3}}>{name}'</Text>
+              <Text style={{fontSize:theme.sizes.h3,fontFamily:'Proxima-Nova-Regular'}}>{name}'</Text>
               :
-              <Text style={{fontSize:theme.sizes.h3}}>{name}'s</Text>
+              <Text style={{fontSize:theme.sizes.h3,fontFamily:'Proxima-Nova-Regular'}}>{name}'s</Text>
             }
             <View style = {{alignItems:'center'}}>
-          <Text style={{fontWeight:"bold",fontSize:theme.sizes.h2,paddingRight:5}}>Collections{"  "}</Text>
+          <Text style={{fontFamily:'Proxima-Nova-Bold',fontSize:theme.sizes.h2,paddingRight:5}}>Collections{"  "}</Text>
             </View>
             </View>
             

@@ -9,11 +9,12 @@ import {createSwitchNavigator,
   } from 'react-navigation'
 import LikersScreen from './screens/components/PodcastPlayer/LikersScreen'
 import setPreferences from './setPreferences'
-  import { createBottomTabNavigator } from 'react-navigation-tabs';
-  import { createStackNavigator } from 'react-navigation-stack';
-  import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
-  import { fromRight , fromLeft} from 'react-navigation-transitions';
-
+import { createBottomTabNavigator } from 'react-navigation-tabs';
+import { createStackNavigator } from 'react-navigation-stack';
+import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
+import { fromRight , fromLeft} from 'react-navigation-transitions';
+import SplashScreen from 'react-native-splash-screen';
+import WelcomeScreen from './screens/WelcomeScreen';
 import thunk from 'redux-thunk';
 import userReducer from './reducers/userReducer'
 import rootReducer from './reducers/rootReducer';
@@ -65,11 +66,11 @@ const AuthStackNavigator= createStackNavigator(
 
     SignInScreen: SignInScreen,
     SignUpScreen: SignUpScreen,
-    //WelcomeScreen:WelcomeScreen
+    WelcomeScreen: WelcomeScreen
   },
   {
     headerMode: 'none',
-    initialRouteName:'SignInScreen',
+    initialRouteName:'WelcomeScreen',
     transitionConfig: () => fromRight(),
     navigationOptions: {
       headerVisible: false,
@@ -431,56 +432,15 @@ const store = createStore(mainReducer, applyMiddleware(thunk))
 
 export default class App extends Component {
 
-  // componentDidMount() {
-  //   if (Platform.OS === 'android') {
-  //     Linking.getInitialURL().then(url => {
-  //       console.log("URL: ",url);
-        
-  //      //this.navigate(url);
-  //     });
-  //   } 
-  //   else
-  //     Linking.addEventListener('url', this.handleOpenURL);
+  componentDidMount(){
+    SplashScreen.hide();
+  }
+
+
+  componentWillUnmount(){
     
-  // }
-
-  // componentWillUnmount() {
-  //   Linking.removeEventListener('url', this.handleOpenURL);
-  // }
-
-  // handleOpenURL = (event) => {
-  //   const route = event.url.replace(/.*?:\/\//g, '');
-  //   console.log("\n\nINCOMING URL: \n\n",event.url);
-  // }
-
-
-
-
-
-
-  // componentDidMount() {
-  //   Linking.addEventListener("url", this.handleOpenURL);
-  //   this.handleDeepLinkingRequests();
-  //   }
-
-  //   handleDeepLinkingRequests = () => {
-      
-  //     Linking.getInitialURL().then(url => {
-  //       if (url) {
-  //         this.handleOpenURL(url);
-  //       }
-  //     })
-  //     .catch(error => { // Error handling });
-  //     console.log(error);
-  //     })
-  //   }
-    
-  //   handleOpenURL = (url) => {
-  //     console.log("INCOMING URL: ",url);
-
-  //   // your navigation logic goes here
-  //   }
-
+    console.log("OUT!!!!!!!");
+  }
 
   render(){
 

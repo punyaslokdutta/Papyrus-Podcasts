@@ -79,9 +79,9 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   storie: {
-    height: 60,
-    width: 60,
-    borderRadius: 30,
+    height: width/4,
+    width: width/4,
+    borderRadius: 60,
     marginLeft: 7,
     borderWidth: 1,
     borderColor: '#dddddd',
@@ -89,7 +89,8 @@ const styles = StyleSheet.create({
 username: {
     alignSelf: 'center',
     fontWeight: '200',
-    fontFamily: 'sans-serif-light'
+    fontFamily: 'sans-serif-light',
+    paddingBottom:10
 },
 shadow: {
   shadowColor: theme.colors.black,
@@ -101,5 +102,6 @@ shadow: {
   shadowOpacity: 5,
   shadowRadius: 20,
   elevation: 30,
+  //height: 10
 }
 });

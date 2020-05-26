@@ -71,33 +71,34 @@ const { width, height } = Dimensions.get("window");
 
     return (
       <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={{backgroundColor:'#212121'}}>
         {renderGallery()}
-
+        </View>
         <Block style={styles.product}>
-          <Text h2 bold>
+          <Text h2 style={{fontFamily:'Proxima-Nova-Bold',color:'white'}}>
             {podcast[0].podcastName}
           </Text>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
           <Block flex={false} row margin={[theme.sizes.base, 0]}>
             { podcast[0].tags && podcast[0].tags.map(tag => (
-              <Text key={`tag-${tag}`} caption gray style={styles.tag}>
+              <Text key={`tag-${tag}`} caption  style={styles.tag}>
                 {tag}
               </Text>
             ))}
           </Block>
           </ScrollView>
-          <Text gray light height={22}>
+          <Text style={{color:'white',fontFamily:'Proxima-Nova-Regular'}} light height={22}>
             {podcast[0].podcastDescription}
           </Text>
 
           <TouchableOpacity onPress={() => {props.navigation.navigate('LikersScreen',
               {podcastID:podcast[0].podcastID})}}>
-          <View>
+          <View style={{paddingTop:10}}>
             {
-              numUsersLiked == 1 && <Text>{numUsersLiked} Like</Text>
+              numUsersLiked == 1 && <Text style={{fontFamily:'Proxima-Nova-Regular',color:'white'}}>{numUsersLiked} Like</Text>
             }
             {
-              numUsersLiked > 1 && <Text>{numUsersLiked} Likes</Text>
+              numUsersLiked > 1 && <Text style={{fontFamily:'Proxima-Nova-Regular',color:'white'}}>{numUsersLiked} Likes</Text>
             }
             
           </View>
@@ -123,8 +124,8 @@ const { width, height } = Dimensions.get("window");
                 <Image source={{uri:userPrivateDoc.displayPicture}} style={{borderRadius:30,width:width/8,height:width/8}}/>
                 </View>
                 <View style={{paddingLeft:10,flexDirection:'column'}}>
-                <Text style={{fontSize:15,fontWeight:'bold'}}>{userPrivateDoc.name}{"  "}</Text>
-                <Text>{userPrivateDoc.introduction}</Text>
+                <Text style={{fontSize:15,fontFamily:'Proxima-Nova-Bold',color:'white'}}>{userPrivateDoc.name}{"  "}</Text>
+                <Text style={{fontFamily:'Proxima-Nova-Regular',color:'white'}}>{userPrivateDoc.introduction}</Text>
                 </View>
                 </View>
               }
@@ -138,21 +139,21 @@ const { width, height } = Dimensions.get("window");
                podcast[0].isChapterPodcast == true 
                ?
                <View>
-               <Text>Chapter</Text> 
+               <Text style={{color:'white',fontFamily:'Proxima-Nova-Regular'}}>Chapter</Text> 
                <TouchableOpacity onPress={() => props.navigation.navigate('RecordChapter',{bookID:podcast[0].bookID,chapterID:podcast[0].chapterID})}>
-               <Text style={{fontSize:20,fontWeight:'bold'}}>{podcast[0].chapterName} {"  "}{"\n"}</Text>
+               <Text style={{fontSize:20,fontFamily:'Proxima-Nova-Bold',color:'white'}}>{podcast[0].chapterName} {"  "}{"\n"}</Text>
                </TouchableOpacity>
                <Divider margin={[theme.sizes.padding * 0.5, 0]} />
-               <Text>Book</Text>
+               <Text style={{color:'white',fontFamily:'Proxima-Nova-Regular'}}>Book</Text>
                <TouchableOpacity onPress={() => props.navigation.navigate('RecordBook',{bookID:podcast[0].bookID})}>
-               <Text style={{fontSize:20,fontWeight:'bold'}}>{podcast[0].bookName}{"  "}</Text>
+               <Text style={{fontSize:20,fontFamily:'Proxima-Nova-Bold',color:'white'}}>{podcast[0].bookName}{"  "}</Text>
                </TouchableOpacity>
                </View>
                :
                <View>
-               <Text>Book</Text>
+               <Text style={{color:'white',fontFamily:'Proxima-Nova-Regular'}}>Book</Text>
                <TouchableOpacity onPress={() => props.navigation.navigate('RecordBook',{bookID:podcast[0].bookID})}>
-               <Text style={{fontSize:20,fontWeight:'bold'}}>{podcast[0].bookName}{" "}</Text>
+               <Text style={{fontSize:20,fontFamily:'Proxima-Nova-Bold',color:'white'}}>{podcast[0].bookName}{" "}</Text>
                </TouchableOpacity>
                </View>
              }
@@ -178,7 +179,8 @@ const styles = StyleSheet.create({
   product: {
     paddingRight: theme.sizes.base * 4,
     paddingLeft: theme.sizes.base * 1.5,
-    paddingVertical: theme.sizes.padding
+    paddingVertical: theme.sizes.padding,
+    backgroundColor:'#212121'
   },
   tag: {
     borderColor: theme.colors.gray2,
@@ -186,7 +188,8 @@ const styles = StyleSheet.create({
     borderRadius: theme.sizes.base,
     paddingHorizontal: theme.sizes.base*0.5,
     paddingVertical: theme.sizes.base / 2.5,
-    marginRight: theme.sizes.base * 0.625
+    marginRight: theme.sizes.base * 0.625,
+    color:'white'
   },
   image: {
     width: width / 3.26,

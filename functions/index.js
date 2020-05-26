@@ -12,41 +12,55 @@ const algoliaRecords = [];
 admin.initializeApp();
 const db = admin.firestore();
 const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
-const collectionIndexName='books';
+const collectionIndexName='dev_chapters';
 const collectionIndex = algoliaClient.initIndex(collectionIndexName);
 
-exports.addBookToIndex = functions.region("asia-northeast1").https.onCall((data, context) => {
+exports.addChapterToIndex = functions.region("asia-northeast1").https.onCall((data, context) => {
  
 
   
   const bookName=data.bookName;
-  const bookCover= data.bookCover;
+  const chapterName=data.chapterName
+  const chapterCover= data.chapterCover;
+  const createdOn=data.createdOn;
   const language =data.language;
   const authors=data.authors;
   const publicationYear = data.publicationYear;
-  const bookID = data.objectID;
+  const chapterID = data.objectID;
+  const bookID = data.bookID;
 
-  console.log("addBookToIndex cloud function");
+  console.log("AddToPodcastsIndex cloud function");
 
  
   console.log("bookName: ",bookName);
-  console.log("bookPicture:" , bookCover)
-  console.log("language: ",language);
+  console.log("bookID: ",bookID);
+  console.log("chapterName: ",chapterName);
+  console.log("chapterCover:" , chapterCover)
+  //console.log("podcastID: ",podcastID);
+  //console.log("podcasterName: ",podcasterName);
+ // console.log("timestamp: ",createdOn);
+  console.log("language ",language);
 
   console.log("context.auth = ",context.auth);
 
   const record = {
-    objectID: bookID,
-    bookCover:bookCover,
+    objectID: chapterID,
+    bookID: bookID,
+    chapterCover:chapterCover,
     bookName:bookName, 
+    chapterName:chapterName,
     language :language,
     authors: authors,
     publicationYear : publicationYear,
+    createdOn :createdOn
 };
 
-//algoliaRecords.push(record);
 
-collectionIndex.saveObject(record, (_error, content) => {
+
+
+algoliaRecords.push(record);
+
+collectionIndex.saveObjects(algoliaRecords, (_error, content) => {
   console.log("content : ",content);
   console.log("ERROR LOG : ",_error);
 

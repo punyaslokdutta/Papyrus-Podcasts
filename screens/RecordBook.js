@@ -1,16 +1,321 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect,useState,useRef } from 'react';
 import firestore from '@react-native-firebase/firestore';
 import { Text, StyleSheet, View, Animated, Image, Dimensions, ScrollView,ActivityIndicator, TouchableOpacity } from 'react-native'
 import {Card, CardItem,  Body} from 'native-base'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { withNavigation } from 'react-navigation';
+import { withFirebaseHOC } from './config/Firebase';
 //import Animated, { Easing } from 'react-native-reanimated';
 import Shimmer from 'react-native-shimmer';
+import * as Animatable from 'react-native-animatable'
+import Icon from 'react-native-vector-icons/FontAwesome'
+import {useSelector, useDispatch} from "react-redux"
+import moment from "moment";
 
 import * as theme from './components/constants/theme';
 
 const { width, height } = Dimensions.get('window');
 //const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView)
+
+const AnimatedIcon = Animatable.createAnimatableComponent(Icon)
+
+const RecordBook = (props) => {
+
+  const  userID = props.firebase._getUid();
+  const privateUserID = "private" + userID;
+  const dispatch = useDispatch();
+  const [loading,setLoading] = useState(false);
+  const bookID = props.navigation.state.params.bookID;
+  const [article,setArticle] = useState(null);
+  var smallAnimatedBookmarkIcon = useRef();
+  const bookmarked = useSelector(state=>state.userReducer.isBookBookmarked[bookID]);
+  const [bookmarkedState,setBookmarkedState] = useState(bookmarked);
+
+  var scrollX = new Animated.Value(0);
+  
+  useEffect(() => {
+    if(props.navigation.state !== undefined)
+    {
+      setLoading(true);
+      retrieveData();
+    }
+    
+  },[props.navigation.state])
+
+  function handleSmallAnimatedBookmarkIconRef  (ref) {
+    smallAnimatedBookmarkIcon = ref
+  }
+
+
+  async function addToBookmarks() {
+    const picturesArray = [];
+    picturesArray.push(article.bookPictures[0]);
+ 
+   firestore().collection('users').doc(userID).collection('privateUserData').doc(privateUserID).collection('bookmarkContent').add({
+     bookmarkedOn : moment().format(),
+     bookName : article.bookName,
+     bookID : article.bookID,
+     bookPictures : picturesArray,
+     bookDescription : article.bookDescription,
+     authors: article.authors
+   }).then(function(docRef){
+     firestore().collection('users').doc(userID).collection('privateUserData').doc(privateUserID).collection('bookmarkContent').doc(docRef.id).set({
+       bookmarkID : docRef.id
+     },{merge:true})
+     
+     Toast.show("Saved to Collections");
+   }).catch(function(error){
+     console.log("Error in adding book bookmarks to user's book bookmarks collection: ",error);
+   })
+   
+    firestore().collection('users').doc(userID).collection('privateUserData').doc(privateUserID).set({
+        booksBookmarked : firestore.FieldValue.arrayUnion(article.bookID)
+    },{merge:true}).catch(function(error){
+      console.log("Error in adding bookID to booksBookmarked in user's private document: ",error);
+    })
+ 
+   dispatch({type:"ADD_TO_BOOKS_BOOKMARKED",payload:article.bookID});
+ 
+ }
+
+
+ async function removeFromBookmarks() {
+
+  firestore().collection('users').doc(userID).collection('privateUserData').doc(privateUserID).collection('bookmarkContent')
+     .where("bookID",'==',article.bookID).get().then(function(querySnapshot){
+       querySnapshot.forEach(function(doc) {
+         if(doc._data.chapterID === undefined || doc._data.chapterID === null)
+         {
+            doc.ref.delete().then(function() {
+              Toast.show("Removed from Collections");
+            }).catch(function(error){
+           console.log("Error in removing book bookmarks from user's bookmarks collection: ",error);
+         });
+         }
+       });
+     });
+  
+   firestore().collection('users').doc(userID).collection('privateUserData').doc(privateUserID).set({
+       booksBookmarked : firestore.FieldValue.arrayRemove(article.bookID)
+     },{merge:true}).catch(function(error){
+       console.log("Error in removing bookID from booksBookmarked in user's private document: ",error);
+     })
+ 
+   dispatch({type:"REMOVE_FROM_BOOKS_BOOKMARKED",payload:article.bookID});
+ 
+ }
+
+  function handleOnPressBookmark() {
+    //smallAnimatedBookmarkIcon.bounceIn();
+    if(bookmarked != true)
+    {
+      smallAnimatedBookmarkIcon.bounceIn();
+      setBookmarkedState(true);
+      addToBookmarks();
+    }
+    else
+    {
+      smallAnimatedBookmarkIcon.bounceIn();
+      setBookmarkedState(false);
+      removeFromBookmarks();
+      
+    }
+    //setBookmarkedState(!bookmarkedState);
+  }
+
+
+  async function retrieveData () {
+  
+    console.log('[Record Book] Retrieving Data');
+    try{
+      console.log("bookID: ",bookID);
+      
+      let bookDoc = await firestore().collection('books').doc(bookID).get();
+      setArticle(bookDoc._data);
+    }
+    catch(error){
+      console.log(error)
+    }
+    finally {
+      setLoading(false);
+    }
+    
+  };
+
+
+  function renderDots () {
+    const dotPosition = Animated.divide(scrollX, width);
+    return (
+      <View style={[ styles.flex, styles.row, styles.dotsContainer ]}>
+        {article.bookPictures && article.bookPictures.map((item, index) => {
+          const opacity = dotPosition.interpolate({
+            inputRange: [index - 1, index, index + 1],
+            outputRange: [0.5, 1, 0.5],
+            extrapolate: 'clamp'
+          });
+          return (
+            <Animated.View
+              key={`step-${item}-${index}`}
+              style={[styles.dots, styles.activeDot,{ opacity }]}
+            />
+          )
+        })}
+      </View>
+    )
+  }
+
+  function renderRatings (rating) {
+    const stars = new Array(5).fill(0);
+    if(rating > 0)
+    {
+      return (
+        stars.map((item, index) => {
+          const activeStar = Math.floor(rating) >= (index + 1);
+          return (
+            <FontAwesome
+              name="star"
+              key={`star-${index}`}
+              size={theme.sizes.font}
+              color={theme.colors[activeStar ? 'active' : 'gray']}
+              style={{ marginRight: 4 }}
+            />
+          )
+        })
+      )
+    }
+    else
+    {
+      return null;
+    }
+    
+  }
+
+  
+
+    if(article != null) 
+    { 
+      return (
+        <ScrollView  scrollEventThrottle={16} >
+        <View style={styles.flex,{paddingBottom:height*2/11}}>
+          <View style={[styles.flex]}>
+            <ScrollView
+            horizontal
+            pagingEnabled
+            scrollEnabled
+            showsHorizontalScrollIndicator={false}
+            decelerationRate={0.998}
+            scrollEventThrottle={16}
+            onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }])}
+            useNativeDriver={true}
+          >
+            {
+               article.bookPictures && article.bookPictures.map((img, index) => 
+                
+                <Image
+                  key={`${index}-${img}`}
+                  source={{ uri: img }}
+                  resizeMode='contain'
+                  style={{ width:width, height: width }}
+                />
+                
+              )
+            }
+          </ScrollView>
+          {renderDots()}
+        </View>
+        <View style={[styles.flex, styles.content]}>
+          <View style={[styles.flex, styles.contentHeader]}>
+            <View style={{flexDirection:'row'}}>
+              <View>
+            <Text style={styles.title}>{article.bookName}</Text>
+            <View style={[
+              styles.row,
+              { alignItems: 'center', marginVertical: theme.sizes.margin / 2, flexDirection:'row' }
+            ]}>
+              {renderRatings(article.bookRating)}
+              <Text style={{ color: theme.colors.active }}>
+                {article.bookRating} 
+              </Text>
+              <View style={{paddingLeft:10}}>
+          
+              </View>
+              </View>
+              </View>
+               
+            </View>
+
+            
+            <View style={{flexDirection:'row',alignItems:'center',justifyContent:'center',paddingTop:20,paddingBottom:20,paddingLeft:width/4}}>
+            <View style={{width:width/2 - theme.sizes.padding}}>  
+            <TouchableOpacity onPress={()=>props.navigation.navigate('SelectScreen',{bookItem:article,chapterItem:null})}>
+            <View style={{width:width/6,alignItems:'center'}}>
+            <FontAwesome name="microphone" color={theme.colors.black} size={theme.sizes.font * 2.0} />
+            <Text style={{fontSize:12,textAlign:'center',fontFamily:'Proxima-Nova-Bold',width:width/6}}>Record</Text>
+            </View>
+            </TouchableOpacity>
+            </View> 
+            
+            <View style={{width:width/2}}>
+          <TouchableOpacity onPress={() => handleOnPressBookmark()}>
+          <View style={{width:width/3,alignItems:'center'}}>
+                  <AnimatedIcon
+                    ref={handleSmallAnimatedBookmarkIconRef}
+                    name={bookmarked ? 'bookmark' : 'bookmark-o'}
+                    color={bookmarked ? 'black' : 'black'}
+                    size={20}
+                    style={{height:30,width:30}}
+                  />
+           <Text style={{fontSize:12,textAlign:'center',fontFamily:'Proxima-Nova-Regular',width:width/3}}>Want to Read</Text>
+
+          </View>
+
+                </TouchableOpacity>
+            </View>
+            </View> 
+
+            <Card style={{borderRadius: 10 ,width:((width*4)/5 ), paddingTop :5}}>
+              <CardItem>
+            <TouchableOpacity>
+              <Text style={{fontSize:20, paddingBottom:10, fontFamily:'Proxima-Nova-Bold'}}>Description</Text>
+              <Text style={{fontFamily:'Proxima-Nova-Regular',fontSize:15}}>
+                {article.bookDescription}
+              </Text>
+            </TouchableOpacity>
+            </CardItem>
+            </Card>
+            <Card style={{borderRadius: 10 ,width:((width*4)/5 ), paddingTop :5}}>
+              <CardItem>
+            <TouchableOpacity>
+              <Text style={{fontSize:20, paddingBottom:10, fontFamily:'Proxima-Nova-Bold'}}>Author(s)</Text>
+                {
+                  article.authors.map(item => (
+                    <Text style={{fontFamily:'Proxima-Nova-Regular',fontSize:15}}>
+                    {item}
+                    </Text>
+                   ))
+                }
+                
+              
+            </TouchableOpacity>
+            </CardItem>
+            </Card>
+          </View>
+        </View>
+      </View>
+      </ScrollView>
+    )
+  }
+  else
+  {
+    return (
+    <View style={{paddingTop:height*5/12}}>
+       <ActivityIndicator size={"large"} color={"black"}/>
+    </View>
+    );
+  }
+  
+}
+
+export default withFirebaseHOC(RecordBook);
 
 const styles = StyleSheet.create({
   TouchableOpacityStyle: {
@@ -21,6 +326,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     right: 30,
     bottom: 30,
+    fontFamily:'Proxima-Nova-Bold'
   },
   activeDot: {
     width: 8,
@@ -113,7 +419,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: theme.sizes.font * 2,
-    fontWeight: 'bold'
+    fontFamily:'Proxima-Nova-Bold'
   },
   description: {
     fontSize: theme.sizes.font * 1.2,
@@ -123,226 +429,3 @@ const styles = StyleSheet.create({
     
   }
 });
-
-class RecordBook extends Component {
-
-  constructor(props)
-  {
-    super(props)
-    {
-      //this.renderHeader = this.renderHeader.bind(this);
-      this.state={
-        loading: true, 
-        article: null
-      };
-    }
-    //const ref = firestore().collection('books');
-  }
-  scrollX = new Animated.Value(0);
-
- 
-
-  //component did mount
-  componentDidMount = async () => {
-    try {
-      // Cloud Firestore: Initial Query
-      this.retrieveData();
-      this.setState({
-        loading: false
-
-      })
-    }
-    catch (error) {
-      console.log(error);
-    }
-  };
-
-
-  retrieveData = async () => {
-  
-    console.log('[Record Book] Retrieving Data');
-    try{
-      const bookID = this.props.navigation.state.params.bookID;
-      let bookDoc = await firestore().collection('books').doc(bookID).get();
-      this.setState({
-        article : bookDoc._data
-      });
-    }
-    catch(error){
-      console.log(error)
-    }
-    
-  };
-
-
-  renderDots = () => {
-   // const { navigation } = this.props;
-    const bookid = this.props.navigation.params;
-
-    const dotPosition = Animated.divide(this.scrollX, width);
-
-
-    return (
-      <View style={[ styles.flex, styles.row, styles.dotsContainer ]}>
-        {this.state.article.bookPictures && this.state.article.bookPictures.map((item, index) => {
-          const opacity = dotPosition.interpolate({
-            inputRange: [index - 1, index, index + 1],
-            outputRange: [0.5, 1, 0.5],
-            extrapolate: 'clamp'
-          });
-          return (
-            <Animated.View
-              key={`step-${item}-${index}`}
-              style={[styles.dots, styles.activeDot,{ opacity }]}
-            />
-          )
-        })}
-      </View>
-    )
-  }
-
-  renderRatings = (rating) => {
-    const stars = new Array(5).fill(0);
-    return (
-      stars.map((_, index) => {
-        const activeStar = Math.floor(rating) >= (index + 1);
-        return (
-          <FontAwesome
-            name="star"
-            key={`star-${index}`}
-            size={theme.sizes.font}
-            color={theme.colors[activeStar ? 'active' : 'gray']}
-            style={{ marginRight: 4 }}
-          />
-        )
-      })
-    )
-  }
-
-  render() {
-    const { navigation } = this.props;
-    const bookid = this.props.navigation.state.params;
-  
-
-    if(this.state.article) 
-    { 
-      return (
-        <ScrollView  scrollEventThrottle={16} >
-        <View style={styles.flex,{paddingBottom:height*2/11}}>
-          <View style={[styles.flex]}>
-            <ScrollView
-            horizontal
-            pagingEnabled
-            scrollEnabled
-            showsHorizontalScrollIndicator={false}
-            decelerationRate={0.998}
-            scrollEventThrottle={16}
-            onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX } } }])}
-            useNativeDriver={true}
-          >
-            {/* <View style={{width:width*25/26,height:width,padding:5}}> */}
-            {
-               this.state.article.bookPictures && this.state.article.bookPictures.map((img, index) => 
-                
-                <Image
-                  key={`${index}-${img}`}
-                  source={{ uri: img }}
-                  resizeMode='contain'
-                  style={{ width:width, height: width }}
-                />
-                
-              )
-            }
-            {/* </View> */}
-          </ScrollView>
-          {this.renderDots()}
-        </View>
-        <View style={[styles.flex, styles.content]}>
-          <View style={[styles.flex, styles.contentHeader]}>
-            <View style={{flexDirection:'row'}}>
-              <View>
-            <Text style={styles.title}>{this.state.article.bookName}</Text>
-            <View style={[
-              styles.row,
-              { alignItems: 'center', marginVertical: theme.sizes.margin / 2, flexDirection:'row' }
-            ]}>
-              {this.renderRatings(this.state.article.bookRating)}
-              <Text style={{ color: theme.colors.active }}>
-                {this.state.article.bookRating} 
-              </Text>
-              <View style={{paddingLeft:10}}>
-          
-              </View>
-              </View>
-              </View>
-               
-            </View>
-
-            
-            <View style={{paddingTop:20,paddingBottom:20, paddingLeft:10}}>
-            <TouchableOpacity onPress={()=>this.props.navigation.navigate('SelectScreen',{bookItem:this.state.article,chapterItem:null})}>
-            <View style={{alignItems:'center'}}>  
-             <FontAwesome name="microphone" color={theme.colors.black} size={theme.sizes.font * 2.0} />
-            <Text style={{fontSize:12}}>Record</Text>
-            </View>
-          </TouchableOpacity>
-            </View> 
-
-            <Card style={{borderRadius: 10 ,width:((width*4)/5 ), paddingTop :5}}>
-              <CardItem>
-            <TouchableOpacity>
-              <Text style={{fontSize:20, paddingBottom:10, fontFamily:'san-serif-light'}}>Description</Text>
-              <Text style={{fontSize:15}}>
-                {this.state.article.bookDescription}
-              </Text>
-            </TouchableOpacity>
-            </CardItem>
-            </Card>
-            <Card style={{borderRadius: 10 ,width:((width*4)/5 ), paddingTop :5}}>
-              <CardItem>
-            <TouchableOpacity>
-              <Text style={{fontSize:20, paddingBottom:10, fontFamily:'san-serif-light'}}>Author(s)</Text>
-                {
-                  this.state.article.authors.map(item => (
-                    <Text style={{fontSize:15}}>
-                    {item}
-                    </Text>
-                   ))
-                }
-                
-              
-            </TouchableOpacity>
-            </CardItem>
-            </Card>
-          </View>
-        </View>
-      </View>
-      </ScrollView>
-    )
-  }
-  else
-  {
-    return (
-    <View style={{paddingTop:height*5/12}}>
-       <ActivityIndicator size={"large"} color={"black"}/>
-      {/* <Shimmer>
-      <View style={{backgroundColor:'#dddd', height:height/2}}/>
-      </Shimmer>
-    
-       <View style={{paddingTop:height/6,alignItems:'center'}}>  
-        <FontAwesome name="microphone" color={theme.colors.black} size={theme.sizes.font * 1.5} />
-        <Text style={{fontSize:12}}>Record</Text>
-       </View>
-   
-      <Shimmer>   
-      <View style={{paddingTop:height/24,paddingLeft:width/10,color:'#dddd',flexDirection:'row'}}>
-      <View style={{backgroundColor:'#dddd', height:height,width:width*4/5}}/>
-         </View>
-        </Shimmer> */}
-    </View>
-    );
-  }
-  }
-}
-
-export default withNavigation(RecordBook);

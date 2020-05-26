@@ -1,6 +1,5 @@
 import React, {Component,useState,useEffect} from 'react';
-import UserBookPodcast from '../components/Explore/UserBookPodcast';
-import UserChapterPodcast from '../components/Explore/UserChapterPodcast';
+import UserBookPodcast from '../components/Explore/UserPodcasts';
 import {createMaterialTopTabNavigator} from 'react-navigation-tabs';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { StyleSheet, View, TouchableOpacity, Image,Text, Dimensions, Button, ScrollView} from 'react-native';
@@ -21,7 +20,7 @@ const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? (IS_IPHONE_X ? 44 : 20) : 0;
 const HEADER_HEIGHT = Platform.OS === 'ios' ? (IS_IPHONE_X ? 88 : 64) : 64;
 const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
 
-const followText = "   FOLLOW   ";
+const followText = "  FOLLOW   ";
 const followingText = "   FOLLOWING   ";
 
 
@@ -152,7 +151,7 @@ const CustomUserHeader = (props) => {
       ?
 
       <TouchableOpacity style={{flex:1,fontSize:1,height:SCREEN_HEIGHT/30, width:SCREEN_WIDTH/6,
-        borderRadius:5,borderColor:'black',borderWidth:1, alignItems:'center',justifyContent:'center', backgroundColor:'white'}} onPress={() => {
+        borderRadius:5,borderColor:'black',alignItems:'center',justifyContent:'center',borderWidth:1,textAlign:'center', backgroundColor:'white'}} onPress={() => {
           
           if(message === followText)
           {
@@ -190,7 +189,7 @@ const CustomUserHeader = (props) => {
 
       :
 
-      <TouchableOpacity style={{flex:1,fontSize:1,height:SCREEN_HEIGHT/30, width:SCREEN_WIDTH/5 + 3,
+      <TouchableOpacity style={{flex:1,fontSize:1,height:SCREEN_HEIGHT/30, width:SCREEN_WIDTH/5 + 10,textAlign:'center',
         borderRadius:5,alignItems:'center',justifyContent:'center', backgroundColor:theme.colors.primary}} onPress={() => {
           
           if(message === followText)
@@ -224,7 +223,7 @@ const CustomUserHeader = (props) => {
             console.log("Before retrieve data: ",message)
           retrieveData(message,userid,otherPrivateUserItem,userDisplayPictureURL,name,privateDataID);
 
-        }}><Text style={{fontSize:12,alignItems:'center',justifyContent:'center'}}>{message}</Text>
+        }}><Text style={{fontSize:12,textAlign:'center',alignItems:'center',justifyContent:'center'}}>{message}</Text>
         </TouchableOpacity>
     }    
 

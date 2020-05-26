@@ -252,7 +252,7 @@ const PreviewScreen = (props) => {
   {
     console.log(state);
     
-    if(state.tagsArray.length != tagsLength)  // for trimming last selected tag
+    if(state.tagsArray.length != tagsLength && state.tagsArray.length != 0)  // for trimming last selected tag
     {
       var trimmedTagState = state;
       const trimmedTag = state.tagsArray[state.tagsArray.length - 1].trim();

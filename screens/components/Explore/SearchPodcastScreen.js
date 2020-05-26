@@ -5,6 +5,8 @@ import algoliasearch from "algoliasearch";
 import {withFirebaseHOC} from '../../config/Firebase'
 import {useSelector,useDispatch} from 'react-redux';
 import SearchPodcastItem from './SearchPodcastItem';
+import LottieView from 'lottie-react-native';
+import newAnimation from '../../../assets/animations/lf30_editor_KtvLMb.json';
 
 
 var {width, height}=Dimensions.get('window')
@@ -17,7 +19,7 @@ const SearchPodcastScreen=(props)=>
       algoliaAPPID,
       algoliaAPIKey
     );
-    const index = searchClient.initIndex('prod_podcasts');
+    const index = searchClient.initIndex('dev_podcasts');
 
 
     const initialAuthors  ={
@@ -27,7 +29,7 @@ const SearchPodcastScreen=(props)=>
 
     const searchQuery = useSelector(state=>state.userReducer.algoliaQuery)
     console.log("Search Query: ",searchQuery);
-    const [podcasts,setPodcasts] = useState(null);
+    const [podcasts,setPodcasts] = useState([]);
     const [lastPage,setLastPage] = useState(0);
     const [loading,setLoading] = useState(false);
     const [refreshing,setRefreshing] = useState(false);
@@ -136,23 +138,36 @@ const SearchPodcastScreen=(props)=>
       }
       else
       {
-        return(
+        if(podcasts.length == 0)
+        {
+          return (
+              <LottieView style={{
+              paddingTop:height/6,
+              //marginRight:width*0.22,
+              height: height*12/24}} source={newAnimation} autoPlay loop />
+          )
+        }
+        else
+        {
+          return(
           
-          <FlatList
-          data={podcasts}
-          renderItem={renderDatas}
-          //numColumns={2}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={item => item.objectID}
-          ItemSeparatorComponent={ItemSeperator}
-          //ListHeaderComponent={this.renderHeader}
-          ListFooterComponent={renderFooter}
-          onEndReached={onEndReached}
-          onEndReachedThreshold={0.5}
-          refreshing={refreshing}
-          onMomentumScrollBegin={() => { setOnEndReachedCalledDuringMomentum(false) }}
-        /> 
-        )
+            <FlatList
+            data={podcasts}
+            renderItem={renderDatas}
+            //numColumns={2}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={item => item.objectID}
+            ItemSeparatorComponent={ItemSeperator}
+            //ListHeaderComponent={this.renderHeader}
+            ListFooterComponent={renderFooter}
+            onEndReached={onEndReached}
+            onEndReachedThreshold={0.5}
+            refreshing={refreshing}
+            onMomentumScrollBegin={() => { setOnEndReachedCalledDuringMomentum(false) }}
+          /> 
+          )
+        }
+        
 }
 }
 

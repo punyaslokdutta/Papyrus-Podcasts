@@ -6,6 +6,8 @@ import algoliasearch from "algoliasearch";
 import {withFirebaseHOC} from '../../config/Firebase'
 import {useSelector,useDispatch} from 'react-redux';
 import SearchChapterItem from './SearchChapterItem';
+import LottieView from 'lottie-react-native';
+import newAnimation from '../../../assets/animations/lf30_editor_KtvLMb.json';
 
 
 var {width, height}=Dimensions.get('window')
@@ -19,7 +21,7 @@ const SearchChapterScreen=(props)=>
       algoliaAPPID,
       algoliaAPIKey
     );
-    const index = searchClient.initIndex('prod_chapters');
+    const index = searchClient.initIndex('dev_chapters');
     
     const initialAuthors  ={
       tag: '',
@@ -30,7 +32,7 @@ const SearchChapterScreen=(props)=>
     const fromExploreScreen = useSelector(state=>state.userReducer.isExplorePreviousScreen)
 
     console.log("Search Query: ",searchQuery);
-    const [chapters,setChapters] = useState(null);
+    const [chapters,setChapters] = useState([]);
     const [lastPage,setLastPage] = useState(0);
     const [loading,setLoading] = useState(false);
     const [refreshing,setRefreshing] = useState(false);
@@ -185,15 +187,6 @@ const SearchChapterScreen=(props)=>
             return (
               <View style={{paddingBottom:height/96}}>
                 <View style={[styles.seperator]} />
-              {/* <View style={{alignItems:'center'}}>
-                <Text>{"\n"}Couldn't find your chapter?  </Text>
-                <TouchableOpacity onPress={()=> {
-                  setChapters([]);
-                  props.navigation.navigate('SelectScreen');
-                }}>
-                <Text style={{textDecorationLine: 'underline',color:'rgb(218,165,32)'}}>Proceed to Select Screen to add chapter</Text>
-                </TouchableOpacity>
-                </View> */}
                 </View>
             );
           }
@@ -202,17 +195,6 @@ const SearchChapterScreen=(props)=>
             return (
               <View style={{paddingBottom:height/96}}>
                 <View style={[styles.seperator]} />
-              {/* <View style={{alignItems:'center'}}>
-                <Text>{"\n"}Couldn't find your chapter?  </Text>
-                <TouchableOpacity onPress={()=> {
-                  setChapters([]);
-                  dispatch({type:"SET_FROM_SEARCH_CHAPTER_SCREEN",payload:true});
-                  dispatch({type:"SET_ALGOLIA_QUERY",payload:"dhdbshbdchsbdch"})
-                  props.navigation.navigate('SearchBookScreen');
-                }}>
-                <Text style={{textDecorationLine: 'underline',color:'rgb(218,165,32)'}}>Proceed to SearchBookScreen to add book</Text>
-                </TouchableOpacity>
-                </View> */}
                 </View>
             );
           }
@@ -232,23 +214,36 @@ const SearchChapterScreen=(props)=>
       }
       else
       {
-        return(
+        if(chapters.length == 0)
+        {
+          return (
+            <LottieView style={{
+            paddingTop:height/6,
+            //marginRight:width*0.22,
+            height: height*12/24}} source={newAnimation} autoPlay loop />
+          )
+        }
+        else
+        {
+          return(
           
-          <FlatList
-          data={chapters}
-          renderItem={renderDatas}
-          //numColumns={2}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={item => item.objectID}
-          ItemSeparatorComponent={ItemSeperator}
-          //ListHeaderComponent={this.renderHeader}
-          ListFooterComponent={renderFooter}
-          onEndReached={onEndReached}
-          onEndReachedThreshold={0.5}
-          refreshing={refreshing}
-          onMomentumScrollBegin={() => { setOnEndReachedCalledDuringMomentum(false) }}
-        /> 
-        )
+            <FlatList
+            data={chapters}
+            renderItem={renderDatas}
+            //numColumns={2}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={item => item.objectID}
+            ItemSeparatorComponent={ItemSeperator}
+            //ListHeaderComponent={this.renderHeader}
+            ListFooterComponent={renderFooter}
+            onEndReached={onEndReached}
+            onEndReachedThreshold={0.5}
+            refreshing={refreshing}
+            onMomentumScrollBegin={() => { setOnEndReachedCalledDuringMomentum(false) }}
+          /> 
+          )
+        }
+        
 }
 }
 

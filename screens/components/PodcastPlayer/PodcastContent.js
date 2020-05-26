@@ -15,11 +15,17 @@ import firestore from '@react-native-firebase/firestore';
 import { firebase } from '@react-native-firebase/functions';
 import { Button } from '../categories/components';
 import Toast from 'react-native-simple-toast';
-
+import EvilIcon from 'react-native-vector-icons/EvilIcons';
+import LottieView from 'lottie-react-native';
+import ForwardAnimation from './ForwardAnimation';
+import BackwardAnimation from './BackwardAnimation';
+import PlayPause from './PlayPause';
+import BarsAnimation from './BarsAnimation';
 import * as Animatable from 'react-native-animatable'
 import IconAntDesign from 'react-native-vector-icons/AntDesign'
 import Animated,{Easing} from 'react-native-reanimated';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
+import { TouchableNativeFeedback } from 'react-native-gesture-handler';
 
 //import { styles } from '../categories/components/Block';
 
@@ -41,14 +47,14 @@ const animationEndY = Math.ceil(height);
 const negativeEndY = animationEndY * -1;
 
 const AnimatedIconAntDesign = Animatable.createAnimatableComponent(IconAntDesign)
-const AnimatedIcon = Animatable.createAnimatableComponent(Icon)
+const AnimatedIcon = Animatable.createAnimatableComponent(EvilIcon)
 
 let heartCount = 0;
+
 
 function getRandomNumber(min,max) {
   return Math.random() * (max - min) + min;
 }
-
 
 
  const PodcastContent=(props)=> {
@@ -60,10 +66,10 @@ function getRandomNumber(min,max) {
 
   
   const navBarHeight = useSelector(state=>state.userReducer.navBarHeight);
-
+  const sessionStartListeningTime = useSelector(state=>state.rootReducer.sessionStartListeningTime);
   const rate=useSelector(state=>state.rootReducer.rate);
   const currentTime=useSelector(state=>state.rootReducer.currentTime) 
-
+  const lastPlayingCurrentTime = useSelector(state=>state.userReducer.lastPlayingCurrentTime);
   const paused=useSelector(state=>state.rootReducer.paused);
   const volume=useSelector(state=>state.rootReducer.volume);
 
@@ -81,12 +87,11 @@ function getRandomNumber(min,max) {
 
   const heartsStore = useSelector(state=>state.rootReducer.hearts);
   const [hearts,setHearts] = useState([]);
+  const podcastName = props.podcast.podcastName;
+  var podcastDescription = props.podcast.podcastDescription;
+  if(podcastDescription === undefined || podcastDescription === null)
+    podcastDescription = "";
 
-
-
-  function onShare(){
-    //
-  }
 
   async function buildDynamicURL() {
     const link = await dynamicLinks().buildShortLink({
@@ -185,24 +190,35 @@ function getRandomNumber(min,max) {
   
 
   function skipForward() {
-    video.current.seek(currentTime + 15);
-    dispatch({type:"SET_CURRENT_TIME", payload: currentTime + 15})
+    video.current.seek(currentTime + 10);
+    paused && dispatch({type:"SET_CURRENT_TIME", payload: currentTime + 10})
   }
   function skipBackward() {
-    video.current.seek(currentTime - 15);
-    dispatch({type:"SET_CURRENT_TIME", payload: currentTime -15})
+    video.current.seek(currentTime - 10);
+    paused && dispatch({type:"SET_CURRENT_TIME", payload: currentTime -10})
     
   }
 
   function onLoadEnd(data) {
     dispatch({type:"SET_DURATION", payload: props.podcast.duration})
-    dispatch({type:"RESET_TO_INITIAL"})
+    //dispatch({type:"RESET_TO_INITIAL"})
     dispatch({type:"SET_LOADING_PODCAST", payload:false});
+
+    //dispatch({type:"SET_PAUSED",payload:true});
+    
+    lastPlayingCurrentTime != null && 
+    video.current.seek(lastPlayingCurrentTime) ;
+
+
+    dispatch({type:"SET_LAST_PLAYING_CURRENT_TIME",payload:null});
+    const currentTime = moment().format();
+    dispatch({type:"SET_SESSION_START_LISTENING_TIME",payload:currentTime});
   }
 
  function onSeek(data) {
-  video.current.seek(data.seekTime);
-  dispatch({type:"SET_CURRENT_TIME", payload: data.seekTime})
+  
+    dispatch({type:"SET_CURRENT_TIME", payload: data.seekTime});
+    video.current.seek(data.seekTime);
 }
 function onEnd() {
   dispatch({type:"TOGGLE_PLAY_PAUSED"})
@@ -214,7 +230,15 @@ function onBuffering()
   dispatch({type:"BUFFERING_PODCAST",payload:true})
 }
 
-function handlePlayPause() {
+function handleSlideStart() {
+  // If playing, pause and show controls immediately.
+  if (!paused) {
+    dispatch({type:"TOGGLE_PLAY_PAUSED"})
+    return;
+  }
+}
+
+function handleSlideComplete() {
   // If playing, pause and show controls immediately.
   if (!paused) {
     dispatch({type:"TOGGLE_PLAY_PAUSED"})
@@ -267,6 +291,7 @@ async function addToBookmarks() {
     bookmarkedOn : moment().format(),
     bookName : props.podcast.bookName,
     bookID : props.podcast.bookID,  
+    chapterID : props.podcast.chapterID,
     chapterName : props.podcast.chapterName,
     podcastID : props.podcast.podcastID, 
     podcastName : props.podcast.podcastName,
@@ -281,7 +306,7 @@ async function addToBookmarks() {
       bookmarkID : docRef.id
     },{merge:true})
     
-    Toast.show("Saved to Collections");
+    Toast.show("Reposted");
   }).catch(function(error){
     console.log("Error in adding bookmarks to user's bookmarks collection: ",error);
   })
@@ -327,6 +352,19 @@ async function retrieveUserPrivateDoc()
     
   }
 
+
+function pausePodcast()
+{
+  const totalListeningTime = moment(sessionStartListeningTime).fromNow();
+  console.log("Listening time from last interval: ",totalListeningTime);
+  dispatch({type:"SET_SESSION_START_LISTENING_TIME",payload:0});
+  dispatch({type:"TOGGLE_PLAY_PAUSED"});
+}
+
+function playPodcast()
+{
+  dispatch({type:"TOGGLE_PLAY_PAUSED"}); 
+}
 
 
 
@@ -378,59 +416,77 @@ async function updatePodcastsLiked(props){
     return (
       
         <View style={styles.content}>
-        <View style={{ alignItems: "center"}}>
-        <View style={{ alignItems: "center"}}>
-        <TouchableOpacity style={styles.rateButton} onPress={()=>{
+        <View>
+        <View>
+        {/* <TouchableOpacity style={styles.rateButton} onPress={()=>{
                   //dispatch({type:"TOGGLE_MINI_PLAYER"})
                   parentSlideDown()
                   props.navigation.navigate('InfoScreen', {podcast:props.podcast})
                }}>
                   <Text style={{color:'white', fontSize:12, alignItems: 'center'}}>
                     Read
-              {/* READ ABOUT THIS PODCAST HERE */}
              </Text>
 
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                        
-        <Text style={[styles.textDark, { paddingTop:10,fontSize: 16, fontWeight: "500" }]}>{props.podcast.podcastName}</Text>
+        <Text style={[styles.textDark, {paddingTop:10,fontSize: 24,fontFamily:'Proxima-Nova-Bold' }]}>
+          {podcastName}{"    "}
+          </Text>
     
                     </View>
-                    <View style={{ alignItems: "center", marginTop: 2}}>
+                    <View style={{ marginTop: 2}}>
                       <TouchableOpacity onPress={() => {
                         parentSlideDown();
                         retrieveUserPrivateDoc();
                         }}>
-                    <Text style={[styles.text, { fontSize: 15, marginTop: 2}]}>{props.podcast.podcasterName}</Text>
+                    <Text style={[styles.text, { fontFamily:'Proxima-Nova-Bold',fontSize: 18, marginTop: 2}]}>{props.podcast.podcasterName}</Text>
                     </TouchableOpacity>
                     </View>
+
+              <View style={{height:height/5,paddingTop:10}}>
+                { podcastDescription.length != 0 &&
+                  <TouchableNativeFeedback useForeground={true} onPress={()=>{
+                  //dispatch({type:"TOGGLE_MINI_PLAYER"})
+                  parentSlideDown()
+                  props.navigation.navigate('InfoScreen', {podcast:props.podcast})
+                  }}>
+                      <Text style={{fontFamily:'Proxima-Nova-Regular',color:'white'}}>{podcastDescription.slice(0,300)}</Text>
+                      <Text style={[styles.text,{fontFamily:'Proxima-Nova-Regular'}]}>{podcastDescription.length > 300 && "...Read More"}</Text>
+                  </TouchableNativeFeedback>
+                }
+                <View style={{justifyContent:'flex-end'}}>
+                <BarsAnimation paused={paused} loadingPodcast={loadingPodcast}/>
+                </View>
+                </View>
+
 
         <View  style={{paddingLeft:10}}>
         </View>
         </View>
         
 
-         <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: 16 }}>
-                    <TouchableOpacity  onPress={skipBackward}>
-                    <Icon name="undo"  size={28} label="10" color="white" />
-                    </TouchableOpacity>
+         <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center", marginTop: height/20 }}>
+                    {/* <TouchableOpacity  onPress={skipBackward} style={{paddingRight:width/20}}>
+                    <Icon name="undo"  size={28} label="10" color="white"/>
+                    </TouchableOpacity> */}
+                    <BackwardAnimation skipBackward={skipBackward}/>
                     {loadingPodcast && <View style={styles.playButtonContainer}>
                       <ActivityIndicator size={'large'} color={'black'}/>
                       </View>}
         
-                    {!loadingPodcast && !paused  && <TouchableOpacity style={styles.playButtonContainer}  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
-                      
-                   <IconAntDesign name="pause"  size={28} label="10" color="black"  style={[styles.playButton, { marginLeft: 0 }]}/>
-                   </TouchableOpacity>}
-                   {!loadingPodcast && paused && <TouchableOpacity style={styles.playButtonContainer}  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
-                   <IconAntDesign name="play"  size={28} label="10" color="black"  style={[styles.playButton, { marginLeft: 0 }]}/>
-                   </TouchableOpacity> }
+                    {
+                      !loadingPodcast && <PlayPause loadingPodcast={loadingPodcast}
+                      paused={paused} pausePodcast={pausePodcast} playPodcast={playPodcast}/>
+                    }
   
-                    <TouchableOpacity  onPress={skipForward}>
-                    <Icon name="repeat"  size={28} label="10" color="white" />
-                    </TouchableOpacity>
+                    {/* <TouchableOpacity  onPress={skipForward} style={{paddingLeft:0}}> */}
+                    
+                    <ForwardAnimation skipForward={skipForward}/>
+                    {/* <Icon name="repeat"  size={28} label="10" color="white" /> */}
+                    {/* </TouchableOpacity> */}
                 </View>
 
-            <View style={{alignItems:'center', paddingTop:8}}>
+            <View style={{alignItems:'center', paddingTop:16}}>
     <TouchableOpacity style={styles.rateButton} onPress={(()=>dispatch({type:"SET_RATE",payload: rate+0.25}))}><Text style={{color:'white', fontSize:12, alignItems: 'center'}}>x{rate}</Text></TouchableOpacity>
               
             </View>
@@ -467,19 +523,21 @@ async function updatePodcastsLiked(props){
             </View>
          
  
-          <View style={{paddingTop:height/50}}> 
+          <View style={{paddingTop:height/30,paddingBottom:height/20}}> 
           <ProgressBar
                 duration={props.podcast.duration}
-                onSlideStart={handlePlayPause}
-                onSlideComplete={handlePlayPause}
+                onSlideStart={handleSlideStart}
+                onSlideComplete={handleSlideComplete}
                 onSlideCapture={onSeek}
+                loadingPodcast={loadingPodcast}
+                videoRef={video}
               />
           
          </View>
          <View style={{paddingBottom:navBarHeight + 20,flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop:height/12}}>
+    paddingTop:height/40}}>
 
            
 
@@ -508,9 +566,9 @@ async function updatePodcastsLiked(props){
                 <TouchableOpacity onPress={() => handleOnPressBookmark()}>
                   <AnimatedIcon
                     ref={handleSmallAnimatedBookmarkIconRef}
-                    name={bookmarked ? 'bookmark' : 'bookmark-o'}
-                    color={bookmarked ? 'white' : 'white'}
-                    size={20}
+                    name={bookmarked ? 'retweet' : 'retweet'}
+                    color={bookmarked ? '#3879ab' : 'white'}
+                    size={30}
                     style={{height:30,width:30}}
                   />
                 </TouchableOpacity>
@@ -558,22 +616,19 @@ const areEqual = (prevProps, nextProps) => {
 };
 
 const HeartContainer = React.memo((props)=> {
-  const [position,setPosition] = useState(new Animated.Value(0));
-  // var [yAnimation,setYAnimation] = useState();
-    //var [opacityAnimation,setOpacityAnimation] = useState();
+  const [position] = useState(new Animated.Value(0));
+   var [yAnimation,setYAnimation] = useState(new Animated.Value(0));
+  var [opacityAnimation,setOpacityAnimation] = useState(new Animated.Value(1));
   useEffect(() => {
-      position.interpolate({
-      inputRange : [negativeEndY, 0],
-      outputRange : [animationEndY,0]
-    });
+    //   position.interpolate({
+    //   inputRange : [negativeEndY, 0],
+    //   outputRange : [animationEndY,0]
+    // });
     
     // setOpacityAnimation(position.interpolate({
     //   inputRange : [0, animationEndY],
     //   outputRange : [1,0]
     // }));
-
-  
-
     Animated.timing(position, {
       duration : 2000,
       toValue : negativeEndY,
@@ -582,10 +637,29 @@ const HeartContainer = React.memo((props)=> {
     }).start(props.onComplete);
   },[])
 
+  // useEffect(()=> {
+  //   setYAnimation(position.interpolate({
+  //     inputRange : [negativeEndY, 0],
+  //     outputRange : [animationEndY,0]
+  //   }));
+  // },[position])
+
+
+  // useEffect(() => {
+  //   setOpacityAnimation(yAnimation.interpolate({
+  //     inputRange : [0, animationEndY],
+  //     outputRange : [1,0]
+  //   }))
+  // },[yAnimation])
+
+   
+
+        
+
   function getHeartStyle() {
     return {
       transform: [{ translateY : position}],
-      opacity: 0.7
+      opacity: 0.8
     };
   }
 
@@ -614,7 +688,7 @@ const styles = StyleSheet.create({
   content: {
     padding: 8,
     backgroundColor:'#212121',
-    height:height*15/24
+    height:height*18/24
   },
   title: {
     fontSize: 16,
@@ -651,7 +725,7 @@ const styles = StyleSheet.create({
     justifyContent:'center', 
     height:height/30, 
     width:(width*7)/70, 
-    borderRadius:10, 
+    borderRadius:5, 
     borderColor:'rgba(255, 255, 255, 0.5)', 
     borderWidth: 1
 
@@ -692,8 +766,8 @@ playButtonContainer: {
   backgroundColor: "#FFF",
   borderColor: "black",
   borderWidth: 2,
-  width: 80,
-  height: 80,
+  width: height/10,
+  height: height/10,
   borderRadius: 64,
   justifyContent: "center",
   marginHorizontal: 32,

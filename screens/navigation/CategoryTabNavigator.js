@@ -42,12 +42,12 @@ const CustomCategoryHeader = props => {
 
 const CategoryTabNavigator = createMaterialTopTabNavigator(
     {
-      CategoryPodcast: {screen:CategoryPodcast, navigationOptions:{
-        tabBarLabel:'Podcasts',
-        tabBarIcon:({tintColor})=>(
-          <Icon name="newspaper-o" color={tintColor} size={20}/>
-        )
-      }}, 
+      // CategoryPodcast: {screen:CategoryPodcast, navigationOptions:{
+      //   tabBarLabel:'Podcasts',
+      //   tabBarIcon:({tintColor})=>(
+      //     <Icon name="newspaper-o" color={tintColor} size={20}/>
+      //   )
+      // }}, 
        CategoryBook:{ screen: CategoryBook,navigationOptions:{
         tabBarLabel:'books',
         tabBarIcon:({tintColor})=>(

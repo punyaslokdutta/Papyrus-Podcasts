@@ -30,6 +30,13 @@ const setUserDetails = (props) => {
         
         doc._data.podcastsLiked && dispatch({type:'SET_PODCASTS_LIKED',payload:doc._data.podcastsLiked})
         doc._data.podcastsBookmarked && dispatch({type:'SET_PODCASTS_BOOKMARKED',payload:doc._data.podcastsBookmarked})
+        doc._data.booksBookmarked && dispatch({type:'SET_BOOKS_BOOKMARKED',payload:doc._data.booksBookmarked})
+        doc._data.chaptersBookmarked && dispatch({type:'SET_CHAPTERS_BOOKMARKED',payload:doc._data.chaptersBookmarked})
+        doc._data.bookmarksCountArray && dispatch({type:'SET_BOOKMARKS_COUNT_ARRAY',payload:doc._data.bookmarksCountArray})
+        doc._data.likesCountArray != null && doc._data.likesCountArray != undefined
+         && dispatch({type:'SET_LIKES_COUNT_ARRAY',payload:doc._data.likesCountArray})
+        doc._data.lastPlayingPodcastID && dispatch({type:'SET_LAST_PLAYING_PODCASTID',payload:doc._data.lastPlayingPodcastID})
+        doc._data.lastPlayingCurrentTime && dispatch({type:'SET_LAST_PLAYING_CURRENT_TIME',payload:doc._data.lastPlayingCurrentTime})
 
         doc._data.email && dispatch({type:'CHANGE_EMAIL',payload:doc._data.email})
         doc._data.name && dispatch({type:'CHANGE_NAME',payload:doc._data.name})
@@ -44,6 +51,7 @@ const setUserDetails = (props) => {
         doc._data.totalMinutesRecorded && dispatch({type:'UPDATE_TOTAL_MINUTES_RECORDED',payload: doc._data.totalMinutesRecorded})
         doc._data.numNotifications && dispatch({type:'ADD_NUM_NOTIFICATIONS',payload: doc._data.numNotifications});
         doc._data.userPreferences.length && dispatch({type:"SET_USER_PREFERENCES",payload:doc._data.userPreferences});
+      
         console.log("WEBSITE: ",doc._data.website);
     }
     catch(error)

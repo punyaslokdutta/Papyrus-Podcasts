@@ -6,6 +6,8 @@ import {useDispatch, useSelector} from "react-redux"
 import firestore from '@react-native-firebase/firestore';
 import { withFirebaseHOC } from './config/Firebase';
 import moment from 'moment';
+import Toast from 'react-native-simple-toast';
+
 var {width, height}=Dimensions.get('window')
 
  const areEqual = (prevProps, nextProps) => true
@@ -22,21 +24,27 @@ const ActivityItem = React.memo((props)=> {
   async function retrievePodcast(podcastID)
   {
     try{
-      const podcastCollection = await firestore().collectionGroup('podcasts').where('podcastID','==',podcastID).get();
-      console.log("[ActivityItem] podcastCollection : ", podcastCollection);
-      const podcastDocumentData = podcastCollection.docs[0]._data;
-      console.log("[ActivityItem] podcastDocumentData : ", podcastDocumentData);
-      dispatch({type:"SET_CURRENT_TIME", payload:0})
-      dispatch({type:"SET_PAUSED", payload:false})
-      dispatch({type:"SET_LOADING_PODCAST", payload:true});
-      dispatch({type:"SET_DURATION", payload:podcastDocumentData.duration})
-      dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
-      podcast === null && dispatch({type:"SET_MINI_PLAYER_FALSE"});
-      dispatch({type:"SET_PODCAST", payload: podcastDocumentData})
-      dispatch({type:"SET_NUM_LIKES", payload: podcastDocumentData.numUsersLiked})
+      if(podcast === null || (podcast!== null && podcast.podcastID != podcastID))
+      {
+        const podcastCollection = await firestore().collectionGroup('podcasts').where('podcastID','==',podcastID).get();
+        console.log("[ActivityItem] podcastCollection : ", podcastCollection);
+        const podcastDocumentData = podcastCollection.docs[0]._data;
+        console.log("[ActivityItem] podcastDocumentData : ", podcastDocumentData);
+        dispatch({type:"SET_CURRENT_TIME", payload:0})
+        dispatch({type:"SET_PAUSED", payload:false})
+        dispatch({type:"SET_LOADING_PODCAST", payload:true});
+        dispatch({type:"SET_DURATION", payload:podcastDocumentData.duration})
+        dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
+        podcast === null && dispatch({type:"SET_MINI_PLAYER_FALSE"});
+        dispatch({type:"SET_PODCAST", payload: podcastDocumentData})
+        dispatch({type:"SET_NUM_LIKES", payload: podcastDocumentData.numUsersLiked})
+      }
+      
     }
     catch(error){
       console.log("Error in retrievePodcast() in ActivityItem: ",error);
+      Toast.show('This podcast has been deleted');
+
     }
   }
 
@@ -65,6 +73,7 @@ const ActivityItem = React.memo((props)=> {
     }
     catch(error){
       console.log("Error in retrieveUser() in ActivityItem: ",error);
+      console.log("This user account does not exist anymore");
     }
     
 
@@ -75,10 +84,10 @@ const ActivityItem = React.memo((props)=> {
   console.log("[Activity Item] props in Activity Item: ",props);
 
   let activityText = <Text>{props.activity.actorName} liked your podcast -
-  <Text style={{fontWeight:"bold"}}>{props.activity.podcastName}.</Text>
+  <Text style={{fontFamily:'Proxima-Nova-Bold'}}>{props.activity.podcastName}</Text>
   </Text>
   if(props.activity.type == "follow")
-    activityText = <Text>{props.activity.actorName} started following you.</Text>
+    activityText = <Text style={{}}>{props.activity.actorName} started following you</Text>
     
 
 
@@ -123,8 +132,7 @@ const ActivityItem = React.memo((props)=> {
           </View>
           <View style={{flexDirection:'row'}}>
           <TouchableOpacity onPress={() => {
-            console.log("podcastClicked")
-            
+            console.log("podcastClicked");
               retrievePodcast(props.activity.podcastID);
             }}>
                <View style={{flexDirection:'row'}}>

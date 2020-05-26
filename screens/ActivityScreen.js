@@ -3,6 +3,8 @@
 import React, {Component, useState,useEffect} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import { StyleSheet, Text, View,ActivityIndicator,Dimensions} from 'react-native';
+import LottieView from 'lottie-react-native';
+import newAnimation from '../assets/animations/lf30_editor_rnKCaq.json';
 
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -173,22 +175,37 @@ const ActivityScreen = (props) => {
   }
   else
   {
-    return ( 
-      <FlatList 
-            nestedScrollEnabled={true}
-            data={activities}
-            renderItem={renderData}
-            showsVerticalScrollIndicator={false}
-            keyExtractor={item => item.activityID}
-            ListHeaderComponent={renderHeader}
-            ListFooterComponent={renderFooter}
-            ItemSeparatorComponent={separator}
-            onEndReached={onEndReached}
-            onEndReachedThreshold={0.01}
-            refreshing={refreshing}
-            onMomentumScrollBegin={() => { setOnEndReachedCalledDuringMomentum(false) }}
-     />   
-   );
+    if(activities.length == 0)
+    {
+      return (
+        <View>
+        {renderHeader()}
+        <LottieView style={{
+          paddingTop:height/4,
+          paddingLeft:width*0.12,
+          height: height*10/24}} source={newAnimation} autoPlay loop />
+        </View>
+      )
+    }
+    else
+    {
+      return ( 
+        <FlatList 
+              nestedScrollEnabled={true}
+              data={activities}
+              renderItem={renderData}
+              showsVerticalScrollIndicator={false}
+              keyExtractor={item => item.activityID}
+              ListHeaderComponent={renderHeader}
+              ListFooterComponent={renderFooter}
+              ItemSeparatorComponent={separator}
+              onEndReached={onEndReached}
+              onEndReachedThreshold={0.01}
+              refreshing={refreshing}
+              onMomentumScrollBegin={() => { setOnEndReachedCalledDuringMomentum(false) }}
+       />   
+     );
+    }
   }
 
   }

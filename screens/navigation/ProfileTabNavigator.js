@@ -1,13 +1,16 @@
 import React, {Component} from 'react';
-import ProfileBookPodcast from '../components/Profile/ProfileBookPodcast';
-import ProfileChapterPodcast from '../components/Profile/ProfileChapterPodcast';
-import BookmarkScreen from '../BookmarkScreen';
+import ProfilePodcasts from '../components/Profile/ProfilePodcasts';
+import BookmarkScreenPodcasts from '../BookmarkScreenPodcasts';
+import BookmarkScreenBooks from '../BookmarkScreenBooks'
 import {createMaterialTopTabNavigator} from 'react-navigation-tabs';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView} from 'react-native';
 import { Block, Text } from '../components/categories/components'
 import { theme } from '../components/categories/constants';
 import CustomProfileHeader from './CustomProfileHeader';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import EvilIcon from 'react-native-vector-icons/EvilIcons';
+import Octicon from 'react-native-vector-icons/Octicons';
 
 var {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
 const IS_IPHONE_X = SCREEN_HEIGHT === 812 || SCREEN_HEIGHT=== 896;
@@ -18,26 +21,30 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
 
 const ProfileTabNavigator =createMaterialTopTabNavigator(
     {
-      BookmarkScreen: {screen:BookmarkScreen, navigationOptions:{
+      BookmarkScreenBooks: {screen:BookmarkScreenBooks, navigationOptions:{
         tabBarLabel:'Saved    ',
         tabBarIcon:({tintColor})=>(
           <Icon name="bookmark" color={tintColor} size={20}/>
         )
       }},
-       ProfileBookPodcast:{ screen: ProfileBookPodcast,navigationOptions:{
-        tabBarLabel:'Books',
+      BookmarkScreenPodcasts: {screen:BookmarkScreenPodcasts, navigationOptions:{
+        tabBarLabel:'Reposts',
         tabBarIcon:({tintColor})=>(
-          <Icon name="book" color={tintColor} size={20}/>
+          <EvilIcon name="retweet" color={tintColor} size={30}/>
+        )
+      }},
+      ProfilePodcasts:{ screen: ProfilePodcasts,navigationOptions:{
+        tabBarLabel:'My Podcasts',
+        tabBarIcon:({tintColor})=>(
+          <FontAwesome5Icon name="microphone-alt" color={tintColor} size={25}/>
         )
       }}, 
-       ProfileChapterPodcast: {screen:ProfileChapterPodcast, navigationOptions:{
-        tabBarLabel:'Chapters',
-        tabBarIcon:({tintColor})=>(
-          <Icon name="newspaper-o" color={tintColor} size={20}/>
-        )
-      }}
-      
-    
+      // StatsScreen:{ screen: StatsScreen,navigationOptions:{
+      //   tabBarLabel:'Stats',
+      //   tabBarIcon:({tintColor})=>(
+      //     <Octicon name="graph" color={tintColor}  size={25}/>
+      //   )
+      // }}
     },
     {tabBarOptions:{
       showIcon: true,

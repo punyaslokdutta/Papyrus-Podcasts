@@ -14,11 +14,15 @@ const INITIAL_STATE = {
   numLikes: 0,
   loadingPodcast: false,
   videoRef: null,
-  hearts: []
+  hearts: [],
+  sessionStartListeningTime: 0
 };
 
 function rootReducer(state = INITIAL_STATE, action)  {
   switch (action.type) {
+    case "SET_SESSION_START_LISTENING_TIME":
+          console.log("[REDUX] sessionStartListeningTime: ",action.payload);
+          return {...state,sessionStartListeningTime:action.payload}
     case "REMOVE_ALL_HEARTS":
         console.log("REMOVE_ALL_HEARTS");
         return {...state,hearts:[] }

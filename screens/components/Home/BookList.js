@@ -12,14 +12,149 @@ import {
   TouchableOpacity, 
   Animated
 } from 'react-native'
+import Carousel,{getInputRangeFromIndexes,Pagination} from 'react-native-snap-carousel';
+
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Octicons from 'react-native-vector-icons/Octicons';
 //import Animated, { Easing } from 'react-native-reanimated';
 
 import * as theme from '../constants/theme';
 import RecordBook from '../../RecordBook'
+import BookItem from './BookItem';
 //const AnimatedFlatList = Animated.createAnimatedComponent(FlatList)
 const { width, height } = Dimensions.get('window');
+
+class BookList extends Component {
+  constructor(props)
+  {
+    super(props)
+    {
+    this.state={
+       activeSlide : 0
+    }
+    }    
+  }
+
+  scrollX = new Animated.Value(0);
+
+
+  get pagination () {
+    const { activeSlide } = this.state;
+    return (
+        <Pagination
+          dotsLength={this.props.books.length}
+          activeDotIndex={activeSlide}
+          containerStyle={{ backgroundColor: 'white' }}
+          dotStyle={{
+              width: 10,
+              height: 10,
+              borderRadius: 5,
+              //marginHorizontal: 8,
+              backgroundColor: 'black'
+          }}
+          inactiveDotStyle={{
+              // Define styles for inactive dots here
+          }}
+          inactiveDotOpacity={0.4}
+          inactiveDotScale={0.6}
+        />
+    );
+}
+
+  renderDots() {
+    console.log(this.props.books)
+    const  books  = this.props.books;
+      console.log("Swayam")
+      console.log(books)
+    
+    const dotPosition = this.state.activeSlide;//Animated.divide(this.scrollX, width);
+    console.log("dotPosition: ",dotPosition);
+    return (
+      <View style={[
+        styles.flex, styles.row,
+        { justifyContent: 'center', alignItems: 'center', marginTop: 10 }
+      ]}>
+        {   books.map((item, index) => {
+          // const borderWidth = dotPosition.interpolate({
+          //   inputRange: [index -1, index, index + 1],
+          //   outputRange: [0, 2.5, 0],
+          //  // extrapolate: 'clamp'
+          // });
+          return (
+            <View
+              key={`step-${index}`}
+              style={[styles.dots, styles.activeDot ]}
+            />
+          )
+        })}
+        
+      </View>
+      
+    )
+  }
+
+  
+
+  renderBooks = () => {
+    return (
+      <View style={[ styles.column, styles.books ]}>
+        {/* <FlatList
+          horizontal
+          //pagingEnabled
+          scrollEnabled
+          showsHorizontalScrollIndicator={false}
+          decelerationRate={0}
+          scrollEventThrottle={50}
+          snapToInterval={width - 50} 
+          snapToAlignment={"center"}
+          style={{ overflow:'visible', height: 280 }}
+          data={this.props.books}
+          keyExtractor={(item, index) => `${item.bookID}`}
+          onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX }} }])}
+          renderItem={({ item }) => this.renderBook(item)}
+        /> */}
+        <Carousel
+              ref={(c) => { this._carousel = c; }}
+              data={this.props.books}
+              //scrollInterpolator={this.scrollInterpolator}
+              //slideInterpolatedStyle={this.animatedStyles}
+              renderItem={this.renderBook}
+              sliderWidth={width}
+              onSnapToItem={(index) => this.setState({ activeSlide: index }) }
+              itemWidth={width}
+            />
+        {this.pagination}
+      </View>      
+    );
+  }
+
+  renderBook = ({item,index}) => {
+    //const { navigation } = this.props;
+    console.log("dwdeeedee")
+    console.log(item)     
+    return (
+      <BookItem item={item} navigation={this.props.navigation}/>
+    )
+  }
+
+  
+  
+
+  render() {
+    return (
+      <View key ={this.props.index}
+      >
+        {this.renderBooks()}
+      </View>
+    )
+  }
+}
+
+// BookList.defaultProps = {
+//   books: mocks
+// };
+
+export default BookList;
 
 const styles = StyleSheet.create({
   flex: {
@@ -139,134 +274,3 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.active,
   }
 });
-
-class BookList extends Component {
-  constructor(props)
-    {
-        super(props);
-    }
-
-  scrollX = new Animated.Value(0);
-
-  renderDots() {
-    console.log(this.props.books)
-    const  books  = this.props.books;
-      console.log("Swayam")
-      console.log(books)
-    
-    const dotPosition = Animated.divide(this.scrollX, width);
-    console.log("dorPosition: ",dotPosition);
-    return (
-      <View style={[
-        styles.flex, styles.row,
-        { justifyContent: 'center', alignItems: 'center', marginTop: 10 }
-      ]}>
-        {   books.map((item, index) => {
-          const borderWidth = dotPosition.interpolate({
-            inputRange: [index -1, index, index + 1],
-            outputRange: [0, 2.5, 0],
-           // extrapolate: 'clamp'
-          });
-          return (
-            <Animated.View
-              key={`step-${index}`}
-              style={[styles.dots, styles.activeDot, { borderWidth: borderWidth } ]}
-            />
-          )
-        })}
-        
-      </View>
-      
-    )
-  }
-
-  renderRatings(rating) {
-    const stars = new Array(5).fill(0);
-    return (
-      stars.map((_, index) => {
-        const activeStar = Math.floor(rating) >= (index + 1);
-        return (
-          <FontAwesome
-            name="star"
-            key={`star-${index}`}
-            size={theme.sizes.font}
-            color={theme.colors[activeStar ? 'active' : 'gray']}
-          />
-        )
-      })
-    )
-  }
-
-  renderBooks = () => {
-    return (
-      <View style={[ styles.column, styles.books ]}>
-        <FlatList
-          horizontal
-          //pagingEnabled
-          scrollEnabled
-          showsHorizontalScrollIndicator={false}
-          decelerationRate={0}
-          scrollEventThrottle={50}
-          snapToInterval={width - 50} 
-          snapToAlignment={"center"}
-          style={{ overflow:'visible', height: 280 }}
-          data={this.props.books}
-          keyExtractor={(item, index) => `${item.bookID}`}
-          onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX }} }])}
-          renderItem={({ item }) => this.renderBook(item)}
-        />
-        {this.renderDots()}
-      </View>      
-    );
-  }
-
-  renderBook = item => {
-    //const { navigation } = this.props;
-    console.log("dwdeeedee")
-    console.log(item)     
-    return (
-      <TouchableOpacity activeOpacity={0.8} onPress={() => this.props.navigation.navigate('RecordBook', { bookID : item.bookID })}>
-        <ImageBackground
-          style={[styles.flex, styles.destination,styles.shadow]}
-          imageStyle={{ borderRadius: theme.sizes.radius }}
-          source={{ uri: item.bookPictures['0'] }}
-        >
-        </ImageBackground>
-          <View style={[styles.column, styles.destinationInfo, styles.shadow]}>
-            <Text style={{ fontSize: theme.sizes.font * 1.25, fontWeight: '500', paddingBottom: 8, }}>
-              {item.bookName}
-            </Text>
-            <View style={[ styles.row, { justifyContent: 'space-between', alignItems: 'flex-end', }]}>
-              <Text style={{ color: theme.colors.caption }}>
-                {item.bookDescription.split('').slice(0, 30)}
-                {(item.bookDescription.length > 30) ? "..." : ""}
-              </Text>
-              <FontAwesome
-                name="chevron-right"
-                size={theme.sizes.font * 0.75}
-                color={theme.colors.caption}
-              />
-            </View>
-          </View>
-      </TouchableOpacity>
-    )
-  }
-
-  
-  
-
-  render() {
-    return (
-      <View key ={this.props.index}
-      >
-        {this.renderBooks()}
-      </View>
-    )
-  }
-}
-
-// BookList.defaultProps = {
-//   books: mocks
-// };
-
-export default BookList;

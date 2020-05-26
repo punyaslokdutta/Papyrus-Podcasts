@@ -10,6 +10,8 @@ const INITIAL_STATE = {
     followingList:[],
     isPodcastLiked: {},
     isPodcastBookmarked : {},
+    isBookBookmarked: {},
+    isChapterBookmarked: {},
     isUserFollowing: {},
     introduction : null,
     numCreatedBookPodcasts : 0,
@@ -30,15 +32,36 @@ const INITIAL_STATE = {
     algoliaAPPID: null,
     algoliaAPIKey: null,
     externalPodcastID: null,
-    navBarHeight:0
+    navBarHeight:0,
+    bookmarksCountArray:[],
+    likesCountArray: [],
+    lastPlayingPodcastID: null,
+    lastPlayingCurrentTime: null
   };
   
   function userReducer(state = INITIAL_STATE, action)  {
     switch (action.type) {
+        case "SET_LAST_PLAYING_CURRENT_TIME":
+            console.log("lastPlayingCurrentTime : ",action.payload);
+            return {...state,lastPlayingCurrentTime:action.payload}
+        case "SET_LAST_PLAYING_PODCASTID":
+            console.log("lastPlayingPodcastID : ",action.payload);
+            return {...state,lastPlayingPodcastID:action.payload}
+        case "SET_LIKES_COUNT_ARRAY":
+            console.log("[REDUX] likesCountArray: ",action.payload);
+            return {...state,likesCountArray:action.payload}
+        case "CLEAR_LIKES_COUNT_ARRAY":
+            return {...state,likesCountArray:[]}
+        case "SET_BOOKMARKS_COUNT_ARRAY":
+            console.log("[REDUX] bookmarksCountArray: ",action.payload);
+            return {...state,bookmarksCountArray:action.payload}
+        case "CLEAR_BOOKMARKS_COUNT_ARRAY":
+            return {...state,bookmarksCountArray:[]}
         case "SET_NAV_BAR_HEIGHT":
             console.log("state.navBarHeight: ",action.payload);
             return {...state,navBarHeight:action.payload}
         case "PODCAST_ID_FROM_EXTERNAL_LINK":
+            console.log("REDUX EXTERNAL_PODCAST_ID: ",action.payload);
             return {...state,externalPodcastID:action.payload}
         case "SET_ALGOLIA_API_KEY":
             return {...state,algoliaAPIKey:action.payload}
@@ -84,10 +107,24 @@ const INITIAL_STATE = {
               }
             return state;
         case "SET_PODCASTS_BOOKMARKED":
-            let bookmark_list = action.payload;
-            let length_bookmark_list = bookmark_list.length;
-            for (i = 0; i < length_bookmark_list; i++) {
-                state.isPodcastBookmarked[bookmark_list[i]] = true;
+            let bookmark_list_podcasts = action.payload;
+            let length_bookmark_list_podcasts = bookmark_list_podcasts.length;
+            for (i = 0; i < length_bookmark_list_podcasts; i++) {
+                state.isPodcastBookmarked[bookmark_list_podcasts[i]] = true;
+                }
+            return state;
+        case "SET_BOOKS_BOOKMARKED":
+            let bookmark_list_books = action.payload;
+            let length_bookmark_list_books = bookmark_list_books.length;
+            for (i = 0; i < length_bookmark_list_books; i++) {
+                state.isBookBookmarked[bookmark_list_books[i]] = true;
+                }
+            return state;
+        case "SET_CHAPTERS_BOOKMARKED":
+            let bookmark_list_chapters = action.payload;
+            let length_bookmark_list_chapters = bookmark_list_chapters.length;
+            for (i = 0; i < length_bookmark_list_chapters; i++) {
+                state.isChapterBookmarked[bookmark_list_chapters[i]] = true;
                 }
             return state;
         case "ADD_TO_PODCASTS_LIKED":
@@ -96,9 +133,21 @@ const INITIAL_STATE = {
         case "ADD_TO_PODCASTS_BOOKMARKED":
             state.isPodcastBookmarked[action.payload] = true;
             return state;
+        case "ADD_TO_BOOKS_BOOKMARKED":
+            state.isBookBookmarked[action.payload] = true;
+            return state;
+        case "ADD_TO_CHAPTERS_BOOKMARKED":
+            state.isChapterBookmarked[action.payload] = true;
+            return state;
         case "REMOVE_FROM_PODCASTS_BOOKMARKED":
             state.isPodcastBookmarked[action.payload] = false;
-            return state;    
+            return state; 
+        case "REMOVE_FROM_BOOKS_BOOKMARKED":
+            state.isBookBookmarked[action.payload] = false;
+            return state;
+        case "REMOVE_FROM_CHAPTERS_BOOKMARKED":
+            state.isChapterBookmarked[action.payload] = false;
+            return state;  
         case "CHANGE_USER_NAME":
             return {...state, userName:action.payload}
         case "CHANGE_DISPLAY_PICTURE":
@@ -140,6 +189,10 @@ const INITIAL_STATE = {
             return {...state,isPodcastLiked:{}}
         case "CLEAR_PODCASTS_BOOKMARKED":
             return {...state,isPodcastBookmarked:{}}
+        case "CLEAR_BOOKS_BOOKMARKED":
+            return {...state,isBookBookmarked:{}}
+        case "CLEAR_CHAPTERS_BOOKMARKED":
+            return {...state,isChapterBookmarked:{}}
         default:
             return state;
     }

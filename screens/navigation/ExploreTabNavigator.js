@@ -1,15 +1,17 @@
 
 import React, {Component,useState} from 'react';
-import UserBookPodcast from '../components/Explore/UserBookPodcast';
-import UserChapterPodcast from '../components/Explore/UserChapterPodcast';
+import UserPodcasts from '../components/Explore/UserPodcasts';
+import UserBookmarks from '../components/Explore/UserBookmarks';
+import UserReposts from '../components/Explore/UserReposts';
+
 import {createMaterialTopTabNavigator} from 'react-navigation-tabs';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView} from 'react-native';
-import { Block, Text } from '../components/categories/components'
 import { theme } from '../components/categories/constants';
-import UserStatsScreen from '../components/Explore/UserStatsScreen'
-import { withFirebaseHOC } from '../config/Firebase';
 import CustomUserHeader from './CustomUserHeader';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5'
+import EvilIcon from 'react-native-vector-icons/EvilIcons';
+
 
 
 var {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
@@ -20,18 +22,25 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
   
   const ExploreTabNavigator = createMaterialTopTabNavigator(
     {
-      UserBookPodcast : { screen: props => <UserBookPodcast {...props}/>,navigationOptions:{
-        tabBarLabel:'books',
+      UserBookmarks: {screen:UserBookmarks, navigationOptions:{
+        tabBarLabel:'Saved    ',
         tabBarIcon:({tintColor})=>(
-          <Icon name="book" color={tintColor} size={20}/>
+          <Icon name="bookmark" color={tintColor} size={20}/>
         )
       }},
-      UserChapterPodcast : { screen: props => <UserChapterPodcast {...props}/>,navigationOptions:{
-        tabBarLabel:'Chapters',
+      UserReposts: {screen:UserReposts, navigationOptions:{
+        tabBarLabel:'Reposts',
         tabBarIcon:({tintColor})=>(
-          <Icon name="newspaper-o" color={tintColor} size={20}/>
+          <EvilIcon name="retweet" color={tintColor} size={30}/>
         )
-      }}
+      }},
+      UserPodcasts : { screen: props => <UserPodcasts {...props}/>,navigationOptions:{
+        tabBarLabel:'Podcasts   ',
+        tabBarIcon:({tintColor})=>(
+          <FontAwesome5Icon name="microphone-alt" color={tintColor} size={25}/>
+        )
+      }},
+
     },
     {tabBarOptions:{
     
@@ -59,7 +68,7 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
        {
          tabBarVisible: true,
          headerVisible: true,
-         initialRouteName:'UserChapterPodcast',
+         initialRouteName:'UserBookmarks',
         header: props => <CustomUserHeader {...props} />, 
          
        }

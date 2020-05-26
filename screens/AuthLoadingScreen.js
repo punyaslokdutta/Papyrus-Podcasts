@@ -7,6 +7,7 @@ import {withFirebaseHOC} from '../screens/config/Firebase'
 import setUserDetails from './setUserDetails';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { useDispatch } from 'react-redux';
+import dynamicLinks from '@react-native-firebase/dynamic-links';
 
 const {width,height} = Dimensions.get('window')
 
@@ -17,28 +18,52 @@ const  AuthLoadingScreen = (props) => {
   
     async function handleDeepLinkingRequests ()
     { 
-      Linking.getInitialURL().then(url => { //
+      dynamicLinks().getInitialLink().then(url => {
+        // Your custom logic here 
+        console.log("[getInitialUrl] DYNAMIC LINK URL: ",url)
         if (url) {
           console.log("Linking.getInitialURL() : ",url);
           const prefix = "https://papyrusapp.page.link/player/";
           const prefixLength = prefix.length;
-          const podcastID = url.slice(prefixLength);
+          const podcastID = url["url"].slice(prefixLength);
           console.log("[AUTH LOADING] Linking.getInitialURL() podcastID: ",podcastID);
           dispatch({type:"PODCAST_ID_FROM_EXTERNAL_LINK",payload:podcastID});
         }
-      })
-      .catch(error => { // Error handling });
-      console.log(error);
-      })
+     }).catch(error => { // Error handling });
+     console.log(error);
+     })
+
+      // Linking.getInitialURL().then(url => { //
+        
+       
+
+      //   if (url) {
+      //     console.log("Linking.getInitialURL() : ",url);
+      //     const prefix = "https://papyrusapp.page.link/player/";
+      //     const prefixLength = prefix.length;
+      //     const podcastID = url.slice(prefixLength);
+      //     console.log("[AUTH LOADING] Linking.getInitialURL() podcastID: ",podcastID);
+      //     dispatch({type:"PODCAST_ID_FROM_EXTERNAL_LINK",payload:podcastID});
+      //   }
+      // })
+      // .catch(error => { // Error handling });
+      // console.log(error);
+      // })
     }
       
-    async function handleOpenURL(url){
-      console.log("[AUTH LOADING] handleOpenURL url: ",url["url"]);
-      const prefix = "https://papyrusapp.page.link/player/";
+    async function handleOpenURL(event){
+
+      dynamicLinks().onLink(url => {
+        // Your custom logic here 
+        console.log("DYNAMIC LINK URL: ",url)
+        const prefix = "https://papyrusapp.page.link/player/";
       const prefixLength = prefix.length;
       const podcastID = url["url"].slice(prefixLength);
       console.log("[AUTH LOADING] handleOpenURL podcastID: ",podcastID);
       dispatch({type:"PODCAST_ID_FROM_EXTERNAL_LINK",payload:podcastID});
+     });
+      console.log("[AUTH LOADING] handleOpenURL url: ",url["url"]);
+      
     }
 
 //    Linking Notes:
@@ -130,7 +155,6 @@ const  AuthLoadingScreen = (props) => {
     useEffect( () => {
       Linking.addEventListener("url", handleOpenURL);
       handleDeepLinkingRequests();
-
       check_User_Auth();
     },[])
 

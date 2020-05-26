@@ -47,7 +47,7 @@ const SearchBookScreen=(props)=>
       algoliaAPPID,
       algoliaAPIKey
     );
-    const index = searchClient.initIndex('prod_books');
+    const index = searchClient.initIndex('dev_books');
     
     const fromSearchChapterScreen = useSelector(state=>state.userReducer.fromSearchChapterScreen)
     console.log("FROM_SEARCH_CHAPTER_SCREEN : ",fromSearchChapterScreen)

@@ -1,7 +1,7 @@
 
 
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, Image, Dimensions, ImageBackground} from 'react-native';
+import { StyleSheet, Text, View, Image, Dimensions, ImageBackground,TouchableNativeFeedback} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import Octicons from 'react-native-vector-icons/Octicons';
@@ -28,22 +28,26 @@ const areEqual = (prevProps, nextProps) => true
         return (
           
            <View style={[styles.shadow,{height:height/7, width:(width*5)/12 + 10, marginLeft:20, borderwidth:4, borderColor:'#dddddd',overflow:'hidden', paddingRight:10,borderRadius:5}]}>
-           <TouchableOpacity onPress={(()=>
+           <TouchableOpacity activeOpacity={0.5} onPress={(()=>
             {
-              dispatch({type:"SET_CURRENT_TIME", payload:0});
-              dispatch({type:"SET_DURATION", payload:props.item.duration});
-             dispatch({type:"SET_PAUSED", payload:false});
-             dispatch({type:"SET_LOADING_PODCAST", payload:true});
-             podcast === null && dispatch({type:"SET_MINI_PLAYER_FALSE"});
-             dispatch({type:"SET_PODCAST", payload: props.item})
-              dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
-              dispatch({type:"SET_NUM_LIKES", payload: props.item.numUsersLiked})
+              if(podcast === null || (podcast!== null && podcast.podcastID != props.item.podcastID))
+              {
+                dispatch({type:"SET_CURRENT_TIME", payload:0});
+                dispatch({type:"SET_DURATION", payload:props.item.duration});
+                dispatch({type:"SET_PAUSED", payload:false});
+                dispatch({type:"SET_LOADING_PODCAST", payload:true});
+                podcast === null && dispatch({type:"SET_MINI_PLAYER_FALSE"});
+                dispatch({type:"SET_PODCAST", payload: props.item})
+                dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
+                dispatch({type:"SET_NUM_LIKES", payload: props.item.numUsersLiked})
+              }
+              
             })}>
            <ImageBackground style={[{width:(width*5)/12 + 10, height:height/7, resizeMode:'cover',borderRadius:5,overflow:'hidden', paddingRight:10}]} source={{ uri: ((item === null || item === undefined)  ? null : item.podcastPictures[0]) }} >
            <View style={{height:height*5/56}}/>
        <LinearGradient  colors={['transparent','#383131','black']} >
        <View style={{height:height*3/56,width:(width*5)/12 + 10}}>
-       <Text style={{color:'white',position:'absolute',bottom:2,left:5,right:10,fontSize:14,alignContent:'center'}}> 
+       <Text style={{color:'white',fontFamily:'Proxima-Nova-Bold',position:'absolute',bottom:2,left:5,right:10,fontSize:14,alignContent:'center'}}> 
        <Icon name="play" size={13} style={styles.icon}/> 
        {"  "}{podcastName.slice(0,30)}   
         {

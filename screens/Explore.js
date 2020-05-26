@@ -1,6 +1,6 @@
 import React, {Component, useState,useEffect, useRef, createRef} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import { StyleSheet, Text, View, SafeAreaView, ActivityIndicator, TextInput, Platform, StatusBar,TouchableOpacity,Dimensions, ScrollView, Image, NativeModules, NativeEventEmitter} from 'react-native';
+import { StyleSheet,BackHandler, Text, View, SafeAreaView, ActivityIndicator, TextInput, Platform, StatusBar,TouchableOpacity,Dimensions, ScrollView, Image, NativeModules, NativeEventEmitter} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import TrendingPodcast from './components/Explore/TrendingPodcast'
 import TopChapters from './components/Explore/TopChapters';
@@ -9,30 +9,33 @@ import ExploreBook from './components/Explore/ExploreBook'
 import { Badge } from 'react-native-elements'
 import {useSelector, useDispatch} from "react-redux"
 import Shimmer from 'react-native-shimmer';
-
-import DetectNavbar from 'react-native-detect-navbar-android';
-// or
-//import {DetectNavbar} from 'react-native-detect-navbar-android';
+import {withFirebaseHOC} from './config/Firebase';
+import TrendingPodcastsCarousel from './components/Explore/TrendingPodcastsCarousel'
+import ShortStoriesCarousel from './components/Explore/ShortStoriesCarousel';
+import ExploreAnimation from './components/Explore/ExploreAnimation';
+import StoryTellerCarousel from './components/Explore/StoryTellerCarousel';
+import ClassicPoemsCarousel from './components/Explore/ClassicPoemsCarousel';
+import SplashScreen from 'react-native-splash-screen';
+import BookList from './components/Home/BookList';
 
 const {width,height} = Dimensions.get('window')
 
-// methods (Android Only, don't call on iOS)
-DetectNavbar.hasSoftKeys().then((bool) => {
-  if(bool) {
-    console.log('Has Soft NavBar');
-  } else {
-    console.log('Has Hard Key NavBar');
-  }
-});
+
 
 
 const Explore = (props) => {
 
+  const  userid = props.firebase._getUid();
+  const privateUserID = "private" + userid;
+
+  const lastPlayingPodcastID = useSelector(state=>state.userReducer.lastPlayingPodcastID);
   const podcast = useSelector(state=>state.rootReducer.podcast);
+  const [podcastState,setPodcastState] = useState(podcast);
   const externalPodcastID = useSelector(state=>state.userReducer.externalPodcastID);
   var [storytellers,setStorytellers] = useState([]);
   var [podcasts,setPodcasts] = useState([]);
   var [books,setBooks] = useState([]);
+  var [recordBooks,setRecordBooks] = useState([]);
   var [chapters,setChapters] = useState([]);
   var [loading,setLoading] = useState(false);
   var [sections,setSections] = useState([]);
@@ -66,7 +69,6 @@ const Explore = (props) => {
       console.log("Error in fetching exploreSection names ",error);
     }
 
-
     //Top Storytellers
     try{
       let userQuery = await firestore().collectionGroup('privateUserData').where('isTopStoryTeller','==',true).get();
@@ -76,7 +78,7 @@ const Explore = (props) => {
     catch(error){
       console.log(error)
     }
-    
+
     // Trending podcasts
     try{
       let podcastQuery = await firestore().collectionGroup('podcasts').where('isTrendingPodcast','==',true).get();
@@ -97,6 +99,16 @@ const Explore = (props) => {
       console.log(error)
     }
 
+    // Record Book Podcasts
+    try{
+      let recordBookQuery = await firestore().collection('books').where('isExploreRecordBook','==',true).get();
+      let documentRecordBooks = recordBookQuery.docs.map(document => document.data());
+      setRecordBooks(documentRecordBooks);
+    }
+    catch(error){
+      console.log(error)
+    }
+
     // Classic Novels
     try{
       let chapterQuery = await firestore().collectionGroup('podcasts').where('isClassicNovel','==',true).get();
@@ -109,21 +121,37 @@ const Explore = (props) => {
     setLoading(false);
   }
 
+    async function setLastPlayingPodcastInUserPrivateDoc(podcastID)
+    {
+      await firestore().collection('users').doc(userid).collection('privateUserData').
+            doc(privateUserID).set({
+              lastPlayingPodcastID : podcastID,
+              lastPlayingCurrentTime : null
+            },{merge:true})
+    }
+
+    function exitPodcastPlayerAndsetLastPlaying(){
+
+      console.log("Inside exitPodcastPlayerAndsetLastPlaying : ",podcastState);
+      if(podcastState!==null)
+      {
+        //setLastPlayingPodcastInUserPrivateDoc(podcastState.podcastID);
+        dispatch({type:"SET_PODCAST", payload: null});
+      }
+      
+    }
+
       useEffect(
         () => {
+          //SplashScreen.hide();
           fetchExploreItems();
-          //console.log("EXPLORE USE EFFECT - props.navigation.state.params : ",props.navigation.state);
-          // if(props.navigation.state.params !== undefined && props.navigation.state.params.podcastID !== undefined 
-          //          && props.navigation.state.params.podcastID !== null)
-          //          {
-          //           console.log("podcast to be played: ",props.navigation.state.params.podcastID);
-          //           fetchPodcastItem(props.navigation.state.params.podcastID);
-          //          }
-            
+          return () => {
+            //exitPodcastPlayerAndsetLastPlaying();
+            dispatch({type:"SET_PODCAST", payload: null});
 
-          // console.log("Explore Use EFFECT Ends");
-          //const eventEmitter=new NativeEventEmitter(NativeModules.ReactNativeRecorder);
-      },[])
+            console.log(" App exited from Explore",podcast);
+          };
+        },[])
 
       async function fetchPodcastItem(podcastID)
       {
@@ -145,10 +173,41 @@ const Explore = (props) => {
       }
 
       useEffect( () => {
-        (externalPodcastID !== null) &&
-          (podcast === null || (podcast !== null && externalPodcastID != podcast.podcastID)) && 
+        console.log("In useEffect of externalPodcastID with podcastID: ",externalPodcastID);
+        if((externalPodcastID !== null) &&
+          (podcast === null || (podcast !== null && externalPodcastID != podcast.podcastID)))
           fetchPodcastItem(externalPodcastID);
+        else
+        {
+          dispatch({type:"PODCAST_ID_FROM_EXTERNAL_LINK",payload:null});
+          setLastPlayingPodcastInUserPrivateDoc(null);
+        }
+
       },[externalPodcastID])
+
+      useEffect(() => {
+        if(lastPlayingPodcastID !== null && externalPodcastID=== null)
+        {
+          fetchPodcastItem(lastPlayingPodcastID);
+          //setLastPlayingPodcastInUserPrivateDoc(null);
+        }
+
+      },[lastPlayingPodcastID])
+
+      // useEffect(
+      //   () => {
+      //     BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
+      //     return () => {
+      //       console.log(" [Explore]back_Button_Press Unmounted");
+      //       BackHandler.removeEventListener("hardwareBackPress",  back_Button_Press);
+      //     };
+      //   }, [back_Button_Press])
+
+      //   function back_Button_Press()
+      //   {
+      //     console.log("OUT FROM back_Button_Press: ",podcast);
+      //     return false;
+      //   }
 
       function getWindowDimension(event) { 
         const device_width = event.nativeEvent.layout.width;
@@ -176,9 +235,9 @@ const Explore = (props) => {
     function renderSectionStoryTellers()
     {
       return (
-        <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
-        <View style={{flexDirection:'row' , flexWrap:'wrap',paddingBottom:10}}>{renderStoryTellers()}</View>
-        </View>
+        <View style={{width:width,paddingTop:height/50}}>
+          <StoryTellerCarousel data={storytellers} navigation={props.navigation}/>
+          </View>
       )
     }
 
@@ -194,8 +253,8 @@ const Explore = (props) => {
     function renderSectionPodcasts()
     {
         return (
-          <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
-          <View style={{flexDirection:'row' , flexWrap:'wrap',paddingBottom:10}}>{renderPodcasts()}</View>
+          <View style={{width:width,paddingTop:10}}>
+          <TrendingPodcastsCarousel data={podcasts} navigation={props.navigation}/>
           </View>
          
         )
@@ -212,10 +271,11 @@ const Explore = (props) => {
     function renderSectionChapters()
     {
       return (
-        <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
-        <View style={{flexDirection:'row' , flexWrap:'wrap',paddingBottom:10}}>{renderChapters()}</View>
-        </View>
-       
+
+        <View style={{width:width,paddingTop:10}}>
+          <ClassicPoemsCarousel data={chapters} navigation={props.navigation}/>
+          </View>
+        
       )
     }
 
@@ -231,9 +291,9 @@ const Explore = (props) => {
     function renderSectionBooks()
     {
       return (
-        <View style={{flexDirection:'row' , flexWrap:'wrap'}}>
-        <View style={{flexDirection:'row' , flexWrap:'wrap',paddingBottom:10}}>{renderBooks()}</View>
-        </View>
+        <View style={{width:width,paddingTop:10}}>
+          <ShortStoriesCarousel data={books} navigation={props.navigation}/>
+          </View>
        
       )
     }
@@ -272,7 +332,7 @@ const Explore = (props) => {
             props.navigation.navigate('SearchTabNavigator',{fromExplore:true})}}>
         <View style={{flexDirection:'row',height:startHeaderHeight, backgroundColor: 'white', paddingRight: 13, paddingVertical:10}}>
        
-            <Text style={{ flex:1, fontWeight:'400',borderRadius:2,backgroundColor:'#dddd',fontSize:13,
+            <Text style={{ flex:1, fontWeight:'400',borderRadius:20,backgroundColor:'#dddd',fontSize:13,
               paddingTop: 7, paddingHorizontal: 10 }}>
            
               <Icon style={{paddingHorizontal:10,paddingTop:20 }} name="search" size={15} />
@@ -390,50 +450,65 @@ const Explore = (props) => {
      
           <SafeAreaView style={{flex:1, backgroundColor:'white'}} onLayout={(event) => getWindowDimension(event)}>
           {renderMainHeader()}
+          
           <ScrollView  scrollEventThrottle={16}>
-          <View style={{height:120}}>
-          <View style={{flex:1}}>
-          <Text style={{fontSize:20, fontWeight:'200', paddingHorizontal: 20, textShadowColor:'black',fontFamily:'sans-serif-light'}}>
-                          {sections.length != 0 && sections[0].sectionName}
-                      </Text>
-          </View>
-          <View style={{flex:3,paddingTop:10}}>
-          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
          
-          {renderSectionStoryTellers()}
-          </ScrollView>
+          <View style={{flexDirection:'row'}}>
+          <View style={{width:width/2}}>
+          <Text style={{paddingLeft: 30, paddingTop:height/20,fontFamily:'Proxima-Nova-Bold',  fontSize:24,textShadowColor:'black'}}> App is under construction.
+          </Text>
+          <Text style={{paddingLeft: 30, paddingTop:5, fontFamily:'Proxima-Nova-Regular', fontSize:15,textShadowColor:'black'}}>Caution: There may be bugs.
+          </Text>
+          <Text style={{paddingLeft: 30, paddingTop:0, fontFamily:'Proxima-Nova-Bold',  fontSize:12,textShadowColor:'black'}}>
+          </Text>
           </View>
-         
+          <View style={{paddingTop:height/6,paddingRight:15}}>
+          <ExploreAnimation/>
+          
           </View>
+          </View>
+          <View style={{height:20}}/>
+          
              
               <View style={{flex:1 , backgroundColor:'white', paddingTop:10}}>
-                      <Text style={{fontSize:20, fontWeight:'normal', paddingHorizontal: 20, textShadowColor:'black',fontFamily:'sans-serif-light'}}>
-                      {sections.length != 0 && sections[1].sectionName}
+                      <Text style={{fontSize:20, fontFamily:'Proxima-Nova-Bold', paddingHorizontal: 20, textShadowColor:'black'}}>
+                      {sections.length != 0 && sections[0].sectionName}{"    "}
                       </Text>
               </View>  
-                  <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{paddingTop:10}}>
                      
                       {renderSectionPodcasts()}
-                  </ScrollView>
-                  <View style={{flex:1 , backgroundColor:'white', paddingTop:10}}>
-                  <Text style={{fontSize:20, fontWeight:'normal', paddingHorizontal: 20, textShadowColor:'black', fontFamily:'sans-serif-light'}}>
-                  {sections.length != 0 && sections[2].sectionName}
+                  
+          <View style={{flex:1,marginTop:height/20,marginBottom:height/20}}>
+          <Text style={{fontSize:20, fontFamily:'Proxima-Nova-Bold', paddingHorizontal: 20, textShadowColor:'black'}}>
+                          {sections.length != 0 && sections[1].sectionName}{"    "}
+                      </Text>
+          </View>
+          
+          <BookList navigation={props.navigation} books={recordBooks}/>
+
+         
+                  <View style={{flex:1 , backgroundColor:'white'}}>
+                  <Text style={{fontSize:20, fontFamily:'Proxima-Nova-Bold', paddingHorizontal: 20, textShadowColor:'black'}}>
+                  {sections.length != 0 && sections[2].sectionName}{"   "}
                       </Text>
               </View>
-              <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{paddingTop:10}}>
               {renderSectionBooks()}
                    
-                  </ScrollView>
-                  <View style={{flex:1 , backgroundColor:'white', paddingTop:10}}>
-                  <Text style={{fontSize:20, fontWeight:'normal', paddingHorizontal: 20,  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
-                  {sections.length != 0 && sections[3].sectionName}
+              <View style={{flex:1 , backgroundColor:'white', marginTop:height/20}}>
+                  <Text style={{fontSize:20, fontFamily:'Proxima-Nova-Bold', paddingHorizontal: 20,  textShadowColor:'black'}}>
+                  {sections.length != 0 && sections[3].sectionName}{"    "}
                       </Text>
-                      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{paddingTop:10}}>
-                      {renderSectionChapters()}                
-                     
-                  </ScrollView>
-              </View>
-             
+                  </View>
+
+                  {renderSectionStoryTellers()}
+
+                <View style={{flex:1 , backgroundColor:'white', marginTop:height/20}}>
+                <Text style={{fontSize:20, fontFamily:'Proxima-Nova-Bold', paddingHorizontal: 20,  textShadowColor:'black'}}>
+                {sections.length != 0 && sections[4].sectionName}{"    "}
+                    </Text>
+                </View>
+
+                      {renderSectionChapters()}                             
                  
               </ScrollView>
           </SafeAreaView>
@@ -441,7 +516,7 @@ const Explore = (props) => {
       }
   }
 
-export default Explore;
+export default withFirebaseHOC(Explore);
 
 
 const styles = StyleSheet.create({

@@ -39,7 +39,7 @@ return(
      </TouchableOpacity>
      <TouchableOpacity onPress={() => props.navigation.navigate('Profile_StatsScreen')}>
      <Block flex={false} row center space="between" style={{paddingTop:10, paddingLeft:5}}>
-<Text style={{color:'white', fontSize:SCREEN_HEIGHT/40 }}>{name}</Text>
+<Text style={{color:'white', fontSize:SCREEN_HEIGHT/40,fontFamily:'Proxima-Nova-Bold' }}>{name}</Text>
           
     </Block>
     </TouchableOpacity>
@@ -61,14 +61,14 @@ return(
                 return (
                   <View style={{flexDirection:'row',paddingBottom:SCREEN_HEIGHT/35}}>
                   <Icon name="home" size={25} style={{ color: 'white',paddingTop:SCREEN_HEIGHT/150,paddingLeft:SCREEN_WIDTH/20,paddingRight:SCREEN_WIDTH/20 }} />
-                  <Text style={{color:'white',fontSize:22,fontWeight:'bold'}}>{props.getLabel(scene)}{"    "}</Text>
+                  <Text style={{color:'white',fontSize:22,fontFamily:'Proxima-Nova-Bold'}}>{props.getLabel(scene)}{"    "}</Text>
                   </View>
                   )
               case "Drafts":
                 return (
                   <View style={{flexDirection:'row',paddingBottom:SCREEN_HEIGHT/35}}>
                   <Icon name="hdd-o" size={25} style={{ color: 'white',paddingTop:SCREEN_HEIGHT/150,paddingLeft:SCREEN_WIDTH/20,paddingRight:SCREEN_WIDTH/20 }} />
-                  <Text style={{color:'white',fontSize:22,fontWeight:'bold'}}>{props.getLabel(scene)}{"    "}</Text>
+                  <Text style={{color:'white',fontSize:22,fontFamily:'Proxima-Nova-Bold'}}>{props.getLabel(scene)}{"    "}</Text>
                   </View>
                 )
               case "Activity":
@@ -88,7 +88,7 @@ return(
                   }
                   
                     </View>
-                  <Text style={{color:'white',fontSize:22,fontWeight:'bold'}}>{props.getLabel(scene)}{"    "}</Text>
+                  <Text style={{color:'white',fontSize:22,fontFamily:'Proxima-Nova-Bold'}}>{props.getLabel(scene)}{"    "}</Text>
                   
                   </View>
                 )
@@ -96,7 +96,7 @@ return(
                 return (
                   <View style={{flexDirection:'row',paddingBottom:SCREEN_HEIGHT/25}}>
                   <Icon name="cog" size={25} style={{ color: 'white',paddingTop:SCREEN_HEIGHT/150,paddingLeft:SCREEN_WIDTH/20,paddingRight:SCREEN_WIDTH/20 }} />
-                  <Text style={{color:'white',fontSize:22,fontWeight:'bold'}}>{props.getLabel(scene)}{"    "}</Text>
+                  <Text style={{color:'white',fontSize:22,fontFamily:'Proxima-Nova-Bold'}}>{props.getLabel(scene)}{"    "}</Text>
                   </View>
                 )
               default:
@@ -129,7 +129,7 @@ return(
           } 
           activeBackgroundColor='#101010'   style={{backgroundColor: '#ffffff', }} labelStyle={{color: '#ffffff', fontSize: SCREEN_HEIGHT/35}}/>
           
-          <Text style={{textAlign:'center', paddingTop:SCREEN_HEIGHT/4,color:'#dddd'}}>v1.0.10</Text>
+          <Text style={{textAlign:'center',fontFamily:'Proxima-Nova-Bold', paddingTop:SCREEN_HEIGHT/4,color:'#dddd'}}>v1.0.13</Text>
     
     </Content>
     </Body>
