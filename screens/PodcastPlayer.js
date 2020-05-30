@@ -196,7 +196,7 @@ const PodcastPlayer=(props)=>{
           // slideDown();
           if(lastPlayingPodcastID != null)
           {
-            dispatch({type:"SET_PAUSED",payload:true})
+            //dispatch({type:"SET_PAUSED",payload:true})
             slideDown();
             dispatch({type:"SET_LAST_PLAYING_PODCASTID",payload:null});
           }

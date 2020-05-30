@@ -21,7 +21,7 @@ const SearchChapterScreen=(props)=>
       algoliaAPPID,
       algoliaAPIKey
     );
-    const index = searchClient.initIndex('dev_chapters');
+    const index = searchClient.initIndex('prod_chapters');
     
     const initialAuthors  ={
       tag: '',

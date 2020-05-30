@@ -53,7 +53,8 @@ const BookItem = React.memo((props) => {
         bookID : props.item.bookID,
         chapterID : props.item.chapterID,
         bookPictures : picturesArray,
-        bookDescription : props.item.bookDescription
+        bookDescription : props.item.bookDescription,
+        authors : props.item.authors
       }).then(function(docRef){
         firestore().collection('users').doc(userID).collection('privateUserData').doc(privateUserID).collection('bookmarkContent').doc(docRef.id).set({
           bookmarkID : docRef.id
@@ -79,7 +80,9 @@ const BookItem = React.memo((props) => {
         bookName : props.item.bookName,
         bookID : props.item.bookID,
         bookPictures : picturesArray,
-        bookDescription : props.item.bookDescription
+        bookDescription : props.item.bookDescription,
+        authors : props.item.authors
+
       }).then(function(docRef){
         firestore().collection('users').doc(userID).collection('privateUserData').doc(privateUserID).collection('bookmarkContent').doc(docRef.id).set({
           bookmarkID : docRef.id

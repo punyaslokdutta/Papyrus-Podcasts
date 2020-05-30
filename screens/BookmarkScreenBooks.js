@@ -19,7 +19,7 @@ const BookmarkScreenBooks = (props) => {
   const  userID = props.firebase._getUid();
   const privateUserID = "private" + userID;
   const [books,setBooks] = useState([]);
-  const limit = 3;
+  const limit = 4;
   const [lastVisible,setLastVisible] = useState(null);
   const [loading,setLoading] = useState(false);
   const [refreshing,setRefreshing] = useState(false);
@@ -108,9 +108,9 @@ function renderBook({item,index})  {
        //console.log("item: ",item);
     return (
         <View>
-        <View style={{height:15}}/>
+        <View style={{height:5}}/>
         <BookmarkBookItem book={item} index={index} navigation={props.navigation}/>
-        <View style={{height:15}}/>
+        <View style={{height:5}}/>
         </View>
     )
   }

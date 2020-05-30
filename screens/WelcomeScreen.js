@@ -15,16 +15,16 @@ const {width,height} = Dimensions.get('window')
 
 const data = [
   {
-    text: "A social network designed to rediscover the voice in you,",
+    text: "A social network designed to rediscover the voice in you.",
     imageURL: "https://storage.googleapis.com/papyrus-274618.appspot.com/illustrations/Illustration-I.png",
   },
   {
-    text: "Through countless voiceless characters in stories ",
+    text: "Through countless voiceless characters in stories. ",
     imageURL: "https://storage.googleapis.com/papyrus-274618.appspot.com/illustrations/Illustration-II.png",
 
   },
   {
-    text: "A story of You, Me,Us  and the Universe",
+    text: "Weaving Stories of Us and our Universes within.",
     imageURL: "https://storage.googleapis.com/papyrus-274618.appspot.com/illustrations/Illustration-IV.png",
 
   }
@@ -144,7 +144,7 @@ class WelcomeScreen extends Component {
     render() {
       return (
         <View onLayout={(event) => this.getWindowDimension(event)}>
-        <LinearGradient  colors={['transparent','transparent','transparent','#383131','black']} >
+        <LinearGradient  colors={['#383131','transparent', 'transparent', 'transparent','transparent','transparent','transparent',  '#383131','black']} >
         <View style={{height:height}}>
           
            <Carousel

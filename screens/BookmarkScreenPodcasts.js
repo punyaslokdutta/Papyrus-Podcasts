@@ -179,7 +179,7 @@ const BookMarkScreenPodcasts = (props) => {
       <FlatList
       data={podcasts}
       renderItem={renderDatas}
-      numColumns={2}
+      //numColumns={2}
       showsVerticalScrollIndicator={false}
       keyExtractor={item => item.podcastID}
       //ListHeaderComponent={renderHeader}
@@ -252,7 +252,8 @@ const styles = StyleSheet.create({
   },
   separator: {
     borderBottomColor: '#d1d0d4',
-    borderBottomWidth: 1
+    borderBottomWidth: 1,
+    paddingTop:10
   },
   destinations: {
     flex: 1,

@@ -164,7 +164,7 @@ class UserReposts extends React.Component {
           nestedScrollEnabled={true}
           data={this.state.reposts}
           renderItem={this.renderData}
-          numColumns={2}
+          //numColumns={2}
           ItemSeparatorComponent={this.separator}
           showsVerticalScrollIndicator={false}
           keyExtractor={item => item.podcastID}
@@ -207,7 +207,8 @@ const styles = StyleSheet.create({
   },
   separator: {
     borderBottomColor: '#d1d0d4',
-    borderBottomWidth: 1
+    borderBottomWidth: 1,
+    paddingTop:10
   },
   welcome: {
     fontSize: 20,
