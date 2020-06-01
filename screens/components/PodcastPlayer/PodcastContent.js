@@ -9,6 +9,7 @@ import HomeScreen from '../../HomeScreen'
 import Explore from '../../Explore'
 import {useSelector, useDispatch} from "react-redux"
 import Video from 'react-native-video';
+import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
 import ProgressBar from './ProgressBar'
 import InfoScreen from '../../../InfoScreen'
 import firestore from '@react-native-firebase/firestore';
@@ -58,6 +59,8 @@ function getRandomNumber(min,max) {
 
 
  const PodcastContent=(props)=> {
+  const playbackState = usePlaybackState();
+  const { position, bufferedPosition, duration } = useTrackPlayerProgress()
   const video = useRef();
   var smallAnimatedHeartIcon = useRef();
   var smallAnimatedBookmarkIcon = useRef();
@@ -127,10 +130,88 @@ function getRandomNumber(min,max) {
     return link;
   }
 
+  
+
+  async function setup() {
+    await TrackPlayer.setupPlayer({});
+    await TrackPlayer.updateOptions({
+      stopWithApp: true,
+      capabilities: [
+        TrackPlayer.CAPABILITY_PLAY,
+        TrackPlayer.CAPABILITY_PAUSE,
+        TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
+        TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS,
+        TrackPlayer.CAPABILITY_STOP
+      ],
+      compactCapabilities: [
+        TrackPlayer.CAPABILITY_PLAY,
+        TrackPlayer.CAPABILITY_PAUSE
+      ],
+      alwaysPauseOnInterruption: true,
+       notificationCapabilities: [
+         TrackPlayer.CAPABILITY_PLAY,
+         TrackPlayer.CAPABILITY_PAUSE
+       ]
+    });
+    await TrackPlayer.add({
+      id: "local-track",
+      url: props.podcast.audioFileLink,
+      title: props.podcast.podcastName,
+      artist: props.podcast.podcasterName,
+      artwork: props.podcast.podcastPictures[0],
+      duration: props.podcast.duration
+    });
+    await TrackPlayer.play();
+  }
+  
+  async function isPlaying () {
+    const currentState = await TrackPlayer.getState()
+    return currentState === TrackPlayer.STATE_PLAYING
+}
+
+async function togglePlay  ()  {
+  const currentState = await TrackPlayer.getState()
+  const isPlaying = (currentState === TrackPlayer.STATE_PLAYING) 
+  //dispatch({type:"TOGGLE_PLAY_PAUSED"});
+    if (isPlaying) {
+        return TrackPlayer.pause()
+    } else {
+        return TrackPlayer.play()
+    }
+
+}
+
+useEffect(() => {
+  props.podcast !== null && setup();
+},[props.podcast])
 
   useEffect(() => {
     setHearts([]);
   },[heartsStore])
+
+
+  useEffect(() => {
+    console.log("playbackState:",playbackState);
+    if(playbackState == TrackPlayer.STATE_PLAYING){
+      console.log("IN STATE PLAYING");
+      loadingPodcast == true && dispatch({type:"SET_LOADING_PODCAST", payload:false});
+      dispatch({type:"SET_PAUSED", payload:false});
+      // ONLY ON First TIME LOAD
+      lastPlayingCurrentTime != null && TrackPlayer.seekTo(lastPlayingCurrentTime);
+      dispatch({type:"SET_LAST_PLAYING_CURRENT_TIME",payload:null});
+    }
+    else if(playbackState == TrackPlayer.STATE_BUFFERING){
+      dispatch({type:"SET_LOADING_PODCAST", payload:true});
+    }
+    else if(playbackState == TrackPlayer.STATE_PAUSED){
+      dispatch({type:"SET_PAUSED", payload:true});
+    }
+    // else if(playbackState == TrackPlayer.STATE_STOPPED){
+    //   dispatch({type:"SET_PODCAST",payload:null});
+    // }
+  },[playbackState])
+
+  
 
   function addHearts(){
     console.log("[addHearts] prevHearts : ",hearts);
@@ -190,12 +271,12 @@ function getRandomNumber(min,max) {
   
 
   function skipForward() {
-    video.current.seek(currentTime + 10);
-    paused && dispatch({type:"SET_CURRENT_TIME", payload: currentTime + 10})
+    TrackPlayer.seekTo(position + 10)
+    dispatch({type:"SET_CURRENT_TIME", payload: currentTime + 10})
   }
   function skipBackward() {
-    video.current.seek(currentTime - 10);
-    paused && dispatch({type:"SET_CURRENT_TIME", payload: currentTime -10})
+    TrackPlayer.seekTo(position - 10)
+    dispatch({type:"SET_CURRENT_TIME", payload: currentTime - 10})
     
   }
 
@@ -205,20 +286,21 @@ function getRandomNumber(min,max) {
     dispatch({type:"SET_LOADING_PODCAST", payload:false});
 
     //dispatch({type:"SET_PAUSED",payload:true});
-    
+    //****** HAVE TO FIX THIS AFTER TRACK PLAYER WORKS PROPERLY
+    /*
     lastPlayingCurrentTime != null && 
-    video.current.seek(lastPlayingCurrentTime) ;
+    TrackPlayer.seekTo(lastPlayingCurrentTime) ;
 
 
     dispatch({type:"SET_LAST_PLAYING_CURRENT_TIME",payload:null});
     const currentTime = moment().format();
     dispatch({type:"SET_SESSION_START_LISTENING_TIME",payload:currentTime});
+    */
   }
 
  function onSeek(data) {
-  
-    dispatch({type:"SET_CURRENT_TIME", payload: data.seekTime});
-    video.current.seek(data.seekTime);
+  TrackPlayer.seekTo(data.seekTime)
+  dispatch({type:"SET_CURRENT_TIME", payload: data.seekTime})
 }
 function onEnd() {
   dispatch({type:"TOGGLE_PLAY_PAUSED"})
@@ -230,20 +312,12 @@ function onBuffering()
   dispatch({type:"BUFFERING_PODCAST",payload:true})
 }
 
-function handleSlideStart() {
+function handlePlayPause() {
   // If playing, pause and show controls immediately.
-  if (!paused) {
-    dispatch({type:"TOGGLE_PLAY_PAUSED"})
-    return;
-  }
-}
-
-function handleSlideComplete() {
-  // If playing, pause and show controls immediately.
-  if (!paused) {
-    dispatch({type:"TOGGLE_PLAY_PAUSED"})
-    return;
-  }
+  // if (!paused) {
+  //   dispatch({type:"TOGGLE_PLAY_PAUSED"})
+  //   return;
+  // }
 }
 
 function parentSlideDown(){
@@ -445,7 +519,7 @@ async function updatePodcastsLiked(props){
 
               <View style={{height:height/5,paddingTop:10}}>
                 { podcastDescription.length != 0 &&
-                  <TouchableNativeFeedback useForeground={true} onPress={()=>{
+                  <TouchableNativeFeedback style={{height:height/6}} useForeground={true} onPress={()=>{
                   //dispatch({type:"TOGGLE_MINI_PLAYER"})
                   parentSlideDown()
                   props.navigation.navigate('InfoScreen', {podcast:props.podcast})
@@ -476,7 +550,7 @@ async function updatePodcastsLiked(props){
         
                     {
                       !loadingPodcast && <PlayPause loadingPodcast={loadingPodcast}
-                      paused={paused} pausePodcast={pausePodcast} playPodcast={playPodcast}/>
+                       pausePodcast={togglePlay} playPodcast={togglePlay}/>
                     }
   
                     {/* <TouchableOpacity  onPress={skipForward} style={{paddingLeft:0}}> */}
@@ -492,45 +566,17 @@ async function updatePodcastsLiked(props){
             </View>
 
 
-            <View>
-            <Video
-            ref={video}
-            /* For ExoPlayer */
-             source={{ uri: props.podcast.audioFileLink }} 
-            //source={require('../../../assets/images/testvideo.mp4')}
-            style={styles.fullScreen}
-            audioOnly={true}
-            rate={rate}
-            paused={paused}
-            playInBackground={true}
-            volume={volume }
-            onBuffer={onBuffering}
-            bufferConfig={{
-            minBufferMs: 10000,
-            maxBufferMs: 30000,
-            bufferForPlaybackMs: 2500,
-            bufferForPlaybackAfterRebufferMs: 5000
-            }}
-           // muted={this.state.muted}
-            //resizeMode={'contain'}
-            onLoad={onLoadEnd}
-            onProgress={(progress)=>dispatch({type:"SET_CURRENT_TIME", payload: progress.currentTime})}
-            onEnd={onEnd}
-           // onAudioBecomingNoisy={this.onAudioBecomingNoisy}
-            //onAudioFocusChanged={this.onAudioFocusChanged}
-            //repeat={false}
-          />
-            </View>
+            
          
  
           <View style={{paddingTop:height/30,paddingBottom:height/20}}> 
           <ProgressBar
+                position = {position}
                 duration={props.podcast.duration}
-                onSlideStart={handleSlideStart}
-                onSlideComplete={handleSlideComplete}
+                onSlideStart={handlePlayPause}
+                onSlideComplete={handlePlayPause}
                 onSlideCapture={onSeek}
                 loadingPodcast={loadingPodcast}
-                videoRef={video}
               />
           
          </View>

@@ -194,12 +194,14 @@ const PodcastPlayer=(props)=>{
           // }
           // if(!isMiniPlayer)
           // slideDown();
-          if(lastPlayingPodcastID != null)
-          {
-            //dispatch({type:"SET_PAUSED",payload:true})
-            slideDown();
-            dispatch({type:"SET_LAST_PLAYING_PODCASTID",payload:null});
-          }
+          
+          // *** code for opening last Playing podcast
+          // if(lastPlayingPodcastID != null)
+          // {
+          //   //dispatch({type:"SET_PAUSED",payload:true})
+          //   slideDown();
+          //   dispatch({type:"SET_LAST_PLAYING_PODCASTID",payload:null});
+          // }
 
         }, [props.podcast])
 

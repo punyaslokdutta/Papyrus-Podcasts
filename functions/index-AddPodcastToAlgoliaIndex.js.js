@@ -12,7 +12,7 @@ const algoliaRecords = [];
 admin.initializeApp();
 const db = admin.firestore();
 const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
-const collectionIndexName='dev_podcasts';
+const collectionIndexName='prod_podcasts';
 const collectionIndex = algoliaClient.initIndex(collectionIndexName);
 
 exports.AddToPodcastsIndex = functions.region("asia-northeast1").https.onCall((data, context) => {

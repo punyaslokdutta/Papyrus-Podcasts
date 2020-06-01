@@ -24,8 +24,6 @@ const PlayerProvider=(props)=>{
 
   
 
- 
-
   // const setGlobalFromPodcast=useCallback(
   //   (podcast)=>
   //   {

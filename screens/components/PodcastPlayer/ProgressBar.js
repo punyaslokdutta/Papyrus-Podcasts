@@ -16,7 +16,7 @@ import {useSelector} from 'react-redux'
   return (
     <View style={styles.wrapper}>
       <Slider
-        value={currentTime}
+        value={props.position}
         minimumValue={1}
         maximumValue={duration===undefined?600:duration}
         step={0.01}
@@ -28,7 +28,7 @@ import {useSelector} from 'react-redux'
         thumbTintColor={'#F44336'}
       />
       <View style={styles.timeWrapper}>
-        <Text style={styles.timeLeft}>{position}</Text>{
+        <Text style={styles.timeLeft}>{getMinutesFromSeconds(props.position)}</Text>{
             duration!==undefined &&
         <Text style={styles.timeRight}>{fullDuration}</Text>
  }

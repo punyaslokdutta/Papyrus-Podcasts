@@ -1,6 +1,7 @@
 
 import React, { useState, useContext, useReducer, useEffect} from 'react';
 import Slider from '@react-native-community/slider';
+import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
 
 import {
   View, StyleSheet, Text, Dimensions, TouchableWithoutFeedback,TouchableOpacity, ActivityIndicator
@@ -24,7 +25,7 @@ const areEqual = (prevProps, nextProps) => true;
   //copied the props to the state of the component 
   console.log( props);
   
-  const videoRef = useSelector(state=>state.rootReducer.videoRef)
+  //const videoRef = useSelector(state=>state.rootReducer.videoRef)
 
   /*useEffect(() => {
    // setplayerControlState(props);
@@ -34,10 +35,11 @@ const areEqual = (prevProps, nextProps) => true;
   
 const dispatch=useDispatch();
 const paused=useSelector(state=>state.rootReducer.paused);
+const { position } = useTrackPlayerProgress()
 
   const currentTime=useSelector(state=>state.rootReducer.currentTime);
   const duration=useSelector(state=>state.rootReducer.duration);
-  const position = getMinutesFromSeconds(currentTime);
+  //const position = getMinutesFromSeconds(currentTime);
   const fullDuration = getMinutesFromSeconds(duration);
   const loadingPodcast = useSelector(state=>state.rootReducer.loadingPodcast)
 
@@ -87,6 +89,17 @@ const paused=useSelector(state=>state.rootReducer.paused);
     }
   }
 
+  async function togglePlay  ()  {
+    const currentState = await TrackPlayer.getState()
+    const isPlaying = (currentState === TrackPlayer.STATE_PLAYING)
+    if (isPlaying) { 
+      return TrackPlayer.pause()
+      } 
+    else {
+      return TrackPlayer.play()
+      }
+  }
+  
   async function setLastPlayingPodcastInUserPrivateDoc(podcastID)
   {
     console.log("Inside setLastPlayingPodcastInUserPrivateDoc");
@@ -105,7 +118,6 @@ const paused=useSelector(state=>state.rootReducer.paused);
           })
   }
 
-
   
    //const { title, onPress } = this.props;
     return (
@@ -118,7 +130,7 @@ const paused=useSelector(state=>state.rootReducer.paused);
         
       <View style={{paddingLeft:10,paddingTop:height/500}}>
         <Slider
-        value={currentTime}
+        value={position}
         minimumValue={1}
         maximumValue={duration===undefined?600:duration}
         step={0.01}
@@ -135,15 +147,22 @@ const paused=useSelector(state=>state.rootReducer.paused);
       </View>
           {/* <Text style={styles.title} numberOfLine={3}>{props.title}</Text> */}
           {loadingPodcast && <ActivityIndicator style={styles.icon} color={'white'}/>}
-          {!loadingPodcast && paused && <TouchableOpacity  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
+          {!loadingPodcast && paused && <TouchableOpacity  onPress={(()=>{
+            dispatch({type:"TOGGLE_PLAY_PAUSED"})
+            togglePlay()
+            })}>
             <IconAntDesign name="play" size={40} style={styles.icon}/></TouchableOpacity>}
-          {!loadingPodcast && !paused && <TouchableOpacity  onPress={(()=>dispatch({type:"TOGGLE_PLAY_PAUSED"}))}>
+          {!loadingPodcast && !paused && <TouchableOpacity  onPress={(()=>{
+            dispatch({type:"TOGGLE_PLAY_PAUSED"})
+            togglePlay()
+            })}>
             <IconAntDesign name="pause" size={70} style={styles.icon}/></TouchableOpacity>}
                 <TouchableOpacity onPress={(()=>{
                   setLastPlayingPodcastInUserPrivateDoc(null);
                   dispatch({type:"SET_LAST_PLAYING_CURRENT_TIME",payload:null});
                   dispatch({type:"SET_LAST_PLAYING_PODCASTID",payload:null});
                   dispatch({type:"TOGGLE_PLAY_PAUSED"})
+                  TrackPlayer.destroy()
                   dispatch({type:"SET_PODCAST", payload: null})
                   })}>
                 <Icon name="times-circle" size={24} style={styles.icon}/>
