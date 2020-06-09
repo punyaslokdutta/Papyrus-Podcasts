@@ -1,7 +1,7 @@
 // @flow
 import React ,{ useState, useEffect , useRef, useCallback} from 'react';
 import { StyleSheet , Image, StatusBar,BackHandler, SafeAreaView,  TouchableNativeFeedback,TouchableOpacity , View,Text, ScrollView, Alert, Dimensions } from 'react-native';
-import {useSelector, useDispatch} from "react-redux"
+import {useSelector, useDispatch,connect} from "react-redux"
 import ExtraDimensions from 'react-native-extra-dimensions-android';
 import Animated, { Easing } from 'react-native-reanimated';
 import PodcastContent from '../screens/components/PodcastPlayer/PodcastContent';
@@ -24,6 +24,8 @@ const {
   Extrapolate,
   Value,
   Clock,
+  block,
+  call,
   cond,
   eq,
   set,
@@ -54,100 +56,112 @@ const shadow = {
   video: VideoModel,
 };
 */
-const PodcastPlayer=(props)=>{
+
+function runSpring(clock, value, dest) {
+  const state = {
+    finished: new Value(0),
+    velocity: new Value(0),
+    position: new Value(0),
+    time: new Value(0),
+  };
+
+  const config = {
+    damping: 20,
+    mass: 1,
+    stiffness: 100,
+    overshootClamping: false,
+    restSpeedThreshold: 1,
+    restDisplacementThreshold: 0.5,
+    toValue: new Value(0),
+  };
+
+  //console.log("[runSpring] position: ",state.position);
+  return [
+    cond(clockRunning(clock), 0, [
+      set(state.finished, 0),
+      set(state.velocity, 0),
+      set(state.position, value),
+      set(config.toValue, dest),
+      startClock(clock),
+    ]),
+    spring(clock, state, config),
+    cond(state.finished, stopClock(clock)),
+    state.position,
+  ];
+}
+
+
+
+class PodcastPlayer extends React.Component {
 
 
   //const [state, changeState]=useState(0)
   //Animation values
-   const translationY =useRef(new Value(0)).current;
+  translationY = new Value(0);
 
-  const velocityY = useRef(new Value(0)).current;
+  velocityY = new Value(0);
 
-  const offsetY = useRef(new Value(0)).current;
+  offsetY = new Value(0);
 
-  const offsetY2 = useRef(new Value(0)).current;
+  offsetY2 = new Value(0);
 
-  const gestureState = useRef(new Value(State.UNDETERMINED)).current;
+  gestureState = new Value(State.UNDETERMINED);
 
-  function runSpring(clock, value, dest) {
-    const state = {
-      finished: new Value(0),
-      velocity: new Value(0),
-      position: new Value(0),
-      time: new Value(0),
-    };
+  translateY = new Value(0);
 
-    const config = {
-      damping: 20,
-      mass: 1,
-      stiffness: 100,
-      overshootClamping: false,
-      restSpeedThreshold: 1,
-      restDisplacementThreshold: 0.5,
-      toValue: new Value(0),
-    };
+  snapPoint = new Value(0);
+  
+  finalTranslateY = new Value(0);
+  //onGestureEvent: $Call<event>
 
-    return [
-      cond(clockRunning(clock), 0, [
-        set(state.finished, 0),
-        set(state.velocity, 0),
-        set(state.position, value),
-        set(config.toValue, dest),
-        startClock(clock),
-      ]),
-      spring(clock, state, config),
-      cond(state.finished, stopClock(clock)),
-      state.position,
-    ];
-  }
+  constructor(props){
+    super(props);
+    const {
+      translationY, velocityY, offsetY, gestureState: state, offsetY2,
+    } = this;
 
-
-  //onGestureEvent: $Call<event>;
-
-  //translateY: Value;
-
-
-
-    // const {
-    //   translationY, velocityY, offsetY, gestureState: state, offsetY2,
-    // } = this;
-    const onGestureEvent = (
-      event(
+    this.onGestureEvent = event(
       [
         {
-          nativeEvent: {
-            translationY,//:translationYRef.current,
-            velocityY,//:velocityYRef.current,
-            gestureState,//:gestureStateRef.current,
-          },
+          nativeEvent: ({ translationY, velocityY, state })
+          // nativeEvent: ({ translationY:y, velocityY:vY, state:s }) =>
+
+          // block([
+          //   // debug('x', _translateX),
+          //   //call([], () => console.log("the code block was executed",translateY)),
+          //    set(this.translationY,y),
+          //    set(this.velocityY,vY),
+          //    set(this.gestureState,s)
+          // ]),
         },
       ],
-      { useNativeDriver: true },
+      { useNativeDriver: true,
+        listener: (event) => {
+          const {absoluteX, translationX} = event.nativeEvent;
+          console.log("absoluteX: ");
+          //console.log('translationX' + translationX);
+          //console.log('dest' + _translateX._value);
+      }},
+     ) 
 
-    )
-
-
-      );
-
-
-    const clockY = useRef(new Clock()).current;
-    const finalTranslateY = useRef(add(add(translationY, offsetY), multiply(0.2, velocityY))).current;
-    const snapPoint = useRef(cond(
-      lessThan(finalTranslateY, sub(offsetY, height / 4)),
-      0,
-      0,
-    )).current;
-    console.log()
-
-     const translateY = useRef(cond(
-      eq(gestureState, State.END),
+     const clockY = new Clock();
+     
+     this.finalTranslateY = add(add(translationY, offsetY), multiply(2, velocityY));
+     this.snapPoint = cond(
+       lessThan(this.finalTranslateY, sub(offsetY, height/4)),
+       0,
+       upperBound,
+     );
+      //console.log("snapPoint: ",snapPoint.__inputNodes);
+     this.translateY = cond(
+      eq(state, State.END),
       [
-        set(translationY, runSpring(clockY, add(translationY, offsetY), snapPoint)),
+        set(translationY, runSpring(clockY, add(translationY, offsetY), this.snapPoint)),
         set(offsetY, translationY),
         translationY,
       ],
       [
-        cond(eq(gestureState, State.BEGAN), [
+        cond(eq(state, State.BEGAN), [
           stopClock(clockY),
           cond(neq(offsetY2, 0), [
             set(offsetY, 0),
@@ -155,67 +169,74 @@ const PodcastPlayer=(props)=>{
           ]),
         ]),
         add(offsetY, translationY),
+
       ],
-    )).current;
+    );
+
+  }
+
+
+
+
+  componentDidUpdate(prevProps) {
+    // if (prevProps !== this.props) {
+    //    this.slideUp();
+    //  }
+    if(!this.props.isMiniPlayer)
+    {
+      this.velocityY.setValue(-8000);
+
+    }
+    console.log("In componentDidUpdate")
+
+  }
+
+  
+
+  //translateY: Value;
+
+     
 
 
 
 
     //BackHandler.addEventListener('hardwareBackPress', this.back_Buttton_Press);
-   const currentTime=useSelector(state=>state.rootReducer.currentTime); 
-   const [currentTimeState,setCurrentTimeState] = useState(currentTime);
-   const  isMiniPlayer = useSelector(state=>state.rootReducer.isMiniPlayer);
-   const navigation=useSelector(state=>state.userReducer.navigation)
-   const navBarHeight = useSelector(state=>state.userReducer.navBarHeight);
-   const lastPlayingPodcastID = useSelector(state=>state.userReducer.lastPlayingPodcastID);
+   
 
-   console.log("navBarHeight: ",navBarHeight)
-   const  dispatch=useDispatch();
+   //console.log("navBarHeight: ",navBarHeight)
+   //const  dispatch=useDispatch();
 
-   //componentDidMount
-    useEffect(
-      () => {
+   componentDidMount = () => {
         console.log("Inside useEffect - componentDidMount of PodcastPlayer");
-        
-        setLastPlayingPodcastInUserPrivateDoc(null);
-        BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
-        return () => {
-          console.log(" back_Button_Press Unmounted");
-          BackHandler.removeEventListener("hardwareBackPress",  back_Button_Press);
-        };
-      }, [back_Button_Press])
+        //console.log("this.translate Value: ",this.translateY)
+        this.setLastPlayingPodcastInUserPrivateDoc(null);
+        BackHandler.addEventListener('hardwareBackPress', this.back_Button_Press);
+        //componentDidUnmount
+        // return () => {
+        //   console.log(" back_Button_Press Unmounted");
+        //   BackHandler.removeEventListener("hardwareBackPress",  this.back_Button_Press);
+        // };
+      }
 
-      useEffect(
-        () => {
-          console.log("Inside useEffect - componentDidUpdate of PodcastPlayer");
-          // if(isMiniPlayer)
-          // {
-          // slideUp();
-          // }
-          // if(!isMiniPlayer)
-          // slideDown();
-          
-          // *** code for opening last Playing podcast
-          // if(lastPlayingPodcastID != null)
-          // {
-          //   //dispatch({type:"SET_PAUSED",payload:true})
-          //   slideDown();
-          //   dispatch({type:"SET_LAST_PLAYING_PODCASTID",payload:null});
-          // }
-
-        }, [props.podcast])
+  componentWillUnmount = () => {
+    console.log(" back_Button_Press Unmounted");
+    BackHandler.removeEventListener("hardwareBackPress",  this.back_Button_Press);   
+  }
 
 
     //componentDidUpdate
-  function slideDown()
+  slideDown = () =>
   {
-    if(!isMiniPlayer)
+    if(!this.props.isMiniPlayer)
     {
-      dispatch({type:"TOGGLE_MINI_PLAYER"})
-      dispatch({type:"REMOVE_ALL_HEARTS"});
-      timing(offsetY, {
+      //this.props.toggleMiniPlayer();
+      //this.props.removeAllHearts();
+      console.log("this.offsetY = ",this.offsetY._value)
+      //this.offsetY.setValue(-100);
+      this.velocityY.setValue(8000);
+      timing(this.offsetY, {
         toValue: upperBound,
-        duration: 800,
+        duration: 1000,
         easing: Easing.inOut(Easing.ease),
         useNativeDriver: true
       }).start();
@@ -227,17 +248,17 @@ const PodcastPlayer=(props)=>{
       //dispatch({type:"TOGGLE_MINI_PLAYER"})
 
     }
-    else
-    {
-      //dispatch({type:"TOGGLE_MINI_PLAYER"})
-      slideUp();
-    }
+      else
+      {
+        //dispatch({type:"TOGGLE_MINI_PLAYER"})
+        //this.slideUp();
+      }
   }
   
-    async function setLastPlayingPodcastInUserPrivateDoc(podcastID)
+    setLastPlayingPodcastInUserPrivateDoc = async (podcastID) =>
       {
         console.log("Inside setLastPlayingPodcastInUserPrivateDoc");
-        const  userID = props.userID;
+        const  userID = this.props.userID;
         const privateUserID = "private" + userID;
         console.log("podcastID: ",podcastID);
         if(podcastID === null)
@@ -245,7 +266,7 @@ const PodcastPlayer=(props)=>{
         await firestore().collection('users').doc(userID).collection('privateUserData').
               doc(privateUserID).set({
                 lastPlayingPodcastID : podcastID,
-                lastPlayingCurrentTime : currentTime
+                lastPlayingCurrentTime : this.props.currentTime
               },{merge:true}).then(function(){
                 console.log("lastPlayingPodcastID set to NULL");
               })
@@ -254,54 +275,56 @@ const PodcastPlayer=(props)=>{
               })
       }
 
-  function back_Button_Press()
+  back_Button_Press = () =>
   {
     console.log("Inside BackButton Press");
-    if(!isMiniPlayer)
+    if(!this.props.isMiniPlayer)
     {
-      dispatch({type:"TOGGLE_MINI_PLAYER"})
-      dispatch({type:"REMOVE_ALL_HEARTS"});
+      //this.props.toggleMiniPlayer();
+      // this.props.removeAllHearts();
 
-      timing(offsetY, {
-        toValue: upperBound,
-        duration: 1000,
-        easing: Easing.inOut(Easing.ease),
-        useNativeDriver: true
-      }).start();
+      // timing(this.offsetY, {
+      //   toValue: upperBound,
+      //   duration: 1000,
+      //   easing: Easing.inOut(Easing.ease),
+      //   useNativeDriver: true
+      // }).start();
+      this.slideDown();
 
      // dispatch({type:"TOGGLE_MINI_PLAYER"})
       return true;
       //dispatch({type:"TOGGLE_MINI_PLAYER"})
   }
-  console.log("Back Butttttton: ",props.podcast.podcastID);
-  if(props.podcast!==null)
+  console.log("Back Butttttton: ",this.props.podcast.podcastID);
+  if(this.props.podcast!==null)
   {
-    setLastPlayingPodcastInUserPrivateDoc(props.podcast.podcastID);
+    this.setLastPlayingPodcastInUserPrivateDoc(this.props.podcast.podcastID);
     //dispatch({type:"SET_PODCAST", payload: null});
   }
   return false;
     //BackHandler.removeEventListener('hardwareBackPress', this.back_Buttton_Press);
   }
 
-  function slideUp(){
-    dispatch({type:"TOGGLE_MINI_PLAYER"})
-    timing(offsetY, {
-    toValue: -upperBound,
+  slideUp = () => {
+    //this.props.toggleMiniPlayer();
+    timing(this.offsetY, {
+    toValue: 0,
     duration: 1000,
     easing: Easing.inOut(Easing.ease),
     useNativeDriver: true
   }).start();
 }
 
+render() {
+    const  {onGestureEvent, onGestureEvent1,translateY:y, offsetY2} = this ;
+    const translateY = add(y, offsetY2);
+    const { podcast } = this.props;
 
-    //const  onGestureEvent, translateY, offsetY2 ;
-     //const translateY = add(y, offsetY2);
-    // const { podcast } = this.props;
-
+    //console.log("this.gestureState: ",this.gestureState);
 
     const tY = interpolate(translateY, {
       inputRange: [0, midBound],
-      outputRange: [0, midBound-navBarHeight],
+      outputRange: [0, midBound-this.props.navBarHeight],
       extrapolate: Extrapolate.CLAMP,
     });
     const opacity = interpolate(translateY, {
@@ -329,11 +352,6 @@ const PodcastPlayer=(props)=>{
       outputRange: [height*6/24, minHeight * 1.3, minHeight],
       extrapolate: Extrapolate.CLAMP,
     });
-    const videoBorderRadius = interpolate(translateY, {
-      inputRange: [0, midBound, upperBound],
-      outputRange: [0, 10, 2],
-      extrapolate: Extrapolate.CLAMP,
-    });
 
     const containerHeight = interpolate(translateY, {
       inputRange: [0, midBound],
@@ -345,69 +363,116 @@ const PodcastPlayer=(props)=>{
       outputRange: [0, 1],
       extrapolate: Extrapolate.CLAMP,
     });
-    console.log("In THIS of PodcastPlayer : ",this);
-    return (
 
-      <Animated.View
-      style={{
-        transform: [{ translateY: tY }],
-        //...shadow,
-      }}
-    >
-          <TouchableNativeFeedback onPress={slideDown}>
-            <View>
-               
-            <Animated.View style={{ backgroundColor: '#212121', width: videoContainerWidth }}>
-            
-            <Animated.View style={{ ...StyleSheet.absoluteFillObject, opacity: playerControlOpaciy }}>
-            <PlayerControls setLastPlayingPodcastInUserPrivateDoc={setLastPlayingPodcastInUserPrivateDoc} podcastName={props.podcast.podcastName} bookName={props.podcast.bookName} userID={props.userID} onPress={slideUp}      />
-            </Animated.View>
+    
+      return (
+
+        
+
+        <Animated.View
+        style={{
+          transform: [{ translateY: tY }],
+          //...shadow,
+        }}
+      >
+        <Animated.Code>
+        {
+          () => call([this.translateY,this.velocityY,this.snapPoint,this.offsetY,this.offsetY2,this.translationY,this.finalTranslateY], 
+            ([val,val6,val4,val1,val2,val3,val5]) => {
+            // console.log("this.translateY = ",val)
+            // console.log("this.translationY = ",val3)
+            // console.log("this.finalTranslateY = ",val5)
+            console.log("this.snapPoint = ",val4)
+            // console.log("this.offsetY = ",val1)
+            // console.log("this.offsetY2 = ",val2)
+            // console.log("this.velocityY = ",val6)
+
+            // console.log("upperBound = ",upperBound)
+            // console.log("midBound = ",midBound)
+            // console.log("height = ",height)
+            val == upperBound && !this.props.isMiniPlayer && this.props.toggleMiniPlayer();
+            val == 0 && this.props.isMiniPlayer && this.props.toggleMiniPlayer();
+          })
+        }
+ </Animated.Code>
+ 
+            <PanGestureHandler
+                onHandlerStateChange={onGestureEvent}
+                activeOffsetY={[-10, 10]}
+                {...{ onGestureEvent }}
+            >
+           
               
+                 
+              <Animated.View style={{ backgroundColor: '#212121', width: videoContainerWidth }}>
               
-              <TouchableNativeFeedback onPress={() => {
-                if(!isMiniPlayer)
-                {
-                  slideDown()
-                  props.navigation.navigate('InfoScreen', {podcast:props.podcast});
-                }
-                else
-                {
-                  slideUp();
-                }
-
-              }}>
-              <Animated.Image
-                source={{uri:props.podcast.podcastPictures[0]}}
-                resizeMode='contain'
-                style={{ width: videoWidth, height: videoHeight, borderColor:'black',borderRadius:5 }}
-              />
-              </TouchableNativeFeedback>
-                {
-                  !isMiniPlayer && <IconAntDesign name="downcircleo" size={30} color='black' style={{
-                  //width: width/15,  
-                  //height: width/10,   
-                  borderRadius: 30,            
-                  backgroundColor: '#dddd',                                    
-                  position: 'absolute',                                          
-                  top: height/50,                                                    
-                  left: width/20, }}/>
-                }
-
-               </Animated.View>
-               </View>
-               </TouchableNativeFeedback>
-
-               <View>
-            <Animated.View style={{ backgroundColor: '#212121', width: videoContainerWidth, height: containerHeight }}>
-              <Animated.View style={{ opacity }}>
-              <PodcastContent userID={props.userID} podcast={props.podcast} navigation={navigation} slideDown={slideDown} />
+              <Animated.View style={{ ...StyleSheet.absoluteFillObject, opacity: playerControlOpaciy }}>
+              <PlayerControls back_Button_Press={this.back_Button_Press} setLastPlayingPodcastInUserPrivateDoc={this.setLastPlayingPodcastInUserPrivateDoc} podcastName={this.props.podcast.podcastName} bookName={this.props.podcast.bookName} userID={this.props.userID} onPress={this.slideUp}      />
               </Animated.View>
-            </Animated.View>
-            </View>
-
-            </Animated.View>
-    );
-
+                
+                
+                {/* <TouchableNativeFeedback onPress={() => {
+                  if(!this.props.isMiniPlayer)
+                  {
+                    this.slideDown()
+                    this.props.navigation.navigate('InfoScreen', {podcast:this.props.podcast});
+                  }
+                  else
+                  {
+                    this.slideUp();
+                  }
+  
+                }}> */}
+                <Animated.Image
+                  source={{uri:this.props.podcast.podcastPictures[0]}}
+                  resizeMode='contain'
+                  style={{ width: videoWidth, height: videoHeight, borderColor:'black',borderRadius:5 }}
+                />
+                {/* </TouchableNativeFeedback> */}
+                  {/* {
+                    !this.props.isMiniPlayer && <IconAntDesign name="downcircleo" size={30} color='black' style={{
+                    //width: width/15,  
+                    //height: width/10,   
+                    borderRadius: 30,            
+                    backgroundColor: '#dddd',                                    
+                    position: 'absolute',                                          
+                    top: height/50,                                                    
+                    left: width/20, }}/>
+                  } */}
+  
+                 </Animated.View>
+                 </PanGestureHandler>
+                
+  
+                 <View>
+              <Animated.View style={{ backgroundColor: '#212121', width: videoContainerWidth, height: containerHeight }}>
+                <Animated.View style={{ opacity }}>
+                <PodcastContent userID={this.props.userID} podcast={this.props.podcast} navigation={this.props.navigation} slideDown={this.slideDown} />
+                </Animated.View>
+              </Animated.View>
+              </View>
+  
+              </Animated.View>
+      );
+    }
+    
 }
 
-export default withFirebaseHOC(PodcastPlayer);
+//export default withFirebaseHOC(PodcastPlayer);
+const mapStateToProps = (state) => {
+  return{
+    currentTime: state.rootReducer.currentTime,
+    isMiniPlayer: state.rootReducer.isMiniPlayer,
+    navigation: state.userReducer.navigation,
+    navBarHeight: state.userReducer.navBarHeight,
+    lastPlayingPodcastID: state.userReducer.lastPlayingPodcastID
+  }}
+
+  const mapDispatchToProps = (dispatch) =>{
+    return{
+    toggleMiniPlayer:() => dispatch({type:"TOGGLE_MINI_PLAYER"}),
+    removeAllHearts:() => dispatch({type:"REMOVE_ALL_HEARTS"})
+    }}
+export default connect(mapStateToProps,mapDispatchToProps)(PodcastPlayer)
+
+  

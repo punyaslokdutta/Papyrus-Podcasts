@@ -1,5 +1,6 @@
 
 import React, { useState, useContext, useReducer, useEffect} from 'react';
+import {BackHandler} from 'react-native';
 import Slider from '@react-native-community/slider';
 import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
 
@@ -161,6 +162,7 @@ const { position } = useTrackPlayerProgress()
                   setLastPlayingPodcastInUserPrivateDoc(null);
                   dispatch({type:"SET_LAST_PLAYING_CURRENT_TIME",payload:null});
                   dispatch({type:"SET_LAST_PLAYING_PODCASTID",payload:null});
+                  //BackHandler.removeEventListener("hardwareBackPress",  this.props.back_Button_Press());
                   dispatch({type:"TOGGLE_PLAY_PAUSED"})
                   TrackPlayer.destroy()
                   dispatch({type:"SET_PODCAST", payload: null})

@@ -561,7 +561,19 @@ async function updatePodcastsLiked(props){
                 </View>
 
             <View style={{alignItems:'center', paddingTop:16}}>
-    <TouchableOpacity style={styles.rateButton} onPress={(()=>dispatch({type:"SET_RATE",payload: rate+0.25}))}><Text style={{color:'white', fontSize:12, alignItems: 'center'}}>x{rate}</Text></TouchableOpacity>
+            <TouchableOpacity style={styles.rateButton} onPress={(()=>{
+      TrackPlayer.getRate().then(function(rate){
+        console.log("RATE: ",rate)
+        if(rate == 2){
+          rate = 0.75;
+        }
+        dispatch({type:"SET_RATE",payload: rate+0.25});
+        TrackPlayer.setRate(rate + 0.25)
+      }
+      );
+    })}>
+      
+      <Text style={{color:'white', fontSize:12, alignItems: 'center'}}>x{rate}</Text></TouchableOpacity>
               
             </View>
 
