@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
       avatar: {
     height: theme.sizes.base * 4,
     width: theme.sizes.base * 4,
-    borderRadius: theme.sizes.base * 0.2, 
+    borderRadius: 30, 
     //paddingRight: 20
   }
 });

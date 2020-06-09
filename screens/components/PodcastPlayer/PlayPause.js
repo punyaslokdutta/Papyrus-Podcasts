@@ -12,19 +12,19 @@ const {width,height} = Dimensions.get('window')
 
 class PlayPause extends React.Component {
   
-  componentDidMount = () => {
-    this.animation.play(30,30);
-  }
+    componentDidMount = () => {
+      this.animation.play(30,30);
+    }
 
   componentDidUpdate =(prevProps)=>
   {
       if(!prevProps.paused && this.props.paused)
       {
-        this.animation.play(30,60);
+        this.animation.play(45,60);
       }
       if(prevProps.paused && !this.props.paused)
       {
-        this.animation.play(0,30);
+        this.animation.play(15,30);
       }
   }
   

@@ -307,6 +307,8 @@ class PodcastPlayer extends React.Component {
 
   slideUp = () => {
     //this.props.toggleMiniPlayer();
+    console.log("sliding UP");
+    this.velocityY.setValue(-8000);
     timing(this.offsetY, {
     toValue: 0,
     duration: 1000,
@@ -382,7 +384,7 @@ render() {
             // console.log("this.translateY = ",val)
             // console.log("this.translationY = ",val3)
             // console.log("this.finalTranslateY = ",val5)
-            console.log("this.snapPoint = ",val4)
+            //console.log("this.snapPoint = ",val4)
             // console.log("this.offsetY = ",val1)
             // console.log("this.offsetY2 = ",val2)
             // console.log("this.velocityY = ",val6)

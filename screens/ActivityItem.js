@@ -84,7 +84,7 @@ const ActivityItem = React.memo((props)=> {
   console.log("[Activity Item] props in Activity Item: ",props);
 
   let activityText = <Text>{props.activity.actorName} liked your podcast -
-  <Text style={{fontFamily:'Proxima-Nova-Bold'}}>{props.activity.podcastName}</Text>
+  <Text style={{fontFamily:'Montserrat-Bold'}}>{props.activity.podcastName}</Text>
   </Text>
   if(props.activity.type == "follow")
     activityText = <Text style={{}}>{props.activity.actorName} started following you</Text>

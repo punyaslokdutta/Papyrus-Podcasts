@@ -503,7 +503,7 @@ async function updatePodcastsLiked(props){
 
                 </TouchableOpacity> */}
                        
-        <Text style={[styles.textDark, {paddingTop:10,fontSize: 24,fontFamily:'Proxima-Nova-Bold' }]}>
+        <Text style={[styles.textDark, {paddingTop:10,fontSize: 24,fontFamily:'Montserrat-Bold' }]}>
           {podcastName}{"    "}
           </Text>
     
@@ -513,7 +513,7 @@ async function updatePodcastsLiked(props){
                         parentSlideDown();
                         retrieveUserPrivateDoc();
                         }}>
-                    <Text style={[styles.text, { fontFamily:'Proxima-Nova-Bold',fontSize: 18, marginTop: 2}]}>{props.podcast.podcasterName}</Text>
+                    <Text style={[styles.text, { fontFamily:'Montserrat-Bold',fontSize: 18, marginTop: 2}]}>{props.podcast.podcasterName}</Text>
                     </TouchableOpacity>
                     </View>
 
@@ -524,8 +524,8 @@ async function updatePodcastsLiked(props){
                   parentSlideDown()
                   props.navigation.navigate('InfoScreen', {podcast:props.podcast})
                   }}>
-                      <Text style={{fontFamily:'Proxima-Nova-Regular',color:'white'}}>{podcastDescription.slice(0,300)}</Text>
-                      <Text style={[styles.text,{fontFamily:'Proxima-Nova-Regular'}]}>{podcastDescription.length > 300 && "...Read More"}</Text>
+                      <Text style={{fontFamily:'Montserrat-Regular',fontSize:12,color:'white',}}>{podcastDescription.slice(0,300)}</Text>
+                      <Text style={[styles.text,{fontFamily:'Montserrat-Regular'}]}>{podcastDescription.length > 300 && "...Read More"}</Text>
                   </TouchableNativeFeedback>
                 }
                 <View style={{justifyContent:'flex-end'}}>

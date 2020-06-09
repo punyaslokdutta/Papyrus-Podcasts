@@ -47,7 +47,7 @@ const areEqual = (prevProps, nextProps) => true
            <View style={{height:height*5/56}}/>
        <LinearGradient  colors={['transparent','#383131','black']} >
        <View style={{height:height*3/56,width:(width*5)/12 + 10}}>
-       <Text style={{color:'white',fontFamily:'Proxima-Nova-Bold',position:'absolute',bottom:2,left:5,right:10,fontSize:14,alignContent:'center'}}> 
+       <Text style={{color:'white',fontFamily:'Montserrat-Bold',position:'absolute',bottom:2,left:5,right:10,fontSize:14,alignContent:'center'}}> 
        <Icon name="play" size={13} style={styles.icon}/> 
        {"  "}{podcastName.slice(0,30)}   
         {

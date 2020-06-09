@@ -28,8 +28,10 @@ const HomeScreen = (props) => {
   const [loading,setLoading] = useState(false);
   const [refreshing,setRefreshing] = useState(false);
   const [onEndReachedCalledDuringMomentum,setOnEndReachedCalledDuringMomentum] = useState(true);
+  const [scrollPosition,setScrollPosition] = useState(0);
 
   useEffect(() => {
+    console.log("[HomeScreen] useEffect LOG");
     retrieveData();
   },[])  
 
@@ -67,7 +69,12 @@ const HomeScreen = (props) => {
     }
   };
 
-  
+  function handleScroll(event) {
+    console.log("In handleScroll : ",event.nativeEvent.contentOffset.y);
+    // this.setState({ scrollPosition: event.nativeEvent.contentOffset.y });
+    setScrollPosition(event.nativeEvent.contentOffset.y);
+   }
+
   async function retrieveMorePodcasts()
   {
     console.log("[HomeScreen] retrieveMorePodcasts starts()")
@@ -156,7 +163,7 @@ const HomeScreen = (props) => {
         return (
           <View>
           <View style={{backgroundColor:'white'}}>  
-          <Text h2 style={{fontFamily:'Proxima-Nova-Bold',paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Book Podcasts</Text>
+          <Text h2 style={{fontFamily:'Montserrat-Bold',paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Book Podcasts</Text>
           <BookList navigation={props.navigation} books={books.slice(0,5)}/>
           </View>
           </View>
@@ -167,10 +174,10 @@ const HomeScreen = (props) => {
       //     return (
       //       <View>
       //       <View style={{backgroundColor:'white'}}>  
-      //       <Text h2 style={{fontFamily:'Proxima-Nova-Bold',paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Book Podcasts</Text>
+      //       <Text h2 style={{fontFamily:'Montserrat-Bold',paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Book Podcasts</Text>
       //       <BookList navigation={props.navigation} books={books.slice(5,totalBooksLength)}/>
       //       </View>
-      //       <Text h3 style={{fontFamily:'Proxima-Nova-Bold',paddingLeft: 30,   textShadowColor:'black'}}>Discover Podcasts
+      //       <Text h3 style={{fontFamily:'Montserrat-Bold',paddingLeft: 30,   textShadowColor:'black'}}>Discover Podcasts
       //       </Text>
       //       </View>
       //     )
@@ -183,29 +190,36 @@ const HomeScreen = (props) => {
   }
 
   function renderData({ section, index }) {
-    const numColumns  = 2;
 
-    if (index % numColumns !== 0) return null;
-
-    const items = [];
-
-    for (let i = index; i < index + numColumns; i++) {
-      if (i >= section.data.length) {
-        break;
-      }
-      items.push(<Podcast podcast={section.data[i]} key={section.data[i].podcastID}  navigation={props.navigation}  />);
-    }
     return (
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          paddingRight: width/10
-        }}
-      >
-        {items}
-      </View>
-    );
+      <View>
+    <Podcast podcast={section.data[index]}  key={section.data[index].podcastID} navigation={props.navigation}/>
+    </View>
+    )
+
+    // const numColumns  = 1;
+
+    // if (index % numColumns !== 0) return null;
+
+    // const items = [];
+
+    // for (let i = index; i < index + numColumns; i++) {
+    //   if (i >= section.data.length) {
+    //     break;
+    //   }
+    //   items.push(<Podcast podcast={section.data[i]} key={section.data[i].podcastID}  navigation={props.navigation}  />);
+    // }
+    // return (
+    //   <View
+    //     style={{
+    //       flexDirection: "row",
+    //       justifyContent: "space-between",
+    //       paddingRight: width/10
+    //     }}
+    //   >
+    //     {items}
+    //   </View>
+    // );
   };
   
   function renderHeader()
@@ -215,7 +229,7 @@ const HomeScreen = (props) => {
     //var podcasts3 = headerPodcasts.slice(8,12); 
     return(
       <View style={{ paddingBottom:30, marginTop: Platform.OS == 'ios' ? 20 : 30 }}>
-      <SectionList
+      {/* <SectionList
         showsVerticalScrollIndicator={false}
         sections={[
           { title: 'A', data: podcasts1},
@@ -230,14 +244,35 @@ const HomeScreen = (props) => {
 
           {renderSectionBooks(section.title)}
           {(section.data !== null) &&
-          <Text h3 style={{fontFamily:'Proxima-Nova-Bold',paddingLeft: 30,   textShadowColor:'black'}}>Discover Podcasts
+          <Text h3 style={{fontFamily:'Montserrat-Bold',paddingLeft: 30,   textShadowColor:'black'}}>Discover Podcasts
           </Text> } 
-          
+          <View style={[styles.separator]} />
           </ScrollView>
         )}
         renderItem={renderData}
-      />
+      /> */}
       
+      <View>
+        <HomeAnimation/>
+      </View>
+      {
+        podcasts1.map((item,index) =>
+        {
+          return <Podcast podcast={item} scrollPosition={scrollPosition} index={index} navigation={props.navigation}/>
+        })
+      }
+      <View>
+          <View style={{backgroundColor:'white'}}>  
+          <Text h2 style={{fontFamily:'Montserrat-Bold',paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Book Podcasts</Text>
+          <BookList navigation={props.navigation} books={books.slice(0,5)}/>
+          </View>
+      </View>
+      {
+        podcasts2.map((item,index) =>
+        {
+          return <Podcast podcast={item} scrollPosition={scrollPosition} index={index} navigation={props.navigation}/>
+        })
+      }
     </View>
     )
   }
@@ -246,7 +281,7 @@ const HomeScreen = (props) => {
   {
       return(
         <View>
-      <Podcast podcast={item} index={index} navigation={props.navigation}/>
+      <Podcast podcast={item} scrollPosition={scrollPosition} index={index} navigation={props.navigation}/>
       </View>
       )
   }
@@ -275,7 +310,8 @@ const HomeScreen = (props) => {
       <FlatList
       data={podcasts}
       renderItem={renderDatas}
-      numColumns={2}
+      //numColumns={2}
+      onScroll={handleScroll}
       showsVerticalScrollIndicator={false}
       keyExtractor={item => item.podcastID}
       ListHeaderComponent={renderHeader}
@@ -288,7 +324,13 @@ const HomeScreen = (props) => {
     )
   }
 
-  
+  function separator(){
+    return(
+      <View style={[styles.separator]} />
+    )
+  }
+
+
   if(loading == true || (loading == false && podcasts.length == 0 && headerPodcastsLimit.length == 0))
   {
     return (
@@ -329,6 +371,11 @@ export default HomeScreen;
 const styles = StyleSheet.create({
   flex: {
     flex: 0,
+  },
+  separator: {
+    borderBottomColor: '#d1d0d4',
+    borderBottomWidth: 1,
+    paddingTop:10
   },
   column: {
     flexDirection: 'column'

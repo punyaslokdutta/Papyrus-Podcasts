@@ -75,7 +75,7 @@ const { width, height } = Dimensions.get("window");
         {renderGallery()}
         </View>
         <Block style={styles.product}>
-          <Text h2 style={{fontFamily:'Proxima-Nova-Bold',color:'white'}}>
+          <Text h2 style={{fontFamily:'Montserrat-Bold',color:'white'}}>
             {podcast[0].podcastName}
           </Text>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
@@ -87,7 +87,7 @@ const { width, height } = Dimensions.get("window");
             ))}
           </Block>
           </ScrollView>
-          <Text style={{color:'white',fontFamily:'Proxima-Nova-Regular'}} light height={22}>
+          <Text style={{color:'white',fontFamily:'Montserrat-Regular'}} light height={22}>
             {podcast[0].podcastDescription}
           </Text>
 
@@ -95,10 +95,10 @@ const { width, height } = Dimensions.get("window");
               {podcastID:podcast[0].podcastID})}}>
           <View style={{paddingTop:10}}>
             {
-              numUsersLiked == 1 && <Text style={{fontFamily:'Proxima-Nova-Regular',color:'white'}}>{numUsersLiked} Like</Text>
+              numUsersLiked == 1 && <Text style={{fontFamily:'Montserrat-Regular',color:'white'}}>{numUsersLiked} Like</Text>
             }
             {
-              numUsersLiked > 1 && <Text style={{fontFamily:'Proxima-Nova-Regular',color:'white'}}>{numUsersLiked} Likes</Text>
+              numUsersLiked > 1 && <Text style={{fontFamily:'Montserrat-Regular',color:'white'}}>{numUsersLiked} Likes</Text>
             }
             
           </View>
@@ -124,8 +124,8 @@ const { width, height } = Dimensions.get("window");
                 <Image source={{uri:userPrivateDoc.displayPicture}} style={{borderRadius:30,width:width/8,height:width/8}}/>
                 </View>
                 <View style={{paddingLeft:10,flexDirection:'column'}}>
-                <Text style={{fontSize:15,fontFamily:'Proxima-Nova-Bold',color:'white'}}>{userPrivateDoc.name}{"  "}</Text>
-                <Text style={{fontFamily:'Proxima-Nova-Regular',color:'white'}}>{userPrivateDoc.introduction}</Text>
+                <Text style={{fontSize:15,fontFamily:'Montserrat-Bold',color:'white'}}>{userPrivateDoc.name}{"  "}</Text>
+                <Text style={{fontFamily:'Montserrat-Regular',color:'white'}}>{userPrivateDoc.introduction}</Text>
                 </View>
                 </View>
               }
@@ -139,21 +139,21 @@ const { width, height } = Dimensions.get("window");
                podcast[0].isChapterPodcast == true 
                ?
                <View>
-               <Text style={{color:'white',fontFamily:'Proxima-Nova-Regular'}}>Chapter</Text> 
+               <Text style={{color:'white',fontFamily:'Montserrat-Regular'}}>Chapter</Text> 
                <TouchableOpacity onPress={() => props.navigation.navigate('RecordChapter',{bookID:podcast[0].bookID,chapterID:podcast[0].chapterID})}>
-               <Text style={{fontSize:20,fontFamily:'Proxima-Nova-Bold',color:'white'}}>{podcast[0].chapterName} {"  "}{"\n"}</Text>
+               <Text style={{fontSize:20,fontFamily:'Montserrat-Bold',color:'white'}}>{podcast[0].chapterName} {"  "}{"\n"}</Text>
                </TouchableOpacity>
                <Divider margin={[theme.sizes.padding * 0.5, 0]} />
-               <Text style={{color:'white',fontFamily:'Proxima-Nova-Regular'}}>Book</Text>
+               <Text style={{color:'white',fontFamily:'Montserrat-Regular'}}>Book</Text>
                <TouchableOpacity onPress={() => props.navigation.navigate('RecordBook',{bookID:podcast[0].bookID})}>
-               <Text style={{fontSize:20,fontFamily:'Proxima-Nova-Bold',color:'white'}}>{podcast[0].bookName}{"  "}</Text>
+               <Text style={{fontSize:20,fontFamily:'Montserrat-Bold',color:'white'}}>{podcast[0].bookName}{"  "}</Text>
                </TouchableOpacity>
                </View>
                :
                <View>
-               <Text style={{color:'white',fontFamily:'Proxima-Nova-Regular'}}>Book</Text>
+               <Text style={{color:'white',fontFamily:'Montserrat-Regular'}}>Book</Text>
                <TouchableOpacity onPress={() => props.navigation.navigate('RecordBook',{bookID:podcast[0].bookID})}>
-               <Text style={{fontSize:20,fontFamily:'Proxima-Nova-Bold',color:'white'}}>{podcast[0].bookName}{" "}</Text>
+               <Text style={{fontSize:20,fontFamily:'Montserrat-Bold',color:'white'}}>{podcast[0].bookName}{" "}</Text>
                </TouchableOpacity>
                </View>
              }

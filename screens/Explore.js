@@ -455,11 +455,11 @@ const Explore = (props) => {
          
           <View style={{flexDirection:'row'}}>
           <View style={{width:width/2}}>
-          <Text style={{paddingLeft: 30, paddingTop:height/20,fontFamily:'Proxima-Nova-Bold',  fontSize:24,textShadowColor:'black'}}> App is under construction.
+          <Text style={{paddingLeft: 30, paddingTop:height/20,fontFamily:'Montserrat-Bold',  fontSize:18,textShadowColor:'black'}}> App is under construction.
           </Text>
-          <Text style={{paddingLeft: 30, paddingTop:5, fontFamily:'Proxima-Nova-Regular', fontSize:15,textShadowColor:'black'}}>Caution: There may be bugs.
+          <Text style={{paddingLeft: 30, paddingTop:5, fontFamily:'Montserrat-Regular', fontSize:15,textShadowColor:'black'}}>Caution: There may be bugs.
           </Text>
-          <Text style={{paddingLeft: 30, paddingTop:0, fontFamily:'Proxima-Nova-Bold',  fontSize:12,textShadowColor:'black'}}>
+          <Text style={{paddingLeft: 30, paddingTop:0, fontFamily:'Montserrat-Bold',  fontSize:12,textShadowColor:'black'}}>
           </Text>
           </View>
           <View style={{paddingTop:height/6,paddingRight:15}}>
@@ -471,7 +471,7 @@ const Explore = (props) => {
           
              
               <View style={{flex:1 , backgroundColor:'white', paddingTop:10}}>
-                      <Text style={{fontSize:20, fontFamily:'Proxima-Nova-Bold', paddingHorizontal: 20, textShadowColor:'black'}}>
+                      <Text style={{fontSize:20, fontFamily:'Montserrat-Bold', paddingHorizontal: 20, textShadowColor:'black'}}>
                       {sections.length != 0 && sections[0].sectionName}{"    "}
                       </Text>
               </View>  
@@ -479,7 +479,7 @@ const Explore = (props) => {
                       {renderSectionPodcasts()}
                   
           <View style={{flex:1,marginTop:height/20,marginBottom:height/20}}>
-          <Text style={{fontSize:20, fontFamily:'Proxima-Nova-Bold', paddingHorizontal: 20, textShadowColor:'black'}}>
+          <Text style={{fontSize:20, fontFamily:'Montserrat-Bold', paddingHorizontal: 20, textShadowColor:'black'}}>
                           {sections.length != 0 && sections[1].sectionName}{"    "}
                       </Text>
           </View>
@@ -488,14 +488,14 @@ const Explore = (props) => {
 
          
                   <View style={{flex:1 , backgroundColor:'white'}}>
-                  <Text style={{fontSize:20, fontFamily:'Proxima-Nova-Bold', paddingHorizontal: 20, textShadowColor:'black'}}>
+                  <Text style={{fontSize:20, fontFamily:'Montserrat-Bold', paddingHorizontal: 20, textShadowColor:'black'}}>
                   {sections.length != 0 && sections[2].sectionName}{"   "}
                       </Text>
               </View>
               {renderSectionBooks()}
                    
               <View style={{flex:1 , backgroundColor:'white', marginTop:height/20}}>
-                  <Text style={{fontSize:20, fontFamily:'Proxima-Nova-Bold', paddingHorizontal: 20,  textShadowColor:'black'}}>
+                  <Text style={{fontSize:20, fontFamily:'Montserrat-Bold', paddingHorizontal: 20,  textShadowColor:'black'}}>
                   {sections.length != 0 && sections[3].sectionName}{"    "}
                       </Text>
                   </View>
@@ -503,7 +503,7 @@ const Explore = (props) => {
                   {renderSectionStoryTellers()}
 
                 <View style={{flex:1 , backgroundColor:'white', marginTop:height/20}}>
-                <Text style={{fontSize:20, fontFamily:'Proxima-Nova-Bold', paddingHorizontal: 20,  textShadowColor:'black'}}>
+                <Text style={{fontSize:20, fontFamily:'Montserrat-Bold', paddingHorizontal: 20,  textShadowColor:'black'}}>
                 {sections.length != 0 && sections[4].sectionName}{"    "}
                     </Text>
                 </View>

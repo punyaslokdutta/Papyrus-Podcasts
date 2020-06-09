@@ -109,7 +109,7 @@ class WelcomeScreen extends Component {
         source={{uri:item.imageURL}}
         resizeMode='center'
         />
-        <Text style={{position:'absolute',fontFamily:'Proxima-Nova-Bold',top:height/6,paddingLeft:10,fontSize:30}}>{item.text}
+        <Text style={{position:'absolute',fontFamily:'Montserrat-Bold',top:height/6,paddingLeft:10,fontSize:30}}>{item.text}
          </Text>
         </View>
       );
@@ -162,13 +162,13 @@ class WelcomeScreen extends Component {
            
           <Icon name="envelope-o" size={20}/>
 
-          <Text style={{height:height/24,fontFamily:'Proxima-Nova-Bold',paddingLeft:5, paddingTop:height/175,fontSize:15, textAlign:'center'}}>  EMAIL </Text>
+          <Text style={{height:height/24,fontFamily:'Montserrat-Bold',paddingLeft:5, paddingTop:height/175,fontSize:15, textAlign:'center'}}>  EMAIL </Text>
               </TouchableOpacity>
           <TouchableOpacity style={{flexDirection:'row',position:'absolute',width:width*0.7,height:height/16,borderRadius:50,
               backgroundColor:'transparent',alignItems:'center',justifyContent:'center',
                marginHorizontal:width*0.15,bottom:height/10,borderColor:'gray',borderWidth:0.5}} activeOpacity={0.5} onPress={()=>{this.onFBLoginOrRegister()}}>
               <Icon name="facebook" size={20} style={{color:'white'}}/>
-          <Text style={{height:height/24,paddingLeft:10, paddingTop:height/175, fontFamily:'Proxima-Nova-Bold',color:'white',fontSize:15,textAlign:'center'}}> FACEBOOK </Text>
+          <Text style={{height:height/24,paddingLeft:10, paddingTop:height/175, fontFamily:'Montserrat-Bold',color:'white',fontSize:15,textAlign:'center'}}> FACEBOOK </Text>
           </TouchableOpacity>
             </View>
           </LinearGradient>

@@ -287,7 +287,7 @@ const Profile_StatsScreen = (props) => {
      :
       <View style={{height:height/2}}>
           <Image style={{height:height/3}} source={{uri:"https://storage.googleapis.com/papyrus-274618.appspot.com/illustrations/graphIllustration.png"}}/>
-          <Text style={{fontFamily:'Proxima-Nova-Regular'}}> Upload a podcast to receive analytics on your created podcasts.
+          <Text style={{fontFamily:'Montserrat-Regular'}}> Upload a podcast to receive analytics on your created podcasts.
             </Text>
       </View>
     }

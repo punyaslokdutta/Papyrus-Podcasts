@@ -249,7 +249,7 @@ const RecordBook = (props) => {
             <TouchableOpacity onPress={()=>props.navigation.navigate('SelectScreen',{bookItem:article,chapterItem:null})}>
             <View style={{width:width/6,alignItems:'center'}}>
             <FontAwesome name="microphone" color={theme.colors.black} size={theme.sizes.font * 2.0} />
-            <Text style={{fontSize:12,textAlign:'center',fontFamily:'Proxima-Nova-Bold',width:width/6}}>Record</Text>
+            <Text style={{fontSize:12,textAlign:'center',fontFamily:'Montserrat-Bold',width:width/6}}>Record</Text>
             </View>
             </TouchableOpacity>
             </View> 
@@ -264,7 +264,7 @@ const RecordBook = (props) => {
                     size={20}
                     style={{height:30,width:30}}
                   />
-           <Text style={{fontSize:12,textAlign:'center',fontFamily:'Proxima-Nova-Regular',width:width/3}}>Want to Read</Text>
+           <Text style={{fontSize:12,textAlign:'center',fontFamily:'Montserrat-Regular',width:width/3}}>Want to Read</Text>
 
           </View>
 
@@ -275,8 +275,8 @@ const RecordBook = (props) => {
             <Card style={{borderRadius: 10 ,width:((width*4)/5 ), paddingTop :5}}>
               <CardItem>
             <TouchableOpacity>
-              <Text style={{fontSize:20, paddingBottom:10, fontFamily:'Proxima-Nova-Bold'}}>Description</Text>
-              <Text style={{fontFamily:'Proxima-Nova-Regular',fontSize:15}}>
+              <Text style={{fontSize:20, paddingBottom:10, fontFamily:'Montserrat-Bold'}}>Description</Text>
+              <Text style={{fontFamily:'Montserrat-Regular',fontSize:15}}>
                 {article.bookDescription}
               </Text>
             </TouchableOpacity>
@@ -285,10 +285,10 @@ const RecordBook = (props) => {
             <Card style={{borderRadius: 10 ,width:((width*4)/5 ), paddingTop :5}}>
               <CardItem>
             <TouchableOpacity>
-              <Text style={{fontSize:20, paddingBottom:10, fontFamily:'Proxima-Nova-Bold'}}>Author(s)</Text>
+              <Text style={{fontSize:20, paddingBottom:10, fontFamily:'Montserrat-Bold'}}>Author(s)</Text>
                 {
                   article.authors.map(item => (
-                    <Text style={{fontFamily:'Proxima-Nova-Regular',fontSize:15}}>
+                    <Text style={{fontFamily:'Montserrat-Regular',fontSize:15}}>
                     {item}
                     </Text>
                    ))
@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     right: 30,
     bottom: 30,
-    fontFamily:'Proxima-Nova-Bold'
+    fontFamily:'Montserrat-Bold'
   },
   activeDot: {
     width: 8,
@@ -419,7 +419,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: theme.sizes.font * 2,
-    fontFamily:'Proxima-Nova-Bold'
+    fontFamily:'Montserrat-Bold'
   },
   description: {
     fontSize: theme.sizes.font * 1.2,

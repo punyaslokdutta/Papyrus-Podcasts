@@ -60,7 +60,7 @@ const TopChapters = React.memo((props)=> {
        <View style={{height:height*3/16}}/>
        <LinearGradient  colors={['transparent','#383131','black']} >
        <View style={{height:height/16,width:width/3 - 2 }}>
-       <Text style={{color:'white',position:'absolute',fontFamily:'Proxima-Nova-Bold',bottom:2,left:3,right:4,fontSize:13}}>
+       <Text style={{color:'white',position:'absolute',fontFamily:'Montserrat-Bold',bottom:2,left:3,right:4,fontSize:13}}>
          <Icon name="play" size={13} style={styles.icon}/> 
        {"  "}{podcastName.slice(0,35)}   
         {

@@ -28,7 +28,7 @@ var {width, height}=Dimensions.get('window')
               <View style={{flexDirection:'column',padding:width/64}}>
               <View style={{flexDirection:'row',alignItems:'flex-end',justifyContent:'flex-end'}}>
                 <Icon name="bookmark" size={15}/>
-        <Text style={{ color:'black', paddingLeft:7,fontFamily:'Proxima-Nova-Bold', fontSize:theme.sizes.font * 1.0 }}>
+        <Text style={{ color:'black', paddingLeft:7,fontFamily:'Montserrat-Bold', fontSize:theme.sizes.font * 1.0 }}>
             {moment(props.book.bookmarkedOn).fromNow()}
             </Text>
               </View>
@@ -85,7 +85,7 @@ var {width, height}=Dimensions.get('window')
                <View style={[styles.flex, styles.column, styles.shadow, { width:(width*2)/3,paddingLeft:theme.sizes.padding/8, paddingTop: theme.sizes.padding / 4 }]}>
                  <View style={{height:(height)/20}}>
                    
-                  <Text style={{ fontSize: theme.sizes.font * 1.0,fontFamily:'Proxima-Nova-Bold' }}>{props.book.bookName.slice(0,50)}
+                  <Text style={{ fontSize: theme.sizes.font * 1.0,fontFamily:'Montserrat-Bold' }}>{props.book.bookName.slice(0,50)}
                        {(props.book.bookName.length > 50) ? ".." : ""}</Text> 
                  </View>
                <View style ={{height:(height)/20}}>
@@ -94,14 +94,14 @@ var {width, height}=Dimensions.get('window')
                     props.book.authors &&
                     props.book.authors.map((item,index) => (
                       (index<=1) &&
-                      <Text style={{ fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green,fontFamily:'Proxima-Nova-Bold' }}>{item}</Text>
+                      <Text style={{ fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green,fontFamily:'Montserrat-Bold' }}>{item}</Text>
                       
                     ))    
                }
 
                </View>
                <View>
-            <Text style={{ height:height/10,fontFamily:'Proxima-Nova-Regular',fontSize: theme.sizes.font * 0.8,color: 'gray' }}>
+            <Text style={{ height:height/10,fontFamily:'Montserrat-Regular',fontSize: theme.sizes.font * 0.8,color: 'gray' }}>
                 {props.book.bookDescription.slice(0,200)}
                 {props.book.bookDescription.length > 200 && "..."}
             </Text>

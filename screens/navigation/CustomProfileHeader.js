@@ -31,12 +31,12 @@ const CustomProfileHeader = props => {
             {
               lastCharacter == 's'
               ?
-              <Text style={{fontSize:theme.sizes.h3,fontFamily:'Proxima-Nova-Regular'}}>{name}'</Text>
+              <Text style={{fontSize:theme.sizes.h3,fontFamily:'Montserrat-Regular'}}>{name}'</Text>
               :
-              <Text style={{fontSize:theme.sizes.h3,fontFamily:'Proxima-Nova-Regular'}}>{name}'s</Text>
+              <Text style={{fontSize:theme.sizes.h3,fontFamily:'Montserrat-Regular'}}>{name}'s</Text>
             }
             <View style = {{alignItems:'center'}}>
-          <Text style={{fontFamily:'Proxima-Nova-Bold',fontSize:theme.sizes.h2,paddingRight:5}}>Collections{"  "}</Text>
+          <Text style={{fontFamily:'Montserrat-Bold',fontSize:theme.sizes.h2,paddingRight:5}}>Collections{"  "}</Text>
             </View>
             </View>
             

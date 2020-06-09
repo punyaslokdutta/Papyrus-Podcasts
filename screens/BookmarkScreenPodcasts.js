@@ -20,12 +20,12 @@ const BookMarkScreenPodcasts = (props) => {
   const  userID = props.firebase._getUid();
   const privateUserID = "private" + userID;
   const [podcasts,setPodcasts] = useState([]);
-  const limit = 6;
+  const limit = 8;
   const [lastVisible,setLastVisible] = useState(null);
   const [loading,setLoading] = useState(false);
   const [refreshing,setRefreshing] = useState(false);
   const [onEndReachedCalledDuringMomentum,setOnEndReachedCalledDuringMomentum] = useState(true);
-
+  const [scrollPosition,setScrollPosition] = useState(0);
   useEffect(() => {
     retrieveData();
   },[])  
@@ -144,7 +144,7 @@ const BookMarkScreenPodcasts = (props) => {
   {
       return(
         <View>
-      <RepostItem podcast={item} isBookmark={true} index={index} navigation={props.navigation}/>
+      <RepostItem podcast={item} scrollPosition={scrollPosition} isBookmark={true} index={index} navigation={props.navigation}/>
       </View>
       )
   }
@@ -173,6 +173,12 @@ const BookMarkScreenPodcasts = (props) => {
     )
   }
 
+  function handleScroll(event) {
+    console.log("In handleScroll : ",event.nativeEvent.contentOffset.y);
+    // this.setState({ scrollPosition: event.nativeEvent.contentOffset.y });
+    setScrollPosition(event.nativeEvent.contentOffset.y);
+   }
+
   function renderPodcasts()
   {
     return (  
@@ -180,6 +186,7 @@ const BookMarkScreenPodcasts = (props) => {
       data={podcasts}
       renderItem={renderDatas}
       //numColumns={2}
+      onScroll={handleScroll}
       showsVerticalScrollIndicator={false}
       keyExtractor={item => item.podcastID}
       //ListHeaderComponent={renderHeader}
