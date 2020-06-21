@@ -57,7 +57,7 @@ function getRandomNumber(min,max) {
   return Math.random() * (max - min) + min;
 }
 
-
+ 
  const PodcastContent=(props)=> {
   const playbackState = usePlaybackState();
   const { position, bufferedPosition, duration } = useTrackPlayerProgress()
@@ -349,6 +349,29 @@ async function removeFromBookmarks() {
       console.log("Error in removing podcastID from podcastsBookmarked in user's private document: ",error);
     })
 
+    if(props.podcast.isChapterPodcast == true)
+    {
+     firestore().collection('books').doc(props.podcast.bookID).collection('chapters').
+       doc(props.podcast.chapterID).collection('podcasts').doc(props.podcast.podcastID).set({
+         numUsersRetweeted : firestore.FieldValue.increment(-1)
+       },{merge:true}).then(() => {
+         console.log("Successfully decremented numUsersRetweeted in podcast(chapter) Doc");
+       }).catch((error) => {
+         console.log("Error in decrementing numUsersRetweeted in podcast(chapter) Doc");
+       })
+    }
+    else
+    {
+     firestore().collection('books').doc(props.podcast.bookID)
+       .collection('podcasts').doc(props.podcast.podcastID).set({
+         numUsersRetweeted : firestore.FieldValue.increment(-1)
+       },{merge:true}).then(() => {
+         console.log("Successfully decremented numUsersRetweeted in podcast(book) Doc");
+       }).catch((error) => {
+         console.log("Error in decrementing numUsersRetweeted in podcast(book) Doc");
+       })
+    }
+
   dispatch({type:"REMOVE_FROM_PODCASTS_BOOKMARKED",payload:props.podcast.podcastID});
 
 }
@@ -391,8 +414,31 @@ async function addToBookmarks() {
      console.log("Error in adding podcastID to podcastsBookmarked in user's private document: ",error);
    })
 
-  dispatch({type:"ADD_TO_PODCASTS_BOOKMARKED",payload:props.podcast.podcastID});
+   if(props.podcast.isChapterPodcast == true)
+   {
+    firestore().collection('books').doc(props.podcast.bookID).collection('chapters').
+      doc(props.podcast.chapterID).collection('podcasts').doc(props.podcast.podcastID).set({
+        numUsersRetweeted : firestore.FieldValue.increment(1)
+      },{merge:true}).then(() => {
+        console.log("Successfully incremented numUsersRetweeted in podcast(chapter) Doc");
+      }).catch((error) => {
+        console.log("Error in incrementing numUsersRetweeted in podcast(chapter) Doc");
+      })
+   }
+   else
+   {
+    firestore().collection('books').doc(props.podcast.bookID)
+      .collection('podcasts').doc(props.podcast.podcastID).set({
+        numUsersRetweeted : firestore.FieldValue.increment(1)
+      },{merge:true}).then(() => {
+        console.log("Successfully incremented numUsersRetweeted in podcast(book) Doc");
+      }).catch((error) => {
+        console.log("Error in incrementing numUsersRetweeted in podcast(book) Doc");
+      })
+   }
 
+  dispatch({type:"ADD_TO_PODCASTS_BOOKMARKED",payload:props.podcast.podcastID});
+  
 }
 
 
@@ -489,7 +535,7 @@ async function updatePodcastsLiked(props){
 
     return (
       
-        <View style={styles.content}>
+        <ScrollView style={styles.content}>
         <View>
         <View>
         {/* <TouchableOpacity style={styles.rateButton} onPress={()=>{
@@ -509,12 +555,15 @@ async function updatePodcastsLiked(props){
     
                     </View>
                     <View style={{ marginTop: 2}}>
-                      <TouchableOpacity onPress={() => {
+                      <TouchableNativeFeedback onPress={() => {
                         parentSlideDown();
                         retrieveUserPrivateDoc();
                         }}>
-                    <Text style={[styles.text, { fontFamily:'Montserrat-Bold',fontSize: 18, marginTop: 2}]}>{props.podcast.podcasterName}</Text>
-                    </TouchableOpacity>
+                      <View style={{flexDirection:'row', marginTop: 2}}>
+                        <Image source={{uri:props.podcast.podcasterDisplayPicture}} style={{height:height/20,width:height/20,borderRadius:30}}/>
+                        <Text style={[styles.text, { fontFamily:'Montserrat-Bold',fontSize: 18, marginTop: 5,marginLeft:7}]}>{props.podcast.podcasterName}</Text>
+                        </View>
+                    </TouchableNativeFeedback>
                     </View>
 
               <View style={{height:height/5,paddingTop:10}}>
@@ -581,7 +630,7 @@ async function updatePodcastsLiked(props){
             
          
  
-          <View style={{paddingTop:height/30,paddingBottom:height/20}}> 
+          <View style={{paddingTop:height/30,paddingBottom:0}}> 
           <ProgressBar
                 position = {position}
                 duration={props.podcast.duration}
@@ -592,10 +641,10 @@ async function updatePodcastsLiked(props){
               />
           
          </View>
-         <View style={{paddingBottom:navBarHeight + 20,flexDirection: 'row',
+         <View style={{flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop:height/40}}>
+    paddingTop:height/40,marginBottom:48}}>
 
            
 
@@ -656,7 +705,7 @@ async function updatePodcastsLiked(props){
                 </TouchableOpacity>
                 </View>
               </View>
-        </View>
+        </ScrollView>
       
     );
   }
@@ -744,7 +793,7 @@ const Heart = props => {
   
 const styles = StyleSheet.create({
   content: {
-    padding: 8,
+    paddingHorizontal: 8,
     backgroundColor:'#212121',
     height:height*18/24
   },

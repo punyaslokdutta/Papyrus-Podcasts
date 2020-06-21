@@ -1,4 +1,5 @@
 const INITIAL_STATE = {
+    appVersion: 16,
     userItem: null,
     name: null,
     email: null,
@@ -36,11 +37,19 @@ const INITIAL_STATE = {
     bookmarksCountArray:[],
     likesCountArray: [],
     lastPlayingPodcastID: null,
-    lastPlayingCurrentTime: null
+    lastPlayingCurrentTime: null,
+    isAdmin: false,
+    uploadPodcastSuccess: false
   };
   
   function userReducer(state = INITIAL_STATE, action)  {
     switch (action.type) {
+        case "SET_PODCAST_UPLOAD_SUCCESS":
+            console.log("uploadPodcastSuccess : ",action.payload);
+            return {...state,uploadPodcastSuccess:action.payload}
+        case "SET_ADMIN_USER":
+            console.log("isAdmin : ",action.payload);
+            return {...state,isAdmin:action.payload}
         case "SET_LAST_PLAYING_CURRENT_TIME":
             console.log("lastPlayingCurrentTime : ",action.payload);
             return {...state,lastPlayingCurrentTime:action.payload}

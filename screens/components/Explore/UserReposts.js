@@ -3,6 +3,7 @@ import firestore from '@react-native-firebase/firestore';
 import { StyleSheet, Text, View, Image, TouchableOpacity,FlatList,  Dimensions,SafeAreaView, ScrollView,ActivityIndicator} from 'react-native';
 import RepostItem from '../Profile/RepostItem'
 import {withFirebaseHOC} from '../../config/Firebase'
+import {useSelector, useDispatch,connect} from "react-redux"
 
 var {width, height}=Dimensions.get('window')
 
@@ -23,6 +24,7 @@ class UserReposts extends React.Component {
         refreshing:false,
         loading:false,
         onEndReachedCalledDuringMomentum : true,
+        scrollPosition: 0
       }
       }
     
@@ -30,6 +32,10 @@ class UserReposts extends React.Component {
    
      componentDidMount = () => {
       try {
+        this.props.navigation.addListener('didFocus', (route) => {
+          console.log("USER_REPOSTS TAB PRESSED");
+          this.props.dispatch({type:"CHANGE_SCREEN"});
+          });
         this.retrieveData();
       }
       catch (error) {
@@ -108,9 +114,11 @@ class UserReposts extends React.Component {
 
     renderData=({item,index})=>
     {
+      const  userID = this.props.navigation.state.params.userData.id;
+
        return(
          <View>
-        <RepostItem podcast={item} isBookmark={true} index={index} navigation={this.props.navigation}/>
+        <RepostItem podcast={item} userID={userID} scrollPosition={this.state.scrollPosition} isBookmark={true} index={index} navigation={this.props.navigation}/>
         </View>
        )
     }
@@ -144,6 +152,13 @@ class UserReposts extends React.Component {
       }
   }
 
+   handleScroll = (event) => {
+    console.log("In handleScroll : ",event.nativeEvent.contentOffset.y);
+    if(Math.abs(this.state.scrollPosition - event.nativeEvent.contentOffset.y) >= height/6)
+      this.setState({ scrollPosition: event.nativeEvent.contentOffset.y });
+    //setScrollPosition(event.nativeEvent.contentOffset.y);
+   }
+
     render() {
      
       if(this.state.loading)
@@ -164,6 +179,7 @@ class UserReposts extends React.Component {
           nestedScrollEnabled={true}
           data={this.state.reposts}
           renderItem={this.renderData}
+          onScroll={this.handleScroll}
           //numColumns={2}
           ItemSeparatorComponent={this.separator}
           showsVerticalScrollIndicator={false}
@@ -193,9 +209,14 @@ class UserReposts extends React.Component {
       }
     }
   }
-  
 
-export default withFirebaseHOC(UserReposts);
+  const mapDispatchToProps = (dispatch) =>{
+    return{
+       dispatch,
+    }}
+export default connect(null,mapDispatchToProps)(withFirebaseHOC(UserReposts))
+
+//export default withFirebaseHOC(UserReposts);
 
 
 const styles = StyleSheet.create({

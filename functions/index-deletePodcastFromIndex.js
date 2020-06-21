@@ -17,10 +17,10 @@ exports.deletePodcastFromIndex = functions.region("asia-northeast1").https.onCal
   console.log("context.auth = ",context.auth);
 
   collectionIndex.deleteObject(podcastID).then(() => {
-      console.log("Deleted podcast from podcasts Index");
-      return 1;
-  }).catch((error) => {
-    console.error("Error removing podcast from podcatsIndex: ", error);
-  });
+    console.log("Deleted podcast from podcasts Index");
+    return 1;
+}).catch((error) => {
+  console.error("Error removing podcast from podcatsIndex: ", error);
+});
 
 });

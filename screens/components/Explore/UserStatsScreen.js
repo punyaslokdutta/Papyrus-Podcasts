@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Image, ScrollView, StyleSheet, TouchableOpacity, View,Dimensions } from 'react-native'
+import { Image, ScrollView, StyleSheet, TouchableOpacity,TouchableNativeFeedback, View,Dimensions } from 'react-native'
 import firestore from '@react-native-firebase/firestore';
 import {Button} from 'native-base';
 //import Icon from 'react-native-vector-icons';
@@ -73,7 +73,7 @@ var {width, height}=Dimensions.get('window')
         <Block>
           <Block center>
     <Text h1 primary spacing={1.7}>{this.state.totalListeningTime}</Text>
-            <Text spacing={0.7}>Minutes Recorded</Text>
+            <Text spacing={0.7} style={{fontFamily:'Montserrat-Regular'}}>Minutes Recorded</Text>
           </Block>
 
           {/* <Block color="gray3" style={styles.hLine} /> */}
@@ -81,14 +81,14 @@ var {width, height}=Dimensions.get('window')
           <Block row>
             <Block center>
     <Text size={20} spacing={0.6} primary style={{ marginBottom: 3 }}>{this.state.numCreatedBookPodcasts}</Text>
-              <Text body spacing={0.7}>Book Podcasts</Text>
+              <Text body spacing={0.7} style={{fontFamily:'Montserrat-Regular'}}>Book Podcasts</Text>
             </Block>
 
             <Block flex={false} color="gray3" style={styles.vLine} />
 
             <Block center>
               <Text size={20} spacing={0.6} primary style={{ marginBottom: 3 }}>{this.state.numCreatedChapterPodcasts}</Text>
-              <Text body spacing={0.7}>Chapter Podcasts</Text>
+              <Text body spacing={0.7} style={{fontFamily:'Montserrat-Regular'}}>Chapter Podcasts</Text>
             </Block>
           </Block>
         </Block>
@@ -111,42 +111,42 @@ var {width, height}=Dimensions.get('window')
         </View>
        
         <View style={{ alignItems:'center',flex:1,paddingTop:50}}>
-       <Text  style={{ fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light', alignItems:'center', justifyContent:'center'}}>{this.state.name}</Text>
+       <Text  style={{ fontSize:24,  textShadowColor:'black', fontFamily:'Montserrat-Bold', alignItems:'center', justifyContent:'center'}}>{this.state.name}</Text>
         </View>
 
         <View style={{justifyContent:'center',alignItems:'center'}}>
-    <Text style={{ fontSize:14, fontWeight:"100",  textShadowColor:'black', fontFamily:'American Typewriter', alignItems:'center', justifyContent:'center', padding:20}}>{this.state.introduction}</Text>
+    <Text style={{ fontSize:14, textShadowColor:'black', fontFamily:'Montserrat-Regular', alignItems:'center', justifyContent:'center', padding:20}}>{this.state.introduction}</Text>
         </View>
 
         <View style={{flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
-        <TouchableOpacity onPress={()=>{
+        <TouchableNativeFeedback onPress={()=>{
           this.state.followingCount != 0 && this.props.navigation.navigate('UserFollowingScreen', { id : this.props.navigation.state.params.item.id })
           }}>
         <View style={{alignItems:'center'}}>
-          <Text style={{paddingTop:height/20, paddingHorizontal:width/10, fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
+          <Text style={{ paddingHorizontal:width/10, fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
           {this.state.followingCount}
           </Text>
-          <Text style={{fontFamily:'sans-serif-light', paddingHorizontal:width/13}}>Following</Text>
+          <Text style={{fontFamily:'Montserrat-Regular', paddingHorizontal:width/13}}>Following</Text>
           </View>
-          </TouchableOpacity>
+          </TouchableNativeFeedback>
           
-          <TouchableOpacity onPress={()=>{
+          <TouchableNativeFeedback onPress={()=>{
              this.state.followersCount != 0 && this.props.navigation.navigate('UserFollowerScreen', { id : this.props.navigation.state.params.item.id })
             }}>
             <View style={{alignItems:'center'}}>
-            <Text style={{paddingTop:height/20 , paddingHorizontal:width/10,  fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
+            <Text style={{paddingHorizontal:width/10,  fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
             {this.state.followersCount}
           </Text>                                             
-          <Text style={{fontFamily:'sans-serif-light', paddingHorizontal:width/13}}>Followers</Text>
+          <Text style={{fontFamily:'Montserrat-Regular', paddingHorizontal:width/13}}>Followers</Text>
           </View>
-          </TouchableOpacity>
+          </TouchableNativeFeedback>
 
         </View>
 
         </View>
        <Block flex={false} row center style={styles.header}>
        
-    <Text h3 bold>Podcast Statistics {"   "}</Text>
+    <Text h3 style={{fontFamily:'Montserrat-Bold'}}>Podcast Statistics {"   "}</Text>
         </Block>
         {this.renderMonthly()}
         <Text>{"\n\n"}</Text>

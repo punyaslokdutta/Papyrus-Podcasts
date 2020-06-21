@@ -9,7 +9,7 @@ import SearchBookScreen from '../components/Explore/SearchBookScreen'
 import SearchChapterScreen from '../components/Explore/SearchChapterScreen'
 import SearchPodcastScreen from '../components/Explore/SearchPodcastScreen'
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5'
-
+import ProfileTabBar from './CustomProfileTabBar';
 
 var {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
 const IS_IPHONE_X = SCREEN_HEIGHT === 812 || SCREEN_HEIGHT=== 896;
@@ -21,7 +21,7 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
   const SearchTabNavigator = createMaterialTopTabNavigator(
     {
       SearchBookScreen : { screen: props => <SearchBookScreen  {...props}/>,navigationOptions:{
-        tabBarLabel:'books',
+        tabBarLabel:'Books',
         tabBarIcon:({tintColor})=>(
           <Icon name="book" color={tintColor} size={20}/>
         )
@@ -35,13 +35,15 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
       SearchPodcastScreen : { screen: props => props.navigation.state.params.fromExplore ? <SearchPodcastScreen  {...props}/> : null,navigationOptions: (props) => ({
         //tabBarVisible: false,
         //tabBarOnPress: (props) => props.navigation.state.params.fromExplore ?  <SearchPodcastScreen  {...props}/> : null,
-        tabBarLabel: props.navigation.state.params.fromExplore ? 'Podcasts  ' : ' ',
+        tabBarLabel: props.navigation.state.params.fromExplore ? 'Podcasts' : ' ',
         tabBarIcon:({tintColor})=>(
           props.navigation.state.params.fromExplore ?  <FontAwesome5Icon name="microphone-alt" color={tintColor} size={25}/> : null
         )
       })}
     },
-  {tabBarOptions:  {
+  {
+    tabBarComponent: props => <ProfileTabBar {...props}/>,
+    tabBarOptions:  {
       showIcon: true,//props.navigation.state.params.fromExplore ? false : true,
       //showLabel: props.navigation.state.params.fromExplore ? false : false,
       activeTintColor:'black',

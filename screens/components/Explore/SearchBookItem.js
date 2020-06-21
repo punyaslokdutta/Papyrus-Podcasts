@@ -1,5 +1,5 @@
 import React, {Component, useState, useEffect, useRef,useContext} from 'react';
-import { StyleSheet, Text, View, Image, Dimensions} from 'react-native';
+import { StyleSheet, Text, View, Image, Dimensions,TouchableNativeFeedback} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import * as theme from '../constants/theme'
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -26,7 +26,7 @@ var {width, height}=Dimensions.get('window')
    console.log("Book Authors : ",props.book.authors);
   console.log("Book Name : ",props.book.bookName)
         return (
-          <TouchableOpacity onPress={() => {
+          <TouchableNativeFeedback onPress={() => {
               console.log("fromSearchChapterScreen : ",props.fromSearchChapterScreen)
             if(props.fromSearchChapterScreen === false)
               props.navigation.navigate('RecordBook', {bookID : props.book.objectID })
@@ -34,29 +34,6 @@ var {width, height}=Dimensions.get('window')
               refRBSheet.current.open()
           }
           }>
-            
-            <RBSheet
-                    ref={refRBSheet}
-                    animationType={"slide"}
-                    closeOnDragDown={true}
-                    closeOnPressMask={true}
-                    duration={50}
-                    customStyles={{
-                      container:{
-                        backgroundColor: "#dddd",
-                        height:(height*5)/8,
-                        borderRadius:40
-                      },
-                      wrapper: {
-                        backgroundColor: "transparent"
-                      },
-                      draggableIcon: {
-                        backgroundColor: "#000"
-                      }
-                    }}
-                  >
-                 <AddChapter bookName={props.book.bookName} refRb={refRBSheet.current}/>
-                 </RBSheet>
 
              <View style={{flex:1,flexDirection:"row",paddingLeft:width/64,width:width,height:height/6}}>
              
@@ -67,7 +44,7 @@ var {width, height}=Dimensions.get('window')
                <View style={[styles.flex, styles.column, styles.shadow, { width:(width*2)/3,paddingLeft:theme.sizes.padding, paddingTop: theme.sizes.padding / 4 }]}>
                  <View style={{height:(height)/16}}>
                    
-                  <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.book.bookName.toString().slice(0,50)}
+                  <Text style={{ fontSize: theme.sizes.font * 1.0, fontFamily:'Montserrat-SemiBold' }}>{props.book.bookName.toString().slice(0,50)}
                        {(props.book.bookName.toString().length > 50) ? ".." : ""}</Text> 
                  </View>
                <View style ={{height:(height)/20}}>
@@ -75,7 +52,7 @@ var {width, height}=Dimensions.get('window')
                     
                     props.book.authors.map((item,index) => (
                       (index<=1) &&
-                      <Text style={{ fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>{item}</Text>
+                      <Text style={{ fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green,fontFamily:'Montserrat-Regular' }}>{item}</Text>
                       
                     ))    
                }
@@ -87,7 +64,7 @@ var {width, height}=Dimensions.get('window')
               { alignItems: 'center', justifyContent: 'space-between'}
               ]}>
                 
-                <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
+                <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green,fontFamily:'Montserrat-Regular' }}>
                   Published in {props.book.publicationYear}
                 </Text>
                 {/* <View style={{alignItems: 'flex-end',paddingRight:5}}>
@@ -106,7 +83,7 @@ var {width, height}=Dimensions.get('window')
             </View>
         
           </View>
-      </TouchableOpacity>
+      </TouchableNativeFeedback>
         );
       
   }, areEqual);

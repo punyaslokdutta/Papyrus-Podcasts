@@ -1,12 +1,11 @@
 import React, {Component, useState, useEffect, useContext} from 'react';
-import { StyleSheet, Text, View, Image, Dimensions,TouchableOpacity, ImageBackground, ActivityIndicator} from 'react-native';
+import { StyleSheet, Text, View, Image, Dimensions,TouchableOpacity,TouchableNativeFeedback, ImageBackground, ActivityIndicator, Alert} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import * as theme from '../constants/theme'
 import firestore from '@react-native-firebase/firestore';
 import moment from 'moment';
 import {withFirebaseHOC} from '../../config/Firebase';
 import {useSelector, useDispatch,connect} from "react-redux"
-import { TouchableNativeFeedback } from 'react-native-gesture-handler';
 import EvilIcon from 'react-native-vector-icons/EvilIcons';
 import IconAntDesign from 'react-native-vector-icons/AntDesign'
 import PodcastAnimation from '../PodcastPlayer/PodcastAnimation';
@@ -14,7 +13,8 @@ import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-nati
 import PlayPauseOut from '../PodcastPlayer/PlayPauseOut';
 import LottieView from 'lottie-react-native';
 import playPause from '../../../assets/animations/play_pause.json';
-import newAnimation from '../../../assets/animations/waves_modified.json'
+import newAnimation from '../../../assets/animations/waterwaves5.json'
+import Toast from 'react-native-simple-toast';
 
 
 var {width, height}=Dimensions.get('window')
@@ -45,7 +45,7 @@ var {width, height}=Dimensions.get('window')
       if(this.props.podcastRedux && this.props.podcastRedux.podcastID == this.props.podcast.podcastID) 
       {
           if(!this.props.pausedRedux)
-              this.animation.play(0,60);
+              this.animation.play(0,178);
           else
               this.animation.pause();
       }
@@ -132,6 +132,28 @@ var {width, height}=Dimensions.get('window')
       }  
   }
 
+  deleteRepostItem = async () =>
+  {
+    const userID = this.props.userID;
+    const privateDataID = "private" + this.props.userID;
+    firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('bookmarks')
+       .where("podcastID",'==',this.props.podcast.podcastID).get().then(function(querySnapshot){
+         querySnapshot.forEach(function(doc) {
+           doc.ref.delete().then(function() {
+             Toast.show("This podcast has been deleted & removed from your collections");
+           }).catch(function(error){
+             console.log("Error in removing bookmarks from user's bookmarks collection: ",error);
+           });
+         });
+       });
+    
+     firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).set({
+         podcastsBookmarked : firestore.FieldValue.arrayRemove(this.props.podcast.podcastID)
+       },{merge:true}).catch(function(error){
+         console.log("Error in removing podcastID from podcastsBookmarked in user's private document: ",error);
+       })
+  }
+
   retrievePodcastDocument = async () =>
   {
     try{
@@ -139,7 +161,37 @@ var {width, height}=Dimensions.get('window')
     {
       const podcastCollection = await firestore().collectionGroup('podcasts')
                              .where('podcastID','==',this.props.podcast.podcastID).get();
+      
+      const userID = this.props.userID;
+      console.log("userID: ",userID);
+      const privateDataID = "private" + userID;
+      if(podcastCollection.docs.length == 0)
+      {
+        this.deleteRepostItem();
+        return;
+      }
       const podcastDocumentData = podcastCollection.docs[0]._data;
+      
+    
+      console.log("podcastDocumentData.lastEditedOn: ",podcastDocumentData.lastEditedOn);
+      console.log("this.props.podcast.lastEditedOn): ",this.props.podcast.lastEditedOn);
+      console.log("this.props.podcast.bookmarkID: ",this.props.podcast)
+      
+      if(podcastDocumentData.lastEditedOn !== this.props.podcast.lastEditedOn)
+      {
+        
+        firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('bookmarks').doc(this.props.podcast.bookmarkID).set({
+          podcastName : podcastDocumentData.podcastName,
+          podcastPictures : [podcastDocumentData.podcastPictures[0]],
+          podcasterName : podcastDocumentData.podcasterName,
+          lastEditedOn : podcastDocumentData.lastEditedOn,
+        },{merge:true}).then(() => {
+          console.log("Successfully updated repostItem with actual Podcast Document data");
+        }).catch((err) => {
+          console.log(err);
+        })
+      }
+      
       console.log("[RepostItem] podcastDocumentData : ", podcastDocumentData);
       this.props.dispatch({type:"SET_CURRENT_TIME", payload:0})
       this.props.dispatch({type:"SET_DURATION", payload:podcastDocumentData.duration})
@@ -188,7 +240,7 @@ var {width, height}=Dimensions.get('window')
     render()
     {
       return (
-        <TouchableOpacity activeOpacity={0.5} onPress={() => {
+        <TouchableNativeFeedback onPress={() => {
         if(this.props.podcastRedux!=null && this.props.podcastRedux.podcastID == this.props.podcast.podcastID)
         {
           if(this.props.pausedRedux)
@@ -323,7 +375,7 @@ var {width, height}=Dimensions.get('window')
             {/* <PodcastAnimation podcastID={this.props.podcast.podcastID}/> */}
             <LottieView 
             ref={animation => { this.animation = animation;}}
-            style={{width:width*3/3}} 
+            style={{width:width*2/3}} 
             source={newAnimation}
             loop={true}/>
             </View>
@@ -339,24 +391,20 @@ var {width, height}=Dimensions.get('window')
                     {this.props.podcast.podcasterName}
                 </Text>
                 </TouchableOpacity>
+                
+              <Text style={{  fontFamily:'Montserrat-Bold',position:'absolute',right:-15,top:3,fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
+              {this.state.createdOn}
+              </Text>
+              
             </View>
         
-            <View style={[
-            styles.row,
-            { alignItems: 'center', justifyContent: 'space-between'}
-            ]}>
             
-            <Text style={{  fontFamily:'Montserrat-Bold',fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
-            {this.state.createdOn}
-            </Text>
-            
-            </View>
             
         </View>
     
         </View>
         </View>
-    </TouchableOpacity>
+    </TouchableNativeFeedback>
     );
     }
       
@@ -367,7 +415,8 @@ const mapStateToProps = (state) => {
   return{
     podcastRedux: state.rootReducer.podcast,
     pausedRedux: state.rootReducer.paused,
-    loadingPodcastRedux: state.rootReducer.loadingPodcast
+    loadingPodcastRedux: state.rootReducer.loadingPodcast,
+    screenChanged: state.rootReducer.screenChanged
   }}
 
   const mapDispatchToProps = (dispatch) =>{

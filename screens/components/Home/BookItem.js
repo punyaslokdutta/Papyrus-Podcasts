@@ -1,4 +1,4 @@
-import { Text, Dimensions,View, StyleSheet,ImageBackground, TouchableOpacity } from 'react-native'
+import { Text, Dimensions,View, StyleSheet,ImageBackground, TouchableOpacity,TouchableNativeFeedback } from 'react-native'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import React, { Component, useEffect,useState,useRef } from 'react';
 import * as theme from '../constants/theme';
@@ -174,7 +174,7 @@ const BookItem = React.memo((props) => {
 
   
     return (
-        <TouchableOpacity activeOpacity={0.8} onPress={() => {
+        <TouchableNativeFeedback activeOpacity={0.8} onPress={() => {
           if(props.item.chapterID !== undefined)
           {
             props.navigation.navigate('RecordChapter', { chapterID: props.item.chapterID, bookID : props.item.bookID });
@@ -184,13 +184,14 @@ const BookItem = React.memo((props) => {
             props.navigation.navigate('RecordBook', { bookID : props.item.bookID });
           }
         }}>
+          <View style={{flex:1,flexDirection:'row'}}>
           <ImageBackground
             style={[styles.flex, styles.destination,styles.shadow]}
             imageStyle={{ borderRadius: theme.sizes.radius }}
             source={{ uri: props.item.bookPictures['0'] }}
           >
           </ImageBackground>
-          <View style={{flex:1,flexDirection:'row'}}>
+          
             
             <View style={[styles.column, styles.destinationInfo, styles.shadow]}>
               <Text style={{ fontSize: theme.sizes.font * 1.25, fontWeight: '500', paddingBottom: 8, }}>
@@ -222,7 +223,7 @@ const BookItem = React.memo((props) => {
             </View>
            
             </View>
-        </TouchableOpacity>
+        </TouchableNativeFeedback>
       )
 
 }, areEqual)

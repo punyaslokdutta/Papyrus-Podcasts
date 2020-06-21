@@ -11,6 +11,7 @@ import CustomProfileHeader from './CustomProfileHeader';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import EvilIcon from 'react-native-vector-icons/EvilIcons';
 import Octicon from 'react-native-vector-icons/Octicons';
+import ProfileTabBar from '../navigation/CustomProfileTabBar';
 
 var {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
 const IS_IPHONE_X = SCREEN_HEIGHT === 812 || SCREEN_HEIGHT=== 896;
@@ -22,7 +23,7 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
 const ProfileTabNavigator =createMaterialTopTabNavigator(
     {
       BookmarkScreenBooks: {screen:BookmarkScreenBooks, navigationOptions:{
-        tabBarLabel:'Saved    ',
+        tabBarLabel:'Saved',
         tabBarIcon:({tintColor})=>(
           <Icon name="bookmark" color={tintColor} size={20}/>
         )
@@ -46,36 +47,39 @@ const ProfileTabNavigator =createMaterialTopTabNavigator(
       //   )
       // }}
     },
-    {tabBarOptions:{
-      showIcon: true,
-      showLabel: true,
-      activeTintColor:'black',
-      inactiveTintColor:'grey',
-      borderTopWidth: 20,
+    {
+      tabBarComponent: props => <ProfileTabBar {...props}/>,
+  
+        tabBarOptions:{
+          showIcon: true,
+          showLabel: true,
+          activeTintColor:'black',
+          inactiveTintColor:'grey',
+          borderTopWidth: 20,
 
-      elevation :5,
-      adaptive: true, 
-      style:
-      {
-        height: 60, 
-        backgroundColor: 'white',
-        
-      },
-      indicatorStyle: {
-        borderBottomColor: 'black',
-        borderBottomWidth: 2,
-      },
-      labelStyle: {
-        fontSize: 10,
-      }
-    }, 
-       navigationOptions:
-       {
-         tabBarVisible: true,
-         //headerVisible: true,
-           header: props => <CustomProfileHeader {...props} />, 
-         
-       }
+          elevation :5,
+          adaptive: true, 
+          style:
+          {
+            height: 60, 
+            backgroundColor: 'white',
+            
+          },
+          indicatorStyle: {
+            borderBottomColor: 'black',
+            borderBottomWidth: 2,
+          },
+          labelStyle: {
+            fontSize: 10,
+          }
+        }, 
+        navigationOptions:
+        {
+          tabBarVisible: true,
+          //headerVisible: true,
+            header: props => <CustomProfileHeader {...props} />, 
+          
+        }
       }
     
     )

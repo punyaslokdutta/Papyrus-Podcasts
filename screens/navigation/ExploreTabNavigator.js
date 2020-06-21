@@ -11,7 +11,7 @@ import { theme } from '../components/categories/constants';
 import CustomUserHeader from './CustomUserHeader';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5'
 import EvilIcon from 'react-native-vector-icons/EvilIcons';
-
+import ProfileTabBar from './CustomProfileTabBar';
 
 
 var {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
@@ -23,7 +23,7 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
   const ExploreTabNavigator = createMaterialTopTabNavigator(
     {
       UserBookmarks: {screen:UserBookmarks, navigationOptions:{
-        tabBarLabel:'Saved    ',
+        tabBarLabel:'Saved',
         tabBarIcon:({tintColor})=>(
           <Icon name="bookmark" color={tintColor} size={20}/>
         )
@@ -35,14 +35,17 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
         )
       }},
       UserPodcasts : { screen: props => <UserPodcasts {...props}/>,navigationOptions:{
-        tabBarLabel:'Podcasts   ',
+        tabBarLabel:'Podcasts',
         tabBarIcon:({tintColor})=>(
           <FontAwesome5Icon name="microphone-alt" color={tintColor} size={25}/>
         )
       }},
 
     },
-    {tabBarOptions:{
+    {
+      tabBarComponent: props => <ProfileTabBar {...props}/>,
+
+      tabBarOptions:{
     
       showIcon: true,
       showLabel: true,

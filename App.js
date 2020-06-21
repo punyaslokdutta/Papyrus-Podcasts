@@ -3,10 +3,14 @@ import ProfileFollowingScreen from './screens/components/Profile/ProfileFollowin
 import React, {Component} from 'react';
 import CustomDrawerContentComponent from './screens/navigation/CustomDrawerContentComponent';
 import setUserDetails from './screens/setUserDetails'
-import { StyleSheet, View, TouchableOpacity, Image, Text,Dimensions, Button, ScrollView,  NativeModules,Linking,Platform} from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Image, Text,Dimensions, Button, ScrollView, Alert, NativeModules,Linking,Platform} from 'react-native';
 import {createSwitchNavigator,
   createAppContainer,
   } from 'react-navigation'
+import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
+import { MenuProvider } from 'react-native-popup-menu';
+
+import TabBar from './screens/navigation/CustomAppTabBar';
 import LikersScreen from './screens/components/PodcastPlayer/LikersScreen'
 import setPreferences from './setPreferences'
 import { createBottomTabNavigator } from 'react-navigation-tabs';
@@ -33,6 +37,7 @@ import RecordChapter from './screens/RecordChapter'
 import StatisticsScreen from './screens/StatisticsScreen'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5'
+import Entypo from 'react-native-vector-icons/Entypo'
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons'
 import SimpleLineIcon from 'react-native-vector-icons/SimpleLineIcons'
 import { theme } from './screens/components/categories/constants';
@@ -53,6 +58,7 @@ import UserFollowerScreen from './screens/components/Explore/UserFollowerScreen'
 import InfoScreen from './InfoScreen'
 import CustomUserHeader from './screens/navigation/CustomUserHeader'
 import SearchTabNavigator from './screens/navigation/SearchTabNavigator'
+import { TouchableNativeFeedback } from 'react-native-gesture-handler';
 
 const  {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
 const IS_IPHONE_X = SCREEN_HEIGHT === 812 || SCREEN_HEIGHT=== 896;
@@ -190,54 +196,49 @@ const AppTabNavigator=createBottomTabNavigator(
   {
     Home: {screen:HomeStackNavigator,
     navigationOptions:{
-      tabBarLabel:'Home',
-      tabBarIcon:({tintColor})=>(
-        <Icon name="home" color={tintColor}  size={24}/>
-      )
+      tabBarIcon:({tintColor})=>( <Entypo name="home" color={tintColor}  size={30}/> )
     }},
     Explore: {screen:ExploreStackNavigator,
       navigationOptions:{
-        tabBarLabel:'Explore',
-        tabBarIcon:({tintColor})=>(
-          <Icon name="search" color={tintColor}  size={26}/>
-        )
+        tabBarIcon:({tintColor})=>( <Icon name="search" color={tintColor}  size={28}/> )
       }
     },
-   Record: {screen:RecordStackNavigator,
+    Record: {screen:RecordStackNavigator,
       navigationOptions:{
-        tabBarLabel:' ',
-        tabBarIcon:({tintColor})=>(
-          <FontAwesome5Icon style={{paddingTop:15}} name="microphone-alt" color={'black'} size={SCREEN_HEIGHT/15}/>
+          tabBarIcon:({tintColor})=>(
+          <FontAwesome5Icon style={{paddingTop:1}} name="microphone-alt" color={'black'} size={SCREEN_HEIGHT/15}/>
         )
       }
    },
     Category: {screen: CategoryStackNavigator,
       navigationOptions:{
-        tabBarLabel:'Categories',
         tabBarIcon:({tintColor})=>(
-          <Icon name="cubes" color={tintColor} size={24}/>
+          <Icon name="cubes" color={tintColor} size={28}/>
         )
       }
     },
     Profile: {screen:ProfileStackNavigator,
       navigationOptions:{
-        tabBarLabel:'Collections',
         tabBarIcon:({tintColor})=>(
-          <Icon name="user-circle" color={tintColor} size={24}/>
+          <Icon name="user-circle" color={tintColor} size={32}/>
         )
       }
     },
-  },{initialRouteName:'Explore',
+  },{
+  tabBarComponent: props => <TabBar {...props}/>,
+  initialRouteName:'Explore',
   order:['Home', 'Explore', 'Record', 'Category', 'Profile'],
   headerMode: 'none',
-  navigationOptions:
-  {
+  navigationOptions: ({ navigation }) => ({
     tabBarVisible: true,
-    headerVisible: false
-  },
+    headerVisible: false,
+    tabBarOnPress: (scene, jumpToIndex) => {
+      console.log("TabBar Pressed");
+    }
+  }),
   tabBarOptions:{
     activeTintColor:'black',
-    inactivetintcolor:'grey',
+    inactiveTintColor:'gray',
     backgroundColor:'white',
     borderTopWidth: 0,
     elevation :5,
@@ -432,8 +433,16 @@ const store = createStore(mainReducer, applyMiddleware(thunk))
 
 export default class App extends Component {
 
-  componentDidMount(){
+  componentDidMount = async () => {
     SplashScreen.hide();
+
+    const updateVersionDoc = await firestore().collection('appUpdates').doc('newUpdate').get();
+    const updateVersionData = updateVersionDoc.data();
+    const latestVersion = updateVersionData.updateVersion;
+
+    if(latestVersion > 17)
+      Alert.alert('New update available.Please delete this app & install app again'); 
+      //from the app link provided to you earlier.');
   }
 
 
@@ -449,7 +458,9 @@ export default class App extends Component {
     <Provider store ={store}>
     <FirebaseProvider value={firebaseApi}>
     <PlayerProvider>
+    <MenuProvider>
     <AppContainer/>
+    </MenuProvider>
     </PlayerProvider>
     </FirebaseProvider>
     </Provider>

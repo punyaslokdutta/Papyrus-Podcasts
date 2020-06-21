@@ -1,6 +1,6 @@
 import React, { Component, useEffect,useState,useRef } from 'react';
 import firestore from '@react-native-firebase/firestore';
-import { Text, StyleSheet, View, Animated, Image, Dimensions, ScrollView,ActivityIndicator, TouchableOpacity } from 'react-native'
+import { Text, StyleSheet, View, Animated, Image, Dimensions, ScrollView,ActivityIndicator, TouchableOpacity,TouchableNativeFeedback } from 'react-native'
 import {Card, CardItem,  Body} from 'native-base'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { withFirebaseHOC } from './config/Firebase';
@@ -246,16 +246,16 @@ const RecordBook = (props) => {
             
             <View style={{flexDirection:'row',alignItems:'center',justifyContent:'center',paddingTop:20,paddingBottom:20,paddingLeft:width/4}}>
             <View style={{width:width/2 - theme.sizes.padding}}>  
-            <TouchableOpacity onPress={()=>props.navigation.navigate('SelectScreen',{bookItem:article,chapterItem:null})}>
+            <TouchableNativeFeedback onPress={()=>props.navigation.navigate('SelectScreen',{bookItem:article,chapterItem:null})}>
             <View style={{width:width/6,alignItems:'center'}}>
             <FontAwesome name="microphone" color={theme.colors.black} size={theme.sizes.font * 2.0} />
             <Text style={{fontSize:12,textAlign:'center',fontFamily:'Montserrat-Bold',width:width/6}}>Record</Text>
             </View>
-            </TouchableOpacity>
+            </TouchableNativeFeedback>
             </View> 
             
             <View style={{width:width/2}}>
-          <TouchableOpacity onPress={() => handleOnPressBookmark()}>
+          <TouchableNativeFeedback onPress={() => handleOnPressBookmark()}>
           <View style={{width:width/3,alignItems:'center'}}>
                   <AnimatedIcon
                     ref={handleSmallAnimatedBookmarkIconRef}
@@ -268,24 +268,24 @@ const RecordBook = (props) => {
 
           </View>
 
-                </TouchableOpacity>
+                </TouchableNativeFeedback>
             </View>
             </View> 
 
             <Card style={{borderRadius: 10 ,width:((width*4)/5 ), paddingTop :5}}>
               <CardItem>
-            <TouchableOpacity>
-              <Text style={{fontSize:20, paddingBottom:10, fontFamily:'Montserrat-Bold'}}>Description</Text>
+            <View>
+              <Text style={{fontSize:20, paddingBottom:10, fontFamily:'Montserrat-SemiBold'}}>Description</Text>
               <Text style={{fontFamily:'Montserrat-Regular',fontSize:15}}>
                 {article.bookDescription}
               </Text>
-            </TouchableOpacity>
+            </View>
             </CardItem>
             </Card>
             <Card style={{borderRadius: 10 ,width:((width*4)/5 ), paddingTop :5}}>
               <CardItem>
-            <TouchableOpacity>
-              <Text style={{fontSize:20, paddingBottom:10, fontFamily:'Montserrat-Bold'}}>Author(s)</Text>
+            <View>
+              <Text style={{fontSize:20, paddingBottom:10, fontFamily:'Montserrat-SemiBold'}}>Author(s)</Text>
                 {
                   article.authors.map(item => (
                     <Text style={{fontFamily:'Montserrat-Regular',fontSize:15}}>
@@ -295,7 +295,7 @@ const RecordBook = (props) => {
                 }
                 
               
-            </TouchableOpacity>
+            </View>
             </CardItem>
             </Card>
           </View>
@@ -419,7 +419,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: theme.sizes.font * 2,
-    fontFamily:'Montserrat-Bold'
+    fontFamily:'Montserrat-SemiBold'
   },
   description: {
     fontSize: theme.sizes.font * 1.2,

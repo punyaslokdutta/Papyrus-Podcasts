@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import { StyleSheet, Text, View, Image, TouchableOpacity,FlatList,  Dimensions,SafeAreaView, ScrollView,ActivityIndicator} from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity,FlatList, RefreshControl, Dimensions,SafeAreaView, ScrollView,ActivityIndicator} from 'react-native';
 import Podcast from '../Home/Podcast'
 import {withFirebaseHOC} from '../../config/Firebase'
+import {useSelector, useDispatch,connect} from "react-redux"
 
 var {width, height}=Dimensions.get('window')
 
@@ -23,6 +24,7 @@ class UserPodcasts extends React.Component {
         refreshing:false,
         loading:false,
         onEndReachedCalledDuringMomentum : true,
+        scrollPosition: 0
       }
       }
     
@@ -30,6 +32,10 @@ class UserPodcasts extends React.Component {
    
      componentDidMount = () => {
       try {
+        this.props.navigation.addListener('didFocus', (route) => {
+          console.log("USER_PODCASTS TAB PRESSED");
+          this.props.dispatch({type:"CHANGE_SCREEN"});
+          });
         this.retrieveData();
       }
       catch (error) {
@@ -46,12 +52,12 @@ class UserPodcasts extends React.Component {
       try {
         const  userid = this.props.navigation.state.params.userData.id;       
         let documentPodcasts = await firestore().collectionGroup('podcasts').where('podcasterID','==',userid)
-                              .orderBy('createdOn','desc').limit(this.state.limit).get();
+                              .orderBy('lastEditedOn','desc').limit(this.state.limit).get();
         let documentData_podcasts = documentPodcasts.docs.map(document => document.data());
         var lastVisibleBookPodcast = this.state.lastVisibleBookPodcast;
 
         if(documentData_podcasts.length != 0)
-          lastVisibleBookPodcast = documentData_podcasts[documentData_podcasts.length - 1].createdOn;        
+          lastVisibleBookPodcast = documentData_podcasts[documentData_podcasts.length - 1].lastEditedOn;        
          
         this.setState({
         bookPodcasts: documentData_podcasts,
@@ -80,12 +86,12 @@ class UserPodcasts extends React.Component {
          
          
         let additionalBookPodcasts = await firestore().collectionGroup('podcasts').where('podcasterID','==',userid)
-                                        .orderBy('createdOn','desc')
+                                        .orderBy('lastEditedOn','desc')
                                         .startAfter(this.state.lastVisibleBookPodcast).limit(this.state.limit).get();
         let documentData = additionalBookPodcasts.docs.map(document => document.data());
         if(documentData.length != 0)
         {
-          let lastVisibleBookPodcast = documentData[documentData.length - 1].createdOn;
+          let lastVisibleBookPodcast = documentData[documentData.length - 1].lastEditedOn;
           if(this.state.lastVisibleBookPodcast != lastVisibleBookPodcast)
           {
             this.setState({
@@ -109,7 +115,7 @@ class UserPodcasts extends React.Component {
     {
        return(
          <View>
-        <Podcast podcast={item} index={index} navigation={this.props.navigation}/>
+        <Podcast podcast={item} scrollPosition={this.state.scrollPosition} index={index} navigation={this.props.navigation}/>
         </View>
        )
     }
@@ -138,6 +144,16 @@ class UserPodcasts extends React.Component {
         }
       }
   }
+  handleRefresh = () => {
+    this.retrieveData();
+  }
+
+  handleScroll = (event) => {
+    console.log("In handleScroll : ",event.nativeEvent.contentOffset.y);
+    if(Math.abs(this.state.scrollPosition - event.nativeEvent.contentOffset.y) >= height/6)
+      this.setState({ scrollPosition: event.nativeEvent.contentOffset.y });
+    //setScrollPosition(event.nativeEvent.contentOffset.y);
+   }
 
     render() {
      
@@ -159,13 +175,20 @@ class UserPodcasts extends React.Component {
           nestedScrollEnabled={true}
           data={this.state.bookPodcasts}
           renderItem={this.renderData}
-          numColumns={2}
+          onScroll={this.handleScroll}
           showsVerticalScrollIndicator={false}
           keyExtractor={item => item.podcastID}
           ListFooterComponent={this.renderFooter}
           onEndReached={this.onEndReached}
           onEndReachedThreshold={0.5}
           refreshing={this.state.refreshing}
+          onRefresh={() => this.handleRefresh()}
+          refreshControl={
+            <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this.handleRefresh}
+            />
+           }
           onMomentumScrollBegin={() => { this.onEndReachedCalledDuringMomentum = false; }}
         />
         </View>
@@ -188,8 +211,12 @@ class UserPodcasts extends React.Component {
     }
   }
   
+const mapDispatchToProps = (dispatch) =>{
+  return{
+      dispatch,
+  }}
 
-export default withFirebaseHOC(UserPodcasts);
+export default connect(null,mapDispatchToProps)(withFirebaseHOC(UserPodcasts))
 
 
 const styles = StyleSheet.create({

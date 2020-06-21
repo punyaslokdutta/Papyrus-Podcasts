@@ -1,6 +1,6 @@
 import React, {Component, useState,useEffect, useRef, createRef} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import { StyleSheet,BackHandler, Text, View, SafeAreaView, ActivityIndicator, TextInput, Platform, StatusBar,TouchableOpacity,Dimensions, ScrollView, Image, NativeModules, NativeEventEmitter} from 'react-native';
+import { StyleSheet,BackHandler, Text, View, SafeAreaView, ActivityIndicator, TextInput, Platform, StatusBar,TouchableOpacity,TouchableNativeFeedback, Dimensions, ScrollView, Image, NativeModules, NativeEventEmitter} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import TrendingPodcast from './components/Explore/TrendingPodcast'
 import TopChapters from './components/Explore/TopChapters';
@@ -302,7 +302,7 @@ const Explore = (props) => {
     {
       return (
       <View style={styles.AppHeader}>
-        <TouchableOpacity onPress={()=>props.navigation.toggleDrawer()}>
+        <TouchableNativeFeedback onPress={()=>props.navigation.toggleDrawer()}>
         <View style={{paddingLeft: 15,paddingRight:10 ,paddingVertical:26} }>
          
           {
@@ -324,9 +324,9 @@ const Explore = (props) => {
             </View>
           }
         </View>
-        </TouchableOpacity>
+        </TouchableNativeFeedback>
         <View style={{flex:1, paddingVertical:10}}>
-          <TouchableOpacity onPress={() => {
+          <TouchableNativeFeedback onPress={() => {
             dispatch({type:"SET_ALGOLIA_QUERY", payload:"papyrus"})
             dispatch({type:"SET_EXPLORE_SCREEN_AS_PREVIOUS_SCREEN", payload:true})
             props.navigation.navigate('SearchTabNavigator',{fromExplore:true})}}>
@@ -342,7 +342,7 @@ const Explore = (props) => {
                </Text>
 
         </View>
-        </TouchableOpacity>
+        </TouchableNativeFeedback>
         </View>
         </View>
       )

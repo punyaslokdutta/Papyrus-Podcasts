@@ -33,6 +33,7 @@ const INITIAL_STATE = {
       case "CHANGE_LANGUAGE":
         console.log("CHANGE_LANGUAGE"+" " +action.payload)
           return {...state,languageSelected:action.payload} 
+          
       default:
           return state;
     }

@@ -1,5 +1,5 @@
 import React, { Component, useState, useEffect } from 'react';
-import { TouchableOpacity, StyleSheet, Text, View, Button, SafeAreaView, Dimensions, Image,  TextInput, Platform , BackHandler} from 'react-native';
+import { TouchableOpacity, StyleSheet, Text, View, Button, SafeAreaView, Dimensions, Image,  TextInput, Platform , BackHandler, ActivityIndicator} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import storage, { firebase } from '@react-native-firebase/storage'
 import { withFirebaseHOC } from '../screens/config/Firebase'
@@ -30,6 +30,8 @@ const PreviewScreen = (props) => {
   console.log("In PreviewScreen");
 
   const dispatch = useDispatch();
+  const displayPictureURL = useSelector(state=>state.userReducer.displayPictureURL)
+  const [loadingPodcastImage,setLoadingPodcastImage] = useState(false);
   const [podcastImage, setPodcastImage] = useState("https://storage.googleapis.com/papyrus-fa45c.appspot.com/podcasts/Waves.jpg");
   const chapterName=useSelector(state=>state.recorderReducer.chapterName)
   const bookName=useSelector(state=>state.recorderReducer.bookName)
@@ -38,14 +40,16 @@ const PreviewScreen = (props) => {
   const bookID=useSelector(state=>state.recorderReducer.bookID)
   const chapterID=useSelector(state=>state.recorderReducer.chapterID)
   const genres = useSelector(state=>state.recorderReducer.genres)
+  const [publishLoading,setPublishLoading] = useState(false);
   const [recordedFilePath, setrecordedFilePath] = useState(props.navigation.getParam('recordedFilePath'));
   const [podcastDescription, setPodcastDescription] = useState(null);
+  const [previewHeaderText,setPreviewHeaderText] = useState("New Podcast");
   const [podcastName, setPodcastName]=useState(null);
   const [tags, setTags]=useState(initialTags);
   const [tagsColor, settagsColor]=useState('#3ca897');
   const [tagsText, settagsText]=useState('#fff');
   const [tagsLength,setTagsLength] = useState(0);
-  const [podcastImageDownloadURL,setPodcastImageDownloadURL] = useState("https://storage.googleapis.com/papyrus-fa45c.appspot.com/podcasts/Waves.jpg");
+  //const [podcastImageDownloadURL,setPodcastImageDownloadURL] = useState("https://storage.googleapis.com/papyrus-fa45c.appspot.com/podcasts/Waves.jpg");
   const [podcastAudioDownloadURL,setPodcastAudioDownloadURL] = useState(null);
   const [duration , setDuration]=useState(props.navigation.getParam('duration'))
   const [progress, setProgress]=useState(0)
@@ -101,12 +105,14 @@ const PreviewScreen = (props) => {
           genres: genres,
           language: languageSelected,
           podcastName: podcastName,
-          podcastPictures: [podcastImageDownloadURL],
+          podcastPictures: [podcastImage],
           createdOn: moment().format(),
+          lastEditedOn: moment().format(),
           podcastDescription: podcastDescription,
           tags : tags.tagsArray,
           podcasterID: userID,
           podcasterName: userName,
+          podcasterDisplayPicture: displayPictureURL,
           numUsersLiked : 0,
           authors: authors
         })
@@ -123,6 +129,7 @@ const PreviewScreen = (props) => {
               tagsArray: [], 
             });
             setUploadPodcastSuccess(true);
+            dispatch({type:"SET_PODCAST_UPLOAD_SUCCESS",payload:true});
         })
         .catch(function(error) {
           console.error("Error adding document: ", error);
@@ -154,12 +161,14 @@ const PreviewScreen = (props) => {
           genres: genres,
           language: languageSelected,
           podcastName: podcastName,
-          podcastPictures: [podcastImageDownloadURL],
+          podcastPictures: [podcastImage],
           createdOn: moment().format(),
+          lastEditedOn: moment().format(),
           podcastDescription: podcastDescription,
           tags : tags.tagsArray,
           podcasterID: userID,
           podcasterName: userName,
+          podcasterDisplayPicture: displayPictureURL,
           numUsersLiked : 0,
           authors:authors
         })
@@ -172,6 +181,7 @@ const PreviewScreen = (props) => {
             Toast.show("Successfully uploaded")
             setPodcastID(docRef.id)
             setUploadPodcastSuccess(true);
+            dispatch({type:"SET_PODCAST_UPLOAD_SUCCESS",payload:true});
         })
         .catch(function(error) {
           console.error("Error adding document: ", error);
@@ -182,7 +192,42 @@ const PreviewScreen = (props) => {
               
   },[podcastAudioDownloadURL])
 
+
+  async function indexEditedPodcast(){
+    
+    const podcast = props.navigation.state.params.podcast;
+    const chapterNameValue = (podcast.isChapterPodcast == true) ? podcast.chapterName : null
+    const instance = firebase.app().functions("asia-northeast1").httpsCallable('AddToPodcastsIndex');
+      
+    try 
+    {          
+      await instance({ // change in podcast docs created by  user
+        createdOn : moment().format(),
+        podcastID : podcast.podcastID,
+        podcastPicture : podcastImage,
+        chapterName : chapterNameValue,  // have to handle it in SearchPodcastItem *******************
+        bookName : podcast.bookName,
+        podcastName : podcastName,
+        language : podcast.language,
+        podcasterName : podcast.podcasterName
+      });
+    }
+    catch (e) 
+    {
+      console.log(e);
+    }
+    finally{
+      Toast.show("Edited Podcast Successfully");
+      setPublishLoading(false);
+      props.navigation.navigate("HomeScreen");
+    }
+        
+      
+  }
+
+
   async function indexPodcast(){
+
     const instance = firebase.app().functions("asia-northeast1").httpsCallable('AddToPodcastsIndex');
       if(uploadPodcastSuccess == true)
       {
@@ -191,7 +236,7 @@ const PreviewScreen = (props) => {
           await instance({ // change in podcast docs created by  user
             createdOn : moment().format(),
             podcastID : podcastID,
-            podcastPicture : podcastImageDownloadURL,
+            podcastPicture : podcastImage,
             chapterName : chapterName,  // have to handle it in SearchPodcastItem *******************
             bookName : bookName,
             podcastName : podcastName,
@@ -234,10 +279,40 @@ const PreviewScreen = (props) => {
     },[uploadPodcastSuccess]
   )
 
+  useEffect(() => {
+    console.log("In USEEFFECT OF PREVIEW SCREEN");
+    console.log("props.podcast = ",props.navigation.state.params.podcast);
+    const podcast = props.navigation.state.params.podcast;
+    if(podcast !== undefined && podcast !== null)
+    {
+      setPodcastDescription(podcast.podcastDescription);
+      setPodcastName(podcast.podcastName);
+      setPodcastImage(podcast.podcastPictures[0]);
+      setPreviewHeaderText("Edit Podcast");
+      
+      var existingPodcastTags  ={
+        tag: '',
+        tagsArray: [], 
+      
+      }
+
+      if(podcast.tags !== undefined && podcast.tags !== null)
+      {
+        existingPodcastTags  ={
+          tag: '',
+          tagsArray: podcast.tags, 
+        
+        }
+      }
+      
+      setTags(existingPodcastTags);
+    }
+  },[])
 
   useEffect(
     () => {
       console.log("Inside useEffect - componentDidMount of PreviewScreen");
+      
       BackHandler.addEventListener('hardwareBackPress', back_Button_Press);
       return () => {
         console.log(" back_Button_Press Unmounted");
@@ -276,6 +351,43 @@ const PreviewScreen = (props) => {
 
     }         
   };
+
+  async function uploadEditedPodcast(podcast)
+  {
+    setPublishLoading(true);
+    if(podcast.isChapterPodcast == false)
+    {
+      await firestore().collection('books').doc(podcast.bookID).collection('podcasts').doc(podcast.podcastID)
+            .set({
+              podcastPictures : [podcastImage],
+              podcastName: podcastName,
+              podcastDescription: podcastDescription,
+              tags: tags.tagsArray,
+              lastEditedOn: moment().format()
+            },{merge:true}).then(() => {
+              console.log("Successfully uploaded edited book podcast");
+              indexEditedPodcast();
+            }).catch((err) => {
+              console.log("Error in uploading edited book podcast: ",err);
+            })
+    }
+    else
+    {
+      await firestore().collection('books').doc(podcast.bookID).collection('chapters').doc(podcast.chapterID)
+          .collection('podcasts').doc(podcast.podcastID).set({
+              podcastPictures : [podcastImage],
+              podcastName: podcastName,
+              podcastDescription: podcastDescription,
+              tags: tags.tagsArray,
+              lastEditedOn: moment().format()
+            },{merge:true}).then(() => {
+              console.log("Successfully uploaded edited book podcast");
+              indexEditedPodcast();
+            }).catch((err) => {
+              console.log("Error in uploading edited chapter podcast: ",err);
+            })
+    }
+  }
 
   function uploadPodcast(recordedFilePath)
   {
@@ -355,7 +467,9 @@ const PreviewScreen = (props) => {
         } else {
           const source = { uri: response.uri };
           console.log("Before storageRef.putFile");
-          setPodcastImage(source)
+          //setImageFromURL(false);
+          //setPodcastImage(source);
+          setLoadingPodcastImage(true);
           var refPath = "podcasts/images/" + userID + "_" + bookID + "_" + moment().format() + ".jpg";
           var storageRef = storage().ref(refPath);
           console.log("Before storageRef.putFile");
@@ -381,7 +495,8 @@ const PreviewScreen = (props) => {
                 storageRef.getDownloadURL()
                   .then((downloadUrl) => {
                     console.log("File available at: " + downloadUrl);
-                    setPodcastImageDownloadURL(downloadUrl);
+                    setPodcastImage(downloadUrl);
+                    setLoadingPodcastImage(false);
                   })
                   .catch(err => {
                     console.log("Error in storageRef.getDownloadURL() in uploadImage in PreviewScreen: ",err);
@@ -407,7 +522,7 @@ const PreviewScreen = (props) => {
         <TouchableOpacity onPress={() => props.navigation.goBack(null)}>
           <View style={{ paddingLeft: width / 12, paddingVertical: height / 20, flexDirection: 'row' }}>
           <Icon name="arrow-left" size={20} style={{color:'white'}}/>
-            <Text style={{ fontFamily: 'san-serif-light', color: 'white', paddingLeft: (width * 7) / 35, fontSize: 20 }}>New Podcast</Text>
+  <Text style={{ fontFamily: 'san-serif-light', color: 'white', paddingLeft: (width * 7) / 35, fontSize: 20 }}>{previewHeaderText}</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -415,13 +530,14 @@ const PreviewScreen = (props) => {
       <View style={{ alignItems: 'center' }}>
         <View style={{ paddingVertical: height / 50, flexDirection: 'column' , paddingBottom:width/10}}>
           <TouchableOpacity onPress={uploadImage}>
-          <View>
+          <View style={{ width: height / 6, height: height / 6, borderRadius: 20, borderColor: 'white', borderWidth: 1,justifyContent:'center' }}>
             {
-              podcastImage == "https://storage.googleapis.com/papyrus-fa45c.appspot.com/podcasts/Waves.jpg"
+              loadingPodcastImage == true
               ?
-              <Image source={{uri:"https://storage.googleapis.com/papyrus-274618.appspot.com/books/addpic.png"}} style={{ width: height / 6, height: height / 6, borderRadius: 20, borderColor: 'white', borderWidth: 1 }} />
+              <ActivityIndicator size='large' color='rgb(218,165,32)'/>
               :
-              <Image source={podcastImage} style={{ width: height / 6, height: height / 6, borderRadius: 20, borderColor: 'white', borderWidth: 1 }} />
+              <Image source={{uri:podcastImage}} style={{ width: height / 6, height: height / 6, borderRadius: 20, borderColor: 'white', borderWidth: 1 }}/>
+              
             }
           </View>
           </TouchableOpacity>
@@ -495,6 +611,7 @@ const PreviewScreen = (props) => {
           underlineColorAndroid="transparent"
           placeholder={"How should your listeners approach this podcast?" }
           placeholderTextColor={"gray"}
+          value={podcastDescription}
           onBlur={() => {
             if(podcastDescription !== null)
             {
@@ -577,11 +694,22 @@ const PreviewScreen = (props) => {
             alert("Please enter some text in Podcast Description field");
             return;
           }
-          uploadPodcast(recordedFilePath)
+          const podcast = props.navigation.state.params.podcast;
+          if(podcast !== null && podcast !== undefined)
+            uploadEditedPodcast(podcast);
+          else
+            uploadPodcast(recordedFilePath);
       }} 
         style={{ alignItems: 'center', justifyContent: 'center', height: height / 16, width: height / 6, borderRadius: 15, borderColor:rgb(218,165,32), borderWidth: 1, }}
         >
-          <Text style={{ alignItems: 'center', fontFamily: 'sans-serif-light', color:rgb(218,165,32),  justifyContent: 'center' }} >Publish</Text>
+          {
+            publishLoading == true
+            ?
+            <ActivityIndicator color='rgb(218,165,32)'/>
+            :
+            <Text style={{ alignItems: 'center', fontFamily: 'sans-serif-light', color:rgb(218,165,32),  justifyContent: 'center' }} >Publish</Text>
+          }
+          
         </TouchableOpacity>
       </View>
       }

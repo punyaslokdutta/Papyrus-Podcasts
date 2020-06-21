@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from 'react'
-import { Image, ScrollView, StyleSheet, TouchableOpacity, View,Dimensions } from 'react-native'
+import { Image, ScrollView, StyleSheet, TouchableOpacity,TouchableNativeFeedback, View,Dimensions } from 'react-native'
 import {Button} from 'native-base';
 import {withFirebaseHOC} from '../../config/Firebase'
 import { Block, Card, Text } from '../categories/components';
@@ -160,12 +160,12 @@ const Profile_StatsScreen = (props) => {
         </View>
         <View style={{ alignItems:'center',flex:1,marginTop:20}}>
        
-   <Text  style={{ fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light', alignItems:'center', justifyContent:'center'}}>{name}</Text>
+   <Text  style={{ fontSize:24,  textShadowColor:'black', fontFamily:'Montserrat-Bold', alignItems:'center', justifyContent:'center'}}>{name}</Text>
        
 
         </View>
         <View style={{justifyContent:'center',alignItems:'center'}}>
-        <Text style={{ fontSize:14, fontWeight:"100",  textShadowColor:'black', fontFamily:'American Typewriter', alignItems:'center',
+        <Text style={{ fontSize:14,  textShadowColor:'black', fontFamily:'Montserrat-Regular', alignItems:'center',
                       justifyContent:'center', padding:20}}>
                    {introduction}
                       </Text>
@@ -178,7 +178,7 @@ const Profile_StatsScreen = (props) => {
           <Text style={{paddingTop:height/20, paddingHorizontal:width/10, fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
             {numFollowings}
           </Text>
-         <Text style={{fontFamily:'sans-serif-light', paddingHorizontal:width/13}}>Following</Text>
+         <Text style={{fontFamily:'Montserrat-Regular', paddingHorizontal:width/13}}>Following</Text>
           </View>
     </TouchableOpacity>
 
@@ -189,7 +189,7 @@ const Profile_StatsScreen = (props) => {
             <Text style={{paddingTop:height/20 , paddingHorizontal:width/10,  fontSize:24, fontWeight:"bold",  textShadowColor:'black', fontFamily:'sans-serif-light'}}>
             {numFollowers}
           </Text>
-          <Text style={{fontFamily:'sans-serif-light', paddingHorizontal:width/13}}>Followers</Text>
+          <Text style={{fontFamily:'Montserrat-Regular', paddingHorizontal:width/13}}>Followers</Text>
           </View>
           </TouchableOpacity>
        </View>
@@ -201,7 +201,7 @@ const Profile_StatsScreen = (props) => {
         {/* <Block flex={false} row center space="between" style={styles.header}> */}
          <View style={{alignItems:'center'}}>
 
-   <Text h3 bold>{"\n"}Your Podcast Statistics {"   "}</Text>
+   <Text h3 style={{fontFamily:'Montserrat-Bold'}}>{"\n"}Your Podcast Statistics {"   "}</Text>
         </View>
         {/* </Block> */}
         {renderRewards(numCreatedBookPodcasts,numCreatedChapterPodcasts,totalMinutesRecordedInteger)}
@@ -304,18 +304,18 @@ function renderRewards(numCreatedBookPodcasts,numCreatedChapterPodcasts,totalMin
       <Block row>
         <Block center flex={0.8}>
   <Text size={20} spacing={1} primary>{numCreatedBookPodcasts}</Text>
-          <Text spacing={0.7}>Books</Text>
+          <Text spacing={0.7} style={{fontFamily:'Montserrat-Regular'}}>Books</Text>
         </Block>
         
         <Block center flex={0.8}>
   <Text size={20} spacing={1} primary>{numCreatedChapterPodcasts}</Text>
-          <Text spacing={0.7}>Chapters</Text>
+          <Text spacing={0.7} style={{fontFamily:'Montserrat-Regular'}}>Chapters</Text>
         </Block>
 
         <Block center flex={0.8}>
   <Text size={20} spacing={0.5} primary>{totalMinutesRecordedInteger}</Text>
           <View style={{alignItems:'center', flexDirection:'column'}}>
-          <Text>Minutes</Text>
+          <Text style={{fontFamily:'Montserrat-Regular'}}>Minutes</Text>
           
           </View>
         </Block>

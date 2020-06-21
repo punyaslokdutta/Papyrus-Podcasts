@@ -129,7 +129,7 @@ return(
           } 
           activeBackgroundColor='#101010'   style={{backgroundColor: '#ffffff', }} labelStyle={{color: '#ffffff', fontSize: SCREEN_HEIGHT/35}}/>
           
-          <Text style={{textAlign:'center',fontFamily:'Montserrat-Bold', paddingTop:SCREEN_HEIGHT/4,color:'#dddd'}}>v1.0.15</Text>
+          <Text style={{textAlign:'center',fontFamily:'Montserrat-Bold', paddingTop:SCREEN_HEIGHT/4,color:'#dddd'}}>v1.0.16</Text>
     
     </Content>
 

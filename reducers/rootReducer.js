@@ -15,11 +15,15 @@ const INITIAL_STATE = {
   loadingPodcast: false,
   videoRef: null,
   hearts: [],
-  sessionStartListeningTime: 0
+  sessionStartListeningTime: 0,
+  screenChanged: 0
 };
 
 function rootReducer(state = INITIAL_STATE, action)  {
   switch (action.type) {
+    case "CHANGE_SCREEN":
+      console.log("SCREEN CHANGED IN REDUX");
+      return {...state,screenChanged:state.screenChanged + 1}
     case "SET_SESSION_START_LISTENING_TIME":
           console.log("[REDUX] sessionStartListeningTime: ",action.payload);
           return {...state,sessionStartListeningTime:action.payload}

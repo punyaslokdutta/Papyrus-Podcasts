@@ -7,7 +7,7 @@ import BookList from './components/Home/BookList'
 import * as theme from './components/constants/theme';
 import Podcast from './components/Home/Podcast'
 import {Text} from './components/categories/components';
-import { useSelector} from 'react-redux';
+import { useSelector,useDispatch} from 'react-redux';
 import { Badge } from 'react-native-elements'
 import Shimmer from 'react-native-shimmer';
 import { withFirebaseHOC } from './config/Firebase';
@@ -26,7 +26,13 @@ const BookMarkScreenPodcasts = (props) => {
   const [refreshing,setRefreshing] = useState(false);
   const [onEndReachedCalledDuringMomentum,setOnEndReachedCalledDuringMomentum] = useState(true);
   const [scrollPosition,setScrollPosition] = useState(0);
+  const dispatch = useDispatch();
+
   useEffect(() => {
+    props.navigation.addListener('didFocus', (route) => {
+      console.log("BookmarkScreenPodcasts TAB PRESSED");
+      dispatch({type:"CHANGE_SCREEN"});
+      });
     retrieveData();
   },[])  
 
@@ -142,9 +148,10 @@ const BookMarkScreenPodcasts = (props) => {
   
   function renderDatas({item,index})
   {
+
       return(
         <View>
-      <RepostItem podcast={item} scrollPosition={scrollPosition} isBookmark={true} index={index} navigation={props.navigation}/>
+      <RepostItem podcast={item} userID={userID} scrollPosition={scrollPosition} isBookmark={true} index={index} navigation={props.navigation}/>
       </View>
       )
   }
@@ -175,8 +182,10 @@ const BookMarkScreenPodcasts = (props) => {
 
   function handleScroll(event) {
     console.log("In handleScroll : ",event.nativeEvent.contentOffset.y);
+    console.log("height : ",height);
     // this.setState({ scrollPosition: event.nativeEvent.contentOffset.y });
-    setScrollPosition(event.nativeEvent.contentOffset.y);
+    if(Math.abs(scrollPosition - event.nativeEvent.contentOffset.y) >= height/6)
+      setScrollPosition(event.nativeEvent.contentOffset.y);
    }
 
   function renderPodcasts()

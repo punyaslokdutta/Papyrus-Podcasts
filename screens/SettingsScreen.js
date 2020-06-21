@@ -1,5 +1,5 @@
-import React, { Component, useState } from 'react'
-import { Image, StyleSheet, ScrollView, TextInput, TouchableOpacity , View,ActivityIndicator, Linking,Dimensions} from 'react-native'
+import React, { Component, useState,useEffect } from 'react'
+import { Image, StyleSheet, ScrollView, TextInput,Alert, TouchableOpacity , View,ActivityIndicator, Linking,Dimensions,NativeModules} from 'react-native'
 import Slider from 'react-native-slider';
 import firestore from '@react-native-firebase/firestore'
 //import { Divider, Button, Block, Text, Switch } from '../components';
@@ -9,6 +9,9 @@ import {withFirebaseHOC} from './config/Firebase'
 import { theme, mocks } from '../screens/components/categories/constants/';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { firebase } from '@react-native-firebase/functions';
+import DeviceInfo from 'react-native-device-info';
+import moment from 'moment';
+
 var {width, height}=Dimensions.get('window')
 
 
@@ -17,12 +20,26 @@ import Toast from 'react-native-simple-toast';
 
 const SettingsScreen = (props) => {
 
-  const dispatch = useDispatch();  
+  const dispatch = useDispatch(); 
+  
+  const [APILevelState,setAPILevelState] = useState(null);
+  const [AndroidIDState,setAndroidIDState] = useState(null);
+  const [DeviceType,setDeviceType] = useState(null);
+  const [DeviceNameState,setDeviceNameState] = useState(null);
+  const [AppNameState,setAppNameState] = useState(null);
+  const [SystemNameState,setSystemNameState] = useState(null);
+  const [SystemVersionState,setSystemVersionState] = useState(null)
+  const [LastUpdateTimeState,setLastUpdateTimeState] = useState(null);
+  const [BuildNumberState,setBuildNumberState] = useState(null);
+  const [BrandState,setBrandState] = useState(null);
+  const [deviceDetailsUpdated,setDeviceDetailsUpdated] = useState(0);
+
   const userid = props.firebase._getUid();
   const privateDataID = "private" + userid;
 
   const [loadingAccountName,setLoadingAccountName] = useState(false);
   const [loadingUserName,setLoadingUserName] = useState(false);
+  
   const accountName = useSelector(state=>state.userReducer.name)
   const userName = useSelector(state=>state.userReducer.userName)
   const accountEmail = useSelector(state=>state.userReducer.email)
@@ -33,6 +50,45 @@ const SettingsScreen = (props) => {
 
   const [editing,setEditing] = useState(null);
   const [notifications,setNotifications] =useState(true);
+
+
+  useEffect(() => {
+    console.log("USE EFFECT");
+    if(deviceDetailsUpdated != 0)
+    {
+        Alert.alert(  
+                    'Are you sure you want to send your device details?',  
+                    '',  
+                    [  
+                        {  
+                            text: 'Cancel',  
+                            onPress: () => console.log('Cancel Pressed'),  
+                            style: 'cancel',  
+                        },  
+                        {text: 'OK', onPress: () => {
+                          firestore().collection('users').doc(userid).collection("privateUserData")
+                        .doc(privateDataID).set({
+                            ['deviceInfo.' + 'APILevelState'] : APILevelState,
+                            ['deviceInfo.' + 'AndroidIDState'] : AndroidIDState,
+                            ['deviceInfo.' + 'DeviceType'] : DeviceType,
+                            ['deviceInfo.' + 'DeviceNameState'] : DeviceNameState,
+                            ['deviceInfo.' + 'AppNameState'] : AppNameState,
+                            ['deviceInfo.' + 'SystemNameState'] : SystemNameState,
+                            ['deviceInfo.' + 'SystemVersionState'] : SystemVersionState,
+                            ['deviceInfo.' + 'LastUpdateTimeState'] : LastUpdateTimeState,
+                            ['deviceInfo.' + 'BuildNumberState'] : BuildNumberState,
+                            ['deviceInfo.' + 'BrandState'] : BrandState
+                          },{merge:true}).then(() => {
+                            console.log("Added Device details to user's private DOC");
+                            Toast.show("Your device details have been sent to the server for detecting errors.");
+                          })
+                          .catch((err) => console.log("Error in adding deviceInfo to privateDoc : ",err))
+                          console.log('OK Pressed')
+                        }},  
+                    ]  
+                ); 
+    }
+  },[deviceDetailsUpdated])
 
   function handleEdit(name, text) {
     console.log("IN Handle Edit function");
@@ -143,6 +199,7 @@ const SettingsScreen = (props) => {
   {
       console.log("[SettingsScreen] logoutFromApp")
       try{
+        dispatch({type:'SET_ADMIN_USER',payload:false})
         dispatch({type:'CLEAR_PODCASTS_LIKED',payload:null})
         dispatch({type:'CLEAR_PODCASTS_BOOKMARKED',payload:null})
         dispatch({type:'ADD_NUM_FOLLOWERS',payload:0})
@@ -288,7 +345,66 @@ const SettingsScreen = (props) => {
           <Block style={styles.toggles}>
             <Block row center space="between" >
               <Text black>Report a Problem</Text>
-              <TouchableOpacity >
+              <TouchableOpacity onPress={() => {
+                  DeviceInfo.getApiLevel().then(apiLevel => {
+                    console.log("apiLevel : ",apiLevel);
+                    setAPILevelState(apiLevel);
+                  }).catch((err) => {
+                    console.log(err);
+                  });
+
+                  DeviceInfo.getAndroidId().then(androidId => {
+                    console.log("AndroidID : ",androidId);
+                    setAndroidIDState(androidId);
+                  }).catch((err) => {
+                    console.log(err);
+                  });; 
+
+                  let type = DeviceInfo.getDeviceType();
+                  console.log("Device Type: ",type);
+                    setDeviceType(type);
+
+                  DeviceInfo.getDeviceName().then(deviceName => {
+                    console.log("deviceName: ",deviceName);
+                    setDeviceNameState(deviceName);
+                  }).catch((err) => {
+                    console.log(err);
+                  });
+
+                  let appName = DeviceInfo.getApplicationName();
+                  console.log("appName = ",appName);
+                  setAppNameState(appName);
+
+                  let systemName = DeviceInfo.getSystemName();
+                  console.log("systemName : ",systemName)
+                  setSystemNameState(systemName);
+
+                  let systemVersion = DeviceInfo.getSystemVersion();
+                  console.log("systemVersion: ",systemVersion);
+                  setSystemVersionState(systemVersion);
+                  
+                  let brand = DeviceInfo.getBrand();
+                  console.log("brand : ",brand);
+                  setBrandState(brand);
+                  
+                  let buildNumber = DeviceInfo.getBuildNumber();
+                  console.log("buildNumber : ",buildNumber);
+                  setBuildNumberState(buildNumber);
+
+                  DeviceInfo.getLastUpdateTime().then(lastUpdateTime => {
+                    console.log("lastUpdateTime : ",moment(lastUpdateTime).format());
+                  setLastUpdateTimeState(moment(lastUpdateTime).format());
+                  setDeviceDetailsUpdated(deviceDetailsUpdated + 1);
+                  }).catch((err) => {
+                    console.log(err);
+                    setLastUpdateTimeState("Could not fetch");
+                    setDeviceDetailsUpdated(deviceDetailsUpdated + 1);
+                  });
+
+                 
+                  
+                          
+              }}>
         <View style={{paddingLeft: 15,paddingRight:10 } }>
           <Icon name="chevron-right" size={20} style={{color:'#101010'}}/>
         </View>

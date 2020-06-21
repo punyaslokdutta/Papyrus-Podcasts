@@ -1,21 +1,25 @@
 import React, {Component,useState,useEffect} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import { StyleSheet, View,SafeAreaView, TextInput, Platform, StatusBar,NativeModules,TouchableOpacity, ScrollView, Image,Dimensions, Animated,SectionList,ActivityIndicator , NativeEventEmitter} from 'react-native';
+import { StyleSheet, View,SafeAreaView, TextInput, Platform, StatusBar,NativeModules,TouchableOpacity, 
+  ScrollView, Image,Dimensions, Animated,SectionList,ActivityIndicator , 
+  NativeEventEmitter,RefreshControl} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { FlatList } from 'react-native-gesture-handler';
 import BookList from './components/Home/BookList'
 import * as theme from '../screens/components/constants/theme';
 import Podcast from './components/Home/Podcast'
 import {Text} from './components/categories/components';
-import { useSelector} from 'react-redux';
+import { useSelector,useDispatch} from 'react-redux';
 import { Badge } from 'react-native-elements'
 import Shimmer from 'react-native-shimmer';
 import HomeAnimation from './components/Home/HomeAnimation';
+import { MenuProvider } from 'react-native-popup-menu';
 
 var {width, height}=Dimensions.get('window')
 
 const HomeScreen = (props) => {
   
+  const uploadPodcastSuccess = useSelector(state=>state.userReducer.uploadPodcastSuccess);
   const numNotifications = useSelector(state=>state.userReducer.numNotifications);
   const userPreferences = useSelector(state=>state.userReducer.userPreferences);
   const [books,setBooks] = useState([]);
@@ -29,11 +33,27 @@ const HomeScreen = (props) => {
   const [refreshing,setRefreshing] = useState(false);
   const [onEndReachedCalledDuringMomentum,setOnEndReachedCalledDuringMomentum] = useState(true);
   const [scrollPosition,setScrollPosition] = useState(0);
+  const dispatch = useDispatch();
+  
 
   useEffect(() => {
     console.log("[HomeScreen] useEffect LOG");
+    props.navigation.addListener('didFocus', (route) => {
+      console.log("HOME TAB PRESSED");
+      dispatch({type:"CHANGE_SCREEN"});
+      });
     retrieveData();
+    return () => {
+      //props.navigation.removeListener('willFocus');
+    }
   },[])  
+
+  useEffect(() => {
+    
+      console.log("uploadPodcastSuccess1234: ",uploadPodcastSuccess);
+      retrieveData();
+    
+  },[uploadPodcastSuccess])
 
   async function retrieveData() 
   {
@@ -49,12 +69,12 @@ const HomeScreen = (props) => {
 
       var initialLimit = headerPodcastsLimit + limit;
       let podcasts = await firestore().collectionGroup('podcasts').where('genres','array-contains-any',userPreferences)
-                    .orderBy('createdOn','desc').limit(initialLimit).get()
+                    .orderBy('lastEditedOn','desc').limit(initialLimit).get()
 
       let documentData_podcasts = podcasts.docs.map(document => document.data());
       var lastVisiblePodcast = lastVisible;
       if(documentData_podcasts.length != 0)      
-          lastVisiblePodcast = documentData_podcasts[documentData_podcasts.length - 1].createdOn; 
+          lastVisiblePodcast = documentData_podcasts[documentData_podcasts.length - 1].lastEditedOn; 
 
       setHeaderPodcasts(documentData_podcasts.slice(0,headerPodcastsLimit));
       setPodcasts(documentData_podcasts.slice(headerPodcastsLimit,initialLimit))
@@ -72,7 +92,8 @@ const HomeScreen = (props) => {
   function handleScroll(event) {
     console.log("In handleScroll : ",event.nativeEvent.contentOffset.y);
     // this.setState({ scrollPosition: event.nativeEvent.contentOffset.y });
-    setScrollPosition(event.nativeEvent.contentOffset.y);
+    if(Math.abs(scrollPosition - event.nativeEvent.contentOffset.y) >= height/6)
+      setScrollPosition(event.nativeEvent.contentOffset.y);
    }
 
   async function retrieveMorePodcasts()
@@ -81,12 +102,12 @@ const HomeScreen = (props) => {
     setRefreshing(true);
     try{   
       let additionalPodcastDocuments =  await firestore().collectionGroup('podcasts').where("genres","array-contains-any",userPreferences)
-        .orderBy('createdOn','desc').startAfter(lastVisible).limit(limit).get()
+        .orderBy('lastEditedOn','desc').startAfter(lastVisible).limit(limit).get()
       
       let documentData = additionalPodcastDocuments.docs.map(document => document.data());
       if(documentData.length != 0) 
       {
-        let lastVisiblePodcast = documentData[documentData.length - 1].createdOn;
+        let lastVisiblePodcast = documentData[documentData.length - 1].lastEditedOn;
         if(lastVisible != lastVisiblePodcast) 
         {
           setPodcasts([...podcasts, ...documentData]);
@@ -156,7 +177,7 @@ const HomeScreen = (props) => {
       case "A":
         return (
           <View>
-          <HomeAnimation/>
+           <HomeAnimation/> 
           </View>
         );
       case "B":
@@ -193,7 +214,7 @@ const HomeScreen = (props) => {
 
     return (
       <View>
-    <Podcast podcast={section.data[index]}  key={section.data[index].podcastID} navigation={props.navigation}/>
+          <Podcast podcast={section.data[index]} key={section.data[index].podcastID} navigation={props.navigation}/>
     </View>
     )
 
@@ -235,7 +256,7 @@ const HomeScreen = (props) => {
           { title: 'A', data: podcasts1},
            { title: 'B', data: podcasts2 }
         ]}
-        keyExtractor={item => item.createdOn}
+        keyExtractor={item => item.lastEditedOn}
         renderSectionHeader={({ section }) => (
           <ScrollView>
               
@@ -253,7 +274,7 @@ const HomeScreen = (props) => {
       /> */}
       
       <View>
-        <HomeAnimation/>
+         <HomeAnimation/>
       </View>
       {
         podcasts1.map((item,index) =>
@@ -280,7 +301,14 @@ const HomeScreen = (props) => {
   function renderDatas({item,index})
   {
       return(
+
+        
         <View>
+          {
+            index == 0
+            &&
+            renderHeader()
+          }
       <Podcast podcast={item} scrollPosition={scrollPosition} index={index} navigation={props.navigation}/>
       </View>
       )
@@ -304,6 +332,10 @@ const HomeScreen = (props) => {
     }
   }
 
+  function handleRefresh()
+  {
+    retrieveData();
+  }
   function renderPodcasts()
   {
     return (  
@@ -314,11 +346,18 @@ const HomeScreen = (props) => {
       onScroll={handleScroll}
       showsVerticalScrollIndicator={false}
       keyExtractor={item => item.podcastID}
-      ListHeaderComponent={renderHeader}
+      //ListHeaderComponent={renderHeader}
       ListFooterComponent={renderFooter}
       onEndReached={onEndReached}
       onEndReachedThreshold={0.001}
       refreshing={refreshing}
+      onRefresh={() => handleRefresh()}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+        />
+      }
       onMomentumScrollBegin={() => { setOnEndReachedCalledDuringMomentum(false); }}
     />   
     )

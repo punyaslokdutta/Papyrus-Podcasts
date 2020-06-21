@@ -1,5 +1,5 @@
 import React, {Component, useState, useEffect, useContext} from 'react';
-import { StyleSheet, Text, View, Image, Dimensions,TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, Image, Dimensions,TouchableOpacity,TouchableNativeFeedback} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import * as theme from '../constants/theme'
 import firestore from '@react-native-firebase/firestore';
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     }
   }
         return (
-          <TouchableOpacity onPress={() => {
+          <TouchableNativeFeedback onPress={() => {
             retrievePodcastDocument();
           }}>
              <View style={{flex:1,flexDirection:"row",paddingBottom:theme.sizes.padding/4,paddingLeft:width/64,width:width,height:height/6}}>
@@ -165,22 +165,22 @@ const styles = StyleSheet.create({
 
                <View style={[styles.flex, styles.column, styles.shadow, { width:(width*2)/3,paddingLeft:theme.sizes.padding, paddingTop: theme.sizes.padding / 4 }]}>
                  <View style={{height:(height)/12,paddingBottom:20}}>
-                  <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.podcast.podcastName.slice(0,50)}
+                  <Text style={{ fontSize: theme.sizes.font * 1.0, fontFamily:'Montserrat-SemiBold' }}>{props.podcast.podcastName.slice(0,50)}
                        {(props.podcast.podcastName.length > 50) ? ".." : ""}</Text> 
                 {
                   (props.podcast.chapterName !== null && props.podcast.chapterName !== undefined) &&
-                  <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
+                  <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green,fontFamily:'Montserrat-Regular' }}>
                   {props.podcast.chapterName}
                 </Text>
                 }
                 
-              <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
+              <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green,fontFamily:'Montserrat-Regular' }}>
                   {props.podcast.bookName}
                 </Text>
                
                 </View>
                <View style={{paddingTop:5}}>
-                  <Text style={{ fontSize:theme.sizes.font * 0.8,color: theme.colors.gray_green }}>{props.podcast.podcasterName}</Text>
+                  <Text style={{ fontSize:theme.sizes.font * 0.8,color: theme.colors.gray_green,fontFamily:'Montserrat-Regular' }}>{props.podcast.podcasterName}</Text>
                </View>
           
               <View style={[
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
               { alignItems: 'center', justifyContent: 'space-between'}
               ]}>
                 
-                <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
+                <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green,fontFamily:'Montserrat-Regular' }}>
                 {createdOn}
                 </Text>
                 
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
             </View>
         
           </View>
-      </TouchableOpacity>
+      </TouchableNativeFeedback>
         );
       
   }, areEqual);

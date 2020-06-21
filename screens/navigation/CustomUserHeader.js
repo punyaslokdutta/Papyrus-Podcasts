@@ -2,7 +2,7 @@ import React, {Component,useState,useEffect} from 'react';
 import UserBookPodcast from '../components/Explore/UserPodcasts';
 import {createMaterialTopTabNavigator} from 'react-navigation-tabs';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { StyleSheet, View, TouchableOpacity, Image,Text, Dimensions, Button, ScrollView} from 'react-native';
+import { StyleSheet, View, TouchableOpacity, TouchableNativeFeedback,Image,Text, Dimensions, Button, ScrollView} from 'react-native';
 import { Block } from '../components/categories/components'
 import { theme } from '../components/categories/constants';
 import UserStatsScreen from '../components/Explore/UserStatsScreen'
@@ -120,7 +120,7 @@ const CustomUserHeader = (props) => {
   const dispatch=useDispatch();
   const lastCharacter = otherPrivateUserItem.name[otherPrivateUserItem.name.length - 1];
   return (
-    <TouchableOpacity onPress={() => props.navigation.navigate({
+    <TouchableNativeFeedback onPress={() => props.navigation.navigate({
       routeName : 'UserStatsScreen',
       params : {item:otherPrivateUserItem},
       key : 'user1' + otherPrivateUserItem.id
@@ -135,8 +135,8 @@ const CustomUserHeader = (props) => {
             />
             
         <View style={{flexDirection:'column',paddingLeft:10,width:SCREEN_WIDTH*3/5}}>      
-<Text style={{fontSize:theme.sizes.h3,fontWeight:'bold'}}>{otherPrivateUserItem.name}{"   "}</Text>
-        <Text style={{fontSize:14,paddingRight:10}}>{otherPrivateUserItem.introduction}</Text>
+<Text style={{fontSize:theme.sizes.h3,fontFamily:'Montserrat-Bold'}}>{otherPrivateUserItem.name}{"   "}</Text>
+        <Text style={{fontSize:14,paddingRight:10,fontFamily:'Montserrat-Regular'}}>{otherPrivateUserItem.introduction}</Text>
         
         
           </View>
@@ -231,7 +231,7 @@ const CustomUserHeader = (props) => {
     </View>
       
           </View>
-          </TouchableOpacity>
+          </TouchableNativeFeedback>
   );   
 };
 

@@ -1,5 +1,5 @@
 import React, {Component, useState, useEffect, useContext} from 'react';
-import { StyleSheet, Text, View, Image, Dimensions} from 'react-native';
+import { StyleSheet, Text, View, Image, Dimensions,TouchableNativeFeedback} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import * as theme from '../constants/theme'
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
    console.log("Book Authors : ",props.chapter.authors);
  
         return (
-          <TouchableOpacity onPress={() => {
+          <TouchableNativeFeedback onPress={() => {
             props.navigation.navigate('RecordChapter', {chapterID : props.chapter.objectID, bookID: props.chapter.bookID })
           }
           }>
@@ -140,10 +140,10 @@ const styles = StyleSheet.create({
 
                <View style={[styles.flex, styles.column, styles.shadow, { width:(width * 2)/3,paddingLeft:theme.sizes.padding, paddingTop: theme.sizes.padding / 4, }]}>
                  <View style={{height:(height)/16}}>
-                  <Text style={{ fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.chapter.chapterName.slice(0,60)}
+                  <Text style={{ fontSize: theme.sizes.font * 1.0, fontFamily:'Montserrat-SemiBold' }}>{props.chapter.chapterName.slice(0,60)}
                        {(props.chapter.bookName.length > 60) ? ".." : ""}</Text> 
 
-                  <Text style={{ fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>{props.chapter.bookName.slice(0,60)}
+                  <Text style={{ fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green,fontFamily:'Montserrat-Regular' }}>{props.chapter.bookName.slice(0,60)}
                        {(props.chapter.bookName.length > 60) ? ".." : ""}</Text>   
                  </View>
                <View style ={{paddingTop:5,height:(height)/20}}>
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
                     
                     props.chapter.authors.map((item,index) => (
                       (index<=1) &&
-                      <Text style={{ fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>{item}</Text>
+                      <Text style={{ fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green,fontFamily:'Montserrat-Regular' }}>{item}</Text>
                       
                     ))
                     
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
               { alignItems: 'center', justifyContent: 'space-between'}
               ]}>
                 
-                <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
+                <Text style={{  fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green,fontFamily:'Montserrat-Regular' }}>
                   Published in {props.chapter.publicationYear}
                 </Text>
                 {/* <View style={{alignItems: 'flex-end',paddingRight:5}}>
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
             </View>
         
           </View>
-      </TouchableOpacity>
+      </TouchableNativeFeedback>
         );
       
   }, areEqual);

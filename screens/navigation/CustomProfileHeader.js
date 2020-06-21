@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, View,Text, TouchableOpacity, Image, Dimensions, Button, ScrollView} from 'react-native';
+import { StyleSheet, View,Text, TouchableOpacity,TouchableNativeFeedback, Image, Dimensions, Button, ScrollView} from 'react-native';
 import { Block } from '../components/categories/components'
 import { theme } from '../components/categories/constants';
 import {useSelector} from 'react-redux'
@@ -22,7 +22,7 @@ const CustomProfileHeader = props => {
       lastCharacter = name[name.length-1];
     const profilePicURL = useSelector(state=>state.userReducer.displayPictureURL)
     return (
-      <TouchableOpacity style={{alignItems:'center'}} onPress={() => {
+      <TouchableNativeFeedback style={{alignItems:'center'}} onPress={() => {
         console.log("TouchableOpacity clicked");
         props.navigation.navigate('Profile_StatsScreen')
       }}>
@@ -46,7 +46,7 @@ const CustomProfileHeader = props => {
               />
               
             </View>
-            </TouchableOpacity>
+            </TouchableNativeFeedback>
     );
   };
 
