@@ -215,8 +215,8 @@ const Explore = (props) => {
     
         console.log ("height: ",height);
         console.log ("nativeEventHeight: ",device_height);  // Yeah !! good value
-        if(height - device_height >= 48)
-          dispatch({type:"SET_NAV_BAR_HEIGHT",payload:48});
+        if(height - device_height >= 32) 
+          dispatch({type:"SET_NAV_BAR_HEIGHT",payload:height - device_height});
         else
           dispatch({type:"SET_NAV_BAR_HEIGHT",payload:0});
         console.log ("nativeEventWidth: ",device_width); 
@@ -326,7 +326,7 @@ const Explore = (props) => {
         </View>
         </TouchableNativeFeedback>
         <View style={{flex:1, paddingVertical:10}}>
-          <TouchableNativeFeedback onPress={() => {
+          <TouchableOpacity onPress={() => {
             dispatch({type:"SET_ALGOLIA_QUERY", payload:"papyrus"})
             dispatch({type:"SET_EXPLORE_SCREEN_AS_PREVIOUS_SCREEN", payload:true})
             props.navigation.navigate('SearchTabNavigator',{fromExplore:true})}}>
@@ -342,7 +342,7 @@ const Explore = (props) => {
                </Text>
 
         </View>
-        </TouchableNativeFeedback>
+        </TouchableOpacity>
         </View>
         </View>
       )

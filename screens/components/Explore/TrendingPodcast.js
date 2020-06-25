@@ -84,7 +84,7 @@ const TrendingPodcast= React.memo((props)=> {
         <Image style={{height:height/5,borderRadius:0,marginHorizontal:3, resizeMode:'cover',  overflow:'hidden',alignItems:'center'}} source={{ uri:  ((item === null || item === undefined)  ? null : ( (item.podcastPictures.length != 0) && item.podcastPictures[0]))}} />
         
       <View style={{paddingHorizontal:10,height:height*2/15,borderColor:'black',height:height*10/40}}>
-        <Text style={{height:height/15,fontFamily:'Montserrat-Bold',fontSize:20}}> {podcastName}{"   "} </Text>
+        <Text style={{height:height/15,fontFamily:'Montserrat-Bold',fontSize:17}}> {podcastName}{"   "} </Text>
       <Text style={{height:height/17,fontFamily:'Montserrat-Regular',color:'gray',paddingBottom:0,fontSize:12}}> {item.podcastDescription}</Text>
         </View>
       

@@ -9,7 +9,6 @@ import {withFirebaseHOC} from '../../config/Firebase';
 import {useSelector, useDispatch,connect} from "react-redux"
 import EvilIcon from 'react-native-vector-icons/EvilIcons';
 import IconAntDesign from 'react-native-vector-icons/AntDesign'
-import PodcastAnimation from '../PodcastPlayer/PodcastAnimation';
 import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
 import PlayPauseOut from '../PodcastPlayer/PlayPauseOut';
 import LottieView from 'lottie-react-native';
@@ -51,6 +50,9 @@ var {width, height}=Dimensions.get('window')
     componentDidMount = () => {
       
       this.animation.play(0,0);
+
+      //if(this.props.isPodcastLiked[this.props.podcast.podcastID] == true)
+        //this.likeAnimation.play(38,38);
       this.likeAnimation.pause();
       
       console.log("In componentDidMount");
@@ -256,9 +258,45 @@ var {width, height}=Dimensions.get('window')
    
    }
 
+   updatePodcastsUnliked = async (props) => {
+
+    const privateDataID = "private" + this.state.realUserID;
+    this.props.dispatch({type:'REMOVE_FROM_PODCASTS_LIKED',payload:this.props.podcast.podcastID});
+
+    if(this.props.podcast.numUsersLiked > 0)
+    {
+      const numUsers = this.props.podcast.numUsersLiked - 1;
+      this.props.dispatch({type:'SET_NUM_LIKES',payload:numUsers});
+      
+      if(this.props.podcast.isChapterPodcast === true)
+      {
+        await firestore().collection('books').doc(this.props.podcast.bookID).collection('chapters').
+          doc(this.props.podcast.chapterID).collection('podcasts').doc(this.props.podcast.podcastID).set({
+            numUsersLiked : firestore.FieldValue.increment(-1)
+        },{merge:true})
+      }
+      else
+      {
+        await firestore().collection('books').doc(this.props.podcast.bookID).collection('podcasts')
+            .doc(this.props.podcast.podcastID).set({
+          numUsersLiked : firestore.FieldValue.increment(-1)
+        },{merge:true})
+      }
+      
+    }
+   
+    await firestore().collection('users').doc(this.state.realUserID).collection('privateUserData').doc(privateDataID).set({
+      podcastsLiked : firestore.FieldValue.arrayRemove(this.props.podcast.podcastID)
+    },{merge:true})
+
+    this.setState({
+      liked : false,
+      numLikes : this.state.numLikes - 1
+    })
+   }
+
    updatePodcastsLiked = async (props) => {
 
-    //setLikedState(true);
     const privateDataID = "private" + this.state.realUserID;
     this.props.dispatch({type:'ADD_TO_PODCASTS_LIKED',payload:this.props.podcast.podcastID})
     const numUsers = this.props.podcast.numUsersLiked + 1;
@@ -476,7 +514,7 @@ var {width, height}=Dimensions.get('window')
             <View>
             <LottieView 
             ref={animation => { this.animation = animation;}}
-            style={{width:(width*3)/4}} 
+            style={{width:(width*3)/5}} 
             source={newAnimation}
             loop={true}/>
             </View>
@@ -524,8 +562,14 @@ var {width, height}=Dimensions.get('window')
             this.updatePodcastsLiked();
             this.likeAnimation.play(0,38)
           }
+          else
+          {
+            this.updatePodcastsUnliked();
+            this.likeAnimation.play(0,0);
+            this.likeAnimation.pause();
+          }
         }}
-        style={{width:width/6,borderColor:'black',borderWidth:0,justifyContent:'center',alignItems:'center'}}>
+        style={{width:width/7,borderColor:'black',borderWidth:0,justifyContent:'center',alignItems:'center'}}>
         
           {
             
@@ -533,25 +577,25 @@ var {width, height}=Dimensions.get('window')
                         name={this.props.isPodcastLiked[this.props.podcast.podcastID] ? "heart" : "hearto"}
                         color={this.props.isPodcastLiked[this.props.podcast.podcastID] ? 'red' : 'black' }
                         style={{position:'absolute',left:20}}
-                        size={20}/>
+                        size={15}/>
           }
             <LottieView 
             ref={animation => { this.likeAnimation = animation;}}
-            style={{width:width/7,position:'absolute',left:0}} 
+            style={{width:45,position:'absolute',left:3}} 
             source={likeButton}
             loop={false}
             /> 
-            <Text style={{position:'absolute',fontFamily:'Montserrat-Regular',left:40,fontSize:15}}> {this.state.numLikes}</Text>
+            <Text style={{position:'absolute',fontFamily:'Montserrat-Regular',left:35,fontSize:12}}> {this.state.numLikes}</Text>
           
         </TouchableOpacity>
         <TouchableOpacity onPress={() => {this.handleOnPressBookmark()}} style={{width:width/6,borderColor:'black',borderWidth:0,justifyContent:'center',alignItems:'center'}}>
-        <EvilIcon name="retweet" size={36}
+        <EvilIcon name="retweet" size={28}
         color={this.props.isPodcastBookmarked[this.props.podcast.podcastID] ? 'blue' : 'black'}/>
-        <Text style={{position:'absolute',fontFamily:'Montserrat-Regular',left:45,fontSize:15}}> {this.state.numRetweets}</Text>
+        <Text style={{position:'absolute',fontFamily:'Montserrat-Regular',left:43,fontSize:12}}> {this.state.numRetweets}</Text>
         </TouchableOpacity>
         <TouchableNativeFeedback onPress={() => {this.buildDynamicURL();}} >
         <View style={{width:width/6,borderColor:'black',borderWidth:0,justifyContent:'center',alignItems:'center'}}>
-        <Icon name="share" size={20} style={{color:'black'}}/>
+        <Icon name="share" size={12} style={{color:'black'}}/>
         </View>
         </TouchableNativeFeedback>
         {/* <FontAwesome name="comment-o" size={height/50} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white'}}/> */}

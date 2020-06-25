@@ -246,8 +246,8 @@ useEffect(() => {
   
 
   function handleOnPressLike() {
-    smallAnimatedHeartIcon.bounceIn();
     setLikedState(!likedState);
+    smallAnimatedHeartIcon.bounceIn();
     }
 
   function handleOnPressBookmark() {
@@ -487,6 +487,37 @@ function playPodcast()
 }
 
 
+async function updatePodcastsUnliked(props) {
+
+  dispatch({type:'REMOVE_FROM_PODCASTS_LIKED',payload:props.podcast.podcastID});
+
+  if(props.podcast.numUsersLiked > 0)
+  {
+    const numUsers = props.podcast.numUsersLiked - 1;
+    dispatch({type:'SET_NUM_LIKES',payload:numUsers});
+    
+    if(props.podcast.isChapterPodcast === true)
+    {
+      await firestore().collection('books').doc(props.podcast.bookID).collection('chapters').
+        doc(props.podcast.chapterID).collection('podcasts').doc(props.podcast.podcastID).set({
+          numUsersLiked : firestore.FieldValue.increment(-1)
+      },{merge:true})
+    }
+    else
+    {
+      await firestore().collection('books').doc(props.podcast.bookID).collection('podcasts')
+          .doc(props.podcast.podcastID).set({
+        numUsersLiked : firestore.FieldValue.increment(-1)
+      },{merge:true})
+    }
+    
+  }
+ 
+  await firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).set({
+    podcastsLiked : firestore.FieldValue.arrayRemove(props.podcast.podcastID)
+  },{merge:true})
+
+ }
 
 async function updatePodcastsLiked(props){
 
@@ -649,13 +680,17 @@ async function updatePodcastsLiked(props){
            
 
          <TouchableOpacity onPress={() => {
-                addHearts();
                 if(liked != true)
                 {
                   handleOnPressLike();
                   updatePodcastsLiked(props);  
+                  addHearts();
                 }
-                
+                else
+                {
+                  setLikedState(!likedState);
+                  updatePodcastsUnliked(props);
+                }
 
             }}>
 

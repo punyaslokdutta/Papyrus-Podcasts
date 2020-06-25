@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 var {width, height}=Dimensions.get('window')
 
 const S = StyleSheet.create({
-  container: { flexDirection: "row", height: height/12, elevation: 0.5,borderColor:'gray',borderWidth:0 },
+  container: { flexDirection: "row", height: height/15, elevation: 0.5,borderColor:'gray',borderWidth:0 },
   tabButton: { flex: 1, justifyContent: "center", alignItems: "center" }
 });
 

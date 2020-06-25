@@ -152,12 +152,12 @@ const { position } = useTrackPlayerProgress()
             dispatch({type:"TOGGLE_PLAY_PAUSED"})
             togglePlay()
             })}>
-            <IconAntDesign name="play" size={40} style={styles.icon}/></TouchableOpacity>}
+            <IconAntDesign name="play" size={20} style={styles.icon}/></TouchableOpacity>}
           {!loadingPodcast && !paused && <TouchableOpacity  onPress={(()=>{
             dispatch({type:"TOGGLE_PLAY_PAUSED"})
             togglePlay()
             })}>
-            <IconAntDesign name="pause" size={70} style={styles.icon}/></TouchableOpacity>}
+            <IconAntDesign name="pause" size={50} style={styles.icon}/></TouchableOpacity>}
                 <TouchableOpacity onPress={(()=>{
                   setLastPlayingPodcastInUserPrivateDoc(null);
                   dispatch({type:"SET_LAST_PLAYING_CURRENT_TIME",payload:null});
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     width: PLACEHOLDER_WIDTH,
   },
   icon: {
-    fontSize: 25,
+    fontSize: 20,
     color: 'white',
     padding: 8,
     

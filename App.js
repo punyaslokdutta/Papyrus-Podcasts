@@ -20,6 +20,9 @@ import { fromRight , fromLeft} from 'react-navigation-transitions';
 import SplashScreen from 'react-native-splash-screen';
 import WelcomeScreen from './screens/WelcomeScreen';
 import thunk from 'redux-thunk';
+import LottieView from 'lottie-react-native';
+
+import updateAnimation from './assets/animations/10251-update-para-coverme.json'
 import userReducer from './reducers/userReducer'
 import rootReducer from './reducers/rootReducer';
 import recorderReducer from './reducers/recorderReducer'
@@ -196,31 +199,31 @@ const AppTabNavigator=createBottomTabNavigator(
   {
     Home: {screen:HomeStackNavigator,
     navigationOptions:{
-      tabBarIcon:({tintColor})=>( <Entypo name="home" color={tintColor}  size={30}/> )
+      tabBarIcon:({tintColor})=>( <Entypo name="home" color={tintColor}  size={24}/> )
     }},
     Explore: {screen:ExploreStackNavigator,
       navigationOptions:{
-        tabBarIcon:({tintColor})=>( <Icon name="search" color={tintColor}  size={28}/> )
+        tabBarIcon:({tintColor})=>( <Icon name="search" color={tintColor}  size={24}/> )
       }
     },
     Record: {screen:RecordStackNavigator,
       navigationOptions:{
           tabBarIcon:({tintColor})=>(
-          <FontAwesome5Icon style={{paddingTop:1}} name="microphone-alt" color={'black'} size={SCREEN_HEIGHT/15}/>
+          <FontAwesome5Icon style={{paddingTop:1}} name="microphone-alt" color={'black'} size={SCREEN_HEIGHT/20}/>
         )
       }
    },
     Category: {screen: CategoryStackNavigator,
       navigationOptions:{
         tabBarIcon:({tintColor})=>(
-          <Icon name="cubes" color={tintColor} size={28}/>
+          <Icon name="cubes" color={tintColor} size={24}/>
         )
       }
     },
     Profile: {screen:ProfileStackNavigator,
       navigationOptions:{
         tabBarIcon:({tintColor})=>(
-          <Icon name="user-circle" color={tintColor} size={32}/>
+          <Icon name="user-circle" color={tintColor} size={28}/>
         )
       }
     },
@@ -245,8 +248,8 @@ const AppTabNavigator=createBottomTabNavigator(
     adaptive: true,
     style:
     {
-      paddingBottom: SCREEN_HEIGHT/100,
-      height: SCREEN_HEIGHT/11,
+      //paddingBottom: SCREEN_HEIGHT/100,
+      height: SCREEN_HEIGHT/20,
     },
   },
   }
@@ -433,16 +436,30 @@ const store = createStore(mainReducer, applyMiddleware(thunk))
 
 export default class App extends Component {
 
-  componentDidMount = async () => {
-    SplashScreen.hide();
+  constructor(props)
+    {
+     super(props)
+     {
+      this.state={
+          currentVersionCode : 19,
+          currentVersion : "1.0.18"
+        }
+     }
+    }
 
+  componentDidMount = async () => {
+    
     const updateVersionDoc = await firestore().collection('appUpdates').doc('newUpdate').get();
     const updateVersionData = updateVersionDoc.data();
-    const latestVersion = updateVersionData.updateVersion;
 
-    if(latestVersion > 17)
-      Alert.alert('New update available.Please delete this app & install app again'); 
-      //from the app link provided to you earlier.');
+    this.setState({
+      latestVersion : updateVersionData.updateVersion,
+      latestVersionCode : updateVersionData.updateVersionCode,
+      isForcedUpdate : updateVersionData.isForcedUpdate,
+      updateMessage : updateVersionData.updateMessage
+    })
+    
+    SplashScreen.hide();
   }
 
 
@@ -454,17 +471,47 @@ export default class App extends Component {
   render(){
 
     console.log("REDUX_STORE_STATE: " + store.getState());
-    return(
-    <Provider store ={store}>
-    <FirebaseProvider value={firebaseApi}>
-    <PlayerProvider>
-    <MenuProvider>
-    <AppContainer/>
-    </MenuProvider>
-    </PlayerProvider>
-    </FirebaseProvider>
-    </Provider>
-    );
+    if(this.state.currentVersionCode < this.state.latestVersionCode && this.state.isForcedUpdate)
+    {
+      return(
+        <View>
+        
+      <LottieView style={{
+       paddingLeft:SCREEN_WIDTH/12,
+       paddingTop:30,
+       height: SCREEN_HEIGHT*12/24,
+       width: 300}} source={updateAnimation} autoPlay loop />
+       <View style={{marginLeft:10,marginRight:10,marginTop:50}}>
+       <Text style={{fontFamily:'Montserrat-Bold',fontSize:20}}> {this.state.updateMessage} </Text>
+       <Text style={{fontFamily:'Montserrat-SemiBold'}}>{"\n"} Current App Version : {this.state.currentVersion} </Text>
+      <Text style={{fontFamily:'Montserrat-SemiBold'}}> Latest App Version :  {this.state.latestVersion}</Text>
+       </View>
+       </View>
+
+      // <View>
+      //   <Modal>
+      //     <View style={{ flex: 1 }}>
+      //       <Text>I am the modal content!</Text>
+      //     </View>
+      //   </Modal>
+      //   </View>
+      )    
+    }
+    else
+    {
+      return(
+        <Provider store ={store}>
+        <FirebaseProvider value={firebaseApi}>
+        <PlayerProvider>
+        <MenuProvider>
+        <AppContainer/>
+        </MenuProvider>
+        </PlayerProvider>
+        </FirebaseProvider>
+        </Provider>
+        );
+    }
+    
   }
 }
 

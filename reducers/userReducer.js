@@ -139,6 +139,9 @@ const INITIAL_STATE = {
         case "ADD_TO_PODCASTS_LIKED":
             state.isPodcastLiked[action.payload] = true;
             return state;
+        case "REMOVE_FROM_PODCASTS_LIKED":
+            state.isPodcastLiked[action.payload] = false;
+            return state;
         case "ADD_TO_PODCASTS_BOOKMARKED":
             state.isPodcastBookmarked[action.payload] = true;
             return state;

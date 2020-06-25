@@ -17,8 +17,8 @@ const width=ExtraDimensions.getRealWindowWidth();
 const STATUS_BAR_HEIGHT= ExtraDimensions.getStatusBarHeight();
 //const isNotchEnabled= SCREEN_HEIGHT+
 const SOFT_MENU_BAR_HEIGHT =  (ExtraDimensions.getSoftMenuBarHeight() === 0) ? 0 :ExtraDimensions.getSoftMenuBarHeight();
-const minHeight = height/12;
-const midBound = (height*11)/12 - (height*33/288 );
+const minHeight = height/15;
+const midBound = (height*14)/15 - (height/10 ); //upper edge of miniPlayer
 const upperBound = midBound + minHeight;
 const {
   Extrapolate,

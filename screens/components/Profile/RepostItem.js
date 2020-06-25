@@ -8,7 +8,6 @@ import {withFirebaseHOC} from '../../config/Firebase';
 import {useSelector, useDispatch,connect} from "react-redux"
 import EvilIcon from 'react-native-vector-icons/EvilIcons';
 import IconAntDesign from 'react-native-vector-icons/AntDesign'
-import PodcastAnimation from '../PodcastPlayer/PodcastAnimation';
 import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
 import PlayPauseOut from '../PodcastPlayer/PlayPauseOut';
 import LottieView from 'lottie-react-native';

@@ -177,7 +177,7 @@ const HomeScreen = (props) => {
       case "A":
         return (
           <View>
-           <HomeAnimation/> 
+           {/* <HomeAnimation/>  */}
           </View>
         );
       case "B":
@@ -274,7 +274,7 @@ const HomeScreen = (props) => {
       /> */}
       
       <View>
-         <HomeAnimation/>
+         {/* <HomeAnimation/> */}
       </View>
       {
         podcasts1.map((item,index) =>

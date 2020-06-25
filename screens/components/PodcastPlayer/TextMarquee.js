@@ -23,7 +23,7 @@ const TextMarquee = React.memo((props)=> {
     return (
         <View style={{paddingLeft: 0}}>
           <TextTicker
-          style={{ fontSize: 15,fontWeight:'bold',paddingLeft:width/20,paddingRight:width/2,color:'white' }}
+          style={{ fontSize: 13,fontFamily:'Montserrat-Regular',paddingLeft:width/20,paddingRight:width/2,color:'white' }}
           duration={20000}
           loop
           bounce
@@ -31,7 +31,7 @@ const TextMarquee = React.memo((props)=> {
           marqueeDelay={500}
           useNativeDriver={true} 
         >  
-          {props.podcastName}{" "} <Text style={{color:'#A9A9A9'}}>~ {props.bookName}{" "}</Text>  
+          {props.podcastName}{" "} <Text style={{color:'#A9A9A9',fontFamily:'Montserrat-Regular'}}>~ {props.bookName}{" "}</Text>  
         </TextTicker>  
         </View> 
     )
