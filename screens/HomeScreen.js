@@ -28,6 +28,7 @@ const HomeScreen = (props) => {
   const limit = 8;
   const headerPodcastsLimit = 8;
   const bookLimit = 5;
+  const [podcastPresentMap,setPodcastPresentMap] = useState({});
   const [lastVisible,setLastVisible] = useState(null);
   const [loading,setLoading] = useState(false);
   const [refreshing,setRefreshing] = useState(false);
@@ -68,17 +69,41 @@ const HomeScreen = (props) => {
 
 
       var initialLimit = headerPodcastsLimit + limit;
+      // 16 podcasts of userPreferences
       let podcasts = await firestore().collectionGroup('podcasts').where('genres','array-contains-any',userPreferences)
-                    .orderBy('lastEditedOn','desc').limit(initialLimit).get()
+                    .orderBy('lastEditedOn','desc').limit(initialLimit).get();
 
-      let documentData_podcasts = podcasts.docs.map(document => document.data());
+      // 8 podcasts of lastEditedOn
+      let latestPodcasts = await firestore().collectionGroup('podcasts')
+                    .orderBy('lastEditedOn','desc').limit(limit).get();
+
+      let documentData_preferredPodcasts = podcasts.docs.map(document => document.data());
+      let documentData_latestPodcasts = latestPodcasts.docs.map(document => document.data()); 
+      
+      var isPodcastPresent = {};
+
+      for(var i=0;i<initialLimit;i++)
+        isPodcastPresent[documentData_preferredPodcasts[i].podcastID] = true;
+      
+
+      var finalDocumentData = documentData_preferredPodcasts.slice(headerPodcastsLimit,initialLimit);      
+      for(var i=0;i<limit;i++)
+      {
+        if(isPodcastPresent[documentData_latestPodcasts[i].podcastID] != true)
+        {
+          finalDocumentData.push(documentData_latestPodcasts[i]);
+          isPodcastPresent[documentData_latestPodcasts[i].podcastID] = true;
+        }
+      }
+      
       var lastVisiblePodcast = lastVisible;
-      if(documentData_podcasts.length != 0)      
-          lastVisiblePodcast = documentData_podcasts[documentData_podcasts.length - 1].lastEditedOn; 
+      if(documentData_latestPodcasts.length != 0)      
+          lastVisiblePodcast = documentData_latestPodcasts[documentData_latestPodcasts.length - 1].lastEditedOn; 
 
-      setHeaderPodcasts(documentData_podcasts.slice(0,headerPodcastsLimit));
-      setPodcasts(documentData_podcasts.slice(headerPodcastsLimit,initialLimit))
+      setHeaderPodcasts(documentData_preferredPodcasts.slice(0,headerPodcastsLimit));
+      setPodcasts(finalDocumentData);
       setLastVisible(lastVisiblePodcast);
+      setPodcastPresentMap(isPodcastPresent);
       //setOnEndReachedCalledDuringMomentum(true);
     }
     catch (error) {
@@ -101,17 +126,29 @@ const HomeScreen = (props) => {
     console.log("[HomeScreen] retrieveMorePodcasts starts()")
     setRefreshing(true);
     try{   
-      let additionalPodcastDocuments =  await firestore().collectionGroup('podcasts').where("genres","array-contains-any",userPreferences)
+      let additionalPodcastDocuments =  await firestore().collectionGroup('podcasts')
         .orderBy('lastEditedOn','desc').startAfter(lastVisible).limit(limit).get()
       
       let documentData = additionalPodcastDocuments.docs.map(document => document.data());
       if(documentData.length != 0) 
       {
+        var finalDocumentData = [];
+        var localPodcastPresentMap = podcastPresentMap;
+        for(var i=0;i<limit;i++)
+        {
+          if(localPodcastPresentMap[documentData[i].podcastID] != true)
+          {
+            finalDocumentData.push(documentData[i]);
+            localPodcastPresentMap[documentData[i].podcastID] = true;
+          }
+        }
+
         let lastVisiblePodcast = documentData[documentData.length - 1].lastEditedOn;
         if(lastVisible != lastVisiblePodcast) 
         {
-          setPodcasts([...podcasts, ...documentData]);
+          setPodcasts([...podcasts, ...finalDocumentData]);
           setLastVisible(lastVisiblePodcast);
+          setPodcastPresentMap(localPodcastPresentMap);
           //setOnEndReachedCalledDuringMomentum(true);
         }
       }
@@ -349,7 +386,7 @@ const HomeScreen = (props) => {
       //ListHeaderComponent={renderHeader}
       ListFooterComponent={renderFooter}
       onEndReached={onEndReached}
-      onEndReachedThreshold={0.001}
+      onEndReachedThreshold={0.5}
       refreshing={refreshing}
       onRefresh={() => handleRefresh()}
       refreshControl={

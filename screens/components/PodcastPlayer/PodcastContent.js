@@ -78,9 +78,11 @@ function getRandomNumber(min,max) {
 
   const liked = useSelector(state=>state.userReducer.isPodcastLiked[props.podcast.podcastID]);
   const [likedState,setLikedState] = useState(liked);
+  const numLikesRedux = useSelector(state=>state.rootReducer.numLikes);
 
   const bookmarked = useSelector(state=>state.userReducer.isPodcastBookmarked[props.podcast.podcastID]);
   const [bookmarkedState,setBookmarkedState] = useState(bookmarked);
+  const numRetweetsRedux = useSelector(state=>state.rootReducer.numRetweets);
 
   const userDisplayPictureURL = useSelector(state=>state.userReducer.displayPictureURL);
   const name = useSelector(state=>state.userReducer.name);
@@ -150,7 +152,8 @@ function getRandomNumber(min,max) {
       alwaysPauseOnInterruption: true,
        notificationCapabilities: [
          TrackPlayer.CAPABILITY_PLAY,
-         TrackPlayer.CAPABILITY_PAUSE
+         TrackPlayer.CAPABILITY_PAUSE,
+         TrackPlayer.CAPABILITY_STOP
        ]
     });
     await TrackPlayer.add({
@@ -180,6 +183,13 @@ async function togglePlay  ()  {
     }
 
 }
+
+useEffect(() => {
+  TrackPlayer.addEventListener('remote-stop', () => {
+    dispatch({type:"SET_PODCAST",payload:null});
+    TrackPlayer.destroy()
+  });
+},[])
 
 useEffect(() => {
   props.podcast !== null && setup();
@@ -332,6 +342,9 @@ function parentSlideDown(){
 
 async function removeFromBookmarks() {
 
+  dispatch({type:"REMOVE_FROM_PODCASTS_BOOKMARKED",payload:props.podcast.podcastID});
+  dispatch({type:"SET_NUM_RETWEETS",payload:numRetweetsRedux - 1});
+
  firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('bookmarks')
     .where("podcastID",'==',props.podcast.podcastID).get().then(function(querySnapshot){
       querySnapshot.forEach(function(doc) {
@@ -372,8 +385,7 @@ async function removeFromBookmarks() {
        })
     }
 
-  dispatch({type:"REMOVE_FROM_PODCASTS_BOOKMARKED",payload:props.podcast.podcastID});
-
+  
 }
 
 
@@ -383,6 +395,9 @@ async function removeFromBookmarks() {
 async function addToBookmarks() {
    const picturesArray = [];
    picturesArray.push(props.podcast.podcastPictures[0]);
+
+  dispatch({type:"ADD_TO_PODCASTS_BOOKMARKED",payload:props.podcast.podcastID});
+  dispatch({type:"SET_NUM_RETWEETS",payload:numRetweetsRedux + 1});
 
   firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('bookmarks').add({
     bookmarkedOn : moment().format(),
@@ -437,8 +452,6 @@ async function addToBookmarks() {
       })
    }
 
-  dispatch({type:"ADD_TO_PODCASTS_BOOKMARKED",payload:props.podcast.podcastID});
-  
 }
 
 
@@ -491,9 +504,10 @@ async function updatePodcastsUnliked(props) {
 
   dispatch({type:'REMOVE_FROM_PODCASTS_LIKED',payload:props.podcast.podcastID});
 
-  if(props.podcast.numUsersLiked > 0)
-  {
-    const numUsers = props.podcast.numUsersLiked - 1;
+
+  //const numUsers = props.podcast.numUsersLiked - 1;
+  const numUsers = numLikesRedux - 1;  
+  
     dispatch({type:'SET_NUM_LIKES',payload:numUsers});
     
     if(props.podcast.isChapterPodcast === true)
@@ -511,7 +525,7 @@ async function updatePodcastsUnliked(props) {
       },{merge:true})
     }
     
-  }
+  
  
   await firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).set({
     podcastsLiked : firestore.FieldValue.arrayRemove(props.podcast.podcastID)
@@ -523,7 +537,8 @@ async function updatePodcastsLiked(props){
 
   //setLikedState(true);
   dispatch({type:'ADD_TO_PODCASTS_LIKED',payload:props.podcast.podcastID})
-  const numUsers = props.podcast.numUsersLiked + 1;
+  //const numUsers = props.podcast.numUsersLiked + 1;
+  const numUsers = numLikesRedux + 1;  
 
   dispatch({type:'SET_NUM_LIKES',payload:numUsers})
 

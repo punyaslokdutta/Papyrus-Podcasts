@@ -35,7 +35,11 @@ const firebaseApi={
             name = user._user.displayName;
         else
             name = fullName;
-            const uId=user._user.uid;
+
+
+
+
+        const uId=user._user.uid;
         ////// username generation
         var splittedString = name.split(" ");
         var i;
@@ -48,6 +52,21 @@ const firebaseApi={
 
         if(pictureURL === null)
             pictureURL = "https://storage.googleapis.com/papyrus-fa45c.appspot.com/users/DefaultProfilePictures/WhatsApp%20Image%202020-03-29%20at%205.51.24%20PM.jpeg";
+        
+        const instance = firebase.app().functions("asia-northeast1").httpsCallable('AddToUsersIndex');
+    
+        try 
+        {          
+            await instance({ // change in podcast docs created by  user
+                name : name,
+                userID : uId,
+                displayPicture : pictureURL
+            });
+        }
+        catch (e) 
+        {
+            console.log(e);
+        }
         
         const privateDataID = "private" + user._user.uid;
         

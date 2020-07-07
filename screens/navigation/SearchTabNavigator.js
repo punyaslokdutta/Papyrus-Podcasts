@@ -2,12 +2,14 @@ import React, {Component,useState} from 'react';
 
 import {createMaterialTopTabNavigator} from 'react-navigation-tabs';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import EnTypoIcon from 'react-native-vector-icons/Entypo';
 import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView} from 'react-native';
 import { theme } from '../components/categories/constants';
 import CustomSearchHeader from './CustomSearchHeader'
 import SearchBookScreen from '../components/Explore/SearchBookScreen'
 import SearchChapterScreen from '../components/Explore/SearchChapterScreen'
 import SearchPodcastScreen from '../components/Explore/SearchPodcastScreen'
+import SearchUserScreen from '../components/Explore/SearchUserScreen'
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5'
 import ProfileTabBar from './CustomProfileTabBar';
 
@@ -30,6 +32,12 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
         tabBarLabel:'Chapters',
         tabBarIcon:({tintColor})=>(
           <Icon name="newspaper-o" color={tintColor} size={20}/>
+        )
+      }},
+      SearchUserScreen : { screen: props => <SearchUserScreen {...props}/>,navigationOptions:{
+        tabBarLabel:'Users',
+        tabBarIcon:({tintColor})=>(
+          <EnTypoIcon name="users" color={tintColor} size={20}/>
         )
       }},
       SearchPodcastScreen : { screen: props => props.navigation.state.params.fromExplore ? <SearchPodcastScreen  {...props}/> : null,navigationOptions: (props) => ({

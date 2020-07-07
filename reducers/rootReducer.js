@@ -12,6 +12,7 @@ const INITIAL_STATE = {
   resizeMode:'contain', 
   isMiniPlayer:false,
   numLikes: 0,
+  numRetweets: 0,
   loadingPodcast: false,
   videoRef: null,
   hearts: [],
@@ -51,6 +52,8 @@ function rootReducer(state = INITIAL_STATE, action)  {
           return {...state,rate:((action.payload)>2.0? 1.0 :(action.payload) )}
       case "SET_NUM_LIKES":
           return {...state, numLikes:action.payload}
+      case "SET_NUM_RETWEETS":
+        return {...state, numRetweets:action.payload}
       case "SET_CURRENT_TIME":
           console.log("SET_CURRENT_TIME_ACTION"+" " +action.payload)
           return {...state, currentTime:(action.payload)}

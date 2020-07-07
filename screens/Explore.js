@@ -17,6 +17,7 @@ import StoryTellerCarousel from './components/Explore/StoryTellerCarousel';
 import ClassicPoemsCarousel from './components/Explore/ClassicPoemsCarousel';
 import SplashScreen from 'react-native-splash-screen';
 import BookList from './components/Home/BookList';
+import Podcast from './components/Home/Podcast';
 
 const {width,height} = Dimensions.get('window')
 
@@ -33,8 +34,8 @@ const Explore = (props) => {
   const [podcastState,setPodcastState] = useState(podcast);
   const externalPodcastID = useSelector(state=>state.userReducer.externalPodcastID);
   var [storytellers,setStorytellers] = useState([]);
-  var [podcasts,setPodcasts] = useState([]);
-  var [books,setBooks] = useState([]);
+  var [section1Podcasts,setSection1Podcasts] = useState([]);
+  var [section2Podcasts,setSection2Podcasts] = useState([]);
   var [recordBooks,setRecordBooks] = useState([]);
   var [chapters,setChapters] = useState([]);
   var [loading,setLoading] = useState(false);
@@ -79,25 +80,37 @@ const Explore = (props) => {
       console.log(error)
     }
 
-    // Trending podcasts
+    // Section 1 podcasts
     try{
-      let podcastQuery = await firestore().collectionGroup('podcasts').where('isTrendingPodcast','==',true).get();
-      let documentPodcasts = podcastQuery.docs.map(document => document.data());
-      setPodcasts(documentPodcasts);
+      let section1Query = await firestore().collectionGroup('podcasts').where('isExploreSection1','==',true)
+                          .orderBy('lastAddedToExplore1','desc').limit(10).get();
+      let section1Podcasts = section1Query.docs.map(document => document.data());
+      setSection1Podcasts(section1Podcasts);
     }
     catch(error){
       console.log(error)
     }
 
-    // Short Stories
+    // Section 2 podcasts
     try{
-      let bookQuery = await firestore().collectionGroup('podcasts').where('isShortStory','==',true).get();
-      let documentBooks = bookQuery.docs.map(document => document.data());
-      setBooks(documentBooks);
+      let section2Query = await firestore().collectionGroup('podcasts').where('isExploreSection2','==',true)
+                          .orderBy('lastAddedToExplore2','desc').limit(10).get();
+      let section2Podcasts = section2Query.docs.map(document => document.data());
+      setSection2Podcasts(section2Podcasts);
     }
     catch(error){
       console.log(error)
     }
+
+    // // Short Stories
+    // try{
+    //   let bookQuery = await firestore().collectionGroup('podcasts').where('isShortStory','==',true).get();
+    //   let documentBooks = bookQuery.docs.map(document => document.data());
+    //   setBooks(documentBooks);
+    // }
+    // catch(error){
+    //   console.log(error)
+    // }
 
     // Record Book Podcasts
     try{
@@ -243,18 +256,18 @@ const Explore = (props) => {
 
     function renderPodcasts()
     {
-       return podcasts.map((item, index)=>
+       return section1Podcasts.map((item, index)=>
       {
         return(<TrendingPodcast item={item} index={index} key ={index} navigation={props.navigation}/>)
       })
 
     }
 
-    function renderSectionPodcasts()
+    function renderSection1Podcasts()
     {
         return (
           <View style={{width:width,paddingTop:10}}>
-          <TrendingPodcastsCarousel data={podcasts} navigation={props.navigation}/>
+          <TrendingPodcastsCarousel data={section1Podcasts} navigation={props.navigation}/>
           </View>
          
         )
@@ -281,21 +294,19 @@ const Explore = (props) => {
 
     function renderBooks()
     {
-       return books.map((item, index)=>
+       return section2Podcasts.map((item, index)=>
       {
         return(<ExploreBook item={item} index={index} key ={index} navigation={props.navigation}/>)
       })
 
     }
 
-    function renderSectionBooks()
+    function renderSection2Podcasts()
     {
-      return (
-        <View style={{width:width,paddingTop:10}}>
-          <ShortStoriesCarousel data={books} navigation={props.navigation}/>
-          </View>
-       
-      )
+      return section2Podcasts.map((item, index)=>
+      {
+        return(<Podcast podcast={item} key ={item.podcastID} navigation={props.navigation}/>)
+      })
     }
  
     function renderMainHeader() 
@@ -469,46 +480,10 @@ const Explore = (props) => {
           </View>
           <View style={{height:20}}/>
           
-             
-              <View style={{flex:1 , backgroundColor:'white', paddingTop:10}}>
-                      <Text style={{fontSize:20, fontFamily:'Montserrat-Bold', paddingHorizontal: 20, textShadowColor:'black'}}>
-                      {sections.length != 0 && sections[0].sectionName}{"    "}
-                      </Text>
-              </View>  
-                     
-                      {renderSectionPodcasts()}
-                  
-          <View style={{flex:1,marginTop:height/20,marginBottom:height/20}}>
-          <Text style={{fontSize:20, fontFamily:'Montserrat-Bold', paddingHorizontal: 20, textShadowColor:'black'}}>
-                          {sections.length != 0 && sections[1].sectionName}{"    "}
-                      </Text>
-          </View>
-          
-          <BookList navigation={props.navigation} books={recordBooks}/>
-
-         
-                  <View style={{flex:1 , backgroundColor:'white'}}>
-                  <Text style={{fontSize:20, fontFamily:'Montserrat-Bold', paddingHorizontal: 20, textShadowColor:'black'}}>
-                  {sections.length != 0 && sections[2].sectionName}{"   "}
-                      </Text>
-              </View>
-              {renderSectionBooks()}
-                   
-              <View style={{flex:1 , backgroundColor:'white', marginTop:height/20}}>
-                  <Text style={{fontSize:20, fontFamily:'Montserrat-Bold', paddingHorizontal: 20,  textShadowColor:'black'}}>
-                  {sections.length != 0 && sections[3].sectionName}{"    "}
-                      </Text>
-                  </View>
-
-                  {renderSectionStoryTellers()}
-
-                <View style={{flex:1 , backgroundColor:'white', marginTop:height/20}}>
-                <Text style={{fontSize:20, fontFamily:'Montserrat-Bold', paddingHorizontal: 20,  textShadowColor:'black'}}>
-                {sections.length != 0 && sections[4].sectionName}{"    "}
-                    </Text>
-                </View>
-
-                      {renderSectionChapters()}                             
+             {renderSection1Podcasts()}
+             {renderSection2Podcasts()}
+             {renderSectionStoryTellers()}
+             <BookList navigation={props.navigation} books={recordBooks}/>
                  
               </ScrollView>
           </SafeAreaView>

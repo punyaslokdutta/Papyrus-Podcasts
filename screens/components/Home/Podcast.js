@@ -66,6 +66,25 @@ var {width, height}=Dimensions.get('window')
               this.animation.play(0,178);
           else
               this.animation.pause();
+
+          // isMiniPlayer OR isPodcastLiked
+
+          if(!prevProps.isMiniPlayer && this.props.isMiniPlayer)
+          {
+            this.setState({
+              numLikes : this.props.numLikesRedux,
+              numRetweets : this.props.numRetweetsRedux
+            })
+
+            //if(prevProps.isPodcastLiked[this.props.podcast.podcastID]) 
+              //&& 
+              if(!this.props.isPodcastLiked[this.props.podcast.podcastID])
+              {
+                this.likeAnimation.play(0,0);
+                this.likeAnimation.pause();
+              }
+          }
+          
       }
       else
       {
@@ -138,6 +157,15 @@ var {width, height}=Dimensions.get('window')
    removeFromBookmarks = async() => {
 
     const privateDataID = "private" + this.state.realUserID;
+
+    if(this.props.podcastRedux && this.props.podcastRedux.podcastID == this.props.podcast.podcastID) 
+        this.props.dispatch({type:'SET_NUM_RETWEETS',payload:this.state.numRetweets - 1});
+    this.props.dispatch({type:"REMOVE_FROM_PODCASTS_BOOKMARKED",payload:this.props.podcast.podcastID});
+      this.setState({
+        reposted : false,
+        numRetweets : this.state.numRetweets - 1
+      })
+
     firestore().collection('users').doc(this.state.realUserID).collection('privateUserData').doc(privateDataID).collection('bookmarks')
        .where("podcastID",'==',this.props.podcast.podcastID).get().then(function(querySnapshot){
          querySnapshot.forEach(function(doc) {
@@ -178,11 +206,6 @@ var {width, height}=Dimensions.get('window')
           })
       }
 
-     this.props.dispatch({type:"REMOVE_FROM_PODCASTS_BOOKMARKED",payload:this.props.podcast.podcastID});
-      this.setState({
-        reposted : false,
-        numRetweets : this.state.numRetweets - 1
-      })
    }
    
    
@@ -194,6 +217,17 @@ var {width, height}=Dimensions.get('window')
       const privateDataID = "private" + this.state.realUserID;
       const localUserID = this.state.realUserID;
       picturesArray.push(this.props.podcast.podcastPictures[0]);
+
+      if(this.props.podcastRedux && this.props.podcastRedux.podcastID == this.props.podcast.podcastID) 
+        this.props.dispatch({type:'SET_NUM_RETWEETS',payload:this.state.numRetweets + 1});
+
+      this.props.dispatch({type:"ADD_TO_PODCASTS_BOOKMARKED",payload:this.props.podcast.podcastID});
+      this.setState({
+        reposted : true,
+        numRetweets : this.state.numRetweets + 1
+      })
+
+      
    
      firestore().collection('users').doc(this.state.realUserID).collection('privateUserData').doc(privateDataID).collection('bookmarks').add({
        bookmarkedOn : moment().format(),
@@ -249,25 +283,26 @@ var {width, height}=Dimensions.get('window')
       }
 
       Toast.show("Reposted");
-      this.props.dispatch({type:"ADD_TO_PODCASTS_BOOKMARKED",payload:this.props.podcast.podcastID});
-
-      this.setState({
-        reposted : true,
-        numRetweets : this.state.numRetweets + 1
-      })
    
    }
 
    updatePodcastsUnliked = async (props) => {
 
-    const privateDataID = "private" + this.state.realUserID;
-    this.props.dispatch({type:'REMOVE_FROM_PODCASTS_LIKED',payload:this.props.podcast.podcastID});
+      const privateDataID = "private" + this.state.realUserID;
+    
+      //const numUsers = this.props.podcast.numUsersLiked - 1;
+      const numUsers = this.state.numLikes - 1;
 
-    if(this.props.podcast.numUsersLiked > 0)
-    {
-      const numUsers = this.props.podcast.numUsersLiked - 1;
-      this.props.dispatch({type:'SET_NUM_LIKES',payload:numUsers});
+      if(this.props.podcastRedux && this.props.podcastRedux.podcastID == this.props.podcast.podcastID) 
+        this.props.dispatch({type:'SET_NUM_LIKES',payload:numUsers});
       
+        this.props.dispatch({type:'REMOVE_FROM_PODCASTS_LIKED',payload:this.props.podcast.podcastID});
+
+        this.setState({
+          liked : false,
+          numLikes : this.state.numLikes - 1
+        })
+
       if(this.props.podcast.isChapterPodcast === true)
       {
         await firestore().collection('books').doc(this.props.podcast.bookID).collection('chapters').
@@ -283,25 +318,31 @@ var {width, height}=Dimensions.get('window')
         },{merge:true})
       }
       
-    }
+    
    
     await firestore().collection('users').doc(this.state.realUserID).collection('privateUserData').doc(privateDataID).set({
       podcastsLiked : firestore.FieldValue.arrayRemove(this.props.podcast.podcastID)
     },{merge:true})
 
-    this.setState({
-      liked : false,
-      numLikes : this.state.numLikes - 1
-    })
+    
    }
 
    updatePodcastsLiked = async (props) => {
 
     const privateDataID = "private" + this.state.realUserID;
-    this.props.dispatch({type:'ADD_TO_PODCASTS_LIKED',payload:this.props.podcast.podcastID})
-    const numUsers = this.props.podcast.numUsersLiked + 1;
+    
+    const numUsers = this.state.numLikes + 1;
   
-    this.props.dispatch({type:'SET_NUM_LIKES',payload:numUsers})
+    if(this.props.podcastRedux && this.props.podcastRedux.podcastID == this.props.podcast.podcastID) 
+      this.props.dispatch({type:'SET_NUM_LIKES',payload:numUsers})
+    
+    this.props.dispatch({type:'ADD_TO_PODCASTS_LIKED',payload:this.props.podcast.podcastID})
+    //const numUsers = this.props.podcast.numUsersLiked + 1;
+    
+    this.setState({
+      liked : true,
+      numLikes : this.state.numLikes + 1
+    })
   
     const likedPodcasts = await firestore().collection('users').doc(this.state.realUserID).collection('privateUserData').doc(privateDataID).set({
           podcastsLiked : firestore.FieldValue.arrayUnion(this.props.podcast.podcastID)
@@ -338,10 +379,7 @@ var {width, height}=Dimensions.get('window')
     {
       console.log(e);
     }
-    this.setState({
-      liked : true,
-      numLikes : this.state.numLikes + 1
-    })
+    
     
   }
 
@@ -360,7 +398,9 @@ var {width, height}=Dimensions.get('window')
       this.props.dispatch({type:"ADD_NAVIGATION", payload:this.props.navigation})
       this.props.podcastRedux === null && this.props.dispatch({type:"SET_MINI_PLAYER_FALSE"});
       this.props.dispatch({type:"SET_PODCAST", payload: this.props.podcast})
-      this.props.dispatch({type:"SET_NUM_LIKES", payload: this.props.podcast.numUsersLiked})
+      this.props.dispatch({type:"SET_NUM_LIKES", payload: this.state.numLikes})
+      this.props.dispatch({type:"SET_NUM_RETWEETS", payload: this.state.numRetweets})
+
     }
     
     }
@@ -701,7 +741,10 @@ const mapStateToProps = (state) => {
     isPodcastLiked: state.userReducer.isPodcastLiked,
     displayPictureURL: state.userReducer.displayPictureURL,
     name: state.userReducer.name,
-    isAdmin: state.userReducer.isAdmin
+    isAdmin: state.userReducer.isAdmin,
+    isMiniPlayer: state.rootReducer.isMiniPlayer,
+    numLikesRedux: state.rootReducer.numLikes,
+    numRetweetsRedux: state.rootReducer.numRetweets
   }}
 
   const mapDispatchToProps = (dispatch) =>{

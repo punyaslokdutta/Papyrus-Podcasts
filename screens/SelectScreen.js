@@ -6,6 +6,7 @@ import { TagSelect } from 'react-native-tag-select'
 import { useDispatch, useSelector} from 'react-redux'
 import { theme } from './components/categories/constants';
 import { ScrollView } from 'react-native-gesture-handler';
+import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
 
 const { width, height } = Dimensions.get('window');
 const data = [
@@ -86,9 +87,15 @@ const SelectScreen = (props)=> {
     ()=>
     {
        dispatch({type:"SET_PODCAST", payload: null})
+       TrackPlayer.destroy();
     }, [tagSelected]
   )
  
+  useEffect(() => {
+    dispatch({type:"SET_PODCAST", payload: null});
+    TrackPlayer.destroy();
+  }, [])
+
   useEffect(
     () =>
     {
