@@ -301,9 +301,17 @@ const Explore = (props) => {
 
     }
 
-    function renderSection2Podcasts()
+    function renderSection2PodcastsI()
     {
-      return section2Podcasts.map((item, index)=>
+      return section2Podcasts.slice(0,5).map((item, index)=>
+      {
+        return(<Podcast podcast={item} key ={item.podcastID} navigation={props.navigation}/>)
+      })
+    }
+
+    function renderSection2PodcastsII()
+    {
+      return section2Podcasts.slice(5,10).map((item, index)=>
       {
         return(<Podcast podcast={item} key ={item.podcastID} navigation={props.navigation}/>)
       })
@@ -481,8 +489,11 @@ const Explore = (props) => {
           <View style={{height:20}}/>
           
              {renderSection1Podcasts()}
-             {renderSection2Podcasts()}
+             <View style={{marginVertical:20,borderBottomColor:'#d1d0d4',borderBottomWidth:1}}/> 
+             {renderSection2PodcastsI()}
              {renderSectionStoryTellers()}
+            <View style={{marginVertical:20,borderBottomColor:'#d1d0d4',borderBottomWidth:1}}/> 
+            {renderSection2PodcastsII()}
              <BookList navigation={props.navigation} books={recordBooks}/>
                  
               </ScrollView>

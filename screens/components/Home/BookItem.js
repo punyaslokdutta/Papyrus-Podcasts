@@ -8,6 +8,7 @@ import {useSelector, useDispatch} from "react-redux"
 import { withFirebaseHOC } from '../../config/Firebase';
 import firestore from '@react-native-firebase/firestore';
 import moment from "moment";
+import LinearGradient from 'react-native-linear-gradient';
 
 
 const { width, height } = Dimensions.get('window');
@@ -185,43 +186,70 @@ const BookItem = React.memo((props) => {
           }
         }}>
           <View style={{flex:1,flexDirection:'row'}}>
-          <ImageBackground
-            style={[styles.flex, styles.destination,styles.shadow]}
+          <View style={{flexDirection:'row'}}>
+             <View style={{flexDirection:'column'}}>
+             <View style={{flexDirection: 'row'}}>
+              <View style={{flexDirection:'column'}}>
+              
+              <ImageBackground
+            style={{height:height/4,width:width/3}}
             imageStyle={{ borderRadius: theme.sizes.radius }}
             source={{ uri: props.item.bookPictures['0'] }}
           >
+            <LinearGradient  colors={['transparent','transparent','transparent','transparent','transparent','transparent','transparent','transparent','transparent','black','black']} >
+            <View style={{height:height/4,width:width/3 }}>
+       <Text style={{color:'white',position:'absolute',fontFamily:'Montserrat-Bold',bottom:2,left:3,right:4,fontSize:13}}>
+       {"  "}{props.item.bookName.slice(0,35)}   
+        {
+          (props.item.bookName.length > 35)  &&  ".."
+        }
+      
+      </Text>       
+      </View> 
+            </LinearGradient>
           </ImageBackground>
-          
-            
-            <View style={[styles.column, styles.destinationInfo, styles.shadow]}>
-              <Text style={{ fontSize: theme.sizes.font * 1.25, fontWeight: '500', paddingBottom: 8, }}>
-                {
-                  props.item.chapterID !== undefined
-                  ?
-                  props.item.chapterName 
-                  :
-                  props.item.bookName
-                }
-                
-              </Text>
-              <View style={[ styles.row, { justifyContent: 'space-between', alignItems: 'flex-end', }]}>
-                <Text style={{ color: theme.colors.caption }}>
-                  {props.item.bookDescription.split('').slice(0, 30)}
-                  {(props.item.bookDescription.length > 30) ? "..." : ""}
-                </Text>
-
-                <TouchableOpacity onPress={() => handleOnPressBookmark()}>
-                  <AnimatedIcon
-                    ref={handleSmallAnimatedBookmarkIconRef}
-                    name={bookmarked ? 'bookmark' : 'bookmark-o'}
-                    color={bookmarked ? 'black' : 'black'}
-                    size={20}
-                    style={{height:30,width:30}}
-                  />
-                </TouchableOpacity>
-              </View>
+               <View
+                    style={{
+                    height:1,
+                    width:width/3 - 10,
+                    marginTop:1,
+                    marginLeft:10,
+                    borderLeftWidth:width/3 - 10,
+                    color: 'black',
+                    }}
+                    />
+               </View>
+                <View
+                    style={{
+                    height:height/4 - 2,
+                    width:3,
+                    marginTop:2,
+                    borderLeftWidth: 1,
+                    color: 'black',
+                    }}
+                    />
             </View>
-           
+            <View
+                style={{
+                height:1,
+                width:width/3 - 9,
+                marginTop:1.5,
+                marginLeft:12,
+                borderLeftWidth:width/3 - 9,
+                color: 'black',
+                }}
+                />
+            </View>
+            <View
+                style={{
+                height:height/4 - 1,
+                width:5,
+                marginTop:4,
+                borderLeftWidth: 1,
+                color: 'black',
+                }}
+                />
+            </View>
             </View>
         </TouchableNativeFeedback>
       )

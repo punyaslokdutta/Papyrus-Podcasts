@@ -28,12 +28,6 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
           <Icon name="book" color={tintColor} size={20}/>
         )
       }},
-      SearchChapterScreen : { screen: props => <SearchChapterScreen {...props}/>,navigationOptions:{
-        tabBarLabel:'Chapters',
-        tabBarIcon:({tintColor})=>(
-          <Icon name="newspaper-o" color={tintColor} size={20}/>
-        )
-      }},
       SearchUserScreen : { screen: props => <SearchUserScreen {...props}/>,navigationOptions:{
         tabBarLabel:'Users',
         tabBarIcon:({tintColor})=>(

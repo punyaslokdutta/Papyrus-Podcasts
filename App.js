@@ -60,7 +60,8 @@ import UserFollowingScreen from './screens/components/Explore/UserFollowingScree
 import UserFollowerScreen from './screens/components/Explore/UserFollowerScreen';
 import InfoScreen from './InfoScreen'
 import CustomUserHeader from './screens/navigation/CustomUserHeader'
-import SearchTabNavigator from './screens/navigation/SearchTabNavigator'
+import SearchTabNavigator from './screens/navigation/SearchTabNavigator';
+import SearchBookChapterTabNavigator from './screens/navigation/SearchBookChapterTabNavigator';
 import { TouchableNativeFeedback } from 'react-native-gesture-handler';
 
 const  {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
@@ -353,7 +354,10 @@ const AppStackNavigator= createStackNavigator(
 }},
    SearchTabNavigator: {screen: SearchTabNavigator,navigationOptions:{
          //header : null
-   }}
+   }},
+   SearchBookChapterTabNavigator: {screen: SearchBookChapterTabNavigator,navigationOptions:{
+    //header : null
+}}
   },
   {
 

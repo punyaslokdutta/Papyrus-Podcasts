@@ -226,10 +226,24 @@ const editProfile = (props) => {
                     catch(error){
                       console.log(error)
                     }
+
+                    const instance = firebase.app().functions("asia-northeast1").httpsCallable('changeDPInPodcastsAsiaEast');
+                    try 
+                    {          
+                      await instance({ // change in podcast docs created by  user
+                        changedDP : downloadUrl
+                      });
+                    }
+                    catch (e) 
+                    {
+                      console.log(e);
+                    }
                   })
                   .catch(err => {
                     console.log("Error in storageRef.getDownloadURL() in editProfile: ",err);
                   })
+
+
               }
            )
         })

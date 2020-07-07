@@ -32,6 +32,7 @@ const PreviewScreen = (props) => {
   const dispatch = useDispatch();
   const displayPictureURL = useSelector(state=>state.userReducer.displayPictureURL)
   const [loadingPodcastImage,setLoadingPodcastImage] = useState(false);
+  const userPreferences = useSelector(state=>state.userReducer.userPreferences);
   const [podcastImage, setPodcastImage] = useState("https://storage.googleapis.com/papyrus-fa45c.appspot.com/podcasts/Waves.jpg");
   const chapterName=useSelector(state=>state.recorderReducer.chapterName)
   const bookName=useSelector(state=>state.recorderReducer.bookName)
@@ -264,12 +265,45 @@ const PreviewScreen = (props) => {
     }
   }
 
+  async function addGenresToUserPreferences() {
+    var tempUserPreferences = userPreferences;
+    var prefsMap = {};
+
+    for(var i=0;i<tempUserPreferences.length;i++)
+      prefsMap[tempUserPreferences[i]] = true;
+    
+    if(tempUserPreferences.length < 10)
+    {
+      if(genres.length > 0)
+      {
+        for(var i=0;i<genres.length;i++)
+        {
+          if(prefsMap[genres[i]] != true)
+          {
+            tempUserPreferences.push(genres[i]);
+            break;
+          }
+        }
+      }
+      dispatch({type:"SET_USER_PREFERENCES",payload:tempUserPreferences});
+
+      firestore().collection('users').doc(userID).collection('privateUserData')
+        .doc(privateDataID).set({
+          userPreferences : tempUserPreferences
+        },{merge:true}).then(() => {
+          console.log("Successfully updated userPreferences of podcaster document");
+        }).catch((err) => {
+          console.log("Error in updating userPreferences of podcaster document");
+        })
+    }
+  }
 
   useEffect(
     () => {
       if(uploadPodcastSuccess == true)
       {
         indexPodcast();
+        addGenresToUserPreferences();
         const updatedMinutesRecorded = totalMinutesRecorded + duration/60; 
         dispatch({type:"UPDATE_TOTAL_MINUTES_RECORDED",payload:updatedMinutesRecorded});
         updateTotalMinutesRecorded(updatedMinutesRecorded);

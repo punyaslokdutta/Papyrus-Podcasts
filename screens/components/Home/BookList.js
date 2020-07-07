@@ -30,7 +30,7 @@ class BookList extends Component {
     super(props)
     {
     this.state={
-       activeSlide : 0
+       activeSlide : 1
     }
     }    
   }
@@ -119,9 +119,11 @@ class BookList extends Component {
               //scrollInterpolator={this.scrollInterpolator}
               //slideInterpolatedStyle={this.animatedStyles}
               renderItem={this.renderBook}
+              firstItem={1}
+              activeSlideAlignment={'center'}
               sliderWidth={width}
               onSnapToItem={(index) => this.setState({ activeSlide: index }) }
-              itemWidth={width}
+              itemWidth={width/3}
             />
         {this.pagination}
       </View>      

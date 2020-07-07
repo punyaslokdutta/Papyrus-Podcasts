@@ -5,9 +5,11 @@ import {
   ActivityIndicator,
   TouchableOpacity, StyleSheet, Text, View, AsyncStorage, Dimensions, ImageBackground, Button, Image} from 'react-native';
 
+  import {Icon} from 'native-base';
+
 import Toast from 'react-native-simple-toast';
 import { TextInput } from 'react-native-gesture-handler';
-import Icon from 'react-native-vector-icons/FontAwesome'
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'
 import { Formik } from 'formik';
 import {withFirebaseHOC} from '../screens/config/Firebase'
 import * as yup from 'yup';
@@ -52,6 +54,26 @@ const SignUpScreen=(props)=>{
   const userEmail = useSelector(state=>state.userReducer.signupEmail);
   console.log("[SIGN UP Screen] userEmail: ", userEmail);
   const dispatch=useDispatch();
+  const [iconPasswordState,setIconPasswordState] = useState('eye-off');
+  const [passwordState,setPasswordState] = useState(true);
+  const [iconConfirmPasswordState,setIconConfirmPasswordState] = useState('eye-off');
+  const [confirmPasswordState,setConfirmPasswordState] = useState(true);
+
+  function _changeIconPassword() {
+  if(iconPasswordState == 'eye-off') 
+    setIconPasswordState('eye');
+  else
+    setIconPasswordState('eye-off');
+    setPasswordState(!passwordState);   
+  }
+
+  function _changeIconConfirmPassword() {
+    if(iconConfirmPasswordState == 'eye-off') 
+      setIconConfirmPasswordState('eye');
+    else
+      setIconConfirmPasswordState('eye-off');
+      setConfirmPasswordState(!confirmPasswordState);   
+    }
 
   async function _signupWithEmail (email, password, fullName){
     try {
@@ -177,8 +199,10 @@ const SignUpScreen=(props)=>{
           <View style={styles.positions}>
           <TextInput style={styles.Input}   placeholder={'Password'} placeholderTextColor={'rgba(255, 255, 255, 0.5)'} underlineColorAndroid='transparent'
           onChangeText={formikProps.handleChange('password')}
-          secureTextEntry
+          secureTextEntry={passwordState}
           /> 
+          <Icon name={iconPasswordState}  style={{color:'white',fontSize:23,position:'absolute',right:45,top:11}} onPress={() => _changeIconPassword()} /> 
+
           <Text style={{ color: 'rgba(255, 255, 255, 0.5)', paddingLeft:45 ,fontFamily:'sans-serif-light' , fontSize:12 }}>
           {formikProps.touched.password && formikProps.errors.password}
           </Text>
@@ -186,8 +210,10 @@ const SignUpScreen=(props)=>{
           <View style={styles.positions}>
           <TextInput style={styles.Input}   placeholder={'Confirm Password'} placeholderTextColor={'rgba(255, 255, 255, 0.5)'} underlineColorAndroid='transparent'
           onChangeText={formikProps.handleChange('confirmPassword')}
-          secureTextEntry
+          secureTextEntry={confirmPasswordState}
           /> 
+          <Icon name={iconConfirmPasswordState}  style={{color:'white',fontSize:23,position:'absolute',right:45,top:11}} onPress={() => _changeIconConfirmPassword()} /> 
+
           <Text style={{ color: 'rgba(255, 255, 255, 0.5)', paddingLeft:45 ,fontFamily:'sans-serif-light' , fontSize:12 }}>
           {formikProps.touched.confirmPassword && formikProps.errors.confirmPassword}
           </Text>
@@ -214,7 +240,7 @@ const SignUpScreen=(props)=>{
 
             <View style={{flexDirection:'row', justifyContent:'center'}}>
          <TouchableOpacity style={{paddingTop:20 }} onPress={()=>{onFBLoginOrRegister()}}>
-         <Icon name="facebook-square" size={30} style={{color:'rgba(255, 255, 255, 0.6)'}}/>
+         <FontAwesomeIcon name="facebook-square" size={30} style={{color:'rgba(255, 255, 255, 0.6)'}}/>
          </TouchableOpacity>
             </View>
         <View style={{ paddingTop:HEIGHT/8}}>

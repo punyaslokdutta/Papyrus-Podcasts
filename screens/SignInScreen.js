@@ -5,7 +5,8 @@ import {SafeAreaView,
   ActivityIndicator,
   TouchableOpacity, StyleSheet, Text, View, AsyncStorage, Dimensions, ImageBackground, Button, Image} from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
-import Icon from 'react-native-vector-icons/FontAwesome'
+import {Icon} from 'native-base';
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import { AccessToken, LoginManager } from 'react-native-fbsdk';
@@ -39,7 +40,16 @@ const validationSchema = yup.object().shape({
      const dispatch = useDispatch();
      const [loading,setLoading] = useState(false);
      const userEmail = useSelector(state=>state.userReducer.signupEmail);
+     const [iconState,setIconState] = useState('eye-off');
+     const [passwordState,setPasswordState] = useState(true);
 
+     function _changeIcon() {
+      if(iconState == 'eye-off') 
+        setIconState('eye');
+      else
+        setIconState('eye-off');
+       setPasswordState(!passwordState);   
+     }
 
   onFBLoginOrRegister = async () => {
     LoginManager.logInWithPermissions(['public_profile', 'email',])
@@ -178,7 +188,8 @@ const validationSchema = yup.object().shape({
         {/* <PasswordTextBox icon="lock" label="Old Password" onChange={(v) => this._updateState('old', v)} /> */}
         <TextInput style={styles.Input} placeholder={'Password'} placeholderTextColor={'black'} underlineColorAndroid='transparent'
           onChangeText={formikProps.handleChange('password')}
-          secureTextEntry/> 
+          secureTextEntry={passwordState}/>
+          <Icon name={iconState}  style={{color:'black',fontSize:23,position:'absolute',right:45,top:11}} onPress={() => _changeIcon()} /> 
           <Text style={{ color: 'rgba(255, 255, 255, 0.5)', paddingLeft:45 ,fontFamily:'sans-serif-light' , fontSize:12 }}>
           {formikProps.touched.password && formikProps.errors.password}
           </Text>
@@ -241,7 +252,7 @@ const validationSchema = yup.object().shape({
 
             <View style={{paddingBottom:HEIGHT/40,flexDirection:'row' ,justifyContent:'center'}}>
             <TouchableOpacity style={{paddingTop:20 }} onPress={()=>{onFBLoginOrRegister()}}>
-         <Icon name="facebook-square" size={30} style={{color:'rgba(255, 255, 255, 0.6)'}}/>
+         <FontAwesomeIcon name="facebook-square" size={30} style={{color:'rgba(255, 255, 255, 0.6)'}}/>
          </TouchableOpacity>
          
             </View>

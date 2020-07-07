@@ -714,6 +714,104 @@ var {width, height}=Dimensions.get('window')
             }} >
               <Text>Delete</Text>
             </MenuOption>
+            {
+              this.props.isAdmin && 
+              <MenuOption onSelect={async() => {
+                Alert.alert(  
+                  'Do you want to add this podcast to Explore Section - I?',  
+                  '',  
+                  [  
+                      {  
+                          text: 'Cancel',  
+                          onPress: () => console.log('Cancel Pressed'),  
+                          style: 'cancel',  
+                      },  
+                      {text: 'OK', onPress: async() => {
+                if(this.props.podcast.isChapterPodcast == false)
+                {
+                  firestore().collection("books").doc(this.props.podcast.bookID).collection("podcasts")
+                        .doc(this.props.podcast.podcastID).set({
+                          isExploreSection1 : true,
+                          lastAddedToExplore1 : moment().format()
+                        },{merge:true}).then(function() {
+                        console.log("Book Podcast Document successfully added to Explore Section I. ");
+                        Toast.show("Added to Explore Section-I");
+                      }).catch(function(error) {
+                    console.error("Error removing document: ", error);
+                  });
+                }
+                else
+                {
+                  firestore().collection("books").doc(this.props.podcast.bookID).collection("chapters")
+                    .doc(this.props.podcast.chapterID).collection("podcasts").doc(this.props.podcast.podcastID)
+                      .set({
+                          isExploreSection1 : true,
+                          lastAddedToExplore1 : moment().format()
+                      },{merge:true}).then(function() {
+                        console.log("Chapter Podcast Document successfully added to Explore Section I. ");
+                        Toast.show("Added to Explore Section-I");
+                      }).catch(function(error) {
+                    console.error("Error removing document: ", error);
+                  });
+                }
+                console.log('OK Pressed')
+                  }},  
+                ]  
+              ); 
+                 
+              }} text="Add To Explore Section - I"/>
+            }
+            
+
+            {
+              this.props.isAdmin &&
+              <MenuOption onSelect={async() => {
+              Alert.alert(  
+                'Do you want to add this podcast to Explore Section - II?',  
+                '',  
+                [  
+                    {  
+                        text: 'Cancel',  
+                        onPress: () => console.log('Cancel Pressed'),  
+                        style: 'cancel',  
+                    },  
+                    {text: 'OK', onPress: async() => {
+              if(this.props.podcast.isChapterPodcast == false)
+              {
+                firestore().collection("books").doc(this.props.podcast.bookID).collection("podcasts")
+                      .doc(this.props.podcast.podcastID).set({
+                        isExploreSection2 : true,
+                        lastAddedToExplore2 : moment().format()
+                      },{merge:true}).then(function() {
+                      console.log("Book Podcast Document successfully added to Explore Section II. ");
+                      Toast.show("Added to Explore Section-II");
+                    }).catch(function(error) {
+                  console.error("Error removing document: ", error);
+                });
+              }
+              else
+              {
+                firestore().collection("books").doc(this.props.podcast.bookID).collection("chapters")
+                  .doc(this.props.podcast.chapterID).collection("podcasts").doc(this.props.podcast.podcastID)
+                    .set({
+                        isExploreSection2 : true,
+                        lastAddedToExplore2 : moment().format()
+                    },{merge:true}).then(function() {
+                      console.log("Chapter Podcast Document successfully added to Explore Section II. ");
+                      Toast.show("Added to Explore Section-II");
+                    }).catch(function(error) {
+                  console.error("Error removing document: ", error);
+                });
+              }
+              console.log('OK Pressed')
+                }},  
+              ]  
+            ); 
+               
+            }} text="Add To Explore Section - II"/>
+            }
+            
+
             {/* <MenuOption onSelect={() => alert(`Not called`)} disabled={true} text='Disabled' /> */}
             </MenuOptions>
             </Menu>

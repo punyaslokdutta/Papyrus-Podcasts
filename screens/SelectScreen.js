@@ -156,7 +156,7 @@ const SelectScreen = (props)=> {
           <TouchableOpacity onPress={()=>{
             dispatch({type:"SET_EXPLORE_SCREEN_AS_PREVIOUS_SCREEN", payload:false})
             dispatch({type:"SET_FROM_SEARCH_CHAPTER_SCREEN",payload:false});
-            props.navigation.navigate('SearchTabNavigator',{fromExplore:false})
+            props.navigation.navigate('SearchBookChapterTabNavigator',{fromExplore:false})
             }}>
         <View style={{flexDirection:'row',height:height/20,borderRadius:20, backgroundColor: 'white', paddingVertical:height/100, width:width*6/8}}>
         
@@ -215,7 +215,7 @@ const SelectScreen = (props)=> {
              <TouchableOpacity onPress={()=>{
               dispatch({type:"SET_EXPLORE_SCREEN_AS_PREVIOUS_SCREEN", payload:false})
               dispatch({type:"SET_FROM_SEARCH_CHAPTER_SCREEN",payload:false});
-              props.navigation.navigate('SearchTabNavigator',{fromExplore:false})
+              props.navigation.navigate('SearchBookChapterTabNavigator',{fromExplore:false})
               }}>
              <View style={{flexDirection:'row',width:width*9/16,borderColor:'white',paddingRight:width/15,height:height*2/13 + 3}}>
              <View style={{flexDirection:'row',width:width*9/32 ,borderColor:'white',borderWidth:2,paddingRight:width/15,height:height*2/13 + 3}}>
