@@ -105,7 +105,7 @@ const SearchChapterScreen=(props)=>
             }).then(({hits})=>
             {
 
-                (chapters != undefined) && (chapters.length != 0) && (hits.length != 0) && 
+                (chapters !== undefined) && (chapters !== null) (chapters.length != 0) && (hits.length != 0) && 
                      setChapters([...chapters,...hits]);
                 setRefreshing(false);
                 console.log(hits);
@@ -214,7 +214,7 @@ const SearchChapterScreen=(props)=>
       }
       else
       {
-        if(chapters.length == 0)
+        if(chapters === null || chapters === undefined || chapters.length == 0)
         {
           return (
             <LottieView style={{

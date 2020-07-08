@@ -23,6 +23,7 @@ import { createIconSetFromFontello } from 'react-native-vector-icons';
 import SearchBookItem from './SearchBookItem';
 import { ScrollView } from 'react-native-gesture-handler';
 import { FirebaseStorageTypes } from '@react-native-firebase/storage';
+import LinearGradient from 'react-native-linear-gradient';
 
 const options = {
   title: 'Select Podcast Cover',
@@ -170,9 +171,12 @@ const SearchBookScreen=(props)=>
                   <View style={[styles.seperator]} />
               
                 <View style={{alignItems:'center'}}>
-                  <Text>{"\n"}Couldn't find your book?  </Text>
-                  <TouchableOpacity onPress={() => {refRBSheet.current.open()
+                  <Text style={{fontFamily:'Montserrat-Medium',color:'gray',paddingBottom:10}}>{"\n"}Couldn't find your book ?</Text>
+                  <LinearGradient style={{borderRadius:5}} colors={['transparent','rgb(218,165,32)']}>
+
+                  <TouchableOpacity style={{borderRadius:5,height:40,width:width*5/12,marginTop:0,alignItems:'center',justifyContent:'center'}} onPress={() => {refRBSheet.current.open()
                                                     }}>
+                                 
                   <RBSheet
                     ref={refRBSheet}
                     animationType={"slide"}
@@ -181,7 +185,7 @@ const SearchBookScreen=(props)=>
                     duration={50}
                     customStyles={{
                       container:{
-                        backgroundColor: "#dddd",
+                        backgroundColor: "black",
                         height:(height*5)/8,
                         borderRadius:40
                       },
@@ -196,8 +200,10 @@ const SearchBookScreen=(props)=>
                  <AddBook refRb ={refRBSheet.current}/>
                  </RBSheet>
                       
-                  <Text style={{textDecorationLine: 'underline',color:'rgb(218,165,32)'}}>Click Here to add book</Text>
+                  <Text style={{fontFamily:'Caudex-Bold', color:'black'}}>Click Here to add book</Text>
                   </TouchableOpacity>
+                  </LinearGradient>
+
                   </View>
                   </View>
               );

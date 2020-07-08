@@ -454,7 +454,7 @@ var {width, height}=Dimensions.get('window')
             {moment(this.props.podcast.bookmarkedOn).fromNow()}
             </Text>
             </View>     */}
-             <TouchableNativeFeedback onPress={() => {
+             <TouchableNativeFeedback style={[styles.shadow]} onPress={() => {
         if(this.props.podcastRedux!=null && this.props.podcastRedux.podcastID == this.props.podcast.podcastID)
         {
           if(this.props.pausedRedux)
@@ -547,7 +547,7 @@ var {width, height}=Dimensions.get('window')
 
             <View style={[styles.flex, styles.column, styles.shadow, { width:(width*2)/3,paddingLeft:theme.sizes.padding/2, paddingTop: 0 }]}>
                 <View style={{height:(height)/24,marginBottom:0}}>
-                <Text style={{ fontSize: theme.sizes.font * 1.0, fontFamily:'Montserrat-Bold' }}>{this.props.podcast.podcastName.slice(0,50)}
+                <Text style={{ fontSize: theme.sizes.font * 1.2, fontFamily:'Montserrat-SemiBold' }}>{this.props.podcast.podcastName.slice(0,50)}
                     {(this.props.podcast.podcastName.length > 50) ? ".." : ""}</Text> 
             
             </View>
@@ -929,7 +929,7 @@ const styles = StyleSheet.create({
     shadow: {
       shadowColor: theme.colors.gray_green,
       shadowOffset: {
-        width: 0,
+        width: 5,
         height: 6,
       },
       shadowOpacity: 0.05,

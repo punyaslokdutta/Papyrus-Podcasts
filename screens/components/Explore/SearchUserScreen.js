@@ -72,7 +72,7 @@ const SearchUserScreen=(props)=>
             }).then(({hits})=>
             {
 
-                (users != undefined) && (users.length != 0) && (hits.length != 0) && 
+                (users != undefined) && (users!==null) && (users.length != 0) && (hits.length != 0) && 
                 setUsers([...users,...hits]);
                 setRefreshing(false);
                 console.log(hits);
@@ -132,7 +132,7 @@ const SearchUserScreen=(props)=>
       }
       else
       {
-        if(users.length == 0)
+        if(users === null || users === undefined || users.length == 0)
         {
           return (
               <LottieView style={{

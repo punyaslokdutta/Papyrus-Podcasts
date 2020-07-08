@@ -4,7 +4,7 @@ const algoliasearch=require('algoliasearch');
 const algoliaRecords = [];
 
 const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
-const collectionIndexName='dev_users';
+const collectionIndexName='prod_users';
 const collectionIndex = algoliaClient.initIndex(collectionIndexName);
 
 exports.AddToUsersIndex = functions.region("asia-northeast1").https.onCall(async(data, context) => {

@@ -192,12 +192,12 @@ const BookItem = React.memo((props) => {
               <View style={{flexDirection:'column'}}>
               
               <ImageBackground
-            style={{height:height/4,width:width/3}}
-            imageStyle={{ borderRadius: theme.sizes.radius }}
+            style={{height:height/4,width:width/3,borderRightWidth:1}}
+            imageStyle={{ borderBottomLeftRadius:10,borderTopLeftRadius:10 }}
             source={{ uri: props.item.bookPictures['0'] }}
           >
             <LinearGradient  colors={['transparent','transparent','transparent','transparent','transparent','transparent','transparent','transparent','transparent','black','black']} >
-            <View style={{height:height/4,width:width/3 }}>
+            <View style={{height:height/3,width:width/3 }}>
        <Text style={{color:'white',position:'absolute',fontFamily:'Montserrat-Bold',bottom:2,left:3,right:4,fontSize:13}}>
        {"  "}{props.item.bookName.slice(0,35)}   
         {

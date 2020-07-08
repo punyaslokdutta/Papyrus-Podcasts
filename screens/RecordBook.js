@@ -227,6 +227,15 @@ const RecordBook = (props) => {
             <View style={{flexDirection:'row'}}>
               <View>
             <Text style={styles.title}>{article.bookName}</Text>
+            <Text> 
+                {
+                  article.authors.map(item => (
+                    <Text style={{fontFamily:'Andika-R',fontSize:15}}>
+                    {item}
+                    </Text>
+                   ))
+                } 
+                </Text>
             <View style={[
               styles.row,
               { alignItems: 'center', marginVertical: theme.sizes.margin / 2, flexDirection:'row' }
@@ -272,32 +281,15 @@ const RecordBook = (props) => {
             </View>
             </View> 
 
-            <Card style={{borderRadius: 10 ,width:((width*4)/5 ), paddingTop :5}}>
-              <CardItem>
+            <View style={{borderRadius: 10 ,width:((width*4)/5 ), paddingTop :5}}>
             <View>
               <Text style={{fontSize:20, paddingBottom:10, fontFamily:'Montserrat-SemiBold'}}>Description</Text>
-              <Text style={{fontFamily:'Montserrat-Regular',fontSize:15}}>
+              <Text style={{fontFamily:'Benne-Regular',fontSize:19,lineHeight:30}}>
                 {article.bookDescription}
               </Text>
             </View>
-            </CardItem>
-            </Card>
-            <Card style={{borderRadius: 10 ,width:((width*4)/5 ), paddingTop :5}}>
-              <CardItem>
-            <View>
-              <Text style={{fontSize:20, paddingBottom:10, fontFamily:'Montserrat-SemiBold'}}>Author(s)</Text>
-                {
-                  article.authors.map(item => (
-                    <Text style={{fontFamily:'Montserrat-Regular',fontSize:15}}>
-                    {item}
-                    </Text>
-                   ))
-                }
-                
-              
             </View>
-            </CardItem>
-            </Card>
+            
           </View>
         </View>
       </View>
@@ -419,7 +411,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: theme.sizes.font * 2,
-    fontFamily:'Montserrat-SemiBold'
+    fontFamily:'HeadlandOne-Regular'
   },
   description: {
     fontSize: theme.sizes.font * 1.2,

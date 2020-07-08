@@ -1,12 +1,12 @@
 const functions         = require('firebase-functions');
 const admin=require('firebase-admin');
 const algoliasearch=require('algoliasearch');
-const serviceAccount = require('./serviceAccount.json');//this one
+const serviceAccount = require('./serviceAccountProduction.json');//this one
 
 const algoliaRecords = [];
 
 const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
-const collectionIndexName='dev_users';
+const collectionIndexName='prod_users';
 const collectionIndex = algoliaClient.initIndex(collectionIndexName);
 
  admin.initializeApp({

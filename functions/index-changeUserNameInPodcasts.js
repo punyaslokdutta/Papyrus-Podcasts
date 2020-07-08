@@ -1,8 +1,13 @@
 const functions         = require('firebase-functions');
 const admin=require('firebase-admin');
 const algoliasearch=require('algoliasearch');
-//const serviceAccount = require('./serviceAccount.json');//this one
+const serviceAccount = require('./serviceAccountProduction.json');//this one
 
+const algoliaRecords = [];
+
+const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
+const collectionIndexName='prod_users';
+const collectionIndex = algoliaClient.initIndex(collectionIndexName);
 
  admin.initializeApp({
    credential: admin.credential.cert(serviceAccount)//not required for uploading json to firestore
@@ -14,8 +19,17 @@ exports.changeUserNameInPodcastsAsiaEast = functions.region("asia-northeast1").h
  const uid = context.auth.uid;
  console.log("User ID: ",uid);
  console.log("data variable: ",data);
-
  
+ const objects = [{
+  name: nameSetInSettingsScreen,
+  objectID: uid
+}];
+
+collectionIndex.partialUpdateObjects(objects).then(({ objectIDs }) => {
+  console.log(objectIDs);
+  return true;
+}).catch(err => console.log(err));
+
  
  const db = admin.firestore();
  db.collectionGroup('podcasts').where('podcasterID','==',uid).get().then(response => {

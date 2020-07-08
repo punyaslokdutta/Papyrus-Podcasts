@@ -87,7 +87,7 @@ const { width, height } = Dimensions.get("window");
             ))}
           </Block>
           </ScrollView>
-          <Text style={{color:'white',fontFamily:'Montserrat-Regular'}} light height={22}>
+          <Text style={{color:'white',fontFamily:'Benne-Regular',fontSize:19,lineHeight:30}} light>
             {podcast[0].podcastDescription}
           </Text>
 

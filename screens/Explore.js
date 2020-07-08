@@ -494,6 +494,7 @@ const Explore = (props) => {
              {renderSectionStoryTellers()}
             <View style={{marginVertical:20,borderBottomColor:'#d1d0d4',borderBottomWidth:1}}/> 
             {renderSection2PodcastsII()}
+            <View style={{height:20}}/>
              <BookList navigation={props.navigation} books={recordBooks}/>
                  
               </ScrollView>

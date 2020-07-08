@@ -9,6 +9,8 @@ import storage, { firebase } from '@react-native-firebase/storage'
 import firestore from '@react-native-firebase/firestore';
 import Toast from 'react-native-simple-toast';
 import moment from 'moment';
+import LinearGradient from 'react-native-linear-gradient';
+
 
 const options = {
     title: 'Select Podcast Cover',
@@ -148,7 +150,9 @@ const AddBook=(props)=>{
 
 
   return(
-    <SafeAreaView style={{flex:1,backgroundColor:'#dddd', alignItems:'center'}}>
+    <SafeAreaView style={{flex:1,backgroundColor:'black', alignItems:'center'}}>
+    <LinearGradient style={{borderRadius:5}} colors={['transparent','#9c9a86','#cccaa9','rgb(218,165,32)']}>
+
           <ScrollView>
            <View style={{ alignItems: 'center' , paddingTop:0}}>
        <View style={{ paddingTop: 10, flexDirection: 'column' , paddingBottom:20}}>
@@ -272,6 +276,7 @@ const AddBook=(props)=>{
              
              </View> 
 </ScrollView>
+</LinearGradient>
          </SafeAreaView>)
   
   }

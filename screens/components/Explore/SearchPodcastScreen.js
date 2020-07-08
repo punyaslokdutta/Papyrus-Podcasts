@@ -78,7 +78,7 @@ const SearchPodcastScreen=(props)=>
             }).then(({hits})=>
             {
 
-                (podcasts != undefined) && (podcasts.length != 0) && (hits.length != 0) && 
+                (podcasts != undefined) && (podcasts !== null) && (podcasts.length != 0) && (hits.length != 0) && 
                 setPodcasts([...podcasts,...hits]);
                 setRefreshing(false);
                 console.log(hits);
@@ -138,7 +138,7 @@ const SearchPodcastScreen=(props)=>
       }
       else
       {
-        if(podcasts.length == 0)
+        if(podcasts === null || podcasts === undefined ||podcasts.length == 0)
         {
           return (
               <LottieView style={{
