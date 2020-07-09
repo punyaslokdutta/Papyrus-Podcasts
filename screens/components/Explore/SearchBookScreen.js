@@ -48,8 +48,10 @@ const SearchBookScreen=(props)=>
       algoliaAPPID,
       algoliaAPIKey
     );
+
     const index = searchClient.initIndex('prod_books');
-    
+    //const index = searchClient.initIndex('prod_books');
+
     const fromSearchChapterScreen = useSelector(state=>state.userReducer.fromSearchChapterScreen)
     console.log("FROM_SEARCH_CHAPTER_SCREEN : ",fromSearchChapterScreen)
 
@@ -185,9 +187,10 @@ const SearchBookScreen=(props)=>
                     duration={50}
                     customStyles={{
                       container:{
-                        backgroundColor: "black",
+                        backgroundColor: 'rgb(218,165,32)',
                         height:(height*5)/8,
-                        borderRadius:40
+                        borderTopLeftRadius : 40,
+                        borderTopRightRadius : 40
                       },
                       wrapper: {
                         backgroundColor: "transparent"

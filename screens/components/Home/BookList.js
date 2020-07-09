@@ -44,7 +44,7 @@ class BookList extends Component {
         <Pagination
           dotsLength={this.props.books.length}
           activeDotIndex={activeSlide}
-          containerStyle={{ backgroundColor: 'white' }}
+          //containerStyle={{ backgroundColor: 'white' }}
           dotStyle={{
               width: 8,
               height: 8,

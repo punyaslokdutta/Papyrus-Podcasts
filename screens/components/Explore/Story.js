@@ -89,7 +89,8 @@ const styles = StyleSheet.create({
 username: {
     alignSelf: 'center',
     fontWeight: '200',
-    fontFamily: 'Montserrat-Regular',
+    fontSize: 15,
+    fontFamily: 'Andika-R',
     paddingBottom:10
 },
 shadow: {

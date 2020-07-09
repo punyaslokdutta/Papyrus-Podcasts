@@ -31,7 +31,7 @@ var {width, height}=Dimensions.get('window')
 
  class Podcast extends React.Component {
    // if(createdOn === null)
-  //   createdOn = props.podcast.createdOn.slice(0,10);
+  //    createdOn = props.podcast.createdOn.slice(0,10);
     constructor(props)
     {
      super(props)
@@ -58,7 +58,7 @@ var {width, height}=Dimensions.get('window')
       console.log("In componentDidMount");
     }
 
-  componentDidUpdate =(prevProps)=>{ 
+  componentDidUpdate =(prevProps)=> { 
       
       if(this.props.podcastRedux && this.props.podcastRedux.podcastID == this.props.podcast.podcastID) 
       {
@@ -238,6 +238,7 @@ var {width, height}=Dimensions.get('window')
        podcastID : this.props.podcast.podcastID, 
        podcastName : this.props.podcast.podcastName,
        podcastPictures : picturesArray,
+       podcastDescription : this.props.podcast.podcastDescription,
        podcasterName : this.props.podcast.podcasterName,
        podcasterID : this.props.podcast.podcasterID,
        createdOn : this.props.podcast.createdOn,
@@ -446,7 +447,7 @@ var {width, height}=Dimensions.get('window')
       return (
        
           
-           <View>
+           <View style={{backgroundColor:'white'}}>
          
             {/* <View style={{flexDirection:'row',alignItems:'flex-end',justifyContent:'flex-end'}}>
             <EvilIcon name='retweet' size={20} color='black'/>
@@ -567,7 +568,7 @@ var {width, height}=Dimensions.get('window')
                 <Image source={{uri:this.props.podcast.podcasterDisplayPicture}} style={{height:20,width:20,borderRadius:20}}/>  
                 </View>
                 <View>
-                <Text style={{ fontFamily:'Montserrat-Bold',fontSize:theme.sizes.font * 0.8,color: theme.colors.gray_green,paddingLeft:5 }}>
+                <Text style={{ fontFamily:'Montserrat-SemiBold',fontSize:theme.sizes.font * 0.8,color: theme.colors.gray_green,paddingLeft:5 }}>
                     {this.props.podcast.podcasterName}
                 </Text>
                 </View>
@@ -588,6 +589,13 @@ var {width, height}=Dimensions.get('window')
           this.props.podcast.podcastDescription !== null &&
 
           this.props.podcast.podcastDescription.slice(0, 200)
+        }
+        {
+          this.props.podcast.podcastDescription !== undefined && 
+          this.props.podcast.podcastDescription !== null &&
+
+          this.props.podcast.podcastDescription.length > 200 &&
+          "..."
         }
         </Text>
         </View>

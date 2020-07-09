@@ -14,6 +14,7 @@ import TrendingPodcastsCarousel from './components/Explore/TrendingPodcastsCarou
 import ShortStoriesCarousel from './components/Explore/ShortStoriesCarousel';
 import ExploreAnimation from './components/Explore/ExploreAnimation';
 import StoryTellerCarousel from './components/Explore/StoryTellerCarousel';
+import MusicCarousel from './components/Explore/MusicCarousel';
 import ClassicPoemsCarousel from './components/Explore/ClassicPoemsCarousel';
 import SplashScreen from 'react-native-splash-screen';
 import BookList from './components/Home/BookList';
@@ -37,6 +38,7 @@ const Explore = (props) => {
   var [section1Podcasts,setSection1Podcasts] = useState([]);
   var [section2Podcasts,setSection2Podcasts] = useState([]);
   var [recordBooks,setRecordBooks] = useState([]);
+  var [music,setMusic] = useState([]);
   var [chapters,setChapters] = useState([]);
   var [loading,setLoading] = useState(false);
   var [sections,setSections] = useState([]);
@@ -122,15 +124,25 @@ const Explore = (props) => {
       console.log(error)
     }
 
-    // Classic Novels
+    // // Classic Novels
+    // try{
+    //   let chapterQuery = await firestore().collectionGroup('podcasts').where('isClassicNovel','==',true).get();
+    //   let documentChapters = chapterQuery.docs.map(document => document.data());
+    //   setChapters(documentChapters);
+    // }
+    // catch(error){
+    //   console.log(error)
+    // }
+
     try{
-      let chapterQuery = await firestore().collectionGroup('podcasts').where('isClassicNovel','==',true).get();
-      let documentChapters = chapterQuery.docs.map(document => document.data());
-      setChapters(documentChapters);
+      let musicQuery = await firestore().collection('music').orderBy('createdOn').get();
+      let documentMusic = musicQuery.docs.map(document => document.data());
+      setMusic(documentMusic);
     }
     catch(error){
       console.log(error)
     }
+    
     setLoading(false);
   }
 
@@ -254,6 +266,16 @@ const Explore = (props) => {
       )
     }
 
+    function renderSectionMusic()
+    {
+      return (
+        <View style={{width:width,paddingTop:height/50}}>
+          <MusicCarousel data={music} navigation={props.navigation}/>
+          </View>
+      )
+    }
+
+
     function renderPodcasts()
     {
        return section1Podcasts.map((item, index)=>
@@ -303,7 +325,7 @@ const Explore = (props) => {
 
     function renderSection2PodcastsI()
     {
-      return section2Podcasts.slice(0,5).map((item, index)=>
+      return section2Podcasts.slice(0,4).map((item, index)=>
       {
         return(<Podcast podcast={item} key ={item.podcastID} navigation={props.navigation}/>)
       })
@@ -311,11 +333,20 @@ const Explore = (props) => {
 
     function renderSection2PodcastsII()
     {
-      return section2Podcasts.slice(5,10).map((item, index)=>
+      return section2Podcasts.slice(4,8).map((item, index)=>
       {
         return(<Podcast podcast={item} key ={item.podcastID} navigation={props.navigation}/>)
       })
     }
+
+    function renderSection2PodcastsIII()
+    {
+      return section2Podcasts.slice(8,10).map((item, index)=>
+      {
+        return(<Podcast podcast={item} key ={item.podcastID} navigation={props.navigation}/>)
+      })
+    }
+    
  
     function renderMainHeader() 
     {
@@ -486,17 +517,26 @@ const Explore = (props) => {
           
           </View>
           </View>
-          <View style={{height:20}}/>
-          
+
+            <View style={{backgroundColor:'#e1e6e1'}}>
+            <View style={{height:15}}/>
+
              {renderSection1Podcasts()}
-             <View style={{marginVertical:20,borderBottomColor:'#d1d0d4',borderBottomWidth:1}}/> 
+             <View style={{marginTop:20,borderBottomColor:'#d1d0d4',borderBottomWidth:1}}/> 
              {renderSection2PodcastsI()}
+             <Text style={{fontSize:23,marginTop:10, color:'black',fontFamily:'HeadlandOne-Regular'}}> Top Podcasters </Text>
              {renderSectionStoryTellers()}
-            <View style={{marginVertical:20,borderBottomColor:'#d1d0d4',borderBottomWidth:1}}/> 
+            <View style={{marginTop:20,borderBottomColor:'#d1d0d4',borderBottomWidth:1}}/> 
             {renderSection2PodcastsII()}
-            <View style={{height:20}}/>
+            <View style={{height:15}}/>
+            <Text style={{fontSize:23,marginBottom:10, color:'black',fontFamily:'HeadlandOne-Regular'}}> Popular Books </Text>
              <BookList navigation={props.navigation} books={recordBooks}/>
-                 
+             {renderSection2PodcastsIII()}
+             <View style={{height:15}}/>
+             <Text style={{fontSize:23,marginBottom:10, color:'black',fontFamily:'HeadlandOne-Regular'}}> Relaxing Music </Text>
+             {renderSectionMusic()}
+             <View style={{height:30}}/>
+             </View>
               </ScrollView>
           </SafeAreaView>
         )

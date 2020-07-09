@@ -151,7 +151,8 @@ const AddBook=(props)=>{
 
   return(
     <SafeAreaView style={{flex:1,backgroundColor:'black', alignItems:'center'}}>
-    <LinearGradient style={{borderRadius:5}} colors={['transparent','#9c9a86','#cccaa9','rgb(218,165,32)']}>
+    {/* <LinearGradient style={{borderRadius:5}} colors={['transparent','#9c9a86','#cccaa9','rgb(218,165,32)']}> */}
+    <LinearGradient style={{borderRadius:5}} colors={['rgb(218,165,32)','#cccaa9','#9c9a86','transparent']}>
 
           <ScrollView>
            <View style={{ alignItems: 'center' , paddingTop:0}}>
@@ -173,15 +174,17 @@ const AddBook=(props)=>{
      </View>
            <View  style={{
                        paddingTop: 0,
-                       paddingBottom: 10,
-                       paddingLeft: width/7,
-                       paddingRight:width/7
+                       paddingBottom: 0,
+                       alignItems:'center',
+                       marginHorizontal : width/8 
                    }} >
            <TextInput
                   style={styles.TextInputStyleClass2}
                   value={bookNameState}        
                   onChangeText={(text) => {setBookNameState(text)} }
                   placeholder="Book"
+                  numberOfLines={1}
+                  multiline={false}
                   onBlur={() => {
                     setBookNameState(bookNameState.trim());
                     if(bookNameState != null && bookNameState.length < 1)
@@ -305,7 +308,8 @@ const styles = StyleSheet.create({
       backgroundColor: 'grey'
     }, 
     tagText: {
-      color: 'black'
+      color: 'black',
+      fontFamily: 'Andika-R'
     },
     seperator: {
       borderBottomColor: '#d1d0d4',
@@ -314,18 +318,19 @@ const styles = StyleSheet.create({
     TextInputStyleClass2: {
   
       //textAlign: 'center',
-      fontFamily: 'san-serif-light',
-      fontStyle: 'italic',
+      fontFamily: 'Andika-R',
+      fontSize: 15,
+      //fontStyle: 'italic',
       color: 'black',
       borderWidth: 1,
       borderColor: '#9E9E9E',
-      borderRadius: 0,
+      borderRadius: 5,
       backgroundColor: "white",
       width: (width * 3) / 4,
       //paddingTop: 15,
       paddingLeft: 10,
       height: height / 18,
-      paddingRight: 10,
+      //paddingRight: 10,
   
     }
    });

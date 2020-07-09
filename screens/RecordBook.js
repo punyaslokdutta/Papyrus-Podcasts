@@ -283,7 +283,7 @@ const RecordBook = (props) => {
 
             <View style={{borderRadius: 10 ,width:((width*4)/5 ), paddingTop :5}}>
             <View>
-              <Text style={{fontSize:20, paddingBottom:10, fontFamily:'Montserrat-SemiBold'}}>Description</Text>
+              {/* <Text style={{fontSize:20, paddingBottom:10, fontFamily:'Montserrat-SemiBold'}}>Description</Text> */}
               <Text style={{fontFamily:'Benne-Regular',fontSize:19,lineHeight:30}}>
                 {article.bookDescription}
               </Text>

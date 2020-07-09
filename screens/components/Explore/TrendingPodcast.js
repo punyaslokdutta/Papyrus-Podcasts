@@ -59,7 +59,7 @@ const TrendingPodcast= React.memo((props)=> {
   }
 
     return (
-      <TouchableNativeFeedback style={[styles.shadow,{height:height/3, borderWidth:0, borderColor:'black',borderRadius:0}]} onPress={(()=>
+      <TouchableNativeFeedback style={[styles.shadow,{height:height/3, borderWidth:0, borderColor:'black',backgroundColor:'white', borderRadius:0}]} onPress={(()=>
         {
           if(props.isBookmark == true)
             {

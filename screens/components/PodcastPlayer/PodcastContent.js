@@ -92,12 +92,13 @@ function getRandomNumber(min,max) {
 
   const heartsStore = useSelector(state=>state.rootReducer.hearts);
   const [hearts,setHearts] = useState([]);
-  const podcastName = props.podcast.podcastName;
+  var podcastName = props.podcast.podcastName;
+
+  
   var podcastDescription = props.podcast.podcastDescription;
   if(podcastDescription === undefined || podcastDescription === null)
     podcastDescription = "";
-
-
+  
   async function buildDynamicURL() {
     const link = await dynamicLinks().buildShortLink({
       //link: 'https://newpodcast.com/' + props.podcast.podcastID,
@@ -156,6 +157,7 @@ function getRandomNumber(min,max) {
          TrackPlayer.CAPABILITY_STOP
        ]
     });
+    
     await TrackPlayer.add({
       id: "local-track",
       url: props.podcast.audioFileLink,
@@ -164,6 +166,7 @@ function getRandomNumber(min,max) {
       artwork: props.podcast.podcastPictures[0],
       duration: props.podcast.duration
     });
+    
     await TrackPlayer.play();
   }
   
@@ -408,6 +411,7 @@ async function addToBookmarks() {
     podcastID : props.podcast.podcastID, 
     podcastName : props.podcast.podcastName,
     podcastPictures : picturesArray,
+    podcastDescription : this.props.podcast.podcastDescription,
     podcasterName : props.podcast.podcasterName,
     podcasterID : props.podcast.podcasterID,
     createdOn : props.podcast.createdOn,
@@ -595,7 +599,7 @@ async function updatePodcastsLiked(props){
 
                 </TouchableOpacity> */}
                        
-        <Text style={[styles.textDark, {paddingTop:10,fontSize: 24,fontFamily:'Montserrat-Bold' }]}>
+        <Text style={[styles.textDark, {paddingTop:10,fontSize: 28,fontFamily:'MilkMustacheBB-Bold' }]}>
           {podcastName}{"    "}
           </Text>
     
@@ -607,7 +611,7 @@ async function updatePodcastsLiked(props){
                         }}>
                       <View style={{flexDirection:'row', marginTop: 2}}>
                         <Image source={{uri:props.podcast.podcasterDisplayPicture}} style={{height:height/20,width:height/20,borderRadius:30}}/>
-                        <Text style={[styles.text, { fontFamily:'Montserrat-Bold',fontSize: 18, marginTop: 5,marginLeft:7}]}>{props.podcast.podcasterName}</Text>
+                        <Text style={[styles.text, { fontFamily:'Montserrat-SemiBold',fontSize: 18, marginTop: 5,marginLeft:7}]}>{props.podcast.podcasterName}</Text>
                         </View>
                     </TouchableNativeFeedback>
                     </View>
@@ -619,8 +623,8 @@ async function updatePodcastsLiked(props){
                   parentSlideDown()
                   props.navigation.navigate('InfoScreen', {podcast:props.podcast})
                   }}>
-                      <Text style={{fontFamily:'Montserrat-Regular',fontSize:12,color:'white',}}>{podcastDescription.slice(0,300)}</Text>
-                      <Text style={[styles.text,{fontFamily:'Montserrat-Regular'}]}>{podcastDescription.length > 300 && "...Read More"}</Text>
+                      <Text style={{fontFamily:'HeadlandOne-Regular',fontSize:12,color:'white',}}>{podcastDescription.slice(0,300)}</Text>
+                      <Text style={[styles.text,{fontFamily:'HeadlandOne-Regular'}]}>{podcastDescription.length > 300 && "...Read More"}</Text>
                   </TouchableNativeFeedback>
                 }
                 <View style={{justifyContent:'flex-end'}}>

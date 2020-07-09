@@ -12,6 +12,7 @@ import ImageResizer from 'react-native-image-resizer';
 import * as Progress from 'react-native-progress';
 import Toast from 'react-native-simple-toast';
 import moment from 'moment';
+import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
 
 
 const { width, height } = Dimensions.get('window');
@@ -77,6 +78,9 @@ const PreviewScreen = (props) => {
 
   console.log("PREVIEW SCREEN")
 
+  useEffect(() => {
+    setup();
+  },[])
   useEffect(() => { 
 
     if(podcastAudioDownloadURL !== null)
@@ -193,6 +197,31 @@ const PreviewScreen = (props) => {
               
   },[podcastAudioDownloadURL])
 
+  async function setup() {
+    await TrackPlayer.setupPlayer({});
+    await TrackPlayer.updateOptions({
+      stopWithApp: true,
+      capabilities: [
+        TrackPlayer.CAPABILITY_PLAY,
+        TrackPlayer.CAPABILITY_PAUSE
+      ],
+      compactCapabilities: [
+        TrackPlayer.CAPABILITY_PLAY,
+        TrackPlayer.CAPABILITY_PAUSE
+      ],
+      alwaysPauseOnInterruption: true
+    });
+
+    await TrackPlayer.add({
+      id: "local-track",
+      url: recordedFilePath,
+      title: "cfdvdfvc",
+      artist: userName,
+      artwork: "dsccdcds",
+      duration: duration
+    });
+    //await TrackPlayer.play();
+  }
 
   async function indexEditedPodcast(){
     
@@ -548,15 +577,15 @@ const PreviewScreen = (props) => {
 
   return (
     
-    <ScrollView style={{ flex: 1, backgroundColor: '#101010' }}>
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#101010' }}>
+    <ScrollView style={{ flex: 1, backgroundColor: 'white' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
     
      <View>
       <View style={styles.AppHeader}>
         <TouchableOpacity onPress={() => props.navigation.goBack(null)}>
           <View style={{ paddingLeft: width / 12, paddingVertical: height / 20, flexDirection: 'row' }}>
-          <Icon name="arrow-left" size={20} style={{color:'white'}}/>
-  <Text style={{ fontFamily: 'san-serif-light', color: 'white', paddingLeft: (width * 7) / 35, fontSize: 20 }}>{previewHeaderText}</Text>
+          <Icon name="arrow-left" size={20} style={{color:'black'}}/>
+  <Text style={{ fontFamily: 'san-serif-light', color: 'black', paddingLeft: (width * 7) / 35, fontSize: 20 }}>{previewHeaderText}</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -564,13 +593,17 @@ const PreviewScreen = (props) => {
       <View style={{ alignItems: 'center' }}>
         <View style={{ paddingVertical: height / 50, flexDirection: 'column' , paddingBottom:width/10}}>
           <TouchableOpacity onPress={uploadImage}>
-          <View style={{ width: height / 6, height: height / 6, borderRadius: 20, borderColor: 'white', borderWidth: 1,justifyContent:'center' }}>
+          <View style={{ borderRadius: 20, borderColor: 'white', borderWidth: 0,justifyContent:'center' }}>
             {
               loadingPodcastImage == true
               ?
+              <View style={{width: (width * 3) / 4,
+                height: (width * 3) / 4, borderRadius: 20, borderColor: 'white', borderWidth: 1,alignItems:'center',justifyContent:'center' }}>
               <ActivityIndicator size='large' color='rgb(218,165,32)'/>
+              </View>
               :
-              <Image source={{uri:podcastImage}} style={{ width: height / 6, height: height / 6, borderRadius: 20, borderColor: 'white', borderWidth: 1 }}/>
+              <Image source={{uri:podcastImage}} style={{width: (width * 3) / 4,
+                 height: (width * 3) / 4, borderRadius: 20, borderColor: 'white', borderWidth: 1 }}/>
               
             }
           </View>
@@ -580,6 +613,12 @@ const PreviewScreen = (props) => {
      </View>
     
      
+        <TouchableOpacity onPress={async() => {
+          await TrackPlayer.play();
+        }} style={{marginBottom:20,alignItems:'center'}}>
+            <Icon name="play" color="black" size={25} />
+            </TouchableOpacity>
+
       {
         chapterName !== null && chapterName !== undefined &&
         <View style={{ paddingLeft: width / 8, paddingBottom: 10 }}>
@@ -674,11 +713,12 @@ const PreviewScreen = (props) => {
           tags={tags}
           placeholder="tags.." 
           label='Press comma to add a tag'
-         labelStyle={{color: '#fff'}}
+         labelStyle={{color: '#000000'}}
          leftElement={<Icon name={'tag'}  color={'#000000'}/>}
          leftElementContainerStyle={{marginLeft: 3}}
          containerStyle={{width:(width * 3) / 4}}
           inputContainerStyle={[styles.textInput, {backgroundColor: 'white'}]}
+          inputStyle={{fontFamily: 'Andika-R',fontSize:15}}
          tagStyle={styles.tag}
           tagTextStyle={styles.tagText}
           keysForTag={','}
@@ -734,14 +774,14 @@ const PreviewScreen = (props) => {
           else
             uploadPodcast(recordedFilePath);
       }} 
-        style={{ alignItems: 'center', justifyContent: 'center', height: height / 16, width: height / 6, borderRadius: 15, borderColor:rgb(218,165,32), borderWidth: 1, }}
+        style={{ alignItems: 'center', justifyContent: 'center', height: height / 16, width: height / 6, borderRadius: 15,marginBottom:30, borderColor:rgb(218,165,32), borderWidth: 1, }}
         >
           {
             publishLoading == true
             ?
             <ActivityIndicator color='rgb(218,165,32)'/>
             :
-            <Text style={{ alignItems: 'center', fontFamily: 'sans-serif-light', color:rgb(218,165,32),  justifyContent: 'center' }} >Publish</Text>
+            <Text style={{ alignItems: 'center',fontWeight:'800', fontFamily: 'Montserrat-Medium', color:rgb(218,165,32),  justifyContent: 'center',fontSize:20 }} >Publish</Text>
           }
           
         </TouchableOpacity>
@@ -765,7 +805,7 @@ const styles = StyleSheet.create({
   AppHeader:
   {
     flexDirection: 'row',
-    backgroundColor: '#101010'
+    backgroundColor: 'white'
   },
   container: {
     flex: 1,
@@ -802,11 +842,11 @@ const styles = StyleSheet.create({
   TextInputStyleClass: {
 
     //textAlign: 'center',
-    fontFamily: 'san-serif-light',
-    fontStyle: 'italic',
+    fontFamily: 'Andika-R',
+    //fontStyle: 'italic',
     color: 'black',
     height: height / 6,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: '#9E9E9E',
     borderRadius: 10,
     backgroundColor: "white",
@@ -826,10 +866,10 @@ const styles = StyleSheet.create({
   TextInputStyleClass2: {
 
     //textAlign: 'center',
-    fontFamily: 'san-serif-light',
-    fontStyle: 'italic',
+    fontFamily: 'Andika-R',
+    //fontStyle: 'italic',
     color: 'black',
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: '#9E9E9E',
     borderRadius: 10,
     backgroundColor: "white",
@@ -845,17 +885,19 @@ const styles = StyleSheet.create({
   }, 
   textInput: {
     height: 40,
-    borderColor: 'white',
+    borderColor: '#9E9E9E',
     borderWidth: 1,
     marginTop: 8,
     borderRadius: 5,
-    padding: 3,
+    padding: 0,
+    fontFamily: 'Andika-R'
   }, 
   tag: {
     backgroundColor: 'grey'
   }, 
   tagText: {
-    color: 'black'
+    color: 'black',
+    fontFamily: 'Andika-R'
   },
   
 });
