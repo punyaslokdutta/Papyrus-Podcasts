@@ -166,8 +166,7 @@ const SearchBookScreen=(props)=>
           }
           else
           {
-            if(fromExploreScreen == false)
-            {
+            
               return (
                 <View style={{paddingBottom:height/96}}>
                   <View style={[styles.seperator]} />
@@ -210,26 +209,12 @@ const SearchBookScreen=(props)=>
                   </View>
                   </View>
               );
-            }
-            else //if(fromExploreScreen === true)
-            {
-              return (
-                <TouchableOpacity onPress={() =>{
-                  props.navigation.navigate('SelectScreen');
-                }}>
-              
-              <View style={{alignItems:'center'}}>
-              <Text style={{textDecorationLine: 'underline',color:'rgb(218,165,32)'}}>
-                Proceed to Record Screen to {"\n"}add book for your podcast</Text>
-                </View>
-                </TouchableOpacity>
-              );
-            }
           } 
         }
 
       
-      if(loading == true)
+      if(loading == true
+        )
       {
         return (
             <View>

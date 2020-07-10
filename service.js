@@ -12,8 +12,22 @@ module.exports = async function() {
     TrackPlayer.addEventListener('remote-duck', async data => {
         console.log("remote-duck triggered: ",data);
 
+        if(data.paused) {
+            TrackPlayer.pause();
+            //wasPlaying = true;
+        } else if(data.ducking) {
+            TrackPlayer.setVolume(0.5);
+        } else {
+            const state = await TrackPlayer.getState();
+            if(state == TrackPlayer.STATE_PLAYING)
+                TrackPlayer.play();
+            else
+                TrackPlayer.pause();
+            TrackPlayer.setVolume(1);
+        }
         let { paused: shouldPause, permanent: permanentLoss = false } = data;
-        TrackPlayer.pause();
+        
+        //TrackPlayer.pause();
         //dispatch({type:"TOGGLE_PLAY_PAUSED"});
     })
     // ...

@@ -583,6 +583,19 @@ async function updatePodcastsLiked(props){
   }
 } 
 
+    function renderHearts(){
+      
+        if(hearts.length != 0)
+        {
+          hearts.map(
+            heart => {
+              console.log("heart.id: ",heart.id);
+              return <HeartContainer item={heart.id} style={{ right : heart.paddingRight}} onComplete={() => {removeHeart(heart.id)}}/>;
+            }
+          )
+        }
+    }
+
     return (
       
         <ScrollView style={styles.content}>
@@ -599,21 +612,29 @@ async function updatePodcastsLiked(props){
 
                 </TouchableOpacity> */}
                        
-        <Text style={[styles.textDark, {paddingTop:10,fontSize: 28,fontFamily:'MilkMustacheBB-Bold' }]}>
+        <Text style={[styles.textDark, {paddingTop:10,fontSize: 28,fontFamily:'Montserrat-SemiBold' }]}>
           {podcastName}{"    "}
           </Text>
     
                     </View>
                     <View style={{ marginTop: 2}}>
+                      {
+                      (props.podcast.isMusic === undefined || props.podcast.isMusic === null) &&
                       <TouchableNativeFeedback onPress={() => {
                         parentSlideDown();
                         retrieveUserPrivateDoc();
                         }}>
                       <View style={{flexDirection:'row', marginTop: 2}}>
                         <Image source={{uri:props.podcast.podcasterDisplayPicture}} style={{height:height/20,width:height/20,borderRadius:30}}/>
-                        <Text style={[styles.text, { fontFamily:'Montserrat-SemiBold',fontSize: 18, marginTop: 5,marginLeft:7}]}>{props.podcast.podcasterName}</Text>
+                        
+                          <Text style={[styles.text, { fontFamily:'Montserrat-SemiBold',fontSize: 18, marginTop: 0,marginLeft:7}]}>
+                            {props.podcast.podcasterName}
+                          </Text>
+                        
                         </View>
                     </TouchableNativeFeedback>
+                      }
+                      
                     </View>
 
               <View style={{height:height/5,paddingTop:10}}>
@@ -623,8 +644,9 @@ async function updatePodcastsLiked(props){
                   parentSlideDown()
                   props.navigation.navigate('InfoScreen', {podcast:props.podcast})
                   }}>
-                      <Text style={{fontFamily:'HeadlandOne-Regular',fontSize:12,color:'white',}}>{podcastDescription.slice(0,300)}</Text>
-                      <Text style={[styles.text,{fontFamily:'HeadlandOne-Regular'}]}>{podcastDescription.length > 300 && "...Read More"}</Text>
+                      <Text style={{fontFamily:'Montserrat-Regular',fontSize:height/54,color:'white',lineHeight:height/54}}>{podcastDescription.slice(0,300)}
+                      <Text style={[styles.text,{fontFamily:'Montserrat-Regular'}]}>{podcastDescription.length > 300 && "...Read More"}</Text>
+                      </Text>
                   </TouchableNativeFeedback>
                 }
                 <View style={{justifyContent:'flex-end'}}>
@@ -691,10 +713,14 @@ async function updatePodcastsLiked(props){
               />
           
          </View>
+
+        {
+          props.podcast.isMusic === undefined && 
+
          <View style={{flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop:height/40,marginBottom:48}}>
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingTop:height/40,marginBottom:48}}>
 
            
 
@@ -737,16 +763,7 @@ async function updatePodcastsLiked(props){
 
 
                 <View>
-            
-            {
-              hearts.length != 0 &&
-              hearts.map(
-                heart => {
-                  console.log("heart.id: ",heart.id);
-                  return <HeartContainer item={heart.id} style={{ right : heart.paddingRight}} onComplete={() => {removeHeart(heart.id)}}/>;
-                }
-              )
-            }
+              {renderHearts()}
             </View>
 
                 <View style={{paddingLeft:width/4}}>
@@ -759,6 +776,7 @@ async function updatePodcastsLiked(props){
                 </TouchableOpacity>
                 </View>
               </View>
+            }
         </ScrollView>
       
     );

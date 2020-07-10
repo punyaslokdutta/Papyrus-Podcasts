@@ -69,8 +69,35 @@ const { width, height } = Dimensions.get("window");
 
     const { product } =props;
 
+    function renderBookChapter() {
+      
+        if(podcast[0].isChapterPodcast == true)
+        {
+          <View>
+          <Text style={{color:'white',fontFamily:'Montserrat-Regular'}}>Chapter</Text> 
+          <TouchableOpacity onPress={() => props.navigation.navigate('RecordChapter',{bookID:podcast[0].bookID,chapterID:podcast[0].chapterID})}>
+          <Text style={{fontSize:20,fontFamily:'Montserrat-Bold',color:'white'}}>{podcast[0].chapterName} {"  "}{"\n"}</Text>
+          </TouchableOpacity>
+          <Divider margin={[theme.sizes.padding * 0.5, 0]} />
+          <Text style={{color:'white',fontFamily:'Montserrat-SemiBold'}}>Book</Text>
+          <TouchableOpacity onPress={() => props.navigation.navigate('RecordBook',{bookID:podcast[0].bookID})}>
+          <Text style={{fontSize:20,fontFamily:'Andika-R',fontColor:'white'}}>{podcast[0].bookName}{"  "}</Text>
+          </TouchableOpacity>
+          </View>
+        }
+        else
+        {
+          <View>
+          <Text style={{color:'white',fontFamily:'Montserrat-Regular'}}>Book</Text>
+          <TouchableOpacity onPress={() => props.navigation.navigate('RecordBook',{bookID:podcast[0].bookID})}>
+          <Text style={{fontSize:20,fontFamily:'Montserrat-Bold',color:'white'}}>{podcast[0].bookName}{" "}</Text>
+          </TouchableOpacity>
+          </View>
+        }
+    }
+
     return (
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView style={{backgroundColor:'#212121'}} showsVerticalScrollIndicator={false}>
         <View style={{backgroundColor:'#212121'}}>
         {renderGallery()}
         </View>
@@ -106,19 +133,20 @@ const { width, height } = Dimensions.get("window");
 
           <Divider margin={[theme.sizes.padding * 0.5,0]} /> 
         
-              <TouchableOpacity onPress={() => {
-                if(realUserID == userPrivateDoc.id)
-                {
-                  props.navigation.navigate('ProfileTabNavigator');
-                }
-                else
-                {
-                  dispatch({type:"SET_OTHER_PRIVATE_USER_ITEM",payload:userPrivateDoc})
-                  props.navigation.navigate('ExploreTabNavigator',{userData:userPrivateDoc});
-                }
-                }}>
+              
               {
-                userPrivateDoc !== null && 
+                podcast[0].isMusic === undefined && userPrivateDoc !== null && 
+                <TouchableOpacity onPress={() => {
+                  if(realUserID == userPrivateDoc.id)
+                  {
+                    props.navigation.navigate('ProfileTabNavigator');
+                  }
+                  else
+                  {
+                    dispatch({type:"SET_OTHER_PRIVATE_USER_ITEM",payload:userPrivateDoc})
+                    props.navigation.navigate('ExploreTabNavigator',{userData:userPrivateDoc});
+                  }
+                  }}>
                 <View style={{flexDirection:'row',paddingRight:theme.sizes.base*1.5}}>
                   <View style={{alignItems:'center',justifyContent:'center'}}>
                 <Image source={{uri:userPrivateDoc.displayPicture}} style={{borderRadius:30,width:width/8,height:width/8}}/>
@@ -128,37 +156,23 @@ const { width, height } = Dimensions.get("window");
                 <Text style={{fontFamily:'Montserrat-Regular',color:'white'}}>{userPrivateDoc.introduction}</Text>
                 </View>
                 </View>
+                </TouchableOpacity>
+
               }
               
-              </TouchableOpacity>
               
-           
-           <Divider margin={[theme.sizes.padding * 0.5, 0]} />
-           <View style={{flexDirection:'row',paddingBottom:height*2/11}}>
-             {
-               podcast[0].isChapterPodcast == true 
-               ?
-               <View>
-               <Text style={{color:'white',fontFamily:'Montserrat-Regular'}}>Chapter</Text> 
-               <TouchableOpacity onPress={() => props.navigation.navigate('RecordChapter',{bookID:podcast[0].bookID,chapterID:podcast[0].chapterID})}>
-               <Text style={{fontSize:20,fontFamily:'Montserrat-Bold',color:'white'}}>{podcast[0].chapterName} {"  "}{"\n"}</Text>
-               </TouchableOpacity>
-               <Divider margin={[theme.sizes.padding * 0.5, 0]} />
-               <Text style={{color:'white',fontFamily:'Montserrat-SemiBold'}}>Book</Text>
-               <TouchableOpacity onPress={() => props.navigation.navigate('RecordBook',{bookID:podcast[0].bookID})}>
-               <Text style={{fontSize:20,fontFamily:'Andika-R',fontColor:'white'}}>{podcast[0].bookName}{"  "}</Text>
-               </TouchableOpacity>
-               </View>
-               :
-               <View>
-               <Text style={{color:'white',fontFamily:'Montserrat-Regular'}}>Book</Text>
-               <TouchableOpacity onPress={() => props.navigation.navigate('RecordBook',{bookID:podcast[0].bookID})}>
-               <Text style={{fontSize:20,fontFamily:'Montserrat-Bold',color:'white'}}>{podcast[0].bookName}{" "}</Text>
-               </TouchableOpacity>
-               </View>
-             }
-           
+           {
+             podcast[0].isMusic === undefined && 
+             <Divider margin={[theme.sizes.padding * 0.5, 0]} />
+           }
+
+           {
+              podcast[0].isMusic === undefined && 
+              <View style={{flexDirection:'row',paddingBottom:height*2/11}}>
+               {renderBookChapter()}
            </View>
+           }
+           
 
            {
               (podcast[0].podcasterID == "UoTnf7dgzvQL7GUaPCwIGlXReGS2") &&

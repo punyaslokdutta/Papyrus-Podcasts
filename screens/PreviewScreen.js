@@ -13,7 +13,8 @@ import * as Progress from 'react-native-progress';
 import Toast from 'react-native-simple-toast';
 import moment from 'moment';
 import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
-
+import ProgressBar from './components/PodcastPlayer/ProgressBar';
+import Slider from '@react-native-community/slider';
 
 const { width, height } = Dimensions.get('window');
 const options = {
@@ -21,20 +22,26 @@ const options = {
   chooseFromLibraryButtonTitle: 'Select from Library'
 };
 
-const initialTags  ={
+const initialTags  = {
   tag: '',
   tagsArray: [], 
-
 }
+
+const defaultPodcastImageURL = "https://storage.googleapis.com/papyrus-fa45c.appspot.com/podcasts/Waves.jpg";
+
 const PreviewScreen = (props) => {
 
   console.log("In PreviewScreen");
 
   const dispatch = useDispatch();
+  const { position, bufferedPosition } = useTrackPlayerProgress();
+
+  const editpodcast = useSelector(state=>state.recorderReducer.editpodcast);
   const displayPictureURL = useSelector(state=>state.userReducer.displayPictureURL)
+  const [isPlaying,setIsPlaying] = useState(false);
   const [loadingPodcastImage,setLoadingPodcastImage] = useState(false);
   const userPreferences = useSelector(state=>state.userReducer.userPreferences);
-  const [podcastImage, setPodcastImage] = useState("https://storage.googleapis.com/papyrus-fa45c.appspot.com/podcasts/Waves.jpg");
+  const [podcastImage, setPodcastImage] = useState(defaultPodcastImageURL);
   const chapterName=useSelector(state=>state.recorderReducer.chapterName)
   const bookName=useSelector(state=>state.recorderReducer.bookName)
   const authors=useSelector(state=>state.recorderReducer.authors)
@@ -45,7 +52,7 @@ const PreviewScreen = (props) => {
   const [publishLoading,setPublishLoading] = useState(false);
   const [recordedFilePath, setrecordedFilePath] = useState(props.navigation.getParam('recordedFilePath'));
   const [podcastDescription, setPodcastDescription] = useState(null);
-  const [previewHeaderText,setPreviewHeaderText] = useState("New Podcast");
+  const [previewHeaderText,setPreviewHeaderText] = useState("Create Podcast");
   const [podcastName, setPodcastName]=useState(null);
   const [tags, setTags]=useState(initialTags);
   const [tagsColor, settagsColor]=useState('#3ca897');
@@ -201,25 +208,34 @@ const PreviewScreen = (props) => {
     await TrackPlayer.setupPlayer({});
     await TrackPlayer.updateOptions({
       stopWithApp: true,
-      capabilities: [
-        TrackPlayer.CAPABILITY_PLAY,
-        TrackPlayer.CAPABILITY_PAUSE
-      ],
-      compactCapabilities: [
-        TrackPlayer.CAPABILITY_PLAY,
-        TrackPlayer.CAPABILITY_PAUSE
-      ],
       alwaysPauseOnInterruption: true
     });
-
-    await TrackPlayer.add({
-      id: "local-track",
-      url: recordedFilePath,
-      title: "cfdvdfvc",
-      artist: userName,
-      artwork: "dsccdcds",
-      duration: duration
-    });
+    
+    if(editpodcast == true)
+       {
+         const podcast = props.navigation.state.params.podcast;
+         setDuration(podcast.duration)
+        await TrackPlayer.add({
+          id: "local-track",
+          url: podcast.audioFileLink,
+          title: podcast.podcastName,
+          artist: podcast.podcasterName,
+          artwork: podcast.podcastPictures[0],
+          duration: podcast.duration
+        });
+       }
+       else
+       {
+        await TrackPlayer.add({
+          id: "local-track",
+          url: recordedFilePath,
+          title: "cfdvdfvc",
+          artist: userName,
+          artwork: "dsccdcds",
+          duration: duration
+        });
+       }
+    
     //await TrackPlayer.play();
   }
 
@@ -249,6 +265,8 @@ const PreviewScreen = (props) => {
     finally{
       Toast.show("Edited Podcast Successfully");
       setPublishLoading(false);
+      TrackPlayer.destroy();
+      dispatch({type:'SET_EDIT_PODCAST',payload:false});
       props.navigation.navigate("HomeScreen");
     }
         
@@ -337,10 +355,48 @@ const PreviewScreen = (props) => {
         dispatch({type:"UPDATE_TOTAL_MINUTES_RECORDED",payload:updatedMinutesRecorded});
         updateTotalMinutesRecorded(updatedMinutesRecorded);
         setTags(initialTags);
+        dispatch({type:'SET_EDIT_PODCAST',payload:false});
         props.navigation.navigate('HomeScreen');
       }
     },[uploadPodcastSuccess]
   )
+
+  function getMinutesFromSeconds(time) {
+    
+    var hours = null;
+    var minutes = null;
+    var seconds = null;
+    if(time >= 3600)
+    {
+      hours = Math.floor(time / 3600);
+      time = time % 3600;
+    }
+    
+    minutes = time >= 60 ? Math.floor(time / 60) : 0;
+    seconds = Math.floor(time - minutes * 60);
+
+    if(hours === null)
+    {  
+      return `${minutes >= 10 ? minutes : '0' + minutes}:${
+        seconds >= 10 ? seconds : '0' + seconds
+      }`;
+    }
+    else
+    {
+      return `${hours >= 10 ? hours : '0' + hours}:${
+                minutes >= 10 ? minutes : '0' + minutes}:${
+                seconds >= 10 ? seconds : '0' + seconds
+      }`;
+    }
+  }
+
+  function onSeek(data) {
+    TrackPlayer.seekTo(data.seekTime)
+  }
+
+  function handleOnSlide(time) {
+    onSeek({seekTime: time});
+  }
 
   useEffect(() => {
     console.log("In USEEFFECT OF PREVIEW SCREEN");
@@ -380,7 +436,9 @@ const PreviewScreen = (props) => {
       return () => {
         console.log(" back_Button_Press Unmounted");
         BackHandler.removeEventListener("hardwareBackPress",  back_Button_Press);
+        dispatch({type:'SET_EDIT_PODCAST',payload:false});
         uploadPodcastSuccess && props.navigation.navigate('HomeScreen');
+
 
       };
   }, [back_Button_Press])
@@ -467,6 +525,7 @@ const PreviewScreen = (props) => {
       setWarningMessage(true);
       return true;
     }
+    TrackPlayer.destroy();
     return false;
   }
 
@@ -575,19 +634,83 @@ const PreviewScreen = (props) => {
     }
   }
 
+  function renderPublishText(){
+      if(publishLoading == true)
+        return <ActivityIndicator color='black'/>;
+      else
+        return <Text style={{ borderRadius:10,textAlignVertical: 'center',padding:8,backgroundColor:'black',color:'white',fontSize:15 }} >Publish</Text>
+  }
+
   return (
     
     <ScrollView style={{ flex: 1, backgroundColor: 'white' }}>
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
     
-     <View>
-      <View style={styles.AppHeader}>
-        <TouchableOpacity onPress={() => props.navigation.goBack(null)}>
-          <View style={{ paddingLeft: width / 12, paddingVertical: height / 20, flexDirection: 'row' }}>
-          <Icon name="arrow-left" size={20} style={{color:'black'}}/>
-  <Text style={{ fontFamily: 'san-serif-light', color: 'black', paddingLeft: (width * 7) / 35, fontSize: 20 }}>{previewHeaderText}</Text>
-          </View>
+     <View style={{paddingBottom:20}}>
+          
+      <View style={{ width:width,borderWidth:0,borderColor:'black', paddingHorizontal: width / 20, paddingVertical: height / 20,display:'flex',justifyContent:'space-between', flexDirection: 'row' }}>
+      <TouchableOpacity onPress={() => {
+        TrackPlayer.destroy();
+        props.navigation.goBack(null)
+      }}>
+      <Icon name="arrow-left" size={20} style={{color:'black'}}/>
+      </TouchableOpacity>
+      <View>
+      <Text style={{ fontFamily: 'Andika-R', color: 'black',paddingBottom:5, fontSize: 20 }}>
+        {previewHeaderText}</Text>
+        </View>
+        {
+          toggleIndicator && 
+     
+          <View style={{alignItems: 'center',justifyContent:'center',width:width/5}}> 
+           <Progress.Bar
+               color={'black'}
+               style={{width:width/5}}
+               progress={progress}
+               indeterminate={indeterminate}
+             />
+           </View>
+        }
+        {
+          !toggleIndicator &&
+          <TouchableOpacity onPress={() => {
+            if(podcastName === null || (podcastName !== null && (podcastName.length < 6 || podcastName.length > 50)))
+            {
+              alert("Please enter the name of your podcast as per the given limits.\nMin characters required: 6\nMax characters allowed: 50");
+              return;
+            }
+            else if(!podcastName.replace(/\s/g,'').length)
+            {
+              setPodcastName(null);
+              alert("Please enter some text in Podcast Name field");
+              return;
+            }
+            else if(podcastDescription === null || (podcastDescription != null && (podcastDescription.length < 6 || podcastDescription.length > 1000)))
+            {
+              alert("Please enter the description of your podcast as per the given limits.\nMin characters required: 6\nMax characters allowed: 1000");
+              return;
+            }
+            else if(!podcastDescription.replace(/\s/g,'').length)
+            {
+              setPodcastDescription(null);
+              alert("Please enter some text in Podcast Description field");
+              return;
+            }
+            else if(podcastImage == defaultPodcastImageURL)
+            {
+              alert("Please upload an image related to your podcast");
+              return;
+            }
+            const podcast = props.navigation.state.params.podcast;
+            if(podcast !== null && podcast !== undefined)
+              uploadEditedPodcast(podcast);
+            else
+              uploadPodcast(recordedFilePath);
+          }} 
+        >      
+        {renderPublishText()}  
         </TouchableOpacity>
+        }
       </View>
 
       <View style={{ alignItems: 'center' }}>
@@ -612,12 +735,55 @@ const PreviewScreen = (props) => {
        
      </View>
     
-     
+        <View style={{width:width*3/4,height:height/12,marginLeft: width / 8,borderRadius:10,marginBottom: 20,borderWidth:1,borderColor:'#9E9E9E',flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
         <TouchableOpacity onPress={async() => {
-          await TrackPlayer.play();
-        }} style={{marginBottom:20,alignItems:'center'}}>
-            <Icon name="play" color="black" size={25} />
+          if(!isPlaying)
+          {
+            setIsPlaying(true);
+            await TrackPlayer.play();
+          }
+          else
+          {
+            setIsPlaying(false);
+            await TrackPlayer.pause();
+          }
+          
+        }} style={{borderWidth:0,borderColor:'black',alignItems:'center'}}>
+            {
+              isPlaying 
+              ?
+              <Icon name="pause" color="black" size={25} />
+              :
+              <Icon name="play" color="black" size={25} />
+            }
             </TouchableOpacity>
+            <View style={{width:width*9/16,borderWidth:0,borderColor:'black',}}>
+            <Slider
+              value={position}
+              minimumValue={1}
+              maximumValue={duration===undefined?600:duration}
+              step={0.01}
+              onValueChange={(value)=>handleOnSlide(value)}
+              //onSlidingStart={handlePlayPause}
+              //onSlidingComplete={handlePlayPause}
+              minimumTrackTintColor={'black'}
+              maximumTrackTintColor={'black'}
+              thumbTintColor={'#F44336'}
+              //disabled={true}
+            />
+            {/* <ProgressBar
+                position = {position}
+                duration={duration}
+                onSlideStart={handlePlayPause}
+                onSlideComplete={handlePlayPause}
+                onSlideCapture={onSeek}
+                loadingPodcast={false}
+              /> */}
+              </View>
+              <View>
+            <Text>{getMinutesFromSeconds(duration)}</Text>
+                </View>
+          </View>
 
       {
         chapterName !== null && chapterName !== undefined &&
@@ -725,75 +891,9 @@ const PreviewScreen = (props) => {
           autoCorrect={false}
           />
       </View>
-
-      
-     { 
-
-     toggleIndicator && 
-     
-     <View style={{ paddingTop: height / 8, alignItems: 'center'}}> 
-      <Progress.Bar
-          color={rgb(218,165,32)}
-          style={styles.progress}
-          progress={progress}
-          indeterminate={indeterminate}
-        />
-      </View>
-     }
-      
-      {
-        !toggleIndicator && 
-       <View style={{ paddingTop: height /16, alignItems: 'center', paddingBottom:10 }}>
-
-        <TouchableOpacity onPress={() => {
-          if(podcastName === null || (podcastName !== null && (podcastName.length < 6 || podcastName.length > 50)))
-          {
-            alert("Please enter the name of your podcast as per the given limits.\nMin characters required: 6\nMax characters allowed: 50");
-            return;
-          }
-          else if(!podcastName.replace(/\s/g,'').length)
-          {
-            setPodcastName(null);
-            alert("Please enter some text in Podcast Name field");
-            return;
-          }
-          else if(podcastDescription === null || (podcastDescription != null && (podcastDescription.length < 6 || podcastDescription.length > 1000)))
-          {
-            alert("Please enter the description of your podcast as per the given limits.\nMin characters required: 6\nMax characters allowed: 1000");
-            return;
-          }
-          else if(!podcastDescription.replace(/\s/g,'').length)
-          {
-            setPodcastDescription(null);
-            alert("Please enter some text in Podcast Description field");
-            return;
-          }
-          const podcast = props.navigation.state.params.podcast;
-          if(podcast !== null && podcast !== undefined)
-            uploadEditedPodcast(podcast);
-          else
-            uploadPodcast(recordedFilePath);
-      }} 
-        style={{ alignItems: 'center', justifyContent: 'center', height: height / 16, width: height / 6, borderRadius: 15,marginBottom:30, borderColor:rgb(218,165,32), borderWidth: 1, }}
-        >
-          {
-            publishLoading == true
-            ?
-            <ActivityIndicator color='rgb(218,165,32)'/>
-            :
-            <Text style={{ alignItems: 'center',fontWeight:'800', fontFamily: 'Montserrat-Medium', color:rgb(218,165,32),  justifyContent: 'center',fontSize:20 }} >Publish</Text>
-          }
-          
-        </TouchableOpacity>
-      </View>
-      }
     </View>
-    </SafeAreaView>
-    
-    </ScrollView>
-    
-    
-    
+    </SafeAreaView>    
+    </ScrollView>   
    
   );
 }
@@ -846,6 +946,7 @@ const styles = StyleSheet.create({
     //fontStyle: 'italic',
     color: 'black',
     height: height / 6,
+    paddingBottom:10,
     borderWidth: 1,
     borderColor: '#9E9E9E',
     borderRadius: 10,
@@ -870,12 +971,16 @@ const styles = StyleSheet.create({
     //fontStyle: 'italic',
     color: 'black',
     borderWidth: 1,
+    paddingTop:0,
+    marginTop:0,
+    paddingBottom:0,
+    marginBottom:0,
     borderColor: '#9E9E9E',
     borderRadius: 10,
     backgroundColor: "white",
     width: (width * 3) / 4,
     paddingLeft: 10,
-    height: height / 18,
+    //height: height / 18,
     paddingRight: 10
   }, 
   tagcontainer: {

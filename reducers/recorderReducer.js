@@ -8,7 +8,8 @@ const INITIAL_STATE = {
     languageSelected:null,
     bookID:null,
     chapterID:null,
-    genres : []
+    genres : [],
+    editpodcast : false
   };
   
   function recorderReducer(state = INITIAL_STATE, action)  {
@@ -19,6 +20,8 @@ const INITIAL_STATE = {
       case "CHANGE_CHAPTER_ID":
         console.log("CHANGE_CHAPTER_ID"+" " +action.payload)
           return {...state, chapterID:action.payload}
+      case "SET_EDIT_PODCAST":
+        return {...state,editpodcast:action.payload}
       case "SET_BOOK_GENRES":
           return {...state,genres:action.payload}  
       case "CHANGE_BOOK":

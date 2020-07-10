@@ -669,6 +669,12 @@ var {width, height}=Dimensions.get('window')
                 this.props.dispatch({type:'CHANGE_CHAPTER_ID', payload:this.props.podcast.chapterID})
                 this.props.dispatch({type:'CHANGE_CHAPTER',payload:this.props.podcast.chapterName})
               }
+              this.props.dispatch({type:'SET_EDIT_PODCAST',payload:true});
+              
+              this.props.podcastRedux !== null && 
+              this.props.dispatch({type:'SET_PODCAST',payload:null}) &&
+              TrackPlayer.destroy();
+              
               this.props.navigation.navigate("PreviewScreen",{podcast:this.props.podcast});
               }} text='Edit' />
             <MenuOption onSelect={async() => {

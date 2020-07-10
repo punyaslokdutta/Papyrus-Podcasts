@@ -286,7 +286,7 @@ const AppStackNavigator= createStackNavigator(
       screen: InfoScreen,
       navigationOptions:{
         //header:null
-        title: 'About this podcast   ',
+        title: 'About  ',
         headerTintColor: 'white',
         headerStyle: {
           backgroundColor: 'black'
