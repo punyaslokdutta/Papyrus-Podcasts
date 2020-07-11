@@ -255,7 +255,7 @@ const RecordBook = (props) => {
             
             <View style={{flexDirection:'row',alignItems:'center',justifyContent:'center',paddingTop:20,paddingBottom:20,paddingLeft:width/4}}>
             <View style={{width:width/2 - theme.sizes.padding}}>  
-            <TouchableNativeFeedback onPress={()=>props.navigation.navigate('SelectScreen',{bookItem:article,chapterItem:null})}>
+            <TouchableNativeFeedback onPress={()=>props.navigation.navigate('AddBookReviewScreen',{bookItem:article,chapterItem:null})}>
             <View style={{width:width/6,alignItems:'center'}}>
             <FontAwesome name="microphone" color={theme.colors.black} size={theme.sizes.font * 2.0} />
             <Text style={{fontSize:12,textAlign:'center',fontFamily:'Montserrat-Bold',width:width/6}}>Record</Text>

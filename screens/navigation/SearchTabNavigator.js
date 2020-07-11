@@ -45,6 +45,7 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
     },
   {
     tabBarComponent: props => <ProfileTabBar {...props}/>,
+    //tabBarPosition: 'bottom',
     tabBarOptions:  {
       showIcon: true,//props.navigation.state.params.fromExplore ? false : true,
       //showLabel: props.navigation.state.params.fromExplore ? false : false,

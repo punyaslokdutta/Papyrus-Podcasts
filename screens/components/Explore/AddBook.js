@@ -48,7 +48,7 @@ const AddBook=(props)=>{
         }
         uploadBookSuccess && 
         dispatch({type:"ADD_BOOK",payload:article}) 
-        //props.navigation.navigate('SelectScreen',{bookItem:article});
+        //props.navigation.navigate('AddBookReviewScreen',{bookItem:article});
       },[uploadBookSuccess])
 
     function updateAuthorState(state)

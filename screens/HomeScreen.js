@@ -8,6 +8,7 @@ import { FlatList } from 'react-native-gesture-handler';
 import BookList from './components/Home/BookList'
 import * as theme from '../screens/components/constants/theme';
 import Podcast from './components/Home/Podcast'
+import FlipItem from './components/Home/FlipItem'
 import {Text} from './components/categories/components';
 import { useSelector,useDispatch} from 'react-redux';
 import { Badge } from 'react-native-elements'
@@ -25,6 +26,7 @@ const HomeScreen = (props) => {
   const [books,setBooks] = useState([]);
   const [headerPodcasts,setHeaderPodcasts] = useState([]);
   const [podcasts,setPodcasts] = useState([]);
+  const [flips,setFlips] = useState([]);
   const limit = 8;
   const headerPodcastsLimit = 8;
   const bookLimit = 5;
@@ -77,6 +79,9 @@ const HomeScreen = (props) => {
       let latestPodcasts = await firestore().collectionGroup('podcasts')
                     .orderBy('lastEditedOn','desc').limit(limit).get();
 
+      let latestFlips = await firestore().collection('flips').orderBy('createdOn','desc').get();
+      let latestFlipsData = latestFlips.docs.map(document=>document.data());
+
       let documentData_preferredPodcasts = podcasts.docs.map(document => document.data());
       let documentData_latestPodcasts = latestPodcasts.docs.map(document => document.data()); 
       
@@ -102,6 +107,7 @@ const HomeScreen = (props) => {
 
       setHeaderPodcasts(documentData_preferredPodcasts.slice(0,headerPodcastsLimit));
       setPodcasts(finalDocumentData);
+      setFlips(latestFlipsData);
       setLastVisible(lastVisiblePodcast);
       setPodcastPresentMap(isPodcastPresent);
       //setOnEndReachedCalledDuringMomentum(true);
@@ -313,6 +319,8 @@ const HomeScreen = (props) => {
       <View>
          {/* <HomeAnimation/> */}
       </View>
+      {renderFlips()}
+
       {
         podcasts1.map((item,index) =>
         {
@@ -331,21 +339,36 @@ const HomeScreen = (props) => {
           return <Podcast podcast={item} scrollPosition={scrollPosition} index={index} navigation={props.navigation}/>
         })
       }
+
     </View>
     )
   }
   
+  function renderFlips(){
+    return (
+      flips.slice(0,5).map((item,index) => {
+        return(
+          <FlipItem item={item} index={index} navigation={props.navigation}/>
+        )
+      })
+    )
+    
+  }
+
   function renderDatas({item,index})
   {
-      return(
-
-        
+      return(        
         <View>
           {
             index == 0
             &&
             renderHeader()
           }
+          {/* {
+            index == 0
+            &&
+            renderFlips()
+          } */}
       <Podcast podcast={item} scrollPosition={scrollPosition} index={index} navigation={props.navigation}/>
       </View>
       )

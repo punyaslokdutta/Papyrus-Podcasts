@@ -49,7 +49,7 @@ const SearchBookScreen=(props)=>
       algoliaAPIKey
     );
 
-    const index = searchClient.initIndex('prod_books');
+    const index = searchClient.initIndex('dev_books');
     //const index = searchClient.initIndex('prod_books');
 
     const fromSearchChapterScreen = useSelector(state=>state.userReducer.fromSearchChapterScreen)
@@ -125,7 +125,7 @@ const SearchBookScreen=(props)=>
     )
 
     useEffect(() => {
-      (bookAdded !== null) && props.navigation.navigate('SelectScreen',{bookItem:bookAdded})
+      (bookAdded !== null) && props.navigation.navigate('AddBookReviewScreen',{bookItem:bookAdded})
       && dispatch({type:"ADD_BOOK",payload:null})//refRBSheet.current.close()
     },[bookAdded])
 

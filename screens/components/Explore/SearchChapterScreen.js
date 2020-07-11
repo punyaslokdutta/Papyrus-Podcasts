@@ -127,7 +127,7 @@ const SearchChapterScreen=(props)=>
         authors : authors.tagsArray
       }
 
-      uploadChapterSuccess && props.navigation.navigate('SelectScreen',{chapterItem:article});
+      uploadChapterSuccess && props.navigation.navigate('AddBookReviewScreen',{chapterItem:article});
     },[uploadChapterSuccess])
 
     // useEffect(

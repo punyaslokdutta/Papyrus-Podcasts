@@ -4,12 +4,14 @@ import React, {Component} from 'react';
 import CustomDrawerContentComponent from './screens/navigation/CustomDrawerContentComponent';
 import setUserDetails from './screens/setUserDetails'
 import { StyleSheet, View, TouchableOpacity, Image, Text,Dimensions, Button, ScrollView, Alert, NativeModules,Linking,Platform} from 'react-native';
+import AddBookReviewScreen from './screens/components/Record/AddBookReviewScreen'
 import {createSwitchNavigator,
   createAppContainer,
   } from 'react-navigation'
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import { MenuProvider } from 'react-native-popup-menu';
 
+import FlipPreviewScreen from './screens/components/Record/FlipPreviewScreen';
 import TabBar from './screens/navigation/CustomAppTabBar';
 import LikersScreen from './screens/components/PodcastPlayer/LikersScreen'
 import setPreferences from './setPreferences'
@@ -32,7 +34,7 @@ import SignUpScreen from './screens/SignUpScreen'
 import HomeScreen from './screens/HomeScreen'
 import Explore from './screens/Explore'
 import PodcastPlayer from './screens/PodcastPlayer'
-import SelectScreen from './screens/SelectScreen'
+import SelectTabNavigator from './screens/SelectTabNavigator'
 import PreviewScreen from './screens/PreviewScreen'
 import CategoryScreen from './screens/CategoryScreen'
 import RecordBook from './screens/RecordBook'
@@ -166,11 +168,14 @@ const ProfileStackNavigator=createStackNavigator(
 
 const RecordStackNavigator= createStackNavigator(
   {
-    SelectScreen: {screen:SelectScreen},
+    SelectTabNavigator: {screen:SelectTabNavigator},
+    AddBookReviewScreen: {screen:AddBookReviewScreen},
+    //AddFlipScreen: {screen:AddFlipScreen},
+    FlipPreviewScreen : {screen:FlipPreviewScreen}
   },
   {
     headerMode:'none',
-    initialRouteName:'SelectScreen',
+    initialRouteName:'SelectTabNavigator',
     transitionConfig: () => fromRight(),
   }
 )
@@ -210,7 +215,7 @@ const AppTabNavigator=createBottomTabNavigator(
     Record: {screen:RecordStackNavigator,
       navigationOptions:{
           tabBarIcon:({tintColor})=>(
-          <FontAwesome5Icon style={{paddingTop:1}} name="microphone-alt" color={'black'} size={SCREEN_HEIGHT/20}/>
+          <MaterialCommunityIcon style={{paddingTop:1}} name="plus-circle" color={'black'} size={SCREEN_HEIGHT/18}/>
         )
       }
    },
