@@ -19,7 +19,7 @@ const SearchUserScreen=(props)=>
       algoliaAPPID,
       algoliaAPIKey
     );
-    const index = searchClient.initIndex('dev_users');
+    const index = searchClient.initIndex('prod_users');
 
     const searchQuery = useSelector(state=>state.userReducer.algoliaQuery)
     console.log("Search Query: ",searchQuery);

@@ -11,7 +11,9 @@ import { theme } from '../components/categories/constants';
 import CustomUserHeader from './CustomUserHeader';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5'
 import EvilIcon from 'react-native-vector-icons/EvilIcons';
+import Entypo from 'react-native-vector-icons/Entypo';
 import ProfileTabBar from './CustomProfileTabBar';
+import ExploreFlipScreen from '../components/Explore/ExploreFlipScreen';
 
 
 var {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
@@ -22,6 +24,12 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
   
   const ExploreTabNavigator = createMaterialTopTabNavigator(
     {
+      ExploreFlipScreen: {screen:ExploreFlipScreen, navigationOptions:{
+        tabBarLabel:'Flips ',
+        tabBarIcon:({tintColor})=>(
+          <Entypo name="news" size={20} color={tintColor}/>
+          )
+      }},
       UserBookmarks: {screen:UserBookmarks, navigationOptions:{
         tabBarLabel:'Saved',
         tabBarIcon:({tintColor})=>(

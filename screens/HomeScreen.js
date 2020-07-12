@@ -79,7 +79,7 @@ const HomeScreen = (props) => {
       let latestPodcasts = await firestore().collectionGroup('podcasts')
                     .orderBy('lastEditedOn','desc').limit(limit).get();
 
-      let latestFlips = await firestore().collection('flips').orderBy('createdOn','desc').get();
+      let latestFlips = await firestore().collection('flips').orderBy('lastEditedOn','desc').get();
       let latestFlipsData = latestFlips.docs.map(document=>document.data());
 
       let documentData_preferredPodcasts = podcasts.docs.map(document => document.data());

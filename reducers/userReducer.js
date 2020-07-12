@@ -7,9 +7,11 @@ const INITIAL_STATE = {
     userName: null, 
     numFollowers: 0,
     numFollowing: 0,
+    renderedREDUX: true,
     displayPictureURL: null,
     followingList:[],
     isPodcastLiked: {},
+    isFlipLiked: {},
     isPodcastBookmarked : {},
     isBookBookmarked: {},
     isChapterBookmarked: {},
@@ -33,6 +35,7 @@ const INITIAL_STATE = {
     algoliaAPPID: null,
     algoliaAPIKey: null,
     externalPodcastID: null,
+    externalFlipID: null,
     navBarHeight:0,
     bookmarksCountArray:[],
     likesCountArray: [],
@@ -44,6 +47,8 @@ const INITIAL_STATE = {
   
   function userReducer(state = INITIAL_STATE, action)  {
     switch (action.type) {
+        case "RENDERED_ALL_FLIPS":
+            return {...state,renderedREDUX:!state.renderedREDUX}
         case "SET_PODCAST_UPLOAD_SUCCESS":
             console.log("uploadPodcastSuccess : ",action.payload);
             return {...state,uploadPodcastSuccess:action.payload}
@@ -72,6 +77,9 @@ const INITIAL_STATE = {
         case "PODCAST_ID_FROM_EXTERNAL_LINK":
             console.log("REDUX EXTERNAL_PODCAST_ID: ",action.payload);
             return {...state,externalPodcastID:action.payload}
+        case "FLIP_ID_FROM_EXTERNAL_LINK":
+            console.log("REDUX EXTERNAL_FLIP_ID: ",action.payload);
+            return {...state,externalFlipID:action.payload}
         case "SET_ALGOLIA_API_KEY":
             return {...state,algoliaAPIKey:action.payload}
         case "SET_ALGOLIA_APP_ID":
@@ -115,6 +123,13 @@ const INITIAL_STATE = {
                 state.isPodcastLiked[liker_list[i]] = true;
               }
             return state;
+        case "SET_FLIPS_LIKED":
+            let flip_liker_list = action.payload;
+            let length_flip_liker_list = flip_liker_list.length;
+            for (i = 0; i < length_flip_liker_list; i++) {
+                state.isFlipLiked[flip_liker_list[i]] = true;
+                }
+            return state;
         case "SET_PODCASTS_BOOKMARKED":
             let bookmark_list_podcasts = action.payload;
             let length_bookmark_list_podcasts = bookmark_list_podcasts.length;
@@ -141,6 +156,12 @@ const INITIAL_STATE = {
             return state;
         case "REMOVE_FROM_PODCASTS_LIKED":
             state.isPodcastLiked[action.payload] = false;
+            return state;
+        case "ADD_TO_FLIPS_LIKED":
+            state.isFlipLiked[action.payload] = true;
+            return state;
+        case "REMOVE_FROM_FLIPS_LIKED":
+            state.isFlipLiked[action.payload] = false;
             return state;
         case "ADD_TO_PODCASTS_BOOKMARKED":
             state.isPodcastBookmarked[action.payload] = true;
@@ -199,6 +220,8 @@ const INITIAL_STATE = {
             return {...state,isUserFollowing:{}}
         case "CLEAR_PODCASTS_LIKED":
             return {...state,isPodcastLiked:{}}
+        case "CLEAR_FLIPS_LIKED":
+            return {...state,isFlipLiked:{}}
         case "CLEAR_PODCASTS_BOOKMARKED":
             return {...state,isPodcastBookmarked:{}}
         case "CLEAR_BOOKS_BOOKMARKED":

@@ -49,7 +49,7 @@ const SearchBookScreen=(props)=>
       algoliaAPIKey
     );
 
-    const index = searchClient.initIndex('dev_books');
+    const index = searchClient.initIndex('prod_books');
     //const index = searchClient.initIndex('prod_books');
 
     const fromSearchChapterScreen = useSelector(state=>state.userReducer.fromSearchChapterScreen)

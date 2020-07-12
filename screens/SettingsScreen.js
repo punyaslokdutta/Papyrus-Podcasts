@@ -201,6 +201,7 @@ const SettingsScreen = (props) => {
       try{
         dispatch({type:'SET_ADMIN_USER',payload:false})
         dispatch({type:'CLEAR_PODCASTS_LIKED',payload:null})
+        dispatch({type:'CLEAR_FLIPS_LIKED',payload:null})
         dispatch({type:'CLEAR_PODCASTS_BOOKMARKED',payload:null})
         dispatch({type:'ADD_NUM_FOLLOWERS',payload:0})
         dispatch({type:"SET_SIGNUP_MAIL",payload:null});

@@ -30,6 +30,7 @@ const setUserDetails = (props) => {
         
         doc._data.isAdmin !== undefined && dispatch({type:'SET_ADMIN_USER',payload:doc._data.isAdmin})
 
+        doc._data.flipsLiked && dispatch({type:'SET_FLIPS_LIKED',payload:doc._data.flipsLiked})
         doc._data.podcastsLiked && dispatch({type:'SET_PODCASTS_LIKED',payload:doc._data.podcastsLiked})
         doc._data.podcastsBookmarked && dispatch({type:'SET_PODCASTS_BOOKMARKED',payload:doc._data.podcastsBookmarked})
         doc._data.booksBookmarked && dispatch({type:'SET_BOOKS_BOOKMARKED',payload:doc._data.booksBookmarked})

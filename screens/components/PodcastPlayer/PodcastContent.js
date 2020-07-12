@@ -411,7 +411,7 @@ async function addToBookmarks() {
     podcastID : props.podcast.podcastID, 
     podcastName : props.podcast.podcastName,
     podcastPictures : picturesArray,
-    podcastDescription : this.props.podcast.podcastDescription,
+    podcastDescription : props.podcast.podcastDescription,
     podcasterName : props.podcast.podcasterName,
     podcasterID : props.podcast.podcasterID,
     createdOn : props.podcast.createdOn,

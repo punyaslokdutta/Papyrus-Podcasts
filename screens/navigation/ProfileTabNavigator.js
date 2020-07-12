@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import ProfileFlipScreen from '../components/Profile/ProfileFlipScreen';
 import ProfilePodcasts from '../components/Profile/ProfilePodcasts';
 import BookmarkScreenPodcasts from '../BookmarkScreenPodcasts';
 import BookmarkScreenBooks from '../BookmarkScreenBooks'
@@ -10,6 +11,7 @@ import { theme } from '../components/categories/constants';
 import CustomProfileHeader from './CustomProfileHeader';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import EvilIcon from 'react-native-vector-icons/EvilIcons';
+import Entypo from 'react-native-vector-icons/Entypo';
 import Octicon from 'react-native-vector-icons/Octicons';
 import ProfileTabBar from '../navigation/CustomProfileTabBar';
 
@@ -22,6 +24,12 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
 
 const ProfileTabNavigator =createMaterialTopTabNavigator(
     {
+      ProfileFlipScreen: {screen:ProfileFlipScreen, navigationOptions:{
+        tabBarLabel:'Flips ',
+        tabBarIcon:({tintColor})=>(
+          <Entypo name="news" size={20} color={tintColor}/>
+          )
+      }},
       BookmarkScreenBooks: {screen:BookmarkScreenBooks, navigationOptions:{
         tabBarLabel:'Saved',
         tabBarIcon:({tintColor})=>(

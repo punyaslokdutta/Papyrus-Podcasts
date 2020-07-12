@@ -24,6 +24,8 @@ import WelcomeScreen from './screens/WelcomeScreen';
 import thunk from 'redux-thunk';
 import LottieView from 'lottie-react-native';
 
+import ExploreFlipScreenVertical from './screens/components/Explore/ExploreFlipScreenVertical';
+import ProfileFlipScreenVertical from './screens/components/Profile/ProfileFlipScreenVertical';
 import updateAnimation from './assets/animations/10251-update-para-coverme.json'
 import userReducer from './reducers/userReducer'
 import rootReducer from './reducers/rootReducer';
@@ -65,6 +67,7 @@ import CustomUserHeader from './screens/navigation/CustomUserHeader'
 import SearchTabNavigator from './screens/navigation/SearchTabNavigator';
 import SearchBookChapterTabNavigator from './screens/navigation/SearchBookChapterTabNavigator';
 import { TouchableNativeFeedback } from 'react-native-gesture-handler';
+import MainFlipItem from './screens/components/Home/MainFlipItem';
 
 const  {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
 const IS_IPHONE_X = SCREEN_HEIGHT === 812 || SCREEN_HEIGHT=== 896;
@@ -120,7 +123,8 @@ const ExploreStackNavigator=createStackNavigator(
   {
      Explore : {screen : Explore,navigationOptions:{
        header:null
-     }}
+     }},
+     MainFlipItem : {screen: MainFlipItem},
   },
   {
     //headerMode:'none',
@@ -134,6 +138,8 @@ const ExploreStackNavigator=createStackNavigator(
 const ProfileStackNavigator=createStackNavigator(
   {
      ProfileTabNavigator : {screen : ProfileTabNavigator},
+     MainFlipItem : {screen: MainFlipItem},
+     ProfileFlipScreenVertical : {screen : ProfileFlipScreenVertical},
     editProfile : {screen : editProfile,navigationOptions: {
        header: null,
    }},
@@ -189,6 +195,7 @@ RecordStackNavigator.navigationOptions = ({ navigation }) => {
 const HomeStackNavigator= createStackNavigator(
   {
     HomeScreen :{screen: HomeScreen},
+    MainFlipItem : {screen: MainFlipItem}
   },
   {
     headerMode:'none',
@@ -271,6 +278,8 @@ const AppStackNavigator= createStackNavigator(
         header: null
        }
     },
+    ExploreFlipScreenVertical : {screen : ExploreFlipScreenVertical},
+ 
     PlayerProvider: {
       screen: PlayerProvider,
       navigationOptions:{
@@ -460,10 +469,19 @@ export default class App extends Component {
     
     const updateVersionDoc = await firestore().collection('appUpdates').doc('newUpdate').get();
     const updateVersionData = updateVersionDoc.data();
+    //[IMPORTANT]
+    // For alpha update, use this code
+    // this.setState({
+    //   latestVersion : updateVersionData.updateVersion,
+    //   latestVersionCode : updateVersionData.updateVersionCode,
+    //   isForcedUpdate : updateVersionData.isForcedUpdate,
+    //   updateMessage : updateVersionData.updateMessage
+    // })
 
+    // For internal update, use this code
     this.setState({
-      latestVersion : updateVersionData.updateVersion,
-      latestVersionCode : updateVersionData.updateVersionCode,
+      latestVersion : updateVersionData.updateInternalTestVersion,
+      latestVersionCode : updateVersionData.updateInternalTestVersionCode,
       isForcedUpdate : updateVersionData.isForcedUpdate,
       updateMessage : updateVersionData.updateMessage
     })

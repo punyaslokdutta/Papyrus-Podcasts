@@ -19,13 +19,13 @@ const { width, height } = Dimensions.get('window');
 const SelectTabNavigator = createMaterialTopTabNavigator(
   {
     AddFlipScreen : { screen: props => <AddFlipScreen {...props}/>,navigationOptions:{
-      tabBarLabel:'Flips',
+      tabBarLabel:'Flip ',
       tabBarIcon:({tintColor})=>(
         <Entypo name="news" size={25}/>
       )
     }}, 
     AddBookReviewScreen : { screen: props => <AddBookReviewScreen {...props}/>,navigationOptions:{
-      tabBarLabel:'Reviews',
+      tabBarLabel:'Book Podcast ',
       tabBarIcon:({tintColor})=>(
         <Icon name="microphone" size={30} color='black'/>
       )

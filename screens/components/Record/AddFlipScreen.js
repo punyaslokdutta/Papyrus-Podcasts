@@ -169,7 +169,10 @@ const AddFlipScreen = (props)=> {
                 <View style={{borderWidth:0.25,width:width*3/4}}/> 
                 <TouchableOpacity onPress={() => {
                   setIsModalVisible(false);
-                  props.navigation.navigate('FlipPreviewScreen');
+                  props.navigation.navigate('FlipPreviewScreen',{
+                    flipPictures : flipImages.slice(0,flipImages.length-1),
+                    flipDescription : flipText
+                  });
                   //addFlipToFirestore();
                 }}>
                 <Text style={{fontFamily:'Andika-R',fontSize:18,backgroundColor:'white',alignSelf:'center'}}> No </Text>
@@ -316,13 +319,13 @@ const AddFlipScreen = (props)=> {
             <Icon name="arrow-left" size={20} style={{color:'white'}}/>
         </TouchableOpacity>
         <View>
-        <Text style={{fontFamily:'san-serif-light', color:'white', fontSize:20}}>Add Flip</Text>
+        <Text style={{fontFamily:'Montserrat-Regular', color:'white', fontSize:20}}>Add Flip</Text>
         </View>
         <TouchableOpacity onPress={() =>{
           //renderModal()
           validateAndAddFlipToFirestore();
         }}>
-          <Text style={{backgroundColor :'white',color:'black',fontSize:20,paddingHorizontal:10,borderRadius:10,fontFamily:'Montserrat-Medium'}}>Share</Text>
+          <Text style={{backgroundColor :'white',color:'black',fontSize:20,paddingHorizontal:10,borderRadius:3,fontFamily:'Montserrat-Medium'}}>Next</Text>
           </TouchableOpacity>
         </View>
         {renderSelectedImage()}
@@ -333,14 +336,14 @@ const AddFlipScreen = (props)=> {
         <View style={{paddingHorizontal:5}}>
         <TextInput
           value={flipText}
-          style={{fontFamily:'Arial',fontSize:20}}
+          style={{fontFamily:'Montserrat-Regular',fontSize:20}}
           underlineColorAndroid="transparent"
-          placeholder={"Describe your flip in less than 300 characters"}
+          placeholder={"Tell us a story (use # for tags)"}
           placeholderTextColor={"gray"}
           //numberOfLines={1}
           multiline={true}
           onChangeText={(text) => {
-              setFlipText(text.slice(0,300))
+              setFlipText(text.slice(0,1000))
           }}/> 
         </View>
         </ScrollView>

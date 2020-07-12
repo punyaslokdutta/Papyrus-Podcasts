@@ -19,6 +19,7 @@ import ClassicPoemsCarousel from './components/Explore/ClassicPoemsCarousel';
 import SplashScreen from 'react-native-splash-screen';
 import BookList from './components/Home/BookList';
 import Podcast from './components/Home/Podcast';
+import FlipItem from './components/Home/FlipItem';
 
 const {width,height} = Dimensions.get('window')
 
@@ -34,6 +35,8 @@ const Explore = (props) => {
   const podcast = useSelector(state=>state.rootReducer.podcast);
   const [podcastState,setPodcastState] = useState(podcast);
   const externalPodcastID = useSelector(state=>state.userReducer.externalPodcastID);
+  const externalFlipID = useSelector(state=>state.userReducer.externalFlipID);
+
   var [storytellers,setStorytellers] = useState([]);
   var [section1Podcasts,setSection1Podcasts] = useState([]);
   var [section2Podcasts,setSection2Podcasts] = useState([]);
@@ -209,6 +212,33 @@ const Explore = (props) => {
         }
 
       },[externalPodcastID])
+
+      async function retrieveFlipFromFirestore() {
+
+        const flipItem = await firestore().collection('flips').doc(externalFlipID).get();
+        const flipItemData = flipItem.data();
+        var resizeModes = [];
+        flipItemData.flipPictures.map((img,index) => {
+          Image.getSize(img, (width, height) => {
+              if(height > width)
+                resizeModes.push('cover');
+              else
+                resizeModes.push('contain');                  
+          });
+        })
+        props.navigation.navigate('MainFlipItem',{
+          item : flipItemData,
+          resizeModes : resizeModes
+      })
+      dispatch({type:"FLIP_ID_FROM_EXTERNAL_LINK",payload:null});
+
+      }
+
+      useEffect(() => {
+        if(externalFlipID !== null){
+          retrieveFlipFromFirestore();          
+        }
+      },[externalFlipID])
 
       useEffect(() => {
         if(lastPlayingPodcastID !== null && externalPodcastID=== null)

@@ -1,27 +1,57 @@
-import { Text, Dimensions,ScrollView, Image,View,Animated,StyleSheet,ImageBackground, TouchableOpacity,TouchableNativeFeedback } from 'react-native'
+import { Text, Dimensions,ScrollView,Share, Image,View,Animated,StyleSheet,ImageBackground, TouchableOpacity,TouchableNativeFeedback,Alert } from 'react-native'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import React, { Component, useEffect,useState,useRef } from 'react';
 import * as theme from '../constants/theme';
 import * as Animatable from 'react-native-animatable'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import IconAntDesign from 'react-native-vector-icons/AntDesign'
 import {useSelector, useDispatch} from "react-redux"
 import { withFirebaseHOC } from '../../config/Firebase';
 import firestore from '@react-native-firebase/firestore';
 import moment from "moment";
+import dynamicLinks from '@react-native-firebase/dynamic-links';
 import LinearGradient from 'react-native-linear-gradient';
-
+import {
+  Menu,
+  MenuOptions,
+  MenuOption,
+  MenuTrigger,
+} from 'react-native-popup-menu';
+import Toast from 'react-native-simple-toast';
 
 const { width, height } = Dimensions.get('window');
 
 const areEqual = (prevProps, nextProps) => true
-const AnimatedIcon = Animatable.createAnimatableComponent(Icon);
 
 const FlipItem = React.memo((props) => {
     
     const realUserID = props.firebase._getUid();
+    const privateDataID = "private" + realUserID;
+    const isAdmin = useSelector(state=>state.userReducer.isAdmin);
+    const isFlipLikedRedux = useSelector(state=>state.userReducer.isFlipLiked);
+    const [numLikes,setNumLikes] = useState(props.item.numUsersLiked);
+    const [liked,setLiked] = useState(isFlipLikedRedux[props.item.flipID]);
     const dispatch = useDispatch();
+    const flipID = props.item.flipID;
+    var [resizeModes,setResizeModes] = useState([])
 
     var scrollX = new Animated.Value(0);
+
+    useEffect(() => {
+      props.item.flipPictures !== undefined &&
+      props.item.flipPictures.map((img,index) => {
+          Image.getSize(img, (width, height) => {
+              var localResizeModes = resizeModes;
+              if(height > width)
+                  localResizeModes.push('cover');
+              else
+                  localResizeModes.push('contain');
+                  
+              setResizeModes(localResizeModes);    
+          });
+
+      })
+  },[])
 
     async function retrieveUserData(){
         if(realUserID == props.item.creatorID)
@@ -35,6 +65,101 @@ const FlipItem = React.memo((props) => {
             dispatch({type:"SET_OTHER_PRIVATE_USER_ITEM",payload:privateDocumentData})
             props.navigation.navigate('ExploreTabNavigator',{userData:privateDocumentData});
         }
+    }
+
+    async function deleteFlipFromFirestore () {
+      firestore().collection('flips').doc(flipID).delete().then(() => {
+        console.log("Flip Document successfully deleted. ");
+        Toast.show('Flip deleted');
+      }).catch((error) => {
+        console.error("Error removing document: ", error);
+      });
+    }
+
+    async function buildDynamicURL() {
+      const link = await dynamicLinks().buildShortLink({
+        //link: 'https://newpodcast.com/' + props.podcast.podcastID,
+        link: 'https://papyrusapp.page.link/flips/' + props.item.flipID,
+        // domainUriPrefix is created in your firebase console
+        domainUriPrefix: 'https://papyrusapp.page.link/',
+        // optional set up which updates firebase analytics campaign
+        // "banner". This also needs setting up before hand
+        analytics: {
+          campaign: 'banner',
+        },
+        android: {
+          packageName: 'com.papyrus_60',
+          minimumVersion: '8',
+          fallbackUrl: 'http://www.papyruspodcasts.com'
+        },
+        social: {
+          title: props.item.bookName,
+          descriptionText: props.item.flipDescription,
+          imageUrl: props.item.flipPictures[0]
+        }
+      });
+    
+      console.log("dynamicURL created for the link: ",link);
+      Share.share({
+        title : props.item.bookName,
+        //url : link,
+        message: link
+      },{
+        dialogTitle: 'Share Flip'
+      })
+      return link;
+    }
+
+    async function addLikeToFlipDoc(){
+
+      firestore().collection('users').doc(realUserID).collection('privateUserData')
+        .doc(privateDataID).set({
+          flipsLiked : firestore.FieldValue.arrayUnion(props.item.flipID)
+        },{merge:true}).then(() => {
+          console.log("Added to flips Liked array in user privaate doc");
+        }).catch((err) => console.log("Error in adding flip to liked flips list of user",err))
+
+        firestore().collection('flips').doc(props.item.flipID).set({
+          numUsersLiked : firestore.FieldValue.increment(1)
+        },{merge:true}).then(() => {
+          console.log("added 1 to number of users who liked this flip")
+        }).catch((err) => {
+          console.log("Error in adding likes to flipDoc",err);
+        })
+    }
+
+    async function removeLikeFromFlipDoc(){
+      firestore().collection('users').doc(realUserID).collection('privateUserData')
+        .doc(privateDataID).set({
+          flipsLiked : firestore.FieldValue.arrayRemove(props.item.flipID)
+        },{merge:true}).then(() => {
+          console.log("Removed from flips Liked array in user privaate doc");
+        }).catch((err) => console.log("Error in removing flip from liked flips list of user",err))
+
+        firestore().collection('flips').doc(props.item.flipID).set({
+          numUsersLiked : firestore.FieldValue.increment(-1)
+        },{merge:true}).then(() => {
+          console.log("subtracted 1 from number of users who liked this flip")
+        }).catch((err) => {
+          console.log("Error in removing likes from flipDoc",err);
+        })
+    }
+
+    async function updateLikes() {
+      if(isFlipLikedRedux[props.item.flipID] == true)
+      {
+        dispatch({type:"REMOVE_FROM_FLIPS_LIKED",payload:props.item.flipID})
+        removeLikeFromFlipDoc();
+        setNumLikes(numLikes-1);
+        setLiked(false);
+      }
+      else
+      {
+        dispatch({type:"ADD_TO_FLIPS_LIKED",payload:props.item.flipID})
+        addLikeToFlipDoc();
+        setNumLikes(numLikes+1);
+        setLiked(true);
+      }
     }
 
     function renderDots () {
@@ -58,10 +183,49 @@ const FlipItem = React.memo((props) => {
         )
       }
 
+      function renderMenu() {
+        return (
+          <Menu>
+          <MenuTrigger>
+          <IconAntDesign name="ellipsis1" size={26}/>
+          </MenuTrigger>
+          <MenuOptions customStyles={{optionWrapper: { margin: 5}}}>
+          <MenuOption text='Edit' onSelect={() => {
+            props.navigation.navigate('FlipPreviewScreen',{
+              flipDescription : props.item.flipDescription,
+              flipPictures : props.item.flipPictures,
+              bookName : props.item.bookName,
+              editing : true,
+              flipID : props.item.flipID
+            })
+          }}/>
+          <MenuOption text='Delete' onSelect={async() => {
+            Alert.alert(  
+              'Are you sure you want to delete this flip?',  
+              '',  
+              [  
+                {  
+                  text: 'Cancel',  
+                  onPress: () => console.log('Cancel Pressed'),  
+                  style: 'cancel',  
+                },  
+                {
+                  text: 'OK', onPress: async() => {
+                    deleteFlipFromFirestore();
+                    console.log('OK Pressed')
+                    }
+                },  
+              ]  
+          );
+          }}/>
+          </MenuOptions>
+          </Menu>
+        );
+      }
 
     return (
-        <View style={{paddingBottom:20,borderBottomWidth:1,borderTopWidth:1, borderColor:'#dddd'}}>
-            
+        <View style={{paddingBottom:0,borderBottomWidth:1,borderTopWidth:1, borderColor:'#dddd'}}>
+            <View style={{backgroundColor:'#dddd',flexDirection:'row'}}>
             <TouchableOpacity 
             onPress={() => retrieveUserData()}
             style={{flexDirection:'row',padding:5}}>
@@ -71,9 +235,19 @@ const FlipItem = React.memo((props) => {
                         style={{height:width/12,width :width/12,borderRadius:20}} />
                 </View>
                 <View style={{borderColor:'black',borderWidth:0,justifyContent:'center'}}>
-                    <Text style={{fontWeight:'bold'}}> {props.item.creatorName}</Text>
+                    <Text style={{fontFamily:'Montserrat-Bold'}}> {props.item.creatorName}</Text>
+                     
                 </View>            
             </TouchableOpacity>
+            <View style={{flex:1,alignItems:'flex-end',justifyContent:"center",paddingRight:5}}>
+            {
+              props.item.bookName !== undefined &&
+              <Text style={{fontFamily:'Montserrat-Italic',fontSize:10}}>
+                {props.item.bookName}
+              </Text>
+            }
+            </View>
+            </View>
             <View>
                 {/* <Image 
                     source={{uri:props.item.flipPictures[0]}}
@@ -90,14 +264,19 @@ const FlipItem = React.memo((props) => {
                 >
             {
                props.item.flipPictures && props.item.flipPictures.map((img, index) => 
-                
+                <TouchableOpacity onPress={() => {
+                  props.navigation.navigate('MainFlipItem',{
+                    item : props.item,
+                    resizeModes : resizeModes
+                  })
+                }}>
                 <Image
                   key={`${index}-${img}`}
                   source={{ uri: img }}
                   resizeMode='cover'
-                  style={{ width:width, height: width }}
+                  style={{ width:width, height: width/2 }}
                 />
-                
+                </TouchableOpacity>
               )
             }
           </ScrollView>
@@ -109,12 +288,50 @@ const FlipItem = React.memo((props) => {
                 renderDots()
             }
                 </View>
-            <View style={{marginHorizontal:5}}>
-                <Text style={{fontWeight:'bold'}}>{props.item.creatorName} 
-                <Text style={{fontWeight:'normal', fontFamily:'Andika-R'}}>  {props.item.flipDescription} </Text>
+            <View style={{marginHorizontal:5,height:width/3.5,marginTop:5}}>
+                <Text style={{fontWeight:'bold',height:width/4,lineHeight:width/28}}>{props.item.creatorName} 
+                <Text style={{fontWeight:'normal',fontFamily:'Montserrat-Regular',fontSize:width/28}}>  {props.item.flipDescription.slice(0,100)}
+                
+                {
+                  props.item.flipDescription.length > 100
+                  &&
+                  <Text onPress={() => {
+                    props.navigation.navigate('MainFlipItem',{
+                      item : props.item,
+                      resizeModes : resizeModes
+                    })
+                  }} 
+                  style={{fontWeight:'normal',color:'gray', fontFamily:'Montserrat-Regular',fontSize:width/30}}>...Read More</Text>
+                }
+
+                 </Text>
                 </Text>
+                <View style={{flexDirection:'row',justifyContent:'space-between'}}>
                 <Text style={{color:"gray",fontSize:10}}>{moment(props.item.createdOn).fromNow()}</Text>
+              
+                
+                </View>
+                
             </View>
+            <View style={{width:width,flexDirection:'row',alignItems:'flex-start'}}>
+                <TouchableOpacity style={{paddingLeft:10,paddingTop:10,paddingBottom:10,paddingRight:5}} onPress={() => updateLikes()} > 
+                  <IconAntDesign 
+                    name={isFlipLikedRedux[props.item.flipID] ? "heart" : "hearto"}
+                    color={isFlipLikedRedux[props.item.flipID] ? 'red' : 'black' } 
+                    size={16} />
+                </TouchableOpacity>
+                <Text style={{paddingTop:8}}>{numLikes} </Text>
+                <TouchableOpacity style={{padding:10}} onPress={() => buildDynamicURL()} > 
+                  <Icon name="share" size={16} style={{color:'black'}}/>
+                </TouchableOpacity>
+                <View style={{position:'absolute',bottom:2,right:10}}>
+                {
+                  (isAdmin == true || props.item.creatorID == realUserID)
+                  &&
+                  renderMenu()
+                }
+                </View>
+                </View>
         </View>
     )
 

@@ -25,9 +25,7 @@ import {
   MenuTrigger,
 } from 'react-native-popup-menu';
 
-var {width, height}=Dimensions.get('window')
-
-
+var {width, height}=Dimensions.get('window');
 
  class Podcast extends React.Component {
    // if(createdOn === null)

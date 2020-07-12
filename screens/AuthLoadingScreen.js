@@ -23,11 +23,25 @@ const  AuthLoadingScreen = (props) => {
         console.log("[getInitialUrl] DYNAMIC LINK URL: ",url)
         if (url) {
           console.log("Linking.getInitialURL() : ",url);
-          const prefix = "https://papyrusapp.page.link/player/";
-          const prefixLength = prefix.length;
-          const podcastID = url["url"].slice(prefixLength);
-          console.log("[AUTH LOADING] Linking.getInitialURL() podcastID: ",podcastID);
-          dispatch({type:"PODCAST_ID_FROM_EXTERNAL_LINK",payload:podcastID});
+
+          const prefixPlayer = "https://papyrusapp.page.link/player/";
+          const prefixFlip = "https://papyrusapp.page.link/flips/";
+
+          const playerIndex = url["url"].search("player");
+          const flipsIndex = url["url"].search("flips");
+          if(flipsIndex != -1)
+          {
+            const flipID = url["url"].slice(prefixFlip.length);
+            console.log("[AUTH LOADING] handleOpenURL flipID: ",flipID);
+            dispatch({type:"FLIP_ID_FROM_EXTERNAL_LINK",payload:flipID});
+          }
+
+          if(playerIndex != -1)
+          {
+            const podcastID = url["url"].slice(prefixPlayer.length);
+            console.log("[AUTH LOADING] handleOpenURL podcastID: ",podcastID);
+            dispatch({type:"PODCAST_ID_FROM_EXTERNAL_LINK",payload:podcastID});
+          }
         }
      }).catch(error => { // Error handling });
      console.log(error);
@@ -56,11 +70,25 @@ const  AuthLoadingScreen = (props) => {
       dynamicLinks().onLink(url => {
         // Your custom logic here 
         console.log("DYNAMIC LINK URL: ",url)
-        const prefix = "https://papyrusapp.page.link/player/";
-      const prefixLength = prefix.length;
-      const podcastID = url["url"].slice(prefixLength);
-      console.log("[AUTH LOADING] handleOpenURL podcastID: ",podcastID);
-      dispatch({type:"PODCAST_ID_FROM_EXTERNAL_LINK",payload:podcastID});
+        const prefixPlayer = "https://papyrusapp.page.link/player/";
+        const prefixFlip = "https://papyrusapp.page.link/flips/";
+
+        const playerIndex = url["url"].search("player");
+        const flipsIndex = url["url"].search("flips");
+        if(flipsIndex != -1)
+        {
+          const flipID = url["url"].slice(prefixFlip.length);
+          console.log("[AUTH LOADING] handleOpenURL flipID: ",flipID);
+          dispatch({type:"FLIP_ID_FROM_EXTERNAL_LINK",payload:flipID});
+        }
+
+        if(playerIndex != -1)
+        {
+          const podcastID = url["url"].slice(prefixPlayer.length);
+          console.log("[AUTH LOADING] handleOpenURL podcastID: ",podcastID);
+          dispatch({type:"PODCAST_ID_FROM_EXTERNAL_LINK",payload:podcastID});
+        }
+      
      });
       console.log("[AUTH LOADING] handleOpenURL url: ",url["url"]);
       
