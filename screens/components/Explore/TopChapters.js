@@ -46,6 +46,7 @@ const TopChapters = React.memo((props)=> {
         {
           if(podcast === null || (podcast!== null && podcast.podcastID != props.item.podcastID))
           {
+            dispatch({type:"SET_FLIP_ID",payload:null});
             dispatch({type:"SET_CURRENT_TIME", payload:0})
             dispatch({type:"SET_DURATION", payload:props.item.duration});
             dispatch({type:"SET_PAUSED", payload:false});

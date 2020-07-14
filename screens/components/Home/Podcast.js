@@ -390,6 +390,8 @@ var {width, height}=Dimensions.get('window');
       // const podcastCollection = await firestore().collectionGroup('podcasts')
       //                        .where('podcastID','==',this.props.podcast.podcastID).get();
       // const podcastDocumentData = podcastCollection.docs[0]._data;
+
+      this.props.dispatch({type:"SET_FLIP_ID",payload:null});
       this.props.dispatch({type:"SET_CURRENT_TIME", payload:0})
       this.props.dispatch({type:"SET_DURATION", payload:this.props.podcast.duration})
       this.props.dispatch({type:"SET_PAUSED", payload:false})

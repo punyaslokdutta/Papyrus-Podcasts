@@ -140,6 +140,7 @@ const styles = StyleSheet.create({
                              .where('podcastID','==',props.podcast.objectID).get();
     const podcastDocumentData = podcastCollection.docs[0]._data;
     console.log("[SearchPodcastItem] podcastDocumentData : ", podcastDocumentData);
+    dispatch({type:"SET_FLIP_ID",payload:null});
     dispatch({type:"SET_CURRENT_TIME", payload:0})
     dispatch({type:"SET_DURATION", payload:podcastDocumentData.duration})
     dispatch({type:"SET_PAUSED", payload:false})

@@ -29,6 +29,7 @@ import ProfileFlipScreenVertical from './screens/components/Profile/ProfileFlipS
 import updateAnimation from './assets/animations/10251-update-para-coverme.json'
 import userReducer from './reducers/userReducer'
 import rootReducer from './reducers/rootReducer';
+import flipReducer from './reducers/flipReducer';
 import recorderReducer from './reducers/recorderReducer'
 import AuthLoadingScreen from './screens/AuthLoadingScreen'
 import SignInScreen from './screens/SignInScreen'
@@ -447,7 +448,8 @@ const AppSwitchNavigator = createSwitchNavigator(
  const mainReducer = combineReducers({
   recorderReducer,
   userReducer,
-  rootReducer
+  rootReducer,
+  flipReducer
 })
 
 const store = createStore(mainReducer, applyMiddleware(thunk))
@@ -459,8 +461,8 @@ export default class App extends Component {
      super(props)
      {
       this.state={
-          currentVersionCode : 19,
-          currentVersion : "1.0.18"
+          currentVersionCode : 20,
+          currentVersion : "1.0.19"
         }
      }
     }

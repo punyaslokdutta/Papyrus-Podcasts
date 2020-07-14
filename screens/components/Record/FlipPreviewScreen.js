@@ -18,6 +18,7 @@ import modalJSON from '../../../assets/animations/modal-microphone.json';
 import modalJSON2 from '../../../assets/animations/modal-animation-2.json';
 import LottieView from 'lottie-react-native';
 import { set } from 'react-native-reanimated';
+import AddAudioFlipComponent from './AddAudioFlipComponent';
 
 const { width, height } = Dimensions.get('window');
 const addPictureImage = 'https://storage.googleapis.com/papyrus-274618.appspot.com/icons8-add-image-64.png';
@@ -28,7 +29,11 @@ const FlipPreviewScreen = (props)=> {
   const [publishLoading,setPublishLoading] = useState(false);
   const [previewHeaderText,setPreviewHeaderText] = useState("Create Flip");
   const [bookName,setBookName] =useState("");
+  const isAudioFlip = props.navigation.state.params.audioFlip;
   const [flipDescription,setFlipDescription] = useState(props.navigation.state.params.flipDescription);
+  const [flipLocalAudio,setFlipLocalAudio] = useState(false);
+  const [flipAudioDownloadURL,setFlipAudioDownloadURL] = useState(false);
+  const [durationState,setDurationState] = useState(0);
   const name = useSelector(state=>state.userReducer.name);
   const displayPictureURL = useSelector(state=>state.userReducer.displayPictureURL);
 
@@ -40,25 +45,12 @@ const FlipPreviewScreen = (props)=> {
     setPreviewHeaderText("Edit Flip");
   },[])
 
-  async function validateAndAddFlipToFirestore(){
-    if(props.navigation.state.params.flipPictures.length == 0)
-    {
-      alert('Please add a picture for your flip');
-      return;
-    }
+  function savePodcast(audioFilePath,duration) {
+    setFlipLocalAudio(audioFilePath);
+    setDurationState(duration);
+  }
 
-    if(flipDescription.length == 0)
-    {
-      alert('Please describe your flip');
-      return;
-    }
-
-    if(bookName.length == 0)
-    {
-      alert('Please provide a book related to your flip');
-      return;
-    }
-
+  async function addFlipToFirestore() {
     try{
       if(props.navigation.state.params.editing === true){
         firestore().collection('flips').doc(props.navigation.state.params.flipID).set({
@@ -100,8 +92,142 @@ const FlipPreviewScreen = (props)=> {
         console.log(error);
       } 
       finally{
+        setFlipAudioDownloadURL(false);
         props.navigation.navigate('HomeScreen');
       }
+  }
+
+  async function addAudioFlipToFirestore() {
+    try{
+      if(props.navigation.state.params.editing === true){
+        firestore().collection('flips').doc(props.navigation.state.params.flipID).set({
+          flipDescription : flipDescription,
+          flipPictures : props.navigation.state.params.flipPictures,
+          bookName : bookName,
+          lastEditedOn : moment().format() 
+        },{merge:true}).then(() => {
+          Toast.show('Flip edited successfully');
+        }).catch((err) => {
+          console.log("Error in editing text flip in firestore :- ",err)
+          alert('Failed to post edited flip !!!');
+        });
+      }
+      else{
+        firestore().collection('flips').add({
+          flipDescription : flipDescription,
+          flipPictures : props.navigation.state.params.flipPictures,
+          creatorID : userID,
+          isAudioFlip : true,
+          audioFileLink : flipAudioDownloadURL,
+          duration : durationState,
+          creatorName : name,
+          bookName : bookName,
+          creatorPicture : displayPictureURL,
+          createdOn : moment().format(),
+          lastEditedOn : moment().format(),
+          numUsersLiked : 0
+        }).then((docRef) => {
+          console.log('Audio Flip added to firestore with ID',docRef.id);
+          firestore().collection('flips').doc(docRef.id).set({
+            flipID : docRef.id
+          },{merge:true});
+          Toast.show('Audio Flip posted successfully');
+        }).catch((err) => {
+          console.log("Error in adding audio flip to firestore :- ",err)
+          alert('Failed to post audio flip !!!');
+        });
+      }
+      }
+      catch(error){
+        console.log(error);
+      } 
+      finally{
+        setFlipAudioDownloadURL(false);
+        props.navigation.navigate('HomeScreen');
+      }
+  }
+
+  useEffect(() => {
+    if(flipAudioDownloadURL != false)
+    {
+      addAudioFlipToFirestore();
+    }
+  },[flipAudioDownloadURL])
+
+
+  async function uploadAudioToStorage() {
+    console.log(flipLocalAudio);
+    var refPath = "flips/audio/" + userID + "_" + moment().format() + ".m4a";
+    var storageRef = storage().ref(refPath);
+    console.log("Before storageRef.putFile in uploadAudioToStorage ");
+    try{
+      flipLocalAudio && storageRef.putFile(flipLocalAudio).on(
+        firebase.storage.TaskEvent.STATE_CHANGED,
+        snapshot => {
+          //setIndeterminate(false);
+          console.log("snapshot: " + snapshot.state);
+          console.log("progress: " + (snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+          //setProgress((snapshot.bytesTransferred / snapshot.totalBytes));
+          
+          if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+            console.log("Success");
+            //setIndeterminate(true);
+          }
+        },
+        error => {
+          //unsubscribe();
+          console.log("File upload error code: " + error.code);
+          console.log("File upload error: " + error.toString()); 
+        },
+        () => {
+          storageRef.getDownloadURL()
+            .then((downloadUrl) => {
+              console.log("File available at: " + downloadUrl);
+              setFlipAudioDownloadURL(downloadUrl);
+              //setUploadPodcastSuccess(true);
+            })
+            .catch(err => {
+              console.log("Error in storageRef.getDownloadURL() in uploadAudioToStorage in FlipPreviewScreen: ",err);
+            })
+        }
+      )
+    }
+    catch(error){
+      console.log("Flip Audio upload error: ",error);
+    }
+  }
+
+  async function validateAndAddFlipToFirestore(){
+    if(props.navigation.state.params.flipPictures.length == 0)
+    {
+      alert('Please add a picture for your flip');
+      return;
+    }
+
+    if(flipDescription.length == 0)
+    {
+      alert('Please describe your flip');
+      return;
+    }
+
+    if(bookName.length == 0)
+    {
+      alert('Please provide a book related to your flip');
+      return;
+    }
+
+   
+    if(isAudioFlip == true)
+    {
+      if(flipLocalAudio == false)
+      {
+        alert('Please record an audio for your flip');
+        return;
+      }
+      uploadAudioToStorage();
+    }
+    else
+      addFlipToFirestore();
   }
 
   function renderPublishText(){
@@ -184,6 +310,12 @@ const FlipPreviewScreen = (props)=> {
             renderDots()
           }
           </View>
+          {
+            isAudioFlip &&
+            <View>
+            <AddAudioFlipComponent savePodcast={savePodcast}/>
+            </View>
+          }
           <View style={{marginTop:20,alignItems:'center',justifyContent:'center'}} >
             <TextInput
               style={styles.TextInputStyleClass2}

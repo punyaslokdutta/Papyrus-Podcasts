@@ -158,20 +158,31 @@ const AddFlipScreen = (props)=> {
             <LottieView style={{
         width:width/2,paddingLeft:width*3/25,paddingTop:10}} source={modalJSON2} autoPlay loop />
             <View style={{justifyContent:'center',alignItems:'center',textAlign:'center'}}>
-              <Text style={{marginHorizontal:5,paddingHorizontal:5,borderWidth:1,borderColor:'#dddd', fontFamily:'Andika-R',fontSize:25,backgroundColor:'white',alignSelf:'center'}}> Add audio to your flip? </Text>
+              <Text style={{marginHorizontal:5,paddingHorizontal:5,borderWidth:1,borderColor:'#dddd', fontFamily:'Andika-R',fontSize:20,backgroundColor:'white',alignSelf:'center'}}> Add audio to your flip? </Text>
               </View>
               {/* <View style={{alignItems:'center'}}>
                 <Text style={{fontSize:30}}> OR </Text>
                 </View> */}
                 <View style={{marginTop:width/6,flexDirection:'column'}}>
                  <View style={{borderBottomWidth:0.25,width:width*3/4}}/> 
+                 <TouchableOpacity onPress={() => {
+                  setIsModalVisible(false);
+                  props.navigation.navigate('FlipPreviewScreen',{
+                    flipPictures : flipImages.slice(0,flipImages.length-1),
+                    flipDescription : flipText,
+                    audioFlip : true
+                  });
+                  //addFlipToFirestore();
+                }}>
                 <Text style={{fontFamily:'Andika-R',fontSize:18,backgroundColor:'white',alignSelf:'center'}}> Yes </Text>
+                </TouchableOpacity>
                 <View style={{borderWidth:0.25,width:width*3/4}}/> 
                 <TouchableOpacity onPress={() => {
                   setIsModalVisible(false);
                   props.navigation.navigate('FlipPreviewScreen',{
                     flipPictures : flipImages.slice(0,flipImages.length-1),
-                    flipDescription : flipText
+                    flipDescription : flipText,
+                    audioFlip : false
                   });
                   //addFlipToFirestore();
                 }}>

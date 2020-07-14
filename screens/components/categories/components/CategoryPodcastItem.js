@@ -172,6 +172,7 @@ const styles = StyleSheet.create({
 
       return (
         <TouchableOpacity  onPress={(()=>{
+          dispatch({type:"SET_FLIP_ID",payload:null});
           dispatch({type:"SET_CURRENT_TIME", payload:0})
           dispatch({type:"SET_DURATION", payload:props.podcast.duration})
           dispatch({type:"SET_PAUSED", payload:false})

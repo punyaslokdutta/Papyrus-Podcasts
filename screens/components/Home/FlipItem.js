@@ -1,4 +1,4 @@
-import { Text, Dimensions,ScrollView,Share, Image,View,Animated,StyleSheet,ImageBackground, TouchableOpacity,TouchableNativeFeedback,Alert } from 'react-native'
+import { Text, Dimensions,ScrollView,Share, Image,View,Animated,StyleSheet,ImageBackground, TouchableOpacity,TouchableNativeFeedback,Alert, ActivityIndicator } from 'react-native'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import React, { Component, useEffect,useState,useRef } from 'react';
 import * as theme from '../constants/theme';
@@ -9,6 +9,8 @@ import {useSelector, useDispatch} from "react-redux"
 import { withFirebaseHOC } from '../../config/Firebase';
 import firestore from '@react-native-firebase/firestore';
 import moment from "moment";
+import Sound from 'react-native-sound';
+import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 import LinearGradient from 'react-native-linear-gradient';
 import {
@@ -32,10 +34,73 @@ const FlipItem = React.memo((props) => {
     const [numLikes,setNumLikes] = useState(props.item.numUsersLiked);
     const [liked,setLiked] = useState(isFlipLikedRedux[props.item.flipID]);
     const dispatch = useDispatch();
+    const [loading,setLoading] = useState(false);
+    const paused = useSelector(state=>state.flipReducer.paused);
+    const isFlipPlaying = useSelector(state=>state.flipReducer.isFlipPlaying);
+    const currentFlipID = useSelector(state=>state.flipReducer.currentFlipID);
+    const [pausedState,setPausedState] = useState(true);
+    const [playerText,setPlayerText] = useState("play");
     const flipID = props.item.flipID;
+    const playbackState = usePlaybackState();
+
+    const [player,setPlayer] = useState(false);
     var [resizeModes,setResizeModes] = useState([])
 
     var scrollX = new Animated.Value(0);
+
+    useEffect(() => {
+      if(props.item.flipID == currentFlipID)
+      {
+        if(pausedState == true )
+          setPlayerText("play");
+        else
+          setPlayerText("pause");
+      }
+      
+    },[pausedState])
+
+    useEffect(() => {
+      console.log("sccdscds");
+      if(props.item.flipID != currentFlipID && playerText == "pause")
+      {
+        setPlayerText("play");
+        setPlayer(false);
+      }
+    },[currentFlipID])
+
+    useEffect(() => {
+      TrackPlayer.addEventListener('remote-stop', () => {
+        dispatch({type:"SET_FLIP_ID",payload:null});
+        setPlayerText("play");
+        TrackPlayer.destroy()
+      });
+      TrackPlayer.addEventListener('remote-play', () => {
+        setPausedState(true);
+        setPausedState(false);
+      });
+      TrackPlayer.addEventListener('remote-pause', () => {
+        setPausedState(false);
+        setPausedState(true);
+      });
+    },[])
+
+    // useEffect(() => {
+    //   console.log("playbackState:",playbackState);
+    //   if(currentFlipID == props.item.flipID)
+    //   {
+    //     if(playbackState == TrackPlayer.STATE_PLAYING){
+    //       console.log("IN STATE PLAYING");
+    //       setPlayerText("pause")
+    //     }
+    //     else if(playbackState == TrackPlayer.STATE_BUFFERING){
+    //       dispatch({type:"SET_LOADING_PODCAST", payload:true});
+    //     }
+    //     else if(playbackState == TrackPlayer.STATE_PAUSED){
+    //       setPlayerText("play")
+    //     }
+    //   }
+    // },[playbackState])
+    
 
     useEffect(() => {
       props.item.flipPictures !== undefined &&
@@ -160,6 +225,90 @@ const FlipItem = React.memo((props) => {
         setNumLikes(numLikes+1);
         setLiked(true);
       }
+    }
+
+    function stopPodcast() {
+        dispatch({type:"SET_LAST_PLAYING_CURRENT_TIME",payload:null});
+        dispatch({type:"SET_LAST_PLAYING_PODCASTID",payload:null});
+        //BackHandler.removeEventListener("hardwareBackPress",  this.props.back_Button_Press());
+        //dispatch({type:"TOGGLE_PLAY_PAUSED"})
+        TrackPlayer.destroy()
+        dispatch({type:"SET_PODCAST", payload: null})
+    }
+
+    async function startAudioFlip() {
+      await TrackPlayer.setupPlayer({});
+      await TrackPlayer.updateOptions({
+        stopWithApp: true,
+        capabilities: [
+          TrackPlayer.CAPABILITY_PLAY,
+          TrackPlayer.CAPABILITY_PAUSE,
+          TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
+          TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS,
+          TrackPlayer.CAPABILITY_STOP
+        ],
+        compactCapabilities: [
+          TrackPlayer.CAPABILITY_PLAY,
+          TrackPlayer.CAPABILITY_PAUSE
+        ],
+        alwaysPauseOnInterruption: true,
+        notificationCapabilities: [
+          TrackPlayer.CAPABILITY_PLAY,
+          TrackPlayer.CAPABILITY_PAUSE,
+          TrackPlayer.CAPABILITY_STOP
+        ]
+      });
+      
+      await TrackPlayer.add({
+        id: "local-track",
+        url: props.item.audioFileLink,
+        title: props.item.bookName,
+        artist: props.item.creatorName,
+        artwork: props.item.flipPictures[0],
+        duration: props.item.duration
+      });
+      
+      await TrackPlayer.play();
+
+      setPlayer(true);
+    }
+
+    function renderFlipPlayer() {
+      if(loading)
+        return <ActivityIndicator color='black' size={'small'}/>
+      else
+        return (
+
+            <TouchableOpacity onPress={() => {
+              //setPausedState(false);
+              if(playerText == "pause")
+              {
+                setPlayerText("play");
+                dispatch({type:"SET_FLIP_PLAYING",payload:false});
+                TrackPlayer.pause();
+              }
+              else
+              {
+                //setLoading(true);
+                setPlayerText("pause")
+                dispatch({type:"SET_FLIP_PAUSED",payload:false})
+
+                if(player == false) 
+                {
+                  stopPodcast();
+                  dispatch({type:"SET_FLIP_ID",payload:props.item.flipID});
+                  dispatch({type:"SET_FLIP_PLAYING",payload:false});
+                  dispatch({type:"SET_FLIP_PLAYING",payload:true});
+                  startAudioFlip();
+                }
+                else
+                  TrackPlayer.play();
+              } 
+            }}>
+              <Icon name={playerText} size={25} color='black'/>
+              {/* <Text> {playerText} </Text> */}
+            </TouchableOpacity>
+      )
     }
 
     function renderDots () {
@@ -288,6 +437,16 @@ const FlipItem = React.memo((props) => {
                 renderDots()
             }
                 </View>
+                {/* {
+                  props.item.isAudioFlip == true &&
+                  
+                } */}
+            {
+                props.item.isAudioFlip == true &&
+                renderFlipPlayer()
+                
+            }
+                
             <View style={{marginHorizontal:5,height:width/3.5,marginTop:5}}>
                 <Text style={{fontWeight:'bold',height:width/4,lineHeight:width/28}}>{props.item.creatorName} 
                 <Text style={{fontWeight:'normal',fontFamily:'Montserrat-Regular',fontSize:width/28}}>  {props.item.flipDescription.slice(0,100)}
@@ -335,7 +494,7 @@ const FlipItem = React.memo((props) => {
         </View>
     )
 
-}, areEqual)
+},areEqual);
 
 export default withFirebaseHOC(FlipItem);
 

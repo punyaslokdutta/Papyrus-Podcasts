@@ -42,6 +42,7 @@ const TrendingPodcast= React.memo((props)=> {
         console.log("[Podcast - BookmarkItem] podcastCollection : ", podcastCollection);
         const podcastDocumentData = podcastCollection.docs[0]._data;
         console.log("[Podcast - BookmarkItem] podcastDocumentData : ", podcastDocumentData);
+        dispatch({type:"SET_FLIP_ID",payload:null});
         dispatch({type:"SET_CURRENT_TIME", payload:0})
         dispatch({type:"SET_PAUSED", payload:false})
         dispatch({type:"SET_LOADING_PODCAST", payload:true});
@@ -69,6 +70,7 @@ const TrendingPodcast= React.memo((props)=> {
             {
               if(podcast === null || (podcast!== null && podcast.podcastID != props.item.podcastID))
               {
+                dispatch({type:"SET_FLIP_ID",payload:null});
                 dispatch({type:"SET_CURRENT_TIME", payload:0});
                 dispatch({type:"SET_PAUSED", payload:false});
                 dispatch({type:"SET_LOADING_PODCAST", payload:true});

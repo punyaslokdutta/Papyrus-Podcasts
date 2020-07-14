@@ -169,10 +169,17 @@ const Explore = (props) => {
       
     }
 
+
       useEffect(
         () => {
           //SplashScreen.hide();
+          console.log("[HomeScreen] useEffect LOG");
+          props.navigation.addListener('didFocus', (route) => {
+             console.log("HOME TAB PRESSED");
+             dispatch({type:"CHANGE_SCREEN"});
+          });
           fetchExploreItems();
+
           return () => {
             //exitPodcastPlayerAndsetLastPlaying();
             dispatch({type:"SET_PODCAST", payload: null});
@@ -187,8 +194,9 @@ const Explore = (props) => {
         let podcastItem = await firestore().collectionGroup('podcasts').where('podcastID','==',podcastID).get();
         let podcastData = podcastItem.docs[0]._data;
 
-        dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
-        dispatch({type:"SET_CURRENT_TIME", payload:0})
+        dispatch({type:"ADD_NAVIGATION", payload:props.navigation});
+        dispatch({type:"SET_FLIP_ID",payload:null});
+        dispatch({type:"SET_CURRENT_TIME", payload:0});
         dispatch({type:"SET_DURATION", payload:podcastData.duration});
         dispatch({type:"SET_PAUSED", payload:false})
         dispatch({type:"SET_LOADING_PODCAST", payload:true});

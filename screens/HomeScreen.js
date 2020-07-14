@@ -46,9 +46,7 @@ const HomeScreen = (props) => {
       dispatch({type:"CHANGE_SCREEN"});
       });
     retrieveData();
-    return () => {
-      //props.navigation.removeListener('willFocus');
-    }
+
   },[])  
 
   useEffect(() => {
@@ -62,7 +60,7 @@ const HomeScreen = (props) => {
   {
     setLoading(true);
     try{
-      console.log("[HomeScreen] Retrieving Data");
+      console.log("[HomeScreen] Retrieving data - userPreferences : ",userPreferences);
       //For books in section list
       let bookDocuments =  await firestore().collection('books').where('genres','array-contains-any',userPreferences)//.where('reviewPending','==',false)
                            .orderBy('createdOn','desc').limit(bookLimit).get()

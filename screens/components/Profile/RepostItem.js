@@ -192,6 +192,7 @@ var {width, height}=Dimensions.get('window')
       }
       
       console.log("[RepostItem] podcastDocumentData : ", podcastDocumentData);
+      this.props.dispatch({type:"SET_FLIP_ID",payload:null});
       this.props.dispatch({type:"SET_CURRENT_TIME", payload:0})
       this.props.dispatch({type:"SET_DURATION", payload:podcastDocumentData.duration})
       this.props.dispatch({type:"SET_PAUSED", payload:false})

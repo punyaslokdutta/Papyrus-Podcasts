@@ -30,6 +30,7 @@ const ActivityItem = React.memo((props)=> {
         console.log("[ActivityItem] podcastCollection : ", podcastCollection);
         const podcastDocumentData = podcastCollection.docs[0]._data;
         console.log("[ActivityItem] podcastDocumentData : ", podcastDocumentData);
+        dispatch({type:"SET_FLIP_ID",payload:null});
         dispatch({type:"SET_CURRENT_TIME", payload:0})
         dispatch({type:"SET_PAUSED", payload:false})
         dispatch({type:"SET_LOADING_PODCAST", payload:true});
