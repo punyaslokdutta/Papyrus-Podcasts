@@ -173,7 +173,7 @@ const Explore = (props) => {
       useEffect(
         () => {
           //SplashScreen.hide();
-          console.log("[HomeScreen] useEffect LOG");
+          console.log("[ExploreScreen] useEffect LOG");
           props.navigation.addListener('didFocus', (route) => {
              console.log("HOME TAB PRESSED");
              dispatch({type:"CHANGE_SCREEN"});

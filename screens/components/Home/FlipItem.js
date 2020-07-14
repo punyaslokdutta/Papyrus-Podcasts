@@ -9,7 +9,6 @@ import {useSelector, useDispatch} from "react-redux"
 import { withFirebaseHOC } from '../../config/Firebase';
 import firestore from '@react-native-firebase/firestore';
 import moment from "moment";
-import Sound from 'react-native-sound';
 import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 import LinearGradient from 'react-native-linear-gradient';
