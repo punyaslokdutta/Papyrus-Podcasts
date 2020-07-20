@@ -9,6 +9,7 @@ import {useSelector, useDispatch} from "react-redux"
 import { withFirebaseHOC } from '../../config/Firebase';
 import firestore from '@react-native-firebase/firestore';
 import moment from "moment";
+import Slider from '@react-native-community/slider';
 import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 import LinearGradient from 'react-native-linear-gradient';
@@ -24,7 +25,7 @@ const { width, height } = Dimensions.get('window');
 
 const areEqual = (prevProps, nextProps) => true
 
-const FlipItem = React.memo((props) => {
+const FlipItem = (props) => {
     
     const realUserID = props.firebase._getUid();
     const privateDataID = "private" + realUserID;
@@ -41,11 +42,13 @@ const FlipItem = React.memo((props) => {
     const [playerText,setPlayerText] = useState("play");
     const flipID = props.item.flipID;
     const playbackState = usePlaybackState();
+    const { position } = useTrackPlayerProgress()
+
 
     const [player,setPlayer] = useState(false);
-    var [resizeModes,setResizeModes] = useState([])
 
     var scrollX = new Animated.Value(0);
+
 
     useEffect(() => {
       if(props.item.flipID == currentFlipID)
@@ -83,39 +86,34 @@ const FlipItem = React.memo((props) => {
       });
     },[])
 
-    // useEffect(() => {
-    //   console.log("playbackState:",playbackState);
-    //   if(currentFlipID == props.item.flipID)
-    //   {
-    //     if(playbackState == TrackPlayer.STATE_PLAYING){
-    //       console.log("IN STATE PLAYING");
-    //       setPlayerText("pause")
-    //     }
-    //     else if(playbackState == TrackPlayer.STATE_BUFFERING){
-    //       dispatch({type:"SET_LOADING_PODCAST", payload:true});
-    //     }
-    //     else if(playbackState == TrackPlayer.STATE_PAUSED){
-    //       setPlayerText("play")
-    //     }
-    //   }
-    // },[playbackState])
+    useEffect(() => {
+      if(props.item.flipID == currentFlipID)
+      {
+        console.log("position: ",position)
+        if(position >= props.item.duration/1000 - 1 && position < props.item.duration/1000)
+        {
+          setPlayerText('play');
+          setPlayer(false);
+        }
+      }
+    },[position])
     
 
-    useEffect(() => {
-      props.item.flipPictures !== undefined &&
-      props.item.flipPictures.map((img,index) => {
-          Image.getSize(img, (width, height) => {
-              var localResizeModes = resizeModes;
-              if(height > width)
-                  localResizeModes.push('cover');
-              else
-                  localResizeModes.push('contain');
+  //   useEffect(() => {
+  //     props.item.flipPictures !== undefined &&
+  //     props.item.flipPictures.map((img,index) => {
+  //         Image.getSize(img, (width, height) => {
+  //             var localResizeModes = resizeModes;
+  //             if(height > width)
+  //                 localResizeModes.push('cover');
+  //             else
+  //                 localResizeModes.push('contain');
                   
-              setResizeModes(localResizeModes);    
-          });
+  //             setResizeModes(localResizeModes);    
+  //         });
 
-      })
-  },[])
+  //     })
+  // },[])
 
     async function retrieveUserData(){
         if(realUserID == props.item.creatorID)
@@ -209,6 +207,11 @@ const FlipItem = React.memo((props) => {
         })
     }
 
+    function handleOnSlide(time) {
+      TrackPlayer.seekTo(time)
+      //props.onSlideCapture({seekTime: time});
+    }
+
     async function updateLikes() {
       if(isFlipLikedRedux[props.item.flipID] == true)
       {
@@ -266,19 +269,23 @@ const FlipItem = React.memo((props) => {
         artwork: props.item.flipPictures[0],
         duration: props.item.duration
       });
-      
+      setPlayer(true);
+
       await TrackPlayer.play();
 
-      setPlayer(true);
     }
 
     function renderFlipPlayer() {
       if(loading)
-        return <ActivityIndicator color='black' size={'small'}/>
+        return (
+          <View>
+          <ActivityIndicator color='black' size={'small'}/>
+          </View>
+        )
       else
         return (
-
-            <TouchableOpacity onPress={() => {
+          <View style={{flex:1,flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-start',marginVertical:5,height:width/15,marginHorizontal:8}}>
+            <TouchableOpacity style={{width:width/10,height:width/10}} onPress={() => {
               //setPausedState(false);
               if(playerText == "pause")
               {
@@ -292,7 +299,7 @@ const FlipItem = React.memo((props) => {
                 setPlayerText("pause")
                 dispatch({type:"SET_FLIP_PAUSED",payload:false})
 
-                if(player == false) 
+                if(player == false || (player == true && props.item.flipID != currentFlipID)) 
                 {
                   stopPodcast();
                   dispatch({type:"SET_FLIP_ID",payload:props.item.flipID});
@@ -301,13 +308,88 @@ const FlipItem = React.memo((props) => {
                   startAudioFlip();
                 }
                 else
+                {
+
                   TrackPlayer.play();
+
+                }
               } 
             }}>
-              <Icon name={playerText} size={25} color='black'/>
-              {/* <Text> {playerText} </Text> */}
-            </TouchableOpacity>
+              <Icon name={playerText} size={playerText == 'play' ? 23 : 20} color='black'/>
+            </TouchableOpacity> 
+            {
+              props.item.flipID == currentFlipID 
+              ?
+              <Text> {getMinutesFromSeconds(Math.floor(position))}</Text>
+              :
+              <Text> {getMinutesFromSeconds(0)}</Text>
+            }
+            <View style={{width:width*5/8}}>
+              {
+                props.item.flipID == currentFlipID 
+                ?
+                <Slider
+                  value={position}
+                  minimumValue={1}
+                  maximumValue={props.item.duration/1000}
+                  step={0.01}
+                  onValueChange={(value)=>handleOnSlide(value)}
+                  //onSlidingStart={handlePlayPause}
+                  //onSlidingComplete={handlePlayPause}
+                  minimumTrackTintColor={'black'}
+                  maximumTrackTintColor={'black'}
+                  thumbTintColor={'#F44336'}
+                  //disabled={true}
+                />
+                :
+                <Slider
+                  value={0}
+                  minimumValue={1}
+                  maximumValue={props.item.duration/1000}
+                  step={0.01}
+                  //onValueChange={(value)=>handleOnSlide(value)}
+                  //onSlidingStart={handlePlayPause}
+                  //onSlidingComplete={handlePlayPause}
+                  minimumTrackTintColor={'black'}
+                  maximumTrackTintColor={'black'}
+                  thumbTintColor={'#F44336'}
+                  //disabled={true}
+                />
+              }
+           
+             </View>
+          <Text>{getMinutesFromSeconds(Math.floor(props.item.duration/1000))}</Text>
+            </View>
       )
+    }
+
+    function getMinutesFromSeconds(time) {
+    
+      var hours = null;
+      var minutes = null;
+      var seconds = null;
+      if(time >= 3600)
+      {
+        hours = Math.floor(time / 3600);
+        time = time % 3600;
+      }
+      
+      minutes = time >= 60 ? Math.floor(time / 60) : 0;
+      seconds = Math.floor(time - minutes * 60);
+  
+      if(hours === null)
+      {  
+        return `${minutes >= 10 ? minutes : '0' + minutes}:${
+          seconds >= 10 ? seconds : '0' + seconds
+        }`;
+      }
+      else
+      {
+        return `${hours >= 10 ? hours : '0' + hours}:${
+                  minutes >= 10 ? minutes : '0' + minutes}:${
+                  seconds >= 10 ? seconds : '0' + seconds
+        }`;
+      }
     }
 
     function renderDots () {
@@ -415,7 +497,7 @@ const FlipItem = React.memo((props) => {
                 <TouchableOpacity onPress={() => {
                   props.navigation.navigate('MainFlipItem',{
                     item : props.item,
-                    resizeModes : resizeModes
+                    // resizeModes : resizeModes
                   })
                 }}>
                 <Image
@@ -456,7 +538,7 @@ const FlipItem = React.memo((props) => {
                   <Text onPress={() => {
                     props.navigation.navigate('MainFlipItem',{
                       item : props.item,
-                      resizeModes : resizeModes
+                      //resizeModes : resizeModes
                     })
                   }} 
                   style={{fontWeight:'normal',color:'gray', fontFamily:'Montserrat-Regular',fontSize:width/30}}>...Read More</Text>
@@ -493,7 +575,7 @@ const FlipItem = React.memo((props) => {
         </View>
     )
 
-},areEqual);
+}
 
 export default withFirebaseHOC(FlipItem);
 

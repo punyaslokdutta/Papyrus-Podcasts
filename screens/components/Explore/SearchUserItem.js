@@ -5,6 +5,7 @@ import * as theme from '../constants/theme'
 import {withFirebaseHOC} from '../../config/Firebase';
 import firestore from '@react-native-firebase/firestore';
 import moment from 'moment';
+import { firebase } from '@react-native-firebase/functions';
 import { useDispatch,useSelector} from 'react-redux';
 
 var {width, height}=Dimensions.get('window')

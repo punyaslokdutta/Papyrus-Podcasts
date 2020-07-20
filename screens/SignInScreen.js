@@ -1,6 +1,6 @@
 
 
-import React, {Component, useEffect,useState} from 'react';
+import React, {Component, useEffect,useState,useContext} from 'react';
 import {SafeAreaView,
   ActivityIndicator,
   TouchableOpacity, StyleSheet, Text, View, AsyncStorage, Dimensions, ImageBackground, Button, Image} from 'react-native';
@@ -14,6 +14,8 @@ import { firebase } from '@react-native-firebase/auth';
 import {withFirebaseHOC} from '../screens/config/Firebase'
 import Toast from 'react-native-simple-toast';
 import { useDispatch,useSelector } from 'react-redux';
+import { NetworkContext } from './config/NetworkProvider';
+
 
 var {width:WIDTH, height:HEIGHT}=Dimensions.get('window')
 
@@ -38,6 +40,9 @@ const validationSchema = yup.object().shape({
   const SignInScreen = (props) => {
 
      const dispatch = useDispatch();
+
+     const isConnectedContext = useContext(NetworkContext);
+
      const [loading,setLoading] = useState(false);
      const userEmail = useSelector(state=>state.userReducer.signupEmail);
      const [iconState,setIconState] = useState('eye-off');
@@ -51,7 +56,12 @@ const validationSchema = yup.object().shape({
        setPasswordState(!passwordState);   
      }
 
-  onFBLoginOrRegister = async () => {
+  async function onFBLoginOrRegister () {
+    if(!isConnectedContext.isConnected) 
+    {
+      Toast.show('Please check your Internet connection & try again.');
+      return;
+    }
     LoginManager.logInWithPermissions(['public_profile', 'email',])
       .then((result) => {
         if (result.isCancelled) {
@@ -147,6 +157,12 @@ const validationSchema = yup.object().shape({
       initialValues={{ email: '', password: '' }}
       onSubmit={(values, actions) => {
         //alert(JSON.stringify(values));
+        if(!isConnectedContext.isConnected) 
+        {
+          Toast.show('Please check your Internet connection & try again.');
+          return;
+        }
+
         setLoading(true);
         const trimmedEmail = values.email.trim();
         const trimmedPassword = values.password.trim();
@@ -220,10 +236,19 @@ const validationSchema = yup.object().shape({
                 const trimmedEmail = email.trim();
                 console.log("userEmail: ",email);
                 console.log("trimmedEmail: ",trimmedEmail);
-                props.firebase._passwordReset(trimmedEmail)
-             Toast.show('A password reset mail has been sent to your emailID.')
-            //   :
-            //  Toast.show('Please enter your email ID') }
+                
+                if(email !== undefined && email !== null && email.length!=0)
+                {
+                  isConnectedContext.isConnected
+                  ?
+                  props.firebase._passwordReset(trimmedEmail)
+                  :
+                  Toast.show('Please check your Internet connection & try again.')
+                }
+                else
+                {
+                  Toast.show('Please enter your account emailID')
+                }
               }
               catch(error)
               {

@@ -219,6 +219,11 @@ useEffect(() => {
     else if(playbackState == TrackPlayer.STATE_PAUSED){
       dispatch({type:"SET_PAUSED", payload:true});
     }
+    else if(playbackState == TrackPlayer.STATE_STOPPED){
+      //TrackPlayer.seekTo(0);
+      dispatch({type:"SET_PAUSED", payload:true});
+      TrackPlayer.pause();
+    }
     // else if(playbackState == TrackPlayer.STATE_STOPPED){
     //   dispatch({type:"SET_PODCAST",payload:null});
     // }

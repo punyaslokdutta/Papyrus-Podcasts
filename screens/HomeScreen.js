@@ -1,8 +1,9 @@
-import React, {Component,useState,useEffect} from 'react';
+import React, {Component,useState,useEffect,useContext} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import { StyleSheet, View,SafeAreaView, TextInput, Platform, StatusBar,NativeModules,TouchableOpacity, 
-  ScrollView, Image,Dimensions, Animated,SectionList,ActivityIndicator , 
+  ScrollView, Image,Dimensions, Animated,SectionList,ActivityIndicator, 
   NativeEventEmitter,RefreshControl} from 'react-native';
+import NetInfo from "@react-native-community/netinfo";
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { FlatList } from 'react-native-gesture-handler';
 import BookList from './components/Home/BookList'
@@ -15,11 +16,13 @@ import { Badge } from 'react-native-elements'
 import Shimmer from 'react-native-shimmer';
 import HomeAnimation from './components/Home/HomeAnimation';
 import { MenuProvider } from 'react-native-popup-menu';
+import { NetworkContext } from './config/NetworkProvider';
 
 var {width, height}=Dimensions.get('window')
 
 const HomeScreen = (props) => {
   
+  const isConnectedContext = useContext(NetworkContext);
   const uploadPodcastSuccess = useSelector(state=>state.userReducer.uploadPodcastSuccess);
   const numNotifications = useSelector(state=>state.userReducer.numNotifications);
   const userPreferences = useSelector(state=>state.userReducer.userPreferences);
@@ -30,6 +33,7 @@ const HomeScreen = (props) => {
   const limit = 8;
   const headerPodcastsLimit = 8;
   const bookLimit = 5;
+  const [isConnected,setIsConnected] = useState(true);
   const [podcastPresentMap,setPodcastPresentMap] = useState({});
   const [lastVisible,setLastVisible] = useState(null);
   const [loading,setLoading] = useState(false);
@@ -45,6 +49,11 @@ const HomeScreen = (props) => {
       console.log("HOME TAB PRESSED");
       dispatch({type:"CHANGE_SCREEN"});
       });
+      const unsubscribe = NetInfo.addEventListener(state => {
+        console.log("Connection type", state.type);
+        console.log("Is connected?", state.isConnected);
+        setIsConnected(state.isConnected);
+      });
     retrieveData();
 
   },[])  
@@ -55,6 +64,15 @@ const HomeScreen = (props) => {
       retrieveData();
     
   },[uploadPodcastSuccess])
+
+  function handleConnectivityChange(isConnected) {
+    if (isConnected) {
+      //this.setState({ isConnected });
+    } else {
+      alert("Oops!! No Internet Connection Available");
+      //this.setState({ isConnected });
+    }
+  }
 
   async function retrieveData() 
   {
@@ -70,14 +88,18 @@ const HomeScreen = (props) => {
 
       var initialLimit = headerPodcastsLimit + limit;
       // 16 podcasts of userPreferences
-      let podcasts = await firestore().collectionGroup('podcasts').where('genres','array-contains-any',userPreferences)
-                    .orderBy('lastEditedOn','desc').limit(initialLimit).get();
+      let podcasts = await firestore().collectionGroup('podcasts')
+            .where('genres','array-contains-any',userPreferences).orderBy('lastEditedOn','desc')
+            .limit(initialLimit).get();
 
       // 8 podcasts of lastEditedOn
       let latestPodcasts = await firestore().collectionGroup('podcasts')
-                    .orderBy('lastEditedOn','desc').limit(limit).get();
+                    .orderBy('lastEditedOn','desc')
+                    .limit(limit).get();
 
-      let latestFlips = await firestore().collection('flips').orderBy('lastEditedOn','desc').get();
+      let latestFlips = await firestore().collection('flips')
+                .orderBy('lastEditedOn','desc')
+                .get();
       let latestFlipsData = latestFlips.docs.map(document=>document.data());
 
       let documentData_preferredPodcasts = podcasts.docs.map(document => document.data());
@@ -428,7 +450,7 @@ const HomeScreen = (props) => {
   }
 
 
-  if(loading == true || (loading == false && podcasts.length == 0 && headerPodcastsLimit.length == 0))
+  if(isConnectedContext.isConnected && loading == true)
   {
     return (
       
@@ -447,8 +469,8 @@ const HomeScreen = (props) => {
       </View>  
        
     )
-  }
-  else
+    }
+  else if(isConnectedContext.isConnected == true || (flips.length != 0))
   {
     return (
       <View style = {{paddingBottom:30}}>
@@ -458,6 +480,19 @@ const HomeScreen = (props) => {
       </View>
       </View>
     );
+  }
+  else 
+  {
+    return (
+      <View>
+      {renderMainHeader()}
+
+      <View style={{alignItems:'center',justifyContent:'center'}}>
+        <Image source={require('../assets/images/NoInternet.jpg')} style={{height:height/1.5,width:width}}/>
+        {/* <Text> No Internet Connection</Text> */}
+        </View>
+        </View>
+    )
   }
 }
 

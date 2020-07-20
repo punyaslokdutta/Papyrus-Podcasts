@@ -1,4 +1,4 @@
-import React, {Component, useState,useEffect, useRef, createRef} from 'react';
+import React, {Component, useState,useEffect, useRef, createRef,useContext} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import { StyleSheet,BackHandler, Text, View, SafeAreaView, ActivityIndicator, TextInput, Platform, StatusBar,TouchableOpacity,TouchableNativeFeedback, Dimensions, ScrollView, Image, NativeModules, NativeEventEmitter} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -20,6 +20,7 @@ import SplashScreen from 'react-native-splash-screen';
 import BookList from './components/Home/BookList';
 import Podcast from './components/Home/Podcast';
 import FlipItem from './components/Home/FlipItem';
+import { NetworkContext } from './config/NetworkProvider';
 
 const {width,height} = Dimensions.get('window')
 
@@ -30,6 +31,8 @@ const Explore = (props) => {
 
   const  userid = props.firebase._getUid();
   const privateUserID = "private" + userid;
+
+  const isConnectedContext = useContext(NetworkContext);
 
   const lastPlayingPodcastID = useSelector(state=>state.userReducer.lastPlayingPodcastID);
   const podcast = useSelector(state=>state.rootReducer.podcast);
@@ -426,7 +429,7 @@ const Explore = (props) => {
               <Icon style={{paddingHorizontal:10,paddingTop:20 }} name="search" size={15} />
              
 
-              {"  "}Search podcasts, books, chapters, authors{"  "}
+              {"  "}Search podcasts, books, topics, authors{"  "}
                </Text>
 
         </View>
@@ -436,7 +439,7 @@ const Explore = (props) => {
       )
     }
      
-      if(loading == true)
+      if(isConnectedContext.isConnected && loading == true)
       {
         return (
           
@@ -532,7 +535,7 @@ const Explore = (props) => {
         
         )
       }
-      else
+      else if(isConnectedContext.isConnected || (section1Podcasts.length != 0 || section2Podcasts.length != 0 || recordBooks.length != 0 || storytellers.length != 0 || music.length != 0))
       {
         return (
      
@@ -577,6 +580,19 @@ const Explore = (props) => {
              </View>
               </ScrollView>
           </SafeAreaView>
+        )
+      }
+      else 
+      {
+        return (
+          <View>
+          {renderMainHeader()}
+
+          <View style={{alignItems:'center',justifyContent:'center'}}>
+            <Image source={require('../assets/images/NoInternet.jpg')} style={{height:height/1.5,width:width}}/>
+            {/* <Text> No Internet Connection</Text> */}
+            </View>
+            </View>
         )
       }
   }

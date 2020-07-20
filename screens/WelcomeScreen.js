@@ -9,6 +9,9 @@ import { AccessToken, LoginManager } from 'react-native-fbsdk';
 import { firebase } from '@react-native-firebase/auth';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/FontAwesome'
+import Flag from 'react-native-flags';
+import { NetworkContext } from './config/NetworkProvider';
+import Toast from 'react-native-simple-toast';
 
 const {width,height} = Dimensions.get('window')
 
@@ -32,6 +35,7 @@ const data = [
 
 class WelcomeScreen extends Component {
 
+  static contextType = NetworkContext
    
   constructor(props)
   {
@@ -45,6 +49,11 @@ class WelcomeScreen extends Component {
   }
 
   onFBLoginOrRegister = async () => {
+    if(!this.context.isConnected) 
+    {
+      Toast.show('Please check your Internet connection & try again.');
+      return;
+    }
     LoginManager.logInWithPermissions(['public_profile', 'email',])
       .then((result) => {
         if (result.isCancelled) {
@@ -170,6 +179,10 @@ class WelcomeScreen extends Component {
               <Icon name="facebook" size={20} style={{color:'white'}}/>
           <Text style={{height:height/24,paddingLeft:10, paddingTop:height/175, fontFamily:'Montserrat-Bold',color:'white',fontSize:15,textAlign:'center'}}> FACEBOOK </Text>
           </TouchableOpacity>
+          <View style={{position:'absolute',bottom:height/20,alignSelf:'center'}}>
+      <Text style={{color:'white',fontFamily:'Montserrat-Bold', fontSize:8}}> Handcrafted in  <Flag code="IN" size={16}/> 
+      </Text>
+            </View>
             </View>
           </LinearGradient>
           </View>

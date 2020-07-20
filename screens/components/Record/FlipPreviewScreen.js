@@ -312,7 +312,7 @@ const FlipPreviewScreen = (props)=> {
           </View>
           {
             isAudioFlip &&
-            <View>
+            <View style={{height:height/7,justifyContent:'center',alignItems:'center'}}>
             <AddAudioFlipComponent savePodcast={savePodcast}/>
             </View>
           }

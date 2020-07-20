@@ -26,11 +26,46 @@ const MainFlipItem = React.memo((props) => {
     
     const realUserID = props.firebase._getUid();
     const isAdmin = useSelector(state=>state.userReducer.isAdmin);
+    const [resizeModes,setResizeModes] = useState([]);
+    const [loadingResizeModes,setLoadingResizeModes] = useState(true);
     const dispatch = useDispatch();
     const flipID = props.navigation.state.params.item.flipID;
+    const item = props.navigation.state.params.item;
     var scrollX = new Animated.Value(0);
 
-    
+    useEffect(() => {
+      console.log("In FLIP ITEM ID: ",item.flipID);
+      console.log("Flip Book Name : ",item.bookName);
+
+      item.flipPictures !== undefined &&
+      item.flipPictures.map((img,index) => {
+            console.log("index:",index);
+          Image.getSize(img, (width, height) => {
+              var localResizeModes = resizeModes;
+              console.log("width : ",width,", height : ",height);
+              if(height == (4/3)*width || height == (3/2)*width){
+                localResizeModes.push('contain');
+                console.log('COVER mode');
+              }
+              else{
+                localResizeModes.push('contain');
+                console.log('CONTAIN mode');
+              }
+                  
+              setResizeModes(localResizeModes); 
+              if(resizeModes.length == item.flipPictures.length)
+                setLoadingResizeModes(false);
+                 
+          });
+      })
+      
+
+  },[])
+
+  useEffect(() => {
+    if(resizeModes.length == item.flipPictures.length)
+        setLoadingResizeModes(false);
+  },[resizeModes])
 
     async function retrieveUserData(){
         if(realUserID == props.navigation.state.params.item.creatorID)
@@ -115,7 +150,7 @@ const MainFlipItem = React.memo((props) => {
 
     return (
         <ScrollView style={{paddingBottom:0,borderBottomWidth:1,borderTopWidth:1, borderColor:'#dddd'}}>
-            <View style={{flexDirection:'row'}}>
+            <View style={{flexDirection:'row',paddingBottom:0}}>
             <TouchableOpacity 
             onPress={() => retrieveUserData()}
             style={{flexDirection:'row',padding:5}}>
@@ -153,6 +188,8 @@ const MainFlipItem = React.memo((props) => {
                     useNativeDriver={true}
                 >
             {
+               loadingResizeModes === false
+               ?
                props.navigation.state.params.item.flipPictures && 
                props.navigation.state.params.item.flipPictures.map((img, index) => 
                 
@@ -160,10 +197,12 @@ const MainFlipItem = React.memo((props) => {
                     <Image
                   key={`${index}-${img}`}
                   source={{ uri: img }}
-                  resizeMode={props.navigation.state.params.resizeModes[index]}
+                  resizeMode={resizeModes[index]}
                   style={{ width:width, height: width*1.5 }}
                 />      
               )
+              :
+              <View style={{ backgroundColor:'#dddd', width:width, height: width*1.5 }}/>  
             }
           </ScrollView>
 
@@ -174,7 +213,7 @@ const MainFlipItem = React.memo((props) => {
                 renderDots()
             }
                 </View>
-            <View style={{marginHorizontal:5}}>
+            <View style={{marginHorizontal:5,paddingBottom:height/6}}>
                 <Text style={{fontWeight:'bold'}}>{props.navigation.state.params.item.creatorName} 
                 <Text style={{fontWeight:'normal', fontFamily:'Montserrat-Regular'}}>  {props.navigation.state.params.item.flipDescription} </Text>
                 </Text>
@@ -194,7 +233,7 @@ const MainFlipItem = React.memo((props) => {
         </ScrollView>
     )
 
-}, areEqual)
+  }, areEqual)
 
 export default withFirebaseHOC(MainFlipItem);
 

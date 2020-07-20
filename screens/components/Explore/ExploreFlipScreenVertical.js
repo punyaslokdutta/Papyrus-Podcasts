@@ -110,7 +110,7 @@ class ExploreFlipScreenVertical extends React.Component {
   renderData = ({item,index}) =>
   {
       return(
-        <View style={{padding:2}}>
+        <View style={{paddingVertical:2}}>
       <FlipItem item={item} index={index} navigation={this.props.navigation}/>
       </View>
       )

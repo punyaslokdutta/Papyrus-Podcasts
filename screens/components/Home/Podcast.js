@@ -18,6 +18,8 @@ import FontAwesome, { Icons } from 'react-native-vector-icons/FontAwesome';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 import Toast from 'react-native-simple-toast';
 import likeButton from '../../../assets/animations/836-like-button.json';
+import { NetworkContext } from '../../config/NetworkProvider';
+
 import {
   Menu,
   MenuOptions,
@@ -30,6 +32,8 @@ var {width, height}=Dimensions.get('window');
  class Podcast extends React.Component {
    // if(createdOn === null)
   //    createdOn = props.podcast.createdOn.slice(0,10);
+  static contextType = NetworkContext
+
     constructor(props)
     {
      super(props)
@@ -446,8 +450,32 @@ var {width, height}=Dimensions.get('window');
 
       return (
        
-          
-           <View style={{backgroundColor:'white'}}>
+           <View>
+             <View style={{backgroundColor:'#dddd',flexDirection:'row'}}>
+            <TouchableOpacity 
+            onPress={() => {
+              this.retrieveUserPrivateDoc(this.props.podcast.podcasterID);
+            }}
+            style={{flexDirection:'row',padding:5}}>
+                <View>
+                    <Image 
+                        source={{uri:this.props.podcast.podcasterDisplayPicture}}
+                        style={{height:width/12,width :width/12,borderRadius:20}} />
+                </View>
+                <View style={{borderColor:'black',borderWidth:0,justifyContent:'center'}}>
+                    <Text style={{fontFamily:'Montserrat-Bold'}}> {this.props.podcast.podcasterName}</Text>
+                     
+                </View>            
+            </TouchableOpacity>
+            <View style={{flex:1,alignItems:'flex-end',justifyContent:"center",paddingRight:5}}>
+            {
+              this.props.podcast.bookName !== undefined &&
+              <Text style={{fontFamily:'Montserrat-Italic',fontSize:10}}>
+                {this.props.podcast.bookName}
+              </Text>
+            }
+            </View>
+            </View>
          
             {/* <View style={{flexDirection:'row',alignItems:'flex-end',justifyContent:'flex-end'}}>
             <EvilIcon name='retweet' size={20} color='black'/>
@@ -456,6 +484,11 @@ var {width, height}=Dimensions.get('window');
             </Text>
             </View>     */}
              <TouchableNativeFeedback style={[styles.shadow]} onPress={() => {
+               if(!this.context.isConnected) 
+               {
+                 Toast.show('Please check your Internet connection & try again.');
+                 return;
+               }
         if(this.props.podcastRedux!=null && this.props.podcastRedux.podcastID == this.props.podcast.podcastID)
         {
           if(this.props.pausedRedux)
@@ -836,7 +869,6 @@ var {width, height}=Dimensions.get('window');
         
       <View style={[styles.separator]} />
     </View>
-  
     );
     }
       

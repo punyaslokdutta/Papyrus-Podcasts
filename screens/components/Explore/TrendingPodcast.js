@@ -1,5 +1,5 @@
 
-import React, {Component} from 'react';
+import React, {Component,useContext} from 'react';
 import { StyleSheet, Text, View, Image,ImageBackground,Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -9,6 +9,7 @@ import {useDispatch,useSelector} from "react-redux"
 import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-simple-toast';
 import firestore from '@react-native-firebase/firestore';
+import { NetworkContext } from '../../config/NetworkProvider';
 
 var {width, height}=Dimensions.get('window')
 
@@ -25,6 +26,7 @@ const areEqual = (prevProps, nextProps) => true
 const TrendingPodcast= React.memo((props)=> {
   
   const dispatch=useDispatch();
+  const isConnectedContext = useContext(NetworkContext);
   const podcast = useSelector(state=>state.rootReducer.podcast);
 
   const item = props.item;
@@ -62,6 +64,11 @@ const TrendingPodcast= React.memo((props)=> {
     return (
       <TouchableNativeFeedback style={[styles.shadow,{height:height/3, borderWidth:0, borderColor:'black',backgroundColor:'white', borderRadius:0}]} onPress={(()=>
         {
+          if(!isConnectedContext.isConnected) 
+          {
+            Toast.show('Please check your Internet connection & try again.');
+            return;
+          }
           if(props.isBookmark == true)
             {
               retrievePodcastDoc(props.item.podcastID);

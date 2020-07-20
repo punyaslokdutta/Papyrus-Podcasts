@@ -330,7 +330,7 @@ const AddFlipScreen = (props)=> {
             <Icon name="arrow-left" size={20} style={{color:'white'}}/>
         </TouchableOpacity>
         <View>
-        <Text style={{fontFamily:'Montserrat-Regular', color:'white', fontSize:20}}>Add Flip</Text>
+        <Text style={{fontFamily:'Montserrat-Regular', color:'white', fontSize:20}}>Create Flip</Text>
         </View>
         <TouchableOpacity onPress={() =>{
           //renderModal()

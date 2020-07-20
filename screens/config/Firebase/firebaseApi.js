@@ -4,6 +4,7 @@ import auth from '@react-native-firebase/auth';
 import {firebase} from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
 import moment from 'moment';
+import Toast from 'react-native-simple-toast';
  
 const firebaseApi={
     
@@ -20,7 +21,16 @@ const firebaseApi={
       },
 
       _passwordReset: async(email)  => {
-        return firebase.auth().sendPasswordResetEmail(email)
+        return firebase.auth().sendPasswordResetEmail(email).then(() => {
+            Toast.show('A password reset mail has been sent to your emailID.')
+        }).catch((error) => {
+            var errorCode = error.code;
+            if(errorCode==="auth/user-not-found")
+                {
+                    Toast.show('Sign up')
+                    console.log("SignUp")
+                }
+        })
       },
 
 

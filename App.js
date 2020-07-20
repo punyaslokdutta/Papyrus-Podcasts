@@ -53,6 +53,7 @@ import ActivityScreen from './screens/ActivityScreen'
 import SettingsScreen from './screens/SettingsScreen'
 import editProfile  from './screens/components/Profile/editProfile'
 import firebaseApi, {FirebaseProvider} from './screens/config/Firebase'
+import {NetworkProvider} from './screens/config/NetworkProvider';
 import PlayerProvider from './screens/components/PodcastPlayer/PlayerProvider';
 import Profile_StatsScreen from './screens/components/Profile/Profile_StatsScreen'
 import CategoryTabNavigator from './screens/navigation/CategoryTabNavigator'
@@ -125,7 +126,7 @@ const ExploreStackNavigator=createStackNavigator(
      Explore : {screen : Explore,navigationOptions:{
        header:null
      }},
-     MainFlipItem : {screen: MainFlipItem},
+     //MainFlipItem : {screen: MainFlipItem},
   },
   {
     //headerMode:'none',
@@ -139,7 +140,7 @@ const ExploreStackNavigator=createStackNavigator(
 const ProfileStackNavigator=createStackNavigator(
   {
      ProfileTabNavigator : {screen : ProfileTabNavigator},
-     MainFlipItem : {screen: MainFlipItem},
+     //MainFlipItem : {screen: MainFlipItem},
      ProfileFlipScreenVertical : {screen : ProfileFlipScreenVertical},
     editProfile : {screen : editProfile,navigationOptions: {
        header: null,
@@ -196,7 +197,7 @@ RecordStackNavigator.navigationOptions = ({ navigation }) => {
 const HomeStackNavigator= createStackNavigator(
   {
     HomeScreen :{screen: HomeScreen},
-    MainFlipItem : {screen: MainFlipItem}
+    //MainFlipItem : {screen: MainFlipItem}
   },
   {
     headerMode:'none',
@@ -215,6 +216,7 @@ const AppTabNavigator=createBottomTabNavigator(
     navigationOptions:{
       tabBarIcon:({tintColor})=>( <Entypo name="home" color={tintColor}  size={24}/> )
     }},
+    
     Explore: {screen:ExploreStackNavigator,
       navigationOptions:{
         tabBarIcon:({tintColor})=>( <Icon name="search" color={tintColor}  size={24}/> )
@@ -308,6 +310,7 @@ const AppStackNavigator= createStackNavigator(
         }
      }
     },
+    MainFlipItem : {screen: MainFlipItem},
     ExploreTabNavigator : {screen : ExploreTabNavigator,navigationOptions:{
     //  header: props => <CustomUserHeader {...props} />
     }},
@@ -461,34 +464,44 @@ export default class App extends Component {
      super(props)
      {
       this.state={
-          currentVersionCode : 20,
-          currentVersion : "1.0.19"
+          currentVersionCode : 22,
+          currentVersion : "1.0.21"
         }
      }
     }
 
   componentDidMount = async () => {
     
-    const updateVersionDoc = await firestore().collection('appUpdates').doc('newUpdate').get();
-    const updateVersionData = updateVersionDoc.data();
-    //[IMPORTANT]
-    // For alpha update, use this code
+    try{
+      const updateVersionDoc = await firestore().collection('appUpdates').doc('newUpdate').get();
+      const updateVersionData = updateVersionDoc.data();
+
+      //[IMPORTANT]
+    //For alpha update, use this code
+      this.setState({
+        latestVersion : updateVersionData.updateVersion,
+        latestVersionCode : updateVersionData.updateVersionCode,
+        isForcedUpdate : updateVersionData.isForcedUpdate,
+        updateMessage : updateVersionData.updateMessage
+      })
+
+      // For internal update, use this code
     // this.setState({
-    //   latestVersion : updateVersionData.updateVersion,
-    //   latestVersionCode : updateVersionData.updateVersionCode,
+    //   latestVersion : updateVersionData.updateInternalTestVersion,
+    //   latestVersionCode : updateVersionData.updateInternalTestVersionCode,
     //   isForcedUpdate : updateVersionData.isForcedUpdate,
     //   updateMessage : updateVersionData.updateMessage
     // })
-
-    // For internal update, use this code
-    this.setState({
-      latestVersion : updateVersionData.updateInternalTestVersion,
-      latestVersionCode : updateVersionData.updateInternalTestVersionCode,
-      isForcedUpdate : updateVersionData.isForcedUpdate,
-      updateMessage : updateVersionData.updateMessage
-    })
+    }
+    catch(error){
+      console.log("Error in reading appUpdates document newUpdate: ",error);
+    }
+    finally{
+      SplashScreen.hide();
+    }
     
-    SplashScreen.hide();
+    
+
   }
 
 
@@ -533,7 +546,9 @@ export default class App extends Component {
         <FirebaseProvider value={firebaseApi}>
         <PlayerProvider>
         <MenuProvider>
+        <NetworkProvider>
         <AppContainer/>
+        </NetworkProvider>
         </MenuProvider>
         </PlayerProvider>
         </FirebaseProvider>
