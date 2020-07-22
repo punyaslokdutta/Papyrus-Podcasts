@@ -2,12 +2,15 @@ import { Text, Dimensions,ScrollView,Share, Image,View,Animated,StyleSheet,Image
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import React, { Component, useEffect,useState,useRef } from 'react';
 import * as theme from '../constants/theme';
+
 import * as Animatable from 'react-native-animatable'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import IconAntDesign from 'react-native-vector-icons/AntDesign'
 import {useSelector, useDispatch} from "react-redux"
 import { withFirebaseHOC } from '../../config/Firebase';
 import firestore from '@react-native-firebase/firestore';
+import { firebase } from '@react-native-firebase/functions';
+
 import moment from "moment";
 import Slider from '@react-native-community/slider';
 import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
@@ -31,6 +34,9 @@ const FlipItem = (props) => {
     const privateDataID = "private" + realUserID;
     const isAdmin = useSelector(state=>state.userReducer.isAdmin);
     const isFlipLikedRedux = useSelector(state=>state.userReducer.isFlipLiked);
+    const userDisplayPictureURL = useSelector(state=>state.userReducer.displayPictureURL);
+    const nameUser = useSelector(state=>state.userReducer.name);
+
     const [numLikes,setNumLikes] = useState(props.item.numUsersLiked);
     const [liked,setLiked] = useState(isFlipLikedRedux[props.item.flipID]);
     const dispatch = useDispatch();
@@ -41,6 +47,7 @@ const FlipItem = (props) => {
     const [pausedState,setPausedState] = useState(true);
     const [playerText,setPlayerText] = useState("play");
     const flipID = props.item.flipID;
+
     const playbackState = usePlaybackState();
     const { position } = useTrackPlayerProgress()
 
@@ -188,6 +195,25 @@ const FlipItem = (props) => {
         }).catch((err) => {
           console.log("Error in adding likes to flipDoc",err);
         })
+
+        const instance = firebase.app().functions("asia-northeast1").httpsCallable('addActivityFlipLike');
+        try 
+        {          
+          await instance({ // change in podcast docs created by  user
+            timestamp : moment().format(),
+            photoURL : userDisplayPictureURL,
+            flipID : props.item.flipID,
+            userID : props.item.creatorID,
+            flipImageURL : props.item.flipPictures[0],
+            type : "flipLike",
+            Name : nameUser,
+            bookName : props.item.bookName,
+          });
+        }
+        catch (e) 
+        {
+          console.log(e);
+        }
     }
 
     async function removeLikeFromFlipDoc(){

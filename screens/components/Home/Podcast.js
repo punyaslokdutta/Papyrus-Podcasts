@@ -450,7 +450,7 @@ var {width, height}=Dimensions.get('window');
 
       return (
        
-           <View>
+           <View style={{backgroundColor:'white'}}>
              <View style={{backgroundColor:'#dddd',flexDirection:'row'}}>
             <TouchableOpacity 
             onPress={() => {
@@ -509,11 +509,11 @@ var {width, height}=Dimensions.get('window');
 
         }}>
           <View>
-            <View>
+            {/* <View>
               <Text style={{  fontFamily:'Montserrat-Bold',fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green, position:'absolute',right:15 }}>
             {this.state.createdOn}
             </Text>
-              </View>
+              </View> */}
             <View style={{flex:1,flexDirection:"row",paddingBottom:theme.sizes.padding/2,paddingLeft:width/64,width:width,height:height/7,marginTop:10}}>
             
             <View style={{flexDirection:'row',marginTop:15}}>
@@ -615,7 +615,7 @@ var {width, height}=Dimensions.get('window');
         </View>
     
         </View>
-        <View style={{paddingHorizontal:10,marginTop:10}}>
+        <View style={{paddingHorizontal:10,marginTop:10,height:width/4}}>
         <Text style={{fontFamily:'Montserrat-Regular', fontSize:12}}>
         {
           this.props.podcast.podcastDescription !== undefined && 
@@ -631,6 +631,9 @@ var {width, height}=Dimensions.get('window');
           "..."
         }
         </Text>
+        </View>
+        <View>
+          <Text style={{color:"gray",fontSize:10}}> {this.state.createdOn} </Text>
         </View>
         </View>
         </TouchableNativeFeedback>

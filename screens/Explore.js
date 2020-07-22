@@ -2,6 +2,7 @@ import React, {Component, useState,useEffect, useRef, createRef,useContext} from
 import firestore from '@react-native-firebase/firestore';
 import { StyleSheet,BackHandler, Text, View, SafeAreaView, ActivityIndicator, TextInput, Platform, StatusBar,TouchableOpacity,TouchableNativeFeedback, Dimensions, ScrollView, Image, NativeModules, NativeEventEmitter} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
+import IconAntDesign from 'react-native-vector-icons/AntDesign'
 import TrendingPodcast from './components/Explore/TrendingPodcast'
 import TopChapters from './components/Explore/TopChapters';
 import Story from './components/Explore/Story'
@@ -41,6 +42,7 @@ const Explore = (props) => {
   const externalFlipID = useSelector(state=>state.userReducer.externalFlipID);
 
   var [storytellers,setStorytellers] = useState([]);
+  var [exploreFlips,setExploreFlips] = useState([]);
   var [section1Podcasts,setSection1Podcasts] = useState([]);
   var [section2Podcasts,setSection2Podcasts] = useState([]);
   var [recordBooks,setRecordBooks] = useState([]);
@@ -110,6 +112,17 @@ const Explore = (props) => {
       console.log(error)
     }
 
+    // Explore Flips
+    try{
+      let exploreFlipsQuery = await firestore().collection('flips')
+                            .where('isExploreFlip','==',true).orderBy('createdOn','desc')
+                            .limit(6).get();
+      let exploreFlipsData = exploreFlipsQuery.docs.map(document => document.data());
+      setExploreFlips(exploreFlipsData);
+    }
+    catch(error){
+      console.log(error)
+    }
     // // Short Stories
     // try{
     //   let bookQuery = await firestore().collectionGroup('podcasts').where('isShortStory','==',true).get();
@@ -182,7 +195,7 @@ const Explore = (props) => {
              dispatch({type:"CHANGE_SCREEN"});
           });
           fetchExploreItems();
-
+          dispatch({type:"SET_MUSIC",payload:"Swayam"})
           return () => {
             //exitPodcastPlayerAndsetLastPlaying();
             dispatch({type:"SET_PODCAST", payload: null});
@@ -297,6 +310,117 @@ const Explore = (props) => {
         return(<Story item={item} index={index} key ={index} navigation={props.navigation}/>)
       })
     };
+
+    function renderTetrisFlips()
+    {
+      if(exploreFlips.length == 6)
+      return (
+        <View style={{borderColor:'black',borderWidth:0.5,height:width,width:width}}>
+          <View style={{flexDirection:"row"}}>
+            <TouchableOpacity onPress={() => {
+              props.navigation.navigate('FlipsExploreScreen',{
+                flips : exploreFlips,
+                scrollIndex:0,
+                lastVisibleFlip:exploreFlips[exploreFlips.length - 1].createdOn,
+            })
+            }}
+            style={{borderColor:'black',borderWidth:0.5,height:width/3,width:width/3}}>
+            <Image source={{uri:exploreFlips[0].flipPictures[0]}} 
+                  style={{height:width/3,width:width/3}}/>
+              {
+                exploreFlips[0].isAudioFlip &&
+                <IconAntDesign name="play" size={height/24} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/6 - height/48,top:width/6 - height/48}}/>
+
+              }
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => {
+              props.navigation.navigate('FlipsExploreScreen',{
+                flips : exploreFlips,
+                scrollIndex:1,
+                lastVisibleFlip:exploreFlips[exploreFlips.length - 1].createdOn,
+            })
+            }}
+            style={{borderColor:'black',borderWidth:0.5,height:width/3,width:width/3}}>
+            <Image source={{uri:exploreFlips[1].flipPictures[0]}} 
+                  style={{height:width/3,width:width/3}}/>
+              {
+                exploreFlips[1].isAudioFlip &&
+                <IconAntDesign name="play" size={height/24} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/6 - height/48,top:width/6 - height/48}}/>
+
+              }
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => {
+              props.navigation.navigate('FlipsExploreScreen',{
+                flips : exploreFlips,
+                scrollIndex:2,
+                lastVisibleFlip:exploreFlips[exploreFlips.length - 1].createdOn,
+            })
+            }}
+             style={{borderColor:'black',borderWidth:0.5,height:width/3,width:width/3}}>
+            <Image source={{uri:exploreFlips[2].flipPictures[0]}} 
+                  style={{height:width/3,width:width/3}}/>
+              {
+                exploreFlips[2].isAudioFlip &&
+                <IconAntDesign name="play" size={height/24} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/6 - height/48,top:width/6 - height/48}}/>
+
+              }
+            </TouchableOpacity>
+          </View>
+          <View style={{flexDirection:"row"}}>
+              <View style={{flexDirection:'column'}}>
+              <TouchableOpacity onPress={() => {
+              props.navigation.navigate('FlipsExploreScreen',{
+                flips : exploreFlips,
+                scrollIndex:3,
+                lastVisibleFlip:exploreFlips[exploreFlips.length - 1].createdOn,
+            })
+            }}
+                style={{borderColor:'black',borderWidth:0.5,height:width/3,width:width/3}}>
+              <Image source={{uri:exploreFlips[3].flipPictures[0]}} 
+                  style={{height:width/3,width:width/3}}/>
+              {
+                exploreFlips[3].isAudioFlip &&
+                <IconAntDesign name="play" size={height/24} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/6 - height/48,top:width/6 - height/48}}/>
+
+              }
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => {
+              props.navigation.navigate('FlipsExploreScreen',{
+                flips : exploreFlips,
+                scrollIndex:4,
+                lastVisibleFlip:exploreFlips[exploreFlips.length - 1].createdOn,
+            })
+            }}
+              style={{borderColor:'black',borderWidth:0.5,height:width/3,width:width/3}}>
+            <Image source={{uri:exploreFlips[4].flipPictures[0]}} 
+                  style={{height:width/3,width:width/3}}/>
+              {
+                exploreFlips[4].isAudioFlip &&
+                <IconAntDesign name="play" size={height/24} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/6 - height/48,top:width/6 - height/48}}/>
+
+              }
+            </TouchableOpacity>
+                </View>
+                <TouchableOpacity onPress={() => {
+              props.navigation.navigate('FlipsExploreScreen',{
+                flips : exploreFlips,
+                scrollIndex:5,
+                lastVisibleFlip:exploreFlips[exploreFlips.length - 1].createdOn,
+            })
+            }}
+                  style={{borderColor:'black',borderWidth:0.5,height:width*2/3,width:width*2/3}}>
+                <Image source={{uri:exploreFlips[5].flipPictures[0]}} 
+                  style={{height:width*2/3,width:width*2/3}}/>
+              {
+                exploreFlips[5].isAudioFlip &&
+                <IconAntDesign name="play" size={height/24} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/3 - height/48,top:width/3 - height/48}}/>
+
+              }
+              </TouchableOpacity>
+          </View>
+          </View>
+      )
+    }
 
     function renderSectionStoryTellers()
     {
@@ -423,7 +547,7 @@ const Explore = (props) => {
             props.navigation.navigate('SearchTabNavigator',{fromExplore:true})}}>
         <View style={{flexDirection:'row',height:startHeaderHeight, backgroundColor: 'white', paddingRight: 13, paddingVertical:10}}>
        
-            <Text style={{ flex:1, fontWeight:'400',borderRadius:20,backgroundColor:'#dddd',fontSize:13,
+            <Text style={{ flex:1, fontFamily:'Montserrat-Bold',borderRadius:20,backgroundColor:'#dddd',fontSize:13,
               paddingTop: 7, paddingHorizontal: 10 }}>
            
               <Icon style={{paddingHorizontal:10,paddingTop:20 }} name="search" size={15} />
@@ -567,6 +691,8 @@ const Explore = (props) => {
              {renderSection2PodcastsI()}
              <Text style={{fontSize:23,marginTop:10, color:'black',fontFamily:'HeadlandOne-Regular'}}> Storytellers </Text>
              {renderSectionStoryTellers()}
+            <View style={{marginTop:20,borderBottomColor:'#d1d0d4',borderBottomWidth:1}}/> 
+            {renderTetrisFlips()}
             <View style={{marginTop:20,borderBottomColor:'#d1d0d4',borderBottomWidth:1}}/> 
             {renderSection2PodcastsII()}
             <View style={{height:15}}/>

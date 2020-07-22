@@ -21,6 +21,25 @@ const ActivityItem = React.memo((props)=> {
   if(props.activity.creationTimestamp)
     timeDiff = moment(props.activity.creationTimestamp).fromNow();
 
+
+  async function retrieveFlip(flipID){
+    try{
+      
+        const flipsDoc = await firestore().collection('flips').doc(flipID).get();
+        console.log("[ActivityItem] flipsDoc : ", flipsDoc);
+        const flipsDocumentData = flipsDoc.data();
+        console.log("[ActivityItem] flipsDocumentData : ", flipsDocumentData);
+        props.navigation.navigate('MainFlipItem',{
+          item : flipsDocumentData
+        })
+    }
+    catch(error){
+      console.log("Error in retrieveFlip() in ActivityItem: ",error);
+      Toast.show('This flip has been deleted');
+
+    }
+  }
+
   async function retrievePodcast(podcastID)
   {
     try{
@@ -84,12 +103,18 @@ const ActivityItem = React.memo((props)=> {
   console.log("Inside [Activity Item]");
   console.log("[Activity Item] props in Activity Item: ",props);
 
+
   let activityText = <Text>{props.activity.actorName} liked your podcast -
   <Text style={{fontFamily:'Montserrat-Bold'}}>{props.activity.podcastName}</Text>
   </Text>
+
   if(props.activity.type == "follow")
     activityText = <Text style={{}}>{props.activity.actorName} started following you</Text>
     
+  if(props.activity.type == "flipLike")
+    activityText = <Text>{props.activity.actorName} liked your flip for the book - 
+    <Text style={{fontFamily:'Montserrat-Bold'}}>{props.activity.bookName}</Text>
+    </Text>
 
 
       if(props.activity.type == "follow")
@@ -133,8 +158,17 @@ const ActivityItem = React.memo((props)=> {
           </View>
           <View style={{flexDirection:'row'}}>
           <TouchableOpacity onPress={() => {
-            console.log("podcastClicked");
-              retrievePodcast(props.activity.podcastID);
+              if(props.activity.type == "flipLike")
+              {
+                console.log("flipClicked");
+                retrieveFlip(props.activity.flipID);
+              }
+              else if(props.activity.type == "like")
+              {
+                console.log("podcastClicked");
+                retrievePodcast(props.activity.podcastID);
+              }
+              
             }}>
                <View style={{flexDirection:'row'}}>
           <View style={{width:width*2/3,paddingLeft:width/25}}>
@@ -145,7 +179,14 @@ const ActivityItem = React.memo((props)=> {
          
           
             <View style={{paddingLeft:width/30}}>
-            <Image style={{borderRadius:10,width:height/16,height:height/16}} source={{uri: props.activity.podcastPicture}} />
+              {
+                props.activity.type == "flipLike"
+                ?
+                <Image style={{borderRadius:10,width:height/16,height:height/16}} source={{uri: props.activity.flipPicture}} />
+                :
+                <Image style={{borderRadius:10,width:height/16,height:height/16}} source={{uri: props.activity.podcastPicture}} />
+
+              }
             </View>
             </View>
             </TouchableOpacity>

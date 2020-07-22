@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, Image, TouchableOpacity,FlatList,RefreshControl
   Dimensions,SafeAreaView, ScrollView,ActivityIndicator} from 'react-native';
 import {withFirebaseHOC} from '../../config/Firebase'
 import {useSelector, useDispatch,connect} from "react-redux"
+import IconAntDesign from 'react-native-vector-icons/AntDesign'
 
 var {width, height}=Dimensions.get('window')
 
@@ -115,9 +116,13 @@ class ExploreFlipScreen extends React.Component {
                 lastVisibleFlip:this.state.lastVisibleFlip,
                 userID : this.props.navigation.state.params.userData.id
             })
-        }} style={{padding:2}}>
+        }} style={{padding:5}}>
         <Image source={{uri: item.flipPictures[0]}} style={{width:width/2 - 10, height:width*0.75,borderRadius:5 }}/>
+              {
+                item.isAudioFlip &&
+                <IconAntDesign name="play" size={height/24} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/4 - 5 - height/48,top:width*0.75/2 - height/48}}/>
 
+              }
       </TouchableOpacity>
       )
   }
@@ -169,7 +174,7 @@ class ExploreFlipScreen extends React.Component {
     {
       return (
       
-        <View style={{alignItems:'center'}}>
+        <View>
         <FlatList   
           data={this.state.flips}
           numColumns={2}

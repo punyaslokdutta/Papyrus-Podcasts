@@ -27,16 +27,18 @@ import LottieView from 'lottie-react-native';
 import ExploreFlipScreenVertical from './screens/components/Explore/ExploreFlipScreenVertical';
 import ProfileFlipScreenVertical from './screens/components/Profile/ProfileFlipScreenVertical';
 import updateAnimation from './assets/animations/10251-update-para-coverme.json'
-import userReducer from './reducers/userReducer'
+import userReducer from './reducers/userReducer';
 import rootReducer from './reducers/rootReducer';
 import flipReducer from './reducers/flipReducer';
-import recorderReducer from './reducers/recorderReducer'
+import recorderReducer from './reducers/recorderReducer';
+import musicReducer from './reducers/musicReducer';
 import AuthLoadingScreen from './screens/AuthLoadingScreen'
 import SignInScreen from './screens/SignInScreen'
 import SignUpScreen from './screens/SignUpScreen'
 import HomeScreen from './screens/HomeScreen'
 import Explore from './screens/Explore'
 import PodcastPlayer from './screens/PodcastPlayer'
+import MusicPlayer from './screens/components/Music/MusicPlayer';
 import SelectTabNavigator from './screens/SelectTabNavigator'
 import PreviewScreen from './screens/PreviewScreen'
 import CategoryScreen from './screens/CategoryScreen'
@@ -55,6 +57,7 @@ import editProfile  from './screens/components/Profile/editProfile'
 import firebaseApi, {FirebaseProvider} from './screens/config/Firebase'
 import {NetworkProvider} from './screens/config/NetworkProvider';
 import PlayerProvider from './screens/components/PodcastPlayer/PlayerProvider';
+import MusicProvider from './screens/components/Music/MusicProvider';
 import Profile_StatsScreen from './screens/components/Profile/Profile_StatsScreen'
 import CategoryTabNavigator from './screens/navigation/CategoryTabNavigator'
 import ProfileTabNavigator from './screens/navigation/ProfileTabNavigator'
@@ -70,6 +73,7 @@ import SearchTabNavigator from './screens/navigation/SearchTabNavigator';
 import SearchBookChapterTabNavigator from './screens/navigation/SearchBookChapterTabNavigator';
 import { TouchableNativeFeedback } from 'react-native-gesture-handler';
 import MainFlipItem from './screens/components/Home/MainFlipItem';
+import FlipsExploreScreen from './screens/components/Explore/FlipsExploreScreen';
 
 const  {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
 const IS_IPHONE_X = SCREEN_HEIGHT === 812 || SCREEN_HEIGHT=== 896;
@@ -126,6 +130,7 @@ const ExploreStackNavigator=createStackNavigator(
      Explore : {screen : Explore,navigationOptions:{
        header:null
      }},
+     FlipsExploreScreen : {screen : FlipsExploreScreen}
      //MainFlipItem : {screen: MainFlipItem},
   },
   {
@@ -289,6 +294,9 @@ const AppStackNavigator= createStackNavigator(
         header:null
      }
     },
+    MusicProvider: {
+      screen : MusicProvider
+    },
     LikersScreen: {
       screen: LikersScreen,
       navigationOptions:{
@@ -351,6 +359,9 @@ const AppStackNavigator= createStackNavigator(
     navigationOptions:{
       header:null
    }},
+   MusicPlayer: {
+     screen : MusicPlayer
+   },
    RecordBook: {screen :RecordBook,
     navigationOptions:{
       //header:null
@@ -452,7 +463,8 @@ const AppSwitchNavigator = createSwitchNavigator(
   recorderReducer,
   userReducer,
   rootReducer,
-  flipReducer
+  flipReducer,
+  musicReducer
 })
 
 const store = createStore(mainReducer, applyMiddleware(thunk))
@@ -544,6 +556,7 @@ export default class App extends Component {
       return(
         <Provider store ={store}>
         <FirebaseProvider value={firebaseApi}>
+          <MusicProvider>
         <PlayerProvider>
         <MenuProvider>
         <NetworkProvider>
@@ -551,6 +564,7 @@ export default class App extends Component {
         </NetworkProvider>
         </MenuProvider>
         </PlayerProvider>
+        </MusicProvider>
         </FirebaseProvider>
         </Provider>
         );

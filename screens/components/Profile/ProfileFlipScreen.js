@@ -5,6 +5,8 @@ import { StyleSheet, Text, View, Image, TouchableOpacity,FlatList,RefreshControl
 import ProfileFlipItem from './ProfileFlipItem';
 import {withFirebaseHOC} from '../../config/Firebase'
 import {useSelector, useDispatch,connect} from "react-redux"
+import IconAntDesign from 'react-native-vector-icons/AntDesign'
+
 
 var {width, height}=Dimensions.get('window')
 
@@ -112,9 +114,13 @@ class ProfileFlipScreen extends React.Component {
       return(
         <TouchableOpacity onPress={() => {
             this.props.navigation.navigate('ProfileFlipScreenVertical',{flips : this.state.flips,scrollIndex:index,lastVisibleFlip:this.state.lastVisibleFlip})
-        }} style={{padding:2}}>
-        <Image source={{uri: item.flipPictures[0]}} style={{width:width/2 - 10, height:width*0.6,borderRadius:5 }}/>
+        }} style={{padding:5}}>
+        <Image source={{uri: item.flipPictures[0]}} style={{width:width/2 - 10, height:width*0.75,borderRadius:5 }}/>
+              {
+                item.isAudioFlip &&
+                <IconAntDesign name="play" size={height/24} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/4 - 5 - height/48,top:width*0.75/2 - height/48}}/>
 
+              }
       {/* <ProfileFlipItem item={item} index={index} navigation={this.props.navigation}/> */}
       </TouchableOpacity>
       )
@@ -167,7 +173,7 @@ class ProfileFlipScreen extends React.Component {
     {
       return (
       
-        <View style={{alignItems:'center'}}>
+        <View>
         <FlatList   
           data={this.state.flips}
           numColumns={2}
