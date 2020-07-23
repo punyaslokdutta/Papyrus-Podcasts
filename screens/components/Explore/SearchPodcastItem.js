@@ -147,6 +147,7 @@ const styles = StyleSheet.create({
     dispatch({type:"SET_LOADING_PODCAST", payload:true});
     dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
     podcast === null && dispatch({type:"SET_MINI_PLAYER_FALSE"});
+    dispatch({ type:"SET_MUSIC_PAUSED",payload:true});
     dispatch({type:"SET_PODCAST", payload: podcastDocumentData})
     dispatch({type:"SET_NUM_LIKES", payload: podcastDocumentData.numUsersLiked})
     }

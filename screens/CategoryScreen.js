@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import firestore from '@react-native-firebase/firestore';
 import {withFirebaseHOC} from './config/Firebase'
-
+import {useSelector, useDispatch,connect} from "react-redux"
 import { Dimensions, Image,NativeEventEmitter, NativeModules,ActivityIndicator,StyleSheet, ScrollView, TouchableOpacity,View } from 'react-native';
 import { Card, Badge, Block, Text } from './components/categories/components';
 import { theme } from './components/categories/constants';
@@ -62,6 +62,14 @@ class CategoryScreen extends Component {
       let categoriesQuery = await firestore().collection('Categories').get();
       let documentData = categoriesQuery.docs.map(document => document.data());
 
+      let musicQuery = await firestore().collection('music').get();
+      let documentMusicData = musicQuery.docs.map(document => document.data());
+
+      this.props.dispatch({ type:"SET_ALL_MUSIC",payload:documentMusicData});
+      this.props.dispatch({type:"SET_MUSIC",payload:documentMusicData[0]})
+      this.props.dispatch({type:"SET_CURRENT_MUSIC_INDEX",payload:1});
+      this.props.dispatch({ type:"SET_CATEGORIES_MAP_NAME_TO_ID",payload:documentData});
+
       this.setState({
         categories: documentData
       });
@@ -102,12 +110,16 @@ class CategoryScreen extends Component {
               {categories.map(category => (
                 <TouchableOpacity key={category.categoryName} onPress={() => 
                                   this.props.navigation.navigate('CategoryTabNavigator', {category : category.categoryName })}>
-                  <Card style={{height:width/3,width:width/4}} center middle shadow> 
+                  <Card style={{height:width/2.8,width:width/4}} center middle shadow> 
                     {/* <Badge margin={[0, 0, 15]} size={20} color="rgba(41,216,143,0.20)"> */}
-                    
+                  
                       <Image style={{height:width/4,width:width/4,borderRadius:0}} source={{uri:category.categoryImage}} />
                 <Text style={{fontWeight:'bold',textAlign:'center',fontSize:9.5}}>{"   "}{category.categoryName}{"  "}{"\n"}</Text>
-
+                {
+                  this.props.isAdmin &&
+                  <Text style={{fontSize:6}}> {category.numPodcasts} </Text>
+                }
+                
                       
                     
                   </Card>
@@ -125,7 +137,18 @@ class CategoryScreen extends Component {
 CategoryScreen.defaultProps = {
 }
 
-export default withFirebaseHOC(CategoryScreen);
+const mapStateToProps = (state) => {
+  return{
+    isAdmin : state.userReducer.isAdmin
+  }
+}
+
+const mapDispatchToProps = (dispatch) =>{
+  return{
+  dispatch,
+  }}
+
+export default connect(mapStateToProps,mapDispatchToProps)(withFirebaseHOC(CategoryScreen));
 
 const styles = StyleSheet.create({
   header: {

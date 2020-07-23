@@ -402,6 +402,7 @@ var {width, height}=Dimensions.get('window');
       this.props.dispatch({type:"SET_LOADING_PODCAST", payload:true});
       this.props.dispatch({type:"ADD_NAVIGATION", payload:this.props.navigation})
       this.props.podcastRedux === null && this.props.dispatch({type:"SET_MINI_PLAYER_FALSE"});
+      this.props.dispatch({ type:"SET_MUSIC_PAUSED",payload:true});
       this.props.dispatch({type:"SET_PODCAST", payload: this.props.podcast})
       this.props.dispatch({type:"SET_NUM_LIKES", payload: this.state.numLikes})
       this.props.dispatch({type:"SET_NUM_RETWEETS", payload: this.state.numRetweets})
@@ -442,6 +443,22 @@ var {width, height}=Dimensions.get('window');
     }
     
   }
+
+   updatePodcastCountInCategoryDoc = async() => {
+
+    this.props.podcast.genres.forEach(genre => {
+      console.log("genreName: ",genre," |  genreID: ",this.props.categoryMapRedux[genre]);
+      firestore().collection('Categories').doc(this.props.categoryMapRedux[genre]).set({
+        numPodcasts : firestore.FieldValue.increment(-1)
+      },{merge:true}).then(() => {
+        console.log("Successfully updated numPodcasts in category - ",genre);
+      }).catch((error) => {
+        console.log("Error in updating numPodcasts in category - ",genre);
+        console.log(error);
+      })
+    });
+  }
+
     render()
     {
       var duration = parseInt((this.props.podcast.duration)/60);
@@ -724,7 +741,8 @@ var {width, height}=Dimensions.get('window');
                         style: 'cancel',  
                     },  
                     {text: 'OK', onPress: async() => {
-                      if(this.props.podcast.isChapterPodcast == false)
+                      this.updatePodcastCountInCategoryDoc();
+              if(this.props.podcast.isChapterPodcast == false)
               {
                 firestore().collection("books").doc(this.props.podcast.bookID).collection("podcasts")
                       .doc(this.props.podcast.podcastID).delete().then(function() {
@@ -891,7 +909,8 @@ const mapStateToProps = (state) => {
     isAdmin: state.userReducer.isAdmin,
     isMiniPlayer: state.rootReducer.isMiniPlayer,
     numLikesRedux: state.rootReducer.numLikes,
-    numRetweetsRedux: state.rootReducer.numRetweets
+    numRetweetsRedux: state.rootReducer.numRetweets,
+    categoryMapRedux: state.categoryReducer.categoryMap
   }}
 
   const mapDispatchToProps = (dispatch) =>{

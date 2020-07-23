@@ -199,6 +199,7 @@ var {width, height}=Dimensions.get('window')
       this.props.dispatch({type:"SET_LOADING_PODCAST", payload:true});
       this.props.dispatch({type:"ADD_NAVIGATION", payload:this.props.navigation})
       this.props.podcastRedux === null && this.props.dispatch({type:"SET_MINI_PLAYER_FALSE"});
+      this.props.dispatch({ type:"SET_MUSIC_PAUSED",payload:true});
       this.props.dispatch({type:"SET_PODCAST", payload: podcastDocumentData})
       this.props.dispatch({type:"SET_NUM_LIKES", payload: podcastDocumentData.numUsersLiked})
     }

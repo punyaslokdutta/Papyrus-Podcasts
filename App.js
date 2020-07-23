@@ -32,6 +32,7 @@ import rootReducer from './reducers/rootReducer';
 import flipReducer from './reducers/flipReducer';
 import recorderReducer from './reducers/recorderReducer';
 import musicReducer from './reducers/musicReducer';
+import categoryReducer from './reducers/categoryReducer';
 import AuthLoadingScreen from './screens/AuthLoadingScreen'
 import SignInScreen from './screens/SignInScreen'
 import SignUpScreen from './screens/SignUpScreen'
@@ -464,7 +465,8 @@ const AppSwitchNavigator = createSwitchNavigator(
   userReducer,
   rootReducer,
   flipReducer,
-  musicReducer
+  musicReducer,
+  categoryReducer
 })
 
 const store = createStore(mainReducer, applyMiddleware(thunk))
@@ -556,15 +558,15 @@ export default class App extends Component {
       return(
         <Provider store ={store}>
         <FirebaseProvider value={firebaseApi}>
-          <MusicProvider>
         <PlayerProvider>
+        <MusicProvider>
         <MenuProvider>
         <NetworkProvider>
         <AppContainer/>
         </NetworkProvider>
         </MenuProvider>
-        </PlayerProvider>
         </MusicProvider>
+        </PlayerProvider>
         </FirebaseProvider>
         </Provider>
         );

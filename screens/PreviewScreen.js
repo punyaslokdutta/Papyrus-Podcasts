@@ -36,6 +36,7 @@ const PreviewScreen = (props) => {
   const dispatch = useDispatch();
   const { position, bufferedPosition } = useTrackPlayerProgress();
 
+  const categoryMapRedux = useSelector(state=>state.categoryReducer.categoryMap); 
   const editpodcast = useSelector(state=>state.recorderReducer.editpodcast);
   const displayPictureURL = useSelector(state=>state.userReducer.displayPictureURL)
   const [isPlaying,setIsPlaying] = useState(false);
@@ -345,12 +346,29 @@ const PreviewScreen = (props) => {
     }
   }
 
+  async function updatePodcastCountInCategoryDoc(){
+
+    console.log("categoryMapRedux:- ",categoryMapRedux);
+    genres.forEach(genre => {
+      console.log("genreName: ",genre," |  genreID: ",categoryMapRedux[genre]);
+      firestore().collection('Categories').doc(categoryMapRedux[genre]).set({
+        numPodcasts : firestore.FieldValue.increment(1)
+      },{merge:true}).then(() => {
+        console.log("Successfully updated numPodcasts in category - ",genre);
+      }).catch((error) => {
+        console.log("Error in updating numPodcasts in category - ",genre);
+        console.log(error);
+      })
+    });
+  }
+
   useEffect(
     () => {
       if(uploadPodcastSuccess == true)
       {
         indexPodcast();
         addGenresToUserPreferences();
+        updatePodcastCountInCategoryDoc();
         const updatedMinutesRecorded = totalMinutesRecorded + duration/60; 
         dispatch({type:"UPDATE_TOTAL_MINUTES_RECORDED",payload:updatedMinutesRecorded});
         updateTotalMinutesRecorded(updatedMinutesRecorded);

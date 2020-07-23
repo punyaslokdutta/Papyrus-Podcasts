@@ -159,7 +159,7 @@ function getRandomNumber(min,max) {
     });
     
     await TrackPlayer.add({
-      id: "local-track",
+      id: props.podcast.podcastID,
       url: props.podcast.audioFileLink,
       title: props.podcast.podcastName,
       artist: props.podcast.podcasterName,

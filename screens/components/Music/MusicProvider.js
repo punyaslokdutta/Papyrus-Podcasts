@@ -3,10 +3,11 @@ import React, {Component, useState, createContext, useReducer, useCallback, useE
 import {withFirebaseHOC} from '../../config/Firebase';
 import {View, StyleSheet, Dimensions, StatusBar, Platform} from 'react-native';
 //import { DangerZone } from 'expo';
+import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
 import MusicPlayer from './MusicPlayer'; //instead of Video Modal 
 import Animated, { Easing } from 'react-native-reanimated';
 import MusicContext from './MusicContext';
-import {useSelector} from "react-redux"
+import {useSelector, useDispatch} from "react-redux"
 const { height } = Dimensions.get('window');
 const { Value, timing } = Animated;
 const isOS = Platform.OS === 'ios';
@@ -14,6 +15,8 @@ const isOS = Platform.OS === 'ios';
 
 const MusicProvider=(props)=>{
 
+  const dispatch = useDispatch();
+  const playbackState = usePlaybackState();
   const music=useSelector(state=>state.musicReducer.music)
   const navigation=useSelector(state=>state.userReducer.navigation)
   const userID = props.firebase._getUid();
@@ -25,6 +28,23 @@ const MusicProvider=(props)=>{
       inputRange: [0, height],
       outputRange: [0, height],
     });
+
+    useEffect(() => {
+      // Have to trigger this only when currentTrackID = music.podcastID
+      //const currentTrackID = await TrackPlayer.getCurrentTrack();
+      if(playbackState == TrackPlayer.STATE_PLAYING){
+        dispatch({ type:"SET_MUSIC_PAUSED",payload:false});
+      }
+      else if(playbackState == TrackPlayer.STATE_PAUSED){
+        dispatch({ type:"SET_MUSIC_PAUSED",payload:true});
+      }
+      else if(playbackState == TrackPlayer.STATE_STOPPED){
+        //TrackPlayer.seekTo(0);
+        dispatch({type:"SET_MUSIC_PAUSED", payload:true});
+        //TrackPlayer.pause();
+      }
+    },[playbackState])
+
     return (
       <MusicContext.Provider value={music }>
         <StatusBar barStyle="dark-content" />

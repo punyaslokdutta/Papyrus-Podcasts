@@ -195,7 +195,7 @@ const Explore = (props) => {
              dispatch({type:"CHANGE_SCREEN"});
           });
           fetchExploreItems();
-          dispatch({type:"SET_MUSIC",payload:"Swayam"})
+          //dispatch({type:"SET_MUSIC",payload:"Swayam"})
           return () => {
             //exitPodcastPlayerAndsetLastPlaying();
             dispatch({type:"SET_PODCAST", payload: null});
@@ -217,6 +217,7 @@ const Explore = (props) => {
         dispatch({type:"SET_PAUSED", payload:false})
         dispatch({type:"SET_LOADING_PODCAST", payload:true});
         podcast === null && dispatch({type:"SET_MINI_PLAYER_FALSE"});
+        dispatch({ type:"SET_MUSIC_PAUSED",payload:true});
         dispatch({type:"SET_PODCAST", payload: podcastData}) 
         dispatch({type:"SET_NUM_LIKES", payload: podcastData.numUsersLiked})
 
@@ -547,8 +548,8 @@ const Explore = (props) => {
             props.navigation.navigate('SearchTabNavigator',{fromExplore:true})}}>
         <View style={{flexDirection:'row',height:startHeaderHeight, backgroundColor: 'white', paddingRight: 13, paddingVertical:10}}>
        
-            <Text style={{ flex:1, fontFamily:'Montserrat-Bold',borderRadius:20,backgroundColor:'#dddd',fontSize:13,
-              paddingTop: 7, paddingHorizontal: 10 }}>
+            <Text style={{ flex:1, fontFamily:'Montserrat-Bold',borderRadius:20,backgroundColor:'#dddd',fontSize:12,
+              paddingTop: 0, paddingHorizontal: 10,justifyContent:'center',textAlignVertical:'center' }}>
            
               <Icon style={{paddingHorizontal:10,paddingTop:20 }} name="search" size={15} />
              

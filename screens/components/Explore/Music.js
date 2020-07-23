@@ -27,6 +27,7 @@ const areEqual = (prevProps, nextProps) => true
             dispatch({type:"SET_LOADING_PODCAST", payload:true});
             dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
             podcastRedux === null && dispatch({type:"SET_MINI_PLAYER_FALSE"});
+            dispatch({ type:"SET_MUSIC_PAUSED",payload:true});
             dispatch({type:"SET_PODCAST", payload: props.item})
             dispatch({type:"SET_NUM_LIKES", payload: props.item.numUsersLiked})
             //this.props.dispatch({type:"SET_NUM_RETWEETS", payload: this.state.numRetweets})

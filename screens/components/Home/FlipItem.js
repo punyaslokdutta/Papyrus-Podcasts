@@ -288,7 +288,7 @@ const FlipItem = (props) => {
       });
       
       await TrackPlayer.add({
-        id: "local-track",
+        id: props.item.flipID,
         url: props.item.audioFileLink,
         title: props.item.bookName,
         artist: props.item.creatorName,
@@ -296,7 +296,7 @@ const FlipItem = (props) => {
         duration: props.item.duration
       });
       setPlayer(true);
-
+      dispatch({ type:"SET_MUSIC_PAUSED",payload:true});
       await TrackPlayer.play();
 
     }
@@ -324,7 +324,7 @@ const FlipItem = (props) => {
                 //setLoading(true);
                 setPlayerText("pause")
                 dispatch({type:"SET_FLIP_PAUSED",payload:false})
-
+                dispatch({ type:"SET_MUSIC_PAUSED",payload:true});
                 if(player == false || (player == true && props.item.flipID != currentFlipID)) 
                 {
                   stopPodcast();
