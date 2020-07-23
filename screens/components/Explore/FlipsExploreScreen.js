@@ -80,7 +80,7 @@ class FlipsExploreScreen extends React.Component {
         console.log('Retrieving More Flips');
         //const  userid = this.props.navigation.state.params.userID;
         let flipVerticals = await firestore().collection('flips')
-                        .where('isExploreFlip','==',true).orderBy('createdOn','desc')
+                        .where('isExploreFlip','==',true).orderBy('lastEditedOn','desc')
                         .startAfter(this.state.lastVisibleFlip)
                         .limit(this.state.limit).get();
     
@@ -88,7 +88,7 @@ class FlipsExploreScreen extends React.Component {
       let documentData = flipVerticals.docs.map(document => document.data());
       if(documentData.length != 0)   
       {
-        let lastVisible = documentData[documentData.length - 1].createdOn;
+        let lastVisible = documentData[documentData.length - 1].lastEditedOn;
         if(this.state.lastVisibleFlip !== lastVisible)
         {
           this.setState({

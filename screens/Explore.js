@@ -115,7 +115,7 @@ const Explore = (props) => {
     // Explore Flips
     try{
       let exploreFlipsQuery = await firestore().collection('flips')
-                            .where('isExploreFlip','==',true).orderBy('createdOn','desc')
+                            .where('isExploreFlip','==',true).orderBy('lastEditedOn','desc')
                             .limit(6).get();
       let exploreFlipsData = exploreFlipsQuery.docs.map(document => document.data());
       setExploreFlips(exploreFlipsData);
@@ -153,14 +153,14 @@ const Explore = (props) => {
     //   console.log(error)
     // }
 
-    try{
-      let musicQuery = await firestore().collection('music').orderBy('createdOn').get();
-      let documentMusic = musicQuery.docs.map(document => document.data());
-      setMusic(documentMusic);
-    }
-    catch(error){
-      console.log(error)
-    }
+    // try{
+    //   let musicQuery = await firestore().collection('music').orderBy('lastEditedOn').get();
+    //   let documentMusic = musicQuery.docs.map(document => document.data());
+    //   setMusic(documentMusic);
+    // }
+    // catch(error){
+    //   console.log(error)
+    // }
     
     setLoading(false);
   }
@@ -322,7 +322,7 @@ const Explore = (props) => {
               props.navigation.navigate('FlipsExploreScreen',{
                 flips : exploreFlips,
                 scrollIndex:0,
-                lastVisibleFlip:exploreFlips[exploreFlips.length - 1].createdOn,
+                lastVisibleFlip:exploreFlips[exploreFlips.length - 1].lastEditedOn,
             })
             }}
             style={{borderColor:'black',borderWidth:0.5,height:width/3,width:width/3}}>
@@ -338,7 +338,7 @@ const Explore = (props) => {
               props.navigation.navigate('FlipsExploreScreen',{
                 flips : exploreFlips,
                 scrollIndex:1,
-                lastVisibleFlip:exploreFlips[exploreFlips.length - 1].createdOn,
+                lastVisibleFlip:exploreFlips[exploreFlips.length - 1].lastEditedOn,
             })
             }}
             style={{borderColor:'black',borderWidth:0.5,height:width/3,width:width/3}}>
@@ -354,7 +354,7 @@ const Explore = (props) => {
               props.navigation.navigate('FlipsExploreScreen',{
                 flips : exploreFlips,
                 scrollIndex:2,
-                lastVisibleFlip:exploreFlips[exploreFlips.length - 1].createdOn,
+                lastVisibleFlip:exploreFlips[exploreFlips.length - 1].lastEditedOn,
             })
             }}
              style={{borderColor:'black',borderWidth:0.5,height:width/3,width:width/3}}>
@@ -373,7 +373,7 @@ const Explore = (props) => {
               props.navigation.navigate('FlipsExploreScreen',{
                 flips : exploreFlips,
                 scrollIndex:3,
-                lastVisibleFlip:exploreFlips[exploreFlips.length - 1].createdOn,
+                lastVisibleFlip:exploreFlips[exploreFlips.length - 1].lastEditedOn,
             })
             }}
                 style={{borderColor:'black',borderWidth:0.5,height:width/3,width:width/3}}>
@@ -389,7 +389,7 @@ const Explore = (props) => {
               props.navigation.navigate('FlipsExploreScreen',{
                 flips : exploreFlips,
                 scrollIndex:4,
-                lastVisibleFlip:exploreFlips[exploreFlips.length - 1].createdOn,
+                lastVisibleFlip:exploreFlips[exploreFlips.length - 1].lastEditedOn,
             })
             }}
               style={{borderColor:'black',borderWidth:0.5,height:width/3,width:width/3}}>
@@ -406,7 +406,7 @@ const Explore = (props) => {
               props.navigation.navigate('FlipsExploreScreen',{
                 flips : exploreFlips,
                 scrollIndex:5,
-                lastVisibleFlip:exploreFlips[exploreFlips.length - 1].createdOn,
+                lastVisibleFlip:exploreFlips[exploreFlips.length - 1].lastEditedOn,
             })
             }}
                   style={{borderColor:'black',borderWidth:0.5,height:width*2/3,width:width*2/3}}>
@@ -689,11 +689,11 @@ const Explore = (props) => {
 
              {renderSection1Podcasts()}
              <View style={{marginTop:20,borderBottomColor:'#d1d0d4',borderBottomWidth:1}}/> 
+             {renderTetrisFlips()}
+             <View style={{marginTop:20,borderBottomColor:'#d1d0d4',borderBottomWidth:1}}/> 
              {renderSection2PodcastsI()}
              <Text style={{fontSize:23,marginTop:10, color:'black',fontFamily:'HeadlandOne-Regular'}}> Storytellers </Text>
              {renderSectionStoryTellers()}
-            <View style={{marginTop:20,borderBottomColor:'#d1d0d4',borderBottomWidth:1}}/> 
-            {renderTetrisFlips()}
             <View style={{marginTop:20,borderBottomColor:'#d1d0d4',borderBottomWidth:1}}/> 
             {renderSection2PodcastsII()}
             <View style={{height:15}}/>
@@ -701,9 +701,9 @@ const Explore = (props) => {
              <BookList navigation={props.navigation} books={recordBooks}/>
              {renderSection2PodcastsIII()}
              <View style={{height:15}}/>
-             <Text style={{fontSize:23,marginBottom:10, color:'black',fontFamily:'HeadlandOne-Regular'}}> Relaxing Music </Text>
+             {/* <Text style={{fontSize:23,marginBottom:10, color:'black',fontFamily:'HeadlandOne-Regular'}}> Relaxing Music </Text>
              {renderSectionMusic()}
-             <View style={{height:30}}/>
+             <View style={{height:30}}/> */}
              </View>
               </ScrollView>
           </SafeAreaView>

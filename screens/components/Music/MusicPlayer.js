@@ -11,6 +11,7 @@ import EnTypo from 'react-native-vector-icons/Entypo';
 import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
 
 import { PanGestureHandler, State, TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import Toast from 'react-native-simple-toast';
 var {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window');
 const height =ExtraDimensions.getRealWindowHeight();
 const width=ExtraDimensions.getRealWindowWidth();
@@ -47,8 +48,13 @@ const {
 class MusicPlayer extends React.Component {
 
     componentDidMount = () => {
-        this.setup();
-        // TrackPlayer.addEventListener('remote-play', () => {
+        
+        if(this.props.flipID === null && this.props.podcastRedux === null)
+        {
+          this.setup();
+          TrackPlayer.play();  
+        }
+              // TrackPlayer.addEventListener('remote-play', () => {
         //   this.props.dispatch({ type:"SET_MUSIC_PAUSED",payload:false});
         // });
         // TrackPlayer.addEventListener('remote-pause', () => {
@@ -86,10 +92,10 @@ class MusicPlayer extends React.Component {
         await TrackPlayer.add({
           id: this.props.musicRedux.podcastID,
           url: this.props.musicRedux.audioFileLink,
-          title: "MUSIC",
-          artist: "The unknown star",
-          artwork: "https://firebasestorage.googleapis.com/v0/b/papyrus-274618.appspot.com/o/music%2Fimages%2Fmusic_1594488941910.jpg?alt=media&token=91cad94e-5ad7-4afd-aec0-bc689da891a8",
-          duration: 231
+          title: this.props.musicRedux.podcastName,
+          artist: "",
+          artwork: this.props.musicRedux.podcastPictures[0],
+          duration: this.props.musicRedux.duration
         });
         
       }
@@ -108,8 +114,9 @@ class MusicPlayer extends React.Component {
               {
                 TrackPlayer.play();
               }
-                
-              this.props.dispatch({type:"SET_CURRENT_MUSIC_INDEX",payload:this.props.currentMusicIndexRedux + 1});
+              Toast.show(this.props.allMusicRedux[this.props.currentMusicIndexRedux].podcastName);
+              const musicCount = this.props.allMusicRedux.length;
+              this.props.dispatch({type:"SET_CURRENT_MUSIC_INDEX",payload:(this.props.currentMusicIndexRedux + 1)%musicCount});
             }}>
               <EnTypo name="shuffle" size={15} color="white"/>
               </TouchableOpacity>
@@ -150,7 +157,9 @@ const mapStateToProps = (state) => {
     musicRedux:  state.musicReducer.music,
     musicPausedRedux: state.musicReducer.musicPaused,
     allMusicRedux: state.musicReducer.allMusic,
-    currentMusicIndexRedux: state.musicReducer.currentMusicIndex
+    currentMusicIndexRedux: state.musicReducer.currentMusicIndex,
+    podcastRedux: state.rootReducer.podcast,
+    flipID: state.flipReducer.currentFlipID
   }}
 
   const mapDispatchToProps = (dispatch) =>{

@@ -1,6 +1,7 @@
 import React, { Component, useState,useEffect } from 'react'
 import { Image, StyleSheet, ScrollView, TextInput,Alert, TouchableOpacity , View,ActivityIndicator, Linking,Dimensions,NativeModules} from 'react-native'
 import Slider from 'react-native-slider';
+import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
 import firestore from '@react-native-firebase/firestore'
 //import { Divider, Button, Block, Text, Switch } from '../components';
 import {  Block, Text } from '../screens/components/categories/components/';
@@ -198,7 +199,9 @@ const SettingsScreen = (props) => {
   async function logoutFromApp() 
   {
       console.log("[SettingsScreen] logoutFromApp")
+
       try{
+        TrackPlayer.destroy();
         dispatch({type:'SET_ADMIN_USER',payload:false})
         dispatch({type:'CLEAR_PODCASTS_LIKED',payload:null})
         dispatch({type:'CLEAR_FLIPS_LIKED',payload:null})
@@ -220,7 +223,10 @@ const SettingsScreen = (props) => {
         dispatch({type:'SET_USER_LANUAGES',payload: []});
         dispatch({type:'SET_ALGOLIA_API_KEY',payload:null});
         dispatch({type:'SET_ALGOLIA_APP_ID',payload:null});
-        dispatch({type:"SET_PODCAST",payload:null})
+        dispatch({type:"SET_PODCAST",payload:null});
+        dispatch({type:"SET_FLIP_ID",payload:null});
+        dispatch({type:"SET_FLIP_PLAYING",payload:false});
+        dispatch({type:"SET_MUSIC",payload:null});
         props.firebase._signOutUser();
         Toast.show("Logged out");
         

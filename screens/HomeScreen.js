@@ -31,6 +31,7 @@ const HomeScreen = (props) => {
   const [podcasts,setPodcasts] = useState([]);
   const [flips,setFlips] = useState([]);
   const limit = 8;
+  const flipLimit = 30;
   const headerPodcastsLimit = 8;
   const bookLimit = 5;
   const [isConnected,setIsConnected] = useState(true);
@@ -98,7 +99,7 @@ const HomeScreen = (props) => {
                     .limit(limit).get();
 
       let latestFlips = await firestore().collection('flips')
-                .orderBy('lastEditedOn','desc')
+                .orderBy('lastEditedOn','desc').limit(flipLimit)
                 .get();
       let latestFlipsData = latestFlips.docs.map(document=>document.data());
 
@@ -339,7 +340,7 @@ const HomeScreen = (props) => {
       <View>
          {/* <HomeAnimation/> */}
       </View>
-      {renderFlips()}
+      {renderFlipsI()}
 
       {
         podcasts1.map((item,index) =>
@@ -360,19 +361,43 @@ const HomeScreen = (props) => {
         })
       }
 
+      {renderFlipsII()}
+
+
+
+
     </View>
     )
   }
   
-  function renderFlips(){
+  function renderFlipsI(){
     return (
-      flips.slice(0,5).map((item,index) => {
+      flips.slice(0,10).map((item,index) => {
         return(
           <FlipItem item={item} index={index} navigation={props.navigation}/>
         )
       })
     )
-    
+  }
+
+  function renderFlipsII(){
+    return (
+      flips.slice(10,20).map((item,index) => {
+        return(
+          <FlipItem item={item} index={index} navigation={props.navigation}/>
+        )
+      })
+    )
+  }
+
+  function renderFlipsIII(){
+    return (
+      flips.slice(20,30).map((item,index) => {
+        return(
+          <FlipItem item={item} index={index} navigation={props.navigation}/>
+        )
+      })
+    )
   }
 
   function renderDatas({item,index})
@@ -384,11 +409,11 @@ const HomeScreen = (props) => {
             &&
             renderHeader()
           }
-          {/* {
-            index == 0
+           {
+            index == 10
             &&
-            renderFlips()
-          } */}
+            renderFlipsIII()
+          } 
       <Podcast podcast={item} scrollPosition={scrollPosition} index={index} navigation={props.navigation}/>
       </View>
       )

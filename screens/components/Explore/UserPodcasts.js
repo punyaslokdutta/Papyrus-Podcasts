@@ -52,12 +52,12 @@ class UserPodcasts extends React.Component {
       try {
         const  userid = this.props.navigation.state.params.userData.id;       
         let documentPodcasts = await firestore().collectionGroup('podcasts').where('podcasterID','==',userid)
-                              .orderBy('lastEditedOn','desc').limit(this.state.limit).get();
+                              .orderBy('createdOn','desc').limit(this.state.limit).get();
         let documentData_podcasts = documentPodcasts.docs.map(document => document.data());
         var lastVisibleBookPodcast = this.state.lastVisibleBookPodcast;
 
         if(documentData_podcasts.length != 0)
-          lastVisibleBookPodcast = documentData_podcasts[documentData_podcasts.length - 1].lastEditedOn;        
+          lastVisibleBookPodcast = documentData_podcasts[documentData_podcasts.length - 1].createdOn;        
          
         this.setState({
         bookPodcasts: documentData_podcasts,
@@ -86,12 +86,12 @@ class UserPodcasts extends React.Component {
          
          
         let additionalBookPodcasts = await firestore().collectionGroup('podcasts').where('podcasterID','==',userid)
-                                        .orderBy('lastEditedOn','desc')
+                                        .orderBy('createdOn','desc')
                                         .startAfter(this.state.lastVisibleBookPodcast).limit(this.state.limit).get();
         let documentData = additionalBookPodcasts.docs.map(document => document.data());
         if(documentData.length != 0)
         {
-          let lastVisibleBookPodcast = documentData[documentData.length - 1].lastEditedOn;
+          let lastVisibleBookPodcast = documentData[documentData.length - 1].createdOn;
           if(this.state.lastVisibleBookPodcast != lastVisibleBookPodcast)
           {
             this.setState({

@@ -533,7 +533,7 @@ var {width, height}=Dimensions.get('window');
               </View> */}
             <View style={{flex:1,flexDirection:"row",paddingBottom:theme.sizes.padding/2,paddingLeft:width/64,width:width,height:height/7,marginTop:10}}>
             
-            <View style={{flexDirection:'row',marginTop:15}}>
+            <View style={{flexDirection:'row',marginTop:0}}>
              <View style={{flexDirection:'column'}}>
              <View style={{flexDirection: 'row'}}>
               <View style={{flexDirection:'column'}}>
@@ -587,13 +587,13 @@ var {width, height}=Dimensions.get('window');
               (
                 this.props.pausedRedux 
                 ?
-                <IconAntDesign name="play" size={height/32} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/64 + height*3/64,top:height*3/64 + 15}}/>
+                <IconAntDesign name="play" size={height/32} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/64 + height*3/64,top:height*3/64}}/>
                 :
-                <IconAntDesign name="pause" size={height/32} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/64 + height*3/64,top:height*3/64 + 15}}/>
+                <IconAntDesign name="pause" size={height/32} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/64 + height*3/64,top:height*3/64}}/>
 
               )
               :
-              <IconAntDesign name="play" size={height/32} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/64 + height*3/64,top:height*3/64 + 15}}/>
+              <IconAntDesign name="play" size={height/32} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/64 + height*3/64,top:height*3/64}}/>
             }
 
             <View style={[styles.flex, styles.column, styles.shadow, { width:(width*2)/3,paddingLeft:theme.sizes.padding/2, paddingTop: 0 }]}>
@@ -609,25 +609,6 @@ var {width, height}=Dimensions.get('window');
             source={newAnimation}
             loop={true}/>
             </View>
-
-            <View style={{flexDirection: 'row',marginBottom:20}}>
-                <TouchableOpacity style={{flexDirection:'row'}} onPress={() => {
-                  this.retrieveUserPrivateDoc(this.props.podcast.podcasterID);
-                }}>
-                  <View>
-                <Image source={{uri:this.props.podcast.podcasterDisplayPicture}} style={{height:20,width:20,borderRadius:20}}/>  
-                </View>
-                <View>
-                <Text style={{ fontFamily:'Montserrat-SemiBold',fontSize:theme.sizes.font * 0.8,color: theme.colors.gray_green,paddingLeft:5 }}>
-                    {this.props.podcast.podcasterName}
-                </Text>
-                </View>
-                </TouchableOpacity>
-
-            <Text style={{  fontFamily:'Montserrat-Bold',fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green, position:'absolute',right:-15 }}>
-            {duration} mins
-            </Text>
-          </View>
             
         </View>
     
@@ -649,8 +630,9 @@ var {width, height}=Dimensions.get('window');
         }
         </Text>
         </View>
-        <View>
+        <View style={{flexDirection:'row', justifyContent:'space-between',alignItems:'flex-end',marginRight:5}}>
           <Text style={{color:"gray",fontSize:10}}> {this.state.createdOn} </Text>
+      <Text style={{fontSize:12}}> {duration} mins</Text>
         </View>
         </View>
         </TouchableNativeFeedback>

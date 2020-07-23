@@ -1,5 +1,6 @@
 import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
 import {useSelector, useDispatch} from "react-redux";
+import ToggleSwitch from 'toggle-switch-react-native';
 import React, {Component} from 'react';
 import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView,NativeModules} from 'react-native';
 import {Container, Content, Header, Body} from 'native-base'
@@ -7,7 +8,7 @@ import { theme } from '../components/categories/constants';
 import { Block, Text } from '../components/categories/components/';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { Badge } from 'react-native-elements'
-
+import FontistoIcon from 'react-native-vector-icons/Fontisto';
 import ActivityScreen from '../ActivityScreen';
 import SettingsScreen from '../SettingsScreen';
 
@@ -26,6 +27,7 @@ const CustomDrawerContentComponent = (props) =>
     const username = useSelector(state=>state.userReducer.userName);
     const photoURL = useSelector(state=>state.userReducer.displayPictureURL);
     const numNotifications = useSelector(state=>state.userReducer.numNotifications);
+    const isMusicEnabled = useSelector(state=>state.userReducer.isMusicEnabled);
     const dispatch = useDispatch();
 
 return(  
@@ -128,7 +130,24 @@ return(
           }
           } 
           activeBackgroundColor='#101010'   style={{backgroundColor: '#ffffff', }} labelStyle={{color: '#ffffff', fontSize: SCREEN_HEIGHT/35}}/>
-          
+            <View>
+          {/* <Text style={{textAlign:"center",fontFamily:'Montserrat-Bold',paddingTop:20,color:'#dddd'}}> Music </Text> */}
+          <View style={{ alignItems:'center',marginTop:10}}>
+          <FontistoIcon name="music-note" size={20} color='white' style={{marginBottom:10}}/>
+
+          <ToggleSwitch
+            isOn={isMusicEnabled}
+            onColor="rgb(218,165,32)"
+            offColor='#dddd'
+            labelStyle={{ color: "black", fontWeight: "900" }}
+            size="medium"
+            onToggle={isOn => {
+              console.log("changed to : ", isOn)
+              dispatch({type:"SET_IS_MUSIC_ENABLED",payload:isOn})
+            }}
+          />
+          </View>
+          </View>
           <Text style={{textAlign:'center',fontFamily:'Montserrat-Bold', paddingTop:SCREEN_HEIGHT/4,color:'#dddd'}}>v1.0.21</Text>
     
     </Content>

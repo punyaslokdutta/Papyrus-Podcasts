@@ -52,7 +52,7 @@ class ProfilePodcasts extends React.Component {
       console.log('Retrieving Data');
       const  userid = this.props.firebase._getUid();
       await firestore().collectionGroup('podcasts').where('podcasterID','==',userid)//.where('isChapterPodcast','==',false)
-      .orderBy('lastEditedOn','desc').limit(this.state.limit)
+      .orderBy('createdOn','desc').limit(this.state.limit)
           .onSnapshot((querySnapshot) =>
           {
             var documentData_podcasts = [];
@@ -62,7 +62,7 @@ class ProfilePodcasts extends React.Component {
             });
             var lastVisibleBook = this.state.lastVisibleBookPodcast;
             if(documentData_podcasts.length != 0)
-              lastVisibleBook = documentData_podcasts[documentData_podcasts.length - 1].lastEditedOn;        
+              lastVisibleBook = documentData_podcasts[documentData_podcasts.length - 1].createdOn;        
             
             this.setState({
               bookPodcasts: documentData_podcasts,
@@ -92,13 +92,13 @@ class ProfilePodcasts extends React.Component {
       console.log("retrieveMoreBookPodcasts starts()")
       const  userid = this.props.firebase._getUid();
       let bookPodcasts = await firestore().collectionGroup('podcasts').where('podcasterID','==',userid)//.where('isChapterPodcast','==',false)
-                        .orderBy('lastEditedOn','desc').startAfter(this.state.lastVisibleBookPodcast).limit(this.state.limit).get();
+                        .orderBy('createdOn','desc').startAfter(this.state.lastVisibleBookPodcast).limit(this.state.limit).get();
     
       console.log("retrieveMoreBookPodcasts afterQuery()") 
       let documentData = bookPodcasts.docs.map(document => document.data());
       if(documentData.length != 0)   
       {
-        let lastVisibleBook = documentData[documentData.length - 1].lastEditedOn;
+        let lastVisibleBook = documentData[documentData.length - 1].createdOn;
         if(this.state.lastVisibleBookPodcast !== lastVisibleBook)
         {
           this.setState({

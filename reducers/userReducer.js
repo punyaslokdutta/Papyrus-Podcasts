@@ -42,11 +42,14 @@ const INITIAL_STATE = {
     lastPlayingPodcastID: null,
     lastPlayingCurrentTime: null,
     isAdmin: false,
-    uploadPodcastSuccess: false
+    uploadPodcastSuccess: false,
+    isMusicEnabled: true
   };
   
   function userReducer(state = INITIAL_STATE, action)  {
     switch (action.type) {
+        case "SET_IS_MUSIC_ENABLED":
+            return {...state,isMusicEnabled:action.payload}
         case "RENDERED_ALL_FLIPS":
             return {...state,renderedREDUX:!state.renderedREDUX}
         case "SET_PODCAST_UPLOAD_SUCCESS":

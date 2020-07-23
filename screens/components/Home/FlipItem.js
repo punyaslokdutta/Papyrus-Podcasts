@@ -23,6 +23,7 @@ import {
   MenuTrigger,
 } from 'react-native-popup-menu';
 import Toast from 'react-native-simple-toast';
+import { accessSync } from 'fs-extra';
 
 const { width, height } = Dimensions.get('window');
 
@@ -439,6 +440,19 @@ const FlipItem = (props) => {
         )
       }
 
+      async function addFlipToExploreScreen() {
+        firestore().collection('flips').doc(props.item.flipID).set({
+          isExploreFlip : true,
+          lastEditedOn: moment().format()
+        },{merge:true}).then(() => {
+          Toast.show("Flip added to Explore Section");
+        }).catch((error) => {
+          console.log("Error in adding flip to Explore Screen: ",error);
+          Toast.show("Failed to")
+        })
+      }
+
+
       function renderMenu() {
         return (
           <Menu>
@@ -474,6 +488,7 @@ const FlipItem = (props) => {
               ]  
           );
           }}/>
+          
           </MenuOptions>
           </Menu>
         );
