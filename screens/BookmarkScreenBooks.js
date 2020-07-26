@@ -12,6 +12,7 @@ import { Badge } from 'react-native-elements'
 import Shimmer from 'react-native-shimmer';
 import { withFirebaseHOC } from './config/Firebase';
 import BookmarkBookItem from './components/Profile/BookmarkBookItem';
+import BookItem from './components/Home/BookItem';
 var {width, height}=Dimensions.get('window')
 
 const BookmarkScreenBooks = (props) => {
@@ -24,7 +25,8 @@ const BookmarkScreenBooks = (props) => {
   const [loading,setLoading] = useState(false);
   const [refreshing,setRefreshing] = useState(false);
   const [onEndReachedCalledDuringMomentum,setOnEndReachedCalledDuringMomentum] = useState(true);
-
+  const [homeBooks,setHomeBooks] = useState([]);
+  const userPreferences = useSelector(state=>state.userReducer.userPreferences);
   useEffect(() => {
     retrieveData();
   },[])  
@@ -58,6 +60,16 @@ const BookmarkScreenBooks = (props) => {
     }
     finally {
       setLoading(false);
+    }
+
+    try{
+      let bookDocuments =  await firestore().collection('books').where('genres','array-contains-any',userPreferences)//.where('reviewPending','==',false)
+                           .orderBy('createdOn','desc').limit(6).get()
+      let bookData = bookDocuments.docs.map(document => document.data());
+      setHomeBooks(bookData) 
+    }
+    catch(error){
+      console.log("Error in fetching HomeScreen Books from database",error);
     }
   };
 
@@ -104,6 +116,14 @@ const BookmarkScreenBooks = (props) => {
     }
   }
   
+function renderHomeBook({item,index}) {
+  return (
+    <View style={{margin:30}}>
+      <BookItem item={item} index={index} navigation={props.navigation}/>
+      </View>
+)
+}
+
 function renderBook({item,index})  {
        //console.log("item: ",item);
     return (
@@ -133,11 +153,49 @@ function renderBook({item,index})  {
     }
   }
 
+  function renderHeader(){
+    return (
+      <View style={{alignItems:'center',justifyContent:'center', height:100}}>
+        <Text style={{fontFamily:'Montserrat-Bold',fontSize:20}}>Save Books in your collection</Text>
+
+        </View>
+    )
+  }
+
+  function renderHomeBooksFooter(){
+    return (
+      <TouchableOpacity onPress={() => {
+        props.navigation.navigate('SearchBookChapterTabNavigator');
+      }} style={{backgroundColor:'#dddd', alignItems:'center',justifyContent:'center',borderRadius:10,borderWidth:0.5, height:40,marginHorizontal:20,marginBottom:20}}>
+        <Text style={{fontFamily:'Montserrat-Bold',fontSize:20}}>Find Other Books</Text>
+
+        </TouchableOpacity>
+    )
+  }
+
   function separator(){
     return(
       <View style={[styles.separator]} />
     )
   }
+
+  function renderHomeBooks()
+  {
+    return (
+      <View>
+      <FlatList
+      showsVerticalScrollIndicator={false}
+      data={homeBooks}
+      renderItem={renderHomeBook}
+      ListHeaderComponent={renderHeader}
+      ListFooterComponent={renderHomeBooksFooter}
+      numColumns={2}
+      keyExtractor={item => item.bookID}
+      />
+      </View>
+    )
+  }
+
 
   function renderBooks()
   {
@@ -161,7 +219,7 @@ function renderBook({item,index})  {
   }
 
   
-  if(loading == true || (loading == false && books.length == 0))// && headerPodcastsLimit.length == 0))
+  if(loading == true)// && headerPodcastsLimit.length == 0))
   {
     return (
       
@@ -178,13 +236,21 @@ function renderBook({item,index})  {
        
     )
   }
-  else
+  else if(books.length != 0)
   {
     return (
     <View> 
       {renderBooks()}
       </View>
     );
+  }
+  else
+  {
+    return (
+      <View style={{backgroundColor:'#b5b0b0', alignItems:'center'}}>
+        {renderHomeBooks()}
+        </View>
+    )
   }
 }
 

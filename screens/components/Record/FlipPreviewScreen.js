@@ -40,10 +40,13 @@ const FlipPreviewScreen = (props)=> {
   const userID = props.firebase._getUid();
 
   useEffect(() => {
-    props.navigation.state.params.bookName !== undefined &&
-    setBookName(props.navigation.state.params.bookName) &&
-    setPreviewHeaderText("Edit Flip");
-  },[])
+    if(props.navigation.state.params.bookName !== undefined){
+      setBookName(props.navigation.state.params.bookName);
+      props.navigation.state.params.flipDescription && 
+      setFlipDescription(props.navigation.state.params.flipDescription)
+      setPreviewHeaderText("Edit Flip");
+    }  
+  },[props.navigation.state.params.bookName])
 
   function savePodcast(audioFilePath,duration) {
     setFlipLocalAudio(audioFilePath);
@@ -93,6 +96,9 @@ const FlipPreviewScreen = (props)=> {
       } 
       finally{
         setFlipAudioDownloadURL(false);
+        setBookName("");
+        setFlipDescription("");
+        
         props.navigation.navigate('HomeScreen');
       }
   }
@@ -266,7 +272,7 @@ const FlipPreviewScreen = (props)=> {
   }
 
     return (
-      <ScrollView style={{backgroundColor:'white'}}>
+      <ScrollView style={{backgroundColor:'white'}} keyboardShouldPersistTaps={'always'}>
         <View style={{flexDirection:'row', justifyContent:'space-between',alignItems:'center',paddingHorizontal:10,paddingVertical:5}}>
         <TouchableOpacity onPress={() => {
         props.navigation.goBack(null)
@@ -280,15 +286,16 @@ const FlipPreviewScreen = (props)=> {
         {renderPublishText()}  
 
           </View>
-        <ScrollView
+        <Animated.ScrollView
             horizontal
             pagingEnabled
             scrollEnabled
             showsHorizontalScrollIndicator={false}
             decelerationRate={0.998}
             scrollEventThrottle={16}
-            onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }])}
-            useNativeDriver={true}
+            onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }],
+              {useNativeDriver:true}
+              )}
         >
         {
             props.navigation.state.params.flipPictures && 
@@ -303,7 +310,7 @@ const FlipPreviewScreen = (props)=> {
             
           )
         }
-        </ScrollView>
+        </Animated.ScrollView>
         <View>
           {
             props.navigation.state.params.flipPictures.length > 1 &&

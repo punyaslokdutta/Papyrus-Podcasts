@@ -41,7 +41,7 @@ const BookItem = React.memo((props) => {
 
 
   async function addToBookmarks() {
-    
+
     const picturesArray = [];
     picturesArray.push(props.item.bookPictures[0]);
 
@@ -60,7 +60,7 @@ const BookItem = React.memo((props) => {
         firestore().collection('users').doc(userID).collection('privateUserData').doc(privateUserID).collection('bookmarkContent').doc(docRef.id).set({
           bookmarkID : docRef.id
         },{merge:true})
-        
+
         Toast.show("Saved to Collections");
       }).catch(function(error){
         console.log("Error in adding chapter bookmarks to user's book bookmarks collection: ",error);
@@ -75,7 +75,7 @@ const BookItem = React.memo((props) => {
       dispatch({type:"ADD_TO_CHAPTERS_BOOKMARKED",payload:props.item.chapterID});
     }
     else
-    { 
+    {
       firestore().collection('users').doc(userID).collection('privateUserData').doc(privateUserID).collection('bookmarkContent').add({
         bookmarkedOn : moment().format(),
         bookName : props.item.bookName,
@@ -88,7 +88,7 @@ const BookItem = React.memo((props) => {
         firestore().collection('users').doc(userID).collection('privateUserData').doc(privateUserID).collection('bookmarkContent').doc(docRef.id).set({
           bookmarkID : docRef.id
         },{merge:true})
-        
+
         Toast.show("Saved to Collections");
       }).catch(function(error){
         console.log("Error in adding book bookmarks to user's book bookmarks collection: ",error);
@@ -101,7 +101,7 @@ const BookItem = React.memo((props) => {
       })
       dispatch({type:"ADD_TO_BOOKS_BOOKMARKED",payload:props.item.bookID});
 
-    } 
+    }
  }
 
  async function removeFromBookmarks() {
@@ -111,22 +111,22 @@ const BookItem = React.memo((props) => {
     firestore().collection('users').doc(userID).collection('privateUserData').doc(privateUserID).collection('bookmarkContent')
      .where("chapterID",'==',props.item.chapterID).get().then(function(querySnapshot){
        querySnapshot.forEach(function(doc) {
-         
+
             doc.ref.delete().then(function() {
               Toast.show("Removed from Collections");
             }).catch(function(error){
               console.log("Error in removing book bookmarks from user's bookmarks collection: ",error);
             });
-         
+
        });
      });
-  
+
    firestore().collection('users').doc(userID).collection('privateUserData').doc(privateUserID).set({
        chaptersBookmarked : firestore.FieldValue.arrayRemove(props.item.chapterID)
      },{merge:true}).catch(function(error){
        console.log("Error in removing chapterID from booksBookmarked in user's private document: ",error);
      })
- 
+
    dispatch({type:"REMOVE_FROM_CHAPTERS_BOOKMARKED",payload:props.item.chapterID});
   }
   else
@@ -144,13 +144,13 @@ const BookItem = React.memo((props) => {
          }
        });
      });
-  
+
    firestore().collection('users').doc(userID).collection('privateUserData').doc(privateUserID).set({
        booksBookmarked : firestore.FieldValue.arrayRemove(props.item.bookID)
      },{merge:true}).catch(function(error){
        console.log("Error in removing bookID from booksBookmarked in user's private document: ",error);
      })
- 
+
    dispatch({type:"REMOVE_FROM_BOOKS_BOOKMARKED",payload:props.item.bookID});
   }
  }
@@ -171,9 +171,9 @@ const BookItem = React.memo((props) => {
     }
     //setBookmarkedState(!bookmarkedState);
   }
-  
 
-  
+
+
     return (
         <TouchableNativeFeedback activeOpacity={0.8} onPress={() => {
           if(props.item.chapterID !== undefined)
@@ -190,24 +190,29 @@ const BookItem = React.memo((props) => {
              <View style={{flexDirection:'column'}}>
              <View style={{flexDirection: 'row'}}>
               <View style={{flexDirection:'column'}}>
-              
+
               <ImageBackground
             style={{height:height/4,width:width/3,borderRightWidth:1}}
             imageStyle={{ borderBottomLeftRadius:10,borderTopLeftRadius:10 }}
             source={{ uri: props.item.bookPictures['0'] }}
           >
-            <LinearGradient  colors={['transparent','transparent','transparent','transparent','transparent','transparent','transparent','transparent','transparent','black','black']} >
-            <View style={{height:height/3,width:width/3 }}>
-       <Text style={{color:'white',position:'absolute',fontFamily:'Montserrat-Bold',bottom:2,left:3,right:4,fontSize:13}}>
-       {"  "}{props.item.bookName.slice(0,35)}   
+                  <LinearGradient  colors={['transparent','transparent','transparent','transparent','transparent','transparent','transparent','transparent','black','black','black']} >
+                  <View style={{height:height/4,width:width/3,borderBottomLeftRadius:10 }}>
+
+       <Text style={{color:'white',position:'absolute',fontFamily:'Montserrat-Bold',bottom:2,left:3,right:4,fontSize:15}}>
+       {"  "}{props.item.bookName.slice(0,35)}
         {
           (props.item.bookName.length > 35)  &&  ".."
         }
-      
-      </Text>       
-      </View> 
+
+      </Text>
+      </View>
+
             </LinearGradient>
+
+
           </ImageBackground>
+
                <View
                     style={{
                     height:1,
@@ -378,6 +383,5 @@ const styles = StyleSheet.create({
   }
 });
 
-       
-    
-  
+
+

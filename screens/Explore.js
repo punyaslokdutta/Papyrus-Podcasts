@@ -1,6 +1,6 @@
 import React, {Component, useState,useEffect, useRef, createRef,useContext} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import { StyleSheet,BackHandler, Text, View, SafeAreaView, ActivityIndicator, TextInput, Platform, StatusBar,TouchableOpacity,TouchableNativeFeedback, Dimensions, ScrollView, Image, NativeModules, NativeEventEmitter} from 'react-native';
+import { StyleSheet,BackHandler, Text, View, SafeAreaView, ActivityIndicator, TextInput, Platform, StatusBar,TouchableOpacity,TouchableNativeFeedback, Dimensions, ScrollView, Image, NativeModules, NativeEventEmitter, Linking} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import IconAntDesign from 'react-native-vector-icons/AntDesign'
 import TrendingPodcast from './components/Explore/TrendingPodcast'
@@ -32,7 +32,9 @@ const Explore = (props) => {
 
   const  userid = props.firebase._getUid();
   const privateUserID = "private" + userid;
+  var didFocusListener = useRef();
 
+  const handleOpenUrlFuncRef = useSelector(state=>state.userReducer.handleOpenUrlFuncRef);
   const isConnectedContext = useContext(NetworkContext);
 
   const lastPlayingPodcastID = useSelector(state=>state.userReducer.lastPlayingPodcastID);
@@ -190,16 +192,20 @@ const Explore = (props) => {
         () => {
           //SplashScreen.hide();
           console.log("[ExploreScreen] useEffect LOG");
-          props.navigation.addListener('didFocus', (route) => {
-             console.log("HOME TAB PRESSED");
-             dispatch({type:"CHANGE_SCREEN"});
-          });
+          if(!didFocusListener.current) {
+            didFocusListener.current = props.navigation.addListener('didFocus', (route) => {
+              console.log("HOME TAB PRESSED");
+              dispatch({type:"CHANGE_SCREEN"});
+           });
+          }
+          
           fetchExploreItems();
           //dispatch({type:"SET_MUSIC",payload:"Swayam"})
           return () => {
             //exitPodcastPlayerAndsetLastPlaying();
             dispatch({type:"SET_PODCAST", payload: null});
-
+            didFocusListener.current.remove();
+            Linking.removeEventListener("url",handleOpenUrlFuncRef);
             console.log(" App exited from Explore",podcast);
           };
         },[])
@@ -242,18 +248,12 @@ const Explore = (props) => {
 
         const flipItem = await firestore().collection('flips').doc(externalFlipID).get();
         const flipItemData = flipItem.data();
-        var resizeModes = [];
-        flipItemData.flipPictures.map((img,index) => {
-          Image.getSize(img, (width, height) => {
-              if(height > width)
-                resizeModes.push('cover');
-              else
-                resizeModes.push('contain');                  
-          });
-        })
+        
         props.navigation.navigate('MainFlipItem',{
           item : flipItemData,
-          resizeModes : resizeModes
+          playerText : "play",
+          pausedState : true,
+          player : false
       })
       dispatch({type:"FLIP_ID_FROM_EXTERNAL_LINK",payload:null});
 

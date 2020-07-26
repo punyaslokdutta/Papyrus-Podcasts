@@ -8,7 +8,9 @@ import IconAntDesign from 'react-native-vector-icons/AntDesign'
 import {useSelector, useDispatch} from "react-redux"
 import { withFirebaseHOC } from '../../config/Firebase';
 import firestore from '@react-native-firebase/firestore';
+import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
 import moment from "moment";
+import Slider from '@react-native-community/slider';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   Menu,
@@ -22,16 +24,69 @@ const { width, height } = Dimensions.get('window');
 
 const areEqual = (prevProps, nextProps) => true
 
-const MainFlipItem = React.memo((props) => {
+const MainFlipItem = (props) => {
     
+
+    const [loading,setLoading] = useState(false);
     const realUserID = props.firebase._getUid();
-    const isAdmin = useSelector(state=>state.userReducer.isAdmin);
     const [resizeModes,setResizeModes] = useState([]);
     const [loadingResizeModes,setLoadingResizeModes] = useState(true);
+    const [playerText,setPlayerText] = useState("play");
+    const [player,setPlayer] = useState(false);
+    const [pausedState,setPausedState] = useState(true);
+    const paused = useSelector(state=>state.flipReducer.paused);
+    const isAdmin = useSelector(state=>state.userReducer.isAdmin);
+    const currentFlipID = useSelector(state=>state.flipReducer.currentFlipID);
+
     const dispatch = useDispatch();
     const flipID = props.navigation.state.params.item.flipID;
     const item = props.navigation.state.params.item;
+    const { position } = useTrackPlayerProgress()
+
     var scrollX = new Animated.Value(0);
+
+    useEffect(() => {
+      if(props.navigation.state.params.item.flipID == currentFlipID)
+      {
+        console.log("position: ",position)
+        !paused && playerText == 'play' && setPlayerText('pause');
+        if(position >= props.navigation.state.params.item.duration/1000 - 1 && 
+          position < props.navigation.state.params.item.duration/1000)
+        {
+          setPlayerText('play');
+          setPlayer(false);
+        }
+      }
+    },[position])
+
+    useEffect(() => {
+      if(paused == true && props.navigation.state.params.item.flipID == currentFlipID)
+      {
+        setPausedState(true);
+        setPlayerText('play')
+      }
+    },[paused])
+
+    useEffect(() => {
+      console.log("sccdscds");
+      if(props.navigation.state.params.item.flipID != currentFlipID && playerText == "pause")
+      {
+        setPlayerText("play");
+        setPlayer(false);
+      }
+    },[currentFlipID])
+
+    useEffect(() => {
+      if(props.navigation.state.params.item.flipID == currentFlipID)
+      {
+        if(pausedState == true )
+          setPlayerText("play");
+        else
+          setPlayerText("pause");
+      }
+      
+    },[pausedState])
+
 
     useEffect(() => {
       console.log("In FLIP ITEM ID: ",item.flipID);
@@ -58,7 +113,10 @@ const MainFlipItem = React.memo((props) => {
                  
           });
       })
-      
+
+      setPlayerText(props.navigation.state.params.playerText);
+      setPausedState(props.navigation.state.params.pausedState);
+      setPlayer(props.navigation.state.params.player);
 
   },[])
 
@@ -66,6 +124,54 @@ const MainFlipItem = React.memo((props) => {
     if(resizeModes.length == item.flipPictures.length)
         setLoadingResizeModes(false);
   },[resizeModes])
+
+  function stopPodcast() {
+    dispatch({type:"SET_LAST_PLAYING_CURRENT_TIME",payload:null});
+    dispatch({type:"SET_LAST_PLAYING_PODCASTID",payload:null});
+    //BackHandler.removeEventListener("hardwareBackPress",  this.props.back_Button_Press());
+    //dispatch({type:"TOGGLE_PLAY_PAUSED"})
+    TrackPlayer.destroy()
+    dispatch({type:"SET_PODCAST", payload: null})
+  }
+
+
+  async function startAudioFlip() {
+    await TrackPlayer.setupPlayer({});
+    await TrackPlayer.updateOptions({
+      stopWithApp: true,
+      capabilities: [
+        TrackPlayer.CAPABILITY_PLAY,
+        TrackPlayer.CAPABILITY_PAUSE,
+        TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
+        TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS,
+        TrackPlayer.CAPABILITY_STOP
+      ],
+      compactCapabilities: [
+        TrackPlayer.CAPABILITY_PLAY,
+        TrackPlayer.CAPABILITY_PAUSE
+      ],
+      alwaysPauseOnInterruption: true,
+      notificationCapabilities: [
+        TrackPlayer.CAPABILITY_PLAY,
+        TrackPlayer.CAPABILITY_PAUSE,
+        TrackPlayer.CAPABILITY_STOP
+      ]
+    });
+    
+    await TrackPlayer.add({
+      id: props.navigation.state.params.item.flipID,
+      url: props.navigation.state.params.item.audioFileLink,
+      title: props.navigation.state.params.item.bookName,
+      artist: props.navigation.state.params.item.creatorName,
+      artwork: props.navigation.state.params.item.flipPictures[0],
+      duration: props.navigation.state.params.item.duration
+    });
+    setPlayer(true);
+    dispatch({ type:"SET_MUSIC_PAUSED",payload:true});
+    await TrackPlayer.play();
+
+  }
+
 
     async function retrieveUserData(){
         if(realUserID == props.navigation.state.params.item.creatorID)
@@ -102,6 +208,132 @@ const MainFlipItem = React.memo((props) => {
           </View>
         )
       }
+
+      function getMinutesFromSeconds(time) {
+    
+        var hours = null;
+        var minutes = null;
+        var seconds = null;
+        if(time >= 3600)
+        {
+          hours = Math.floor(time / 3600);
+          time = time % 3600;
+        }
+        
+        minutes = time >= 60 ? Math.floor(time / 60) : 0;
+        seconds = Math.floor(time - minutes * 60);
+    
+        if(hours === null)
+        {  
+          return `${minutes >= 10 ? minutes : '0' + minutes}:${
+            seconds >= 10 ? seconds : '0' + seconds
+          }`;
+        }
+        else
+        {
+          return `${hours >= 10 ? hours : '0' + hours}:${
+                    minutes >= 10 ? minutes : '0' + minutes}:${
+                    seconds >= 10 ? seconds : '0' + seconds
+          }`;
+        }
+      }
+
+      function handleOnSlide(time) {
+        TrackPlayer.seekTo(time)
+        //props.onSlideCapture({seekTime: time});
+      }
+
+      function renderFlipPlayer() {
+        if(loading)
+          return (
+            <View>
+            <ActivityIndicator color='black' size={'small'}/>
+            </View>
+          )
+        else
+          return (
+            <View style={{flex:1,flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-start',marginVertical:5,height:width/15,marginHorizontal:8}}>
+              <TouchableOpacity style={{width:width/10,height:width/10,paddingLeft:10}} onPress={() => {
+                //setPausedState(false);
+                if(playerText == "pause")
+                {
+                  setPlayerText("play");
+                  dispatch({type:"SET_FLIP_PAUSED",payload:true})
+                  dispatch({type:"SET_FLIP_PLAYING",payload:false});
+                  TrackPlayer.pause();
+                }
+                else
+                {
+                  //setLoading(true);
+                  setPlayerText("pause")
+                  dispatch({type:"SET_FLIP_PAUSED",payload:false})
+                  dispatch({ type:"SET_MUSIC_PAUSED",payload:true});
+                  if(player == false || (player == true && props.navigation.state.params.item.flipID != currentFlipID)) 
+                  {
+                    stopPodcast();
+                    dispatch({type:"SET_FLIP_ID",payload:props.navigation.state.params.item.flipID});
+                    dispatch({type:"SET_FLIP_PLAYING",payload:false});
+                    dispatch({type:"SET_FLIP_PLAYING",payload:true});
+                    startAudioFlip();
+                  }
+                  else
+                  {
+  
+                    TrackPlayer.play();
+  
+                  }
+                } 
+              }}>
+                <Icon name={playerText} size={playerText == 'play' ? 23 : 20} color='black'/>
+              </TouchableOpacity> 
+              {
+                props.navigation.state.params.item.flipID == currentFlipID 
+                ?
+                <Text> {getMinutesFromSeconds(Math.floor(position))}</Text>
+                :
+                <Text> {getMinutesFromSeconds(0)}</Text>
+              }
+              <View style={{width:width*5/8}}>
+                {
+                  props.navigation.state.params.item.flipID == currentFlipID 
+                  ?
+                  <Slider
+                    value={position}
+                    minimumValue={1}
+                    maximumValue={props.navigation.state.params.item.duration/1000}
+                    step={0.01}
+                    onValueChange={(value)=>handleOnSlide(value)}
+                    //onSlidingStart={handlePlayPause}
+                    //onSlidingComplete={handlePlayPause}
+                    minimumTrackTintColor={'black'}
+                    maximumTrackTintColor={'black'}
+                    thumbTintColor={'black'}
+                    //disabled={true}
+                  />
+                  :
+                  <Slider
+                    value={0}
+                    minimumValue={1}
+                    maximumValue={props.navigation.state.params.item.duration/1000}
+                    step={0.01}
+                    //onValueChange={(value)=>handleOnSlide(value)}
+                    //onSlidingStart={handlePlayPause}
+                    //onSlidingComplete={handlePlayPause}
+                    minimumTrackTintColor={'black'}
+                    maximumTrackTintColor={'black'}
+                    thumbTintColor={'black'}
+                    //disabled={true}
+                  />
+                }
+             
+               </View>
+            <Text>{getMinutesFromSeconds(Math.floor(props.navigation.state.params.item.duration/1000))}</Text>
+              </View>
+        )
+      }
+
+
+
 
       function renderMenu() {
         return (
@@ -175,17 +407,18 @@ const MainFlipItem = React.memo((props) => {
             </View>
             <View>
                 {/* <Image 
-                    source={{uri:props.item.flipPictures[0]}}
+                    source={{uri:props.navigation.state.params.item.flipPictures[0]}}
                     style={{height:width,width :width}}/> */}
-                <ScrollView
+                <Animated.ScrollView
                     horizontal
                     pagingEnabled
                     scrollEnabled
                     showsHorizontalScrollIndicator={false}
                     decelerationRate={0.998}
                     scrollEventThrottle={16}
-                    onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }])}
-                    useNativeDriver={true}
+                    onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }],
+                      {useNativeDriver:true}
+                      )}
                 >
             {
                loadingResizeModes === false
@@ -204,7 +437,7 @@ const MainFlipItem = React.memo((props) => {
               :
               <View style={{ backgroundColor:'#dddd', width:width, height: width*1.5 }}/>  
             }
-          </ScrollView>
+          </Animated.ScrollView>
 
             </View>
             <View>
@@ -213,6 +446,10 @@ const MainFlipItem = React.memo((props) => {
                 renderDots()
             }
                 </View>
+                {
+                  props.navigation.state.params.item.isAudioFlip == true &&
+                  renderFlipPlayer()
+                }
             <View style={{marginHorizontal:5,paddingBottom:height/6}}>
                 <Text style={{fontWeight:'bold'}}>{props.navigation.state.params.item.creatorName} 
                 <Text style={{fontWeight:'normal', fontFamily:'Montserrat-Regular'}}>  {props.navigation.state.params.item.flipDescription} </Text>
@@ -233,7 +470,7 @@ const MainFlipItem = React.memo((props) => {
         </ScrollView>
     )
 
-  }, areEqual)
+  }//, areEqual)
 
 export default withFirebaseHOC(MainFlipItem);
 

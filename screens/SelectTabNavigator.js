@@ -56,6 +56,7 @@ const SelectTabNavigator = createMaterialTopTabNavigator(
       fontSize: 10,
     }
   }, 
+  backBehavior : "none",
      navigationOptions:
      {
        tabBarVisible: true,//props => props.navigation.state.params.fromExplore ? false : false,

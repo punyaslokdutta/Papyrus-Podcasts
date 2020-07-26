@@ -478,8 +478,8 @@ export default class App extends Component {
      super(props)
      {
       this.state={
-          currentVersionCode : 22,
-          currentVersion : "1.0.21"
+          currentVersionCode : 23,
+          currentVersion : "1.0.22"
         }
      }
     }
@@ -492,20 +492,20 @@ export default class App extends Component {
 
       //[IMPORTANT]
     //For alpha update, use this code
-      this.setState({
-        latestVersion : updateVersionData.updateVersion,
-        latestVersionCode : updateVersionData.updateVersionCode,
-        isForcedUpdate : updateVersionData.isForcedUpdate,
-        updateMessage : updateVersionData.updateMessage
-      })
+      // this.setState({
+      //   latestVersion : updateVersionData.updateVersion,
+      //   latestVersionCode : updateVersionData.updateVersionCode,
+      //   isForcedUpdate : updateVersionData.isForcedUpdate,
+      //   updateMessage : updateVersionData.updateMessage
+      // })
 
       // For internal update, use this code
-    // this.setState({
-    //   latestVersion : updateVersionData.updateInternalTestVersion,
-    //   latestVersionCode : updateVersionData.updateInternalTestVersionCode,
-    //   isForcedUpdate : updateVersionData.isForcedUpdate,
-    //   updateMessage : updateVersionData.updateMessage
-    // })
+    this.setState({
+      latestVersion : updateVersionData.updateInternalTestVersion,
+      latestVersionCode : updateVersionData.updateInternalTestVersionCode,
+      isForcedUpdate : updateVersionData.isForcedUpdate,
+      updateMessage : updateVersionData.updateMessage
+    })
     }
     catch(error){
       console.log("Error in reading appUpdates document newUpdate: ",error);

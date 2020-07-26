@@ -23,7 +23,6 @@ import {
   MenuTrigger,
 } from 'react-native-popup-menu';
 import Toast from 'react-native-simple-toast';
-import { accessSync } from 'fs-extra';
 
 const { width, height } = Dimensions.get('window');
 
@@ -55,8 +54,15 @@ const FlipItem = (props) => {
 
     const [player,setPlayer] = useState(false);
 
-    var scrollX = new Animated.Value(0);
+    const scrollX = new Animated.Value(0);
 
+    useEffect(() => {
+      if(paused == true && props.item.flipID == currentFlipID)
+      {
+        setPausedState(true);
+        setPlayerText('play')
+      }
+    },[paused])
 
     useEffect(() => {
       if(props.item.flipID == currentFlipID)
@@ -79,18 +85,22 @@ const FlipItem = (props) => {
     },[currentFlipID])
 
     useEffect(() => {
+
       TrackPlayer.addEventListener('remote-stop', () => {
         dispatch({type:"SET_FLIP_ID",payload:null});
+        dispatch({type:"SET_FLIP_PAUSED",payload:true})
         setPlayerText("play");
         TrackPlayer.destroy()
       });
       TrackPlayer.addEventListener('remote-play', () => {
-        setPausedState(true);
-        setPausedState(false);
+        dispatch({type:"SET_FLIP_PAUSED",payload:false})
+        //setPausedState(true);
+        //setPausedState(false);
       });
       TrackPlayer.addEventListener('remote-pause', () => {
-        setPausedState(false);
-        setPausedState(true);
+        dispatch({type:"SET_FLIP_PAUSED",payload:true})
+        //setPausedState(false);
+        //setPausedState(true);
       });
     },[])
 
@@ -98,6 +108,7 @@ const FlipItem = (props) => {
       if(props.item.flipID == currentFlipID)
       {
         console.log("position: ",position)
+        !paused && playerText == 'play' && setPlayerText('pause');
         if(position >= props.item.duration/1000 - 1 && position < props.item.duration/1000)
         {
           setPlayerText('play');
@@ -312,11 +323,12 @@ const FlipItem = (props) => {
       else
         return (
           <View style={{flex:1,flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-start',marginVertical:5,height:width/15,marginHorizontal:8}}>
-            <TouchableOpacity style={{width:width/10,height:width/10}} onPress={() => {
+            <TouchableOpacity style={{width:width/10,height:width/10,paddingLeft:10}} onPress={() => {
               //setPausedState(false);
               if(playerText == "pause")
               {
                 setPlayerText("play");
+                dispatch({type:"SET_FLIP_PAUSED",payload:true})
                 dispatch({type:"SET_FLIP_PLAYING",payload:false});
                 TrackPlayer.pause();
               }
@@ -427,7 +439,8 @@ const FlipItem = (props) => {
               const opacity = dotPosition.interpolate({
                 inputRange: [index - 1, index, index + 1],
                 outputRange: [0.5, 1, 0.5],
-                extrapolate: 'clamp'
+                extrapolate: 'clamp',
+              
               });
               return (
                 <Animated.View
@@ -440,6 +453,18 @@ const FlipItem = (props) => {
         )
       }
 
+      async function removeFlipFromHomeScreen() {
+        firestore().collection('flips').doc(props.item.flipID).set({
+          lastEditedOn : moment().subtract(7,'d').format()
+        },{merge:true}).then(() => {
+          console.log("Removed this flip from HomeScreen");
+          Toast.show("Successfully removed flip from HomeScreen");
+        }).catch((error) => {
+          console.log("Error in removing this flip from HomeScreen",error);
+          Toast.show("Failed to remove flip from HomeScreen");
+        })
+      }
+
       async function addFlipToExploreScreen() {
         firestore().collection('flips').doc(props.item.flipID).set({
           isExploreFlip : true,
@@ -448,7 +473,7 @@ const FlipItem = (props) => {
           Toast.show("Flip added to Explore Section");
         }).catch((error) => {
           console.log("Error in adding flip to Explore Screen: ",error);
-          Toast.show("Failed to")
+          Toast.show("Failed to add Flip to Explore Screen");
         })
       }
 
@@ -488,11 +513,33 @@ const FlipItem = (props) => {
               ]  
           );
           }}/>
+          {
+            isAdmin &&
+            <MenuOption text="Remove from HomeScreen" onSelect={() => {
+              removeFlipFromHomeScreen();
+            }}/>
+          }
+          {
+            isAdmin &&
+            <MenuOption text="Add To Explore Flips" onSelect={() => {
+              addFlipToExploreScreen();
+            }}/>
+          }
+          
           
           </MenuOptions>
           </Menu>
         );
       }
+
+    function onScroll(nativeEvent) {
+      return (
+        Animated.event(
+          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+          {useNativeDriver:true}
+        )
+      )
+    }
 
     return (
         <View style={{paddingBottom:0,borderBottomWidth:1,borderTopWidth:1, borderColor:'#dddd'}}>
@@ -520,24 +567,25 @@ const FlipItem = (props) => {
             </View>
             </View>
             <View>
-                {/* <Image 
-                    source={{uri:props.item.flipPictures[0]}}
-                    style={{height:width,width :width}}/> */}
-                <ScrollView
+                <Animated.ScrollView
                     horizontal
                     pagingEnabled
                     scrollEnabled
                     showsHorizontalScrollIndicator={false}
                     decelerationRate={0.998}
                     scrollEventThrottle={16}
-                    onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }])}
-                    useNativeDriver={true}
+                    onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }],
+                      {useNativeDriver:true}
+                      )}
                 >
             {
                props.item.flipPictures && props.item.flipPictures.map((img, index) => 
                 <TouchableOpacity onPress={() => {
                   props.navigation.navigate('MainFlipItem',{
                     item : props.item,
+                    playerText : playerText,
+                    pausedState : pausedState,
+                    player : player
                     // resizeModes : resizeModes
                   })
                 }}>
@@ -550,7 +598,7 @@ const FlipItem = (props) => {
                 </TouchableOpacity>
               )
             }
-          </ScrollView>
+          </Animated.ScrollView>
 
             </View>
             <View>
@@ -559,10 +607,7 @@ const FlipItem = (props) => {
                 renderDots()
             }
                 </View>
-                {/* {
-                  props.item.isAudioFlip == true &&
-                  
-                } */}
+               
             {
                 props.item.isAudioFlip == true &&
                 renderFlipPlayer()
@@ -617,6 +662,7 @@ const FlipItem = (props) => {
     )
 
 }
+//, areEqual)
 
 export default withFirebaseHOC(FlipItem);
 

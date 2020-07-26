@@ -43,11 +43,14 @@ const INITIAL_STATE = {
     lastPlayingCurrentTime: null,
     isAdmin: false,
     uploadPodcastSuccess: false,
-    isMusicEnabled: true
+    isMusicEnabled: true,
+    handleOpenUrlFuncRef: null
   };
   
   function userReducer(state = INITIAL_STATE, action)  {
     switch (action.type) {
+        case "SET_HANDLE_URL_FUNC_REF":
+            return {...state,handleOpenUrlFuncRef:action.payload}
         case "SET_IS_MUSIC_ENABLED":
             return {...state,isMusicEnabled:action.payload}
         case "RENDERED_ALL_FLIPS":

@@ -45,6 +45,7 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
     },
   {
     tabBarComponent: props => <ProfileTabBar {...props}/>,
+    initialRouteName: 'SearchPodcastScreen',
     //tabBarPosition: 'bottom',
     tabBarOptions:  {
       showIcon: true,//props.navigation.state.params.fromExplore ? false : true,

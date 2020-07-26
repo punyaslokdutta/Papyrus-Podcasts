@@ -265,6 +265,7 @@ const editProfile = (props) => {
     <KeyboardAvoidingView style={styles.container} enabled>
       <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
         <ScrollView
+          keyboardShouldPersistTaps='always'
           showsVerticalScrollIndicator={false}
           style={{ paddingVertical: theme.sizes.base * 1, paddingBottom: theme.sizes.base * 3 }}
         >

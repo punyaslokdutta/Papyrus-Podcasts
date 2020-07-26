@@ -444,6 +444,37 @@ var {width, height}=Dimensions.get('window');
     
   }
 
+  removePodcastFromHomeScreen = async() => {
+    if(!this.props.podcast.isChapterPodcast)
+    {
+      firestore().collection('books').doc(this.props.podcast.bookID).
+      collection('podcasts').doc(this.props.podcast.podcastID).set({
+        lastEditedOn : moment().subtract(20,'d').format()
+    },{merge:true}).then(() => {
+      console.log("Removed this book podcast from HomeScreen");
+      Toast.show("Successfully removed podcast from HomeScreen");
+    }).catch((error) => {
+      console.log("Error in removing this book podcast from HomeScreen",error);
+      Toast.show("Failed to remove podcast from HomeScreen");
+    })
+    }
+    else if(this.props.podcast.isChapterPodcast)
+    {
+      firestore().collection('books').doc(this.props.podcast.bookID).
+      collection('chapters').doc(this.props.podcast.chapterID).
+      collection('podcasts').doc(this.props.podcast.podcastID).set({
+        lastEditedOn : moment().subtract(20,'d').format()
+    },{merge:true}).then(() => {
+      console.log("Removed this chapter podcast from HomeScreen");
+      Toast.show("Successfully removed podcast from HomeScreen");
+    }).catch((error) => {
+      console.log("Error in removing this chapter podcast from HomeScreen",error);
+      Toast.show("Failed to remove podcast from HomeScreen");
+    })
+    }
+    
+  }
+
    updatePodcastCountInCategoryDoc = async() => {
 
     this.props.podcast.genres.forEach(genre => {
@@ -859,6 +890,12 @@ var {width, height}=Dimensions.get('window');
             ); 
                
             }} text="Add To Explore Section - II"/>
+            }
+            {
+              this.props.isAdmin &&
+              <MenuOption text="Remove from HomeScreen" onSelect={() => {
+                this.removePodcastFromHomeScreen();
+              }}/>
             }
             
 

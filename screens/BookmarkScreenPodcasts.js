@@ -1,4 +1,4 @@
-import React, {Component,useState,useEffect} from 'react';
+import React, {Component,useState,useEffect,useRef} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import { StyleSheet, View,SafeAreaView, TextInput, Platform, StatusBar,NativeModules,TouchableOpacity, ScrollView, Image,Dimensions, Animated,SectionList,ActivityIndicator , NativeEventEmitter} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -17,6 +17,7 @@ var {width, height}=Dimensions.get('window')
 
 const BookMarkScreenPodcasts = (props) => {
   
+  const [section2Podcasts,setSection2Podcasts] = useState([]);
   const  userID = props.firebase._getUid();
   const privateUserID = "private" + userID;
   const [podcasts,setPodcasts] = useState([]);
@@ -28,12 +29,22 @@ const BookMarkScreenPodcasts = (props) => {
   const [scrollPosition,setScrollPosition] = useState(0);
   const dispatch = useDispatch();
 
+  var didFocusListener = useRef();
+
   useEffect(() => {
-    props.navigation.addListener('didFocus', (route) => {
-      console.log("BookmarkScreenPodcasts TAB PRESSED");
-      dispatch({type:"CHANGE_SCREEN"});
-      });
+    if(!didFocusListener.current){
+      didFocusListener.current = props.navigation.addListener('didFocus', (route) => {
+        console.log("BookmarkScreenPodcasts TAB PRESSED");
+        dispatch({type:"CHANGE_SCREEN"});
+        });
+    }
+    
     retrieveData();
+    
+    return () => {
+        console.log("[BookmarkScreenPodcasts] component unmounting");
+        didFocusListener.current.remove();
+      };
   },[])  
 
   async function retrieveData() 
@@ -65,6 +76,17 @@ const BookMarkScreenPodcasts = (props) => {
     }
     finally {
       setLoading(false);
+    }
+
+     // Section 2 podcasts
+     try{
+      let section2Query = await firestore().collectionGroup('podcasts').where('isExploreSection2','==',true)
+                          .orderBy('lastAddedToExplore2','desc').limit(10).get();
+      let section2Podcasts = section2Query.docs.map(document => document.data());
+      setSection2Podcasts(section2Podcasts);
+    }
+    catch(error){
+      console.log(error)
     }
   };
 
@@ -188,6 +210,47 @@ const BookMarkScreenPodcasts = (props) => {
       setScrollPosition(event.nativeEvent.contentOffset.y);
    }
 
+   function renderPodcast({item,index}) {
+     return (
+       <View>
+         <Podcast podcast={item} key ={item.podcastID} navigation={props.navigation}/>
+         </View>
+     )
+   }
+
+   function renderExploreFooter(){
+    return (
+      <TouchableOpacity onPress={() => {
+        props.navigation.navigate('SearchTabNavigator',{fromExplore:true});
+      }} style={{backgroundColor:'#dddd', alignItems:'center',justifyContent:'center',borderRadius:10,borderWidth:0.5, height:40,marginHorizontal:20,marginVertical:20}}>
+        <Text style={{fontFamily:'Montserrat-Bold',fontSize:20}}>Explore Podcasts</Text>
+
+        </TouchableOpacity>
+    )
+  }
+
+   function renderHeader(){
+    return (
+      <View style={{alignItems:'center',justifyContent:'center', height:100}}>
+        <Text style={{fontFamily:'Montserrat-Bold',fontSize:20}}>Repost Podcasts in your collection</Text>
+        </View>
+    )
+  }
+
+   function renderSection2Podcasts() {
+    return (
+      <FlatList
+      showsVerticalScrollIndicator={false}
+      data={section2Podcasts}
+      renderItem={renderPodcast}
+      ListHeaderComponent={renderHeader}
+      ListFooterComponent={renderExploreFooter}
+      //numColumns={2}
+      keyExtractor={item => item.podcastID}
+      />
+    )
+   }
+
   function renderPodcasts()
   {
     return (  
@@ -210,7 +273,7 @@ const BookMarkScreenPodcasts = (props) => {
   }
 
   
-  if(loading == true || (loading == false && podcasts.length == 0))// && headerPodcastsLimit.length == 0))
+  if(loading == true)// && headerPodcastsLimit.length == 0))
   {
     return (
       
@@ -227,13 +290,21 @@ const BookMarkScreenPodcasts = (props) => {
        
     )
   }
-  else
+  else if(podcasts.length != 0)
   {
     return (
     <View> 
       {renderPodcasts()}
       </View>
     );
+  }
+  else
+  {
+    return (
+      <View style={{backgroundColor:'#b5b0b0', alignItems:'center'}}>
+        {renderSection2Podcasts()}
+        </View>
+    )
   }
 }
 

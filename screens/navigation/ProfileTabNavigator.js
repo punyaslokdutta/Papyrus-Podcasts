@@ -81,6 +81,7 @@ const ProfileTabNavigator =createMaterialTopTabNavigator(
             fontSize: 10,
           }
         }, 
+        backBehavior : "none",
         navigationOptions:
         {
           tabBarVisible: true,

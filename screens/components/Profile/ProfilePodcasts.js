@@ -30,7 +30,7 @@ class ProfilePodcasts extends React.Component {
    
   componentDidMount = () => {
     try {
-      this.props.navigation.addListener('didFocus', (route) => {
+      this.didFocusEventListener = this.props.navigation.addListener('didFocus', (route) => {
         console.log("PROFILE_PODCASTS TAB PRESSED");
         this.props.dispatch({type:"CHANGE_SCREEN"});
         });
@@ -40,6 +40,10 @@ class ProfilePodcasts extends React.Component {
       console.log(error);
     }
   };
+
+  componentWillUnmount = () => {
+    this.didFocusEventListener.remove();
+  }
   
 
   retrieveData = async () => {
@@ -184,7 +188,7 @@ class ProfilePodcasts extends React.Component {
           keyExtractor={item => item.podcastID}
             ListFooterComponent={this.renderFooter}
           onEndReached={this.onEndReached}
-          onEndReachedThreshold={0.5}
+          onEndReachedThreshold={1}
           refreshing={this.state.refreshing}
           onRefresh={() => this.handleRefresh()}
           refreshControl={
@@ -203,11 +207,19 @@ class ProfilePodcasts extends React.Component {
     else
     {
       return(
-        <View style={{alignItems:'center',paddingTop:height/5}}>
+        <View style={{alignItems:'center',justifyContent:'center',paddingTop:height/6}}>
             
-        <Image 
+            <Image source={{uri:'https://storage.googleapis.com/papyrus-274618.appspot.com/illustrations/undraw_speech_to_text_9uir.png'}} style={{height:height/3,width:width/2}}/>
+            <TouchableOpacity onPress={() => {
+              this.props.navigation.navigate('AddBookReviewScreen');
+            }} style={{justifyContent:'center',alignItems:'center',
+            borderRadius:10,width:width/3.5,height:40,borderWidth:0.5,backgroundColor:'black'}}>
+              <Text style={{fontSize:15, fontFamily:'Montserrat-Regular',color:'white'}}>Add Podcast</Text>
+              </TouchableOpacity>
+              {/* <Image style={{height:50,width:50,}} source={{uri:require('../../../assets/illustrations/undraw_recording_lywr.png')}}/> */}
+        {/* <Image 
         source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/HomeScreen/WhatsApp%20Image%202020-03-29%20at%206.17.51%20PM.jpeg"}}
-        style={{height: height/4,width: width/4}}/>
+        style={{height: height/4,width: width/4}}/> */}
         </View>
       );
       

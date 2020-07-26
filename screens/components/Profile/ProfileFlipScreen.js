@@ -201,12 +201,25 @@ class ProfileFlipScreen extends React.Component {
     else
     {
       return(
-        <View style={{alignItems:'center',paddingTop:height/5}}>
+        <ScrollView contentContainerStyle={{alignItems:'center',paddingTop:height/15}}>
             
-        <Image 
+            <TouchableOpacity onPress={() => {
+              this.props.navigation.navigate('AddFlipScreen');
+            }} style={{justifyContent:'center',alignItems:'center',
+            borderRadius:10,width:width/3.2,height:50,borderWidth:0.5,backgroundColor:'black',marginBottom:30}}>
+              <Text style={{fontSize:23, fontFamily:'Montserrat-SemiBold',color:'white'}}>Add Flip</Text>
+              </TouchableOpacity>
+              <View style={{alignItems:'center',justifyContent:'center',paddingHorizontal:20}}>
+          <Text style={{fontFamily:'Montserrat-Bold',fontSize:30}}>What are Flips?{"\n"}</Text>
+          <Text style={{fontFamily:'Montserrat-SemiBold',fontSize:15}}>Flips are book notes and highlights which you can share on the go.{"\n"}</Text>
+                </View>
+              <Image source={{uri:'https://storage.googleapis.com/papyrus-274618.appspot.com/illustrations/Flip-I.jpg'}} style={{height:width/2,width:width/1.8,borderWidth:0,borderColor:'black'}}/>
+
+              <Image source={{uri:'https://storage.googleapis.com/papyrus-274618.appspot.com/illustrations/FLIP-II.jpg'}} style={{height:width/2,width:width/1.8,borderWidth:0,borderColor:'black'}}/>
+        {/* <Image 
         source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/HomeScreen/WhatsApp%20Image%202020-03-29%20at%206.17.51%20PM.jpeg"}}
-        style={{height: height/4,width: width/4}}/>
-        </View>
+        style={{height: height/4,width: width/4}}/> */}
+        </ScrollView>
       );
       
     }

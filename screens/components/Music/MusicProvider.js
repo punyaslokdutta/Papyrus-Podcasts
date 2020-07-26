@@ -18,6 +18,7 @@ const isOS = Platform.OS === 'ios';
 const MusicProvider=(props)=>{
 
   const dispatch = useDispatch();
+
   const flipID = useSelector(state=>state.flipReducer.currentFlipID);
   const podcastRedux = useSelector(state=>state.rootReducer.podcast);
   const { position } = useTrackPlayerProgress()
@@ -153,14 +154,14 @@ const MusicProvider=(props)=>{
                 style={{ transform: [{ translateY }] }}
               >
                 {
-                  musicRedux && <MusicPlayer/>
+                  isMusicEnabled && musicRedux && <MusicPlayer/>
                 }
               </Animated.View>
             )
           }
           {
             
-            !isOS && musicRedux && <MusicPlayer/>
+            !isOS && isMusicEnabled && musicRedux && <MusicPlayer/>
            
           
           }

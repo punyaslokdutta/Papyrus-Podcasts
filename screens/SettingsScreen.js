@@ -278,7 +278,8 @@ const SettingsScreen = (props) => {
           </TouchableOpacity>
         </Block>
 
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView showsVerticalScrollIndicator={false} 
+                    keyboardShouldPersistTaps={'always'}>
 
           <Block style={styles.inputs}>
           <Block>

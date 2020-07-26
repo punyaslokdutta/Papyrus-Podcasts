@@ -237,8 +237,8 @@ class PodcastPlayer extends React.Component {
       timing(this.offsetY, {
         toValue: upperBound,
         duration: 1000,
+        useNativeDriver: true,
         easing: Easing.inOut(Easing.ease),
-        useNativeDriver: true
       }).start();
 
      // dispatch({type:"TOGGLE_MINI_PLAYER"})
@@ -312,8 +312,8 @@ class PodcastPlayer extends React.Component {
     timing(this.offsetY, {
     toValue: 0,
     duration: 1000,
+    useNativeDriver: true,
     easing: Easing.inOut(Easing.ease),
-    useNativeDriver: true
   }).start();
 }
 

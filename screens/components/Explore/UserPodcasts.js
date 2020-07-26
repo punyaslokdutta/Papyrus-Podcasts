@@ -32,7 +32,7 @@ class UserPodcasts extends React.Component {
    
      componentDidMount = () => {
       try {
-        this.props.navigation.addListener('didFocus', (route) => {
+        this.didFocusEventListener = this.props.navigation.addListener('didFocus', (route) => {
           console.log("USER_PODCASTS TAB PRESSED");
           this.props.dispatch({type:"CHANGE_SCREEN"});
           });
@@ -42,6 +42,10 @@ class UserPodcasts extends React.Component {
         console.log(error);
       }
     };
+    
+    componentWillUnmount = () => {
+      this.didFocusEventListener.remove();
+    }
     
      retrieveData = async () => {
       

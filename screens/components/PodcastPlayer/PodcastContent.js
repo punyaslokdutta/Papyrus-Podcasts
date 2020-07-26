@@ -648,6 +648,7 @@ async function updatePodcastsLiked(props){
                   //dispatch({type:"TOGGLE_MINI_PLAYER"})
                   parentSlideDown()
                   props.navigation.navigate('InfoScreen', {podcast:props.podcast})
+
                   }}>
                       <Text style={{fontFamily:'Montserrat-Regular',fontSize:height/54,color:'white',lineHeight:height/54}}>{podcastDescription.slice(0,300)}
                       <Text style={[styles.text,{fontFamily:'Montserrat-Regular'}]}>{podcastDescription.length > 300 && "...Read More"}</Text>

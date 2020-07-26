@@ -1,4 +1,4 @@
-import React, {Component,useState,useEffect,useContext} from 'react';
+import React, {Component,useState,useEffect,useContext,useRef} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import { StyleSheet, View,SafeAreaView, TextInput, Platform, StatusBar,NativeModules,TouchableOpacity, 
   ScrollView, Image,Dimensions, Animated,SectionList,ActivityIndicator, 
@@ -42,21 +42,32 @@ const HomeScreen = (props) => {
   const [onEndReachedCalledDuringMomentum,setOnEndReachedCalledDuringMomentum] = useState(true);
   const [scrollPosition,setScrollPosition] = useState(0);
   const dispatch = useDispatch();
-  
+  var didFocusListener = useRef();
 
   useEffect(() => {
     console.log("[HomeScreen] useEffect LOG");
-    props.navigation.addListener('didFocus', (route) => {
-      console.log("HOME TAB PRESSED");
-      dispatch({type:"CHANGE_SCREEN"});
-      });
-      const unsubscribe = NetInfo.addEventListener(state => {
-        console.log("Connection type", state.type);
-        console.log("Is connected?", state.isConnected);
-        setIsConnected(state.isConnected);
-      });
+    if(!didFocusListener.current) {
+      didFocusListener.current =  props.navigation.addListener('didFocus', (route) => {
+        console.log("HOME TAB PRESSED");
+        dispatch({type:"CHANGE_SCREEN"});
+        });
+    }
+    
+    // if(!netInfoListener.current) {
+    //   netInfoListener.current =  NetInfo.addEventListener(state => {
+    //     console.log("Connection type", state.type);
+    //     console.log("Is connected?", state.isConnected);
+    //     setIsConnected(state.isConnected);
+    //   });
+    // }
+      
     retrieveData();
 
+    return () => {
+      console.log("[HomeScreen] component unmounting");
+      didFocusListener.current.remove();
+      //netInfoListener.current.remove();
+    };
   },[])  
 
   useEffect(() => {
@@ -409,11 +420,11 @@ const HomeScreen = (props) => {
             &&
             renderHeader()
           }
-           {
+           {/* {
             index == 10
             &&
             renderFlipsIII()
-          } 
+          }  */}
       <Podcast podcast={item} scrollPosition={scrollPosition} index={index} navigation={props.navigation}/>
       </View>
       )
@@ -454,7 +465,7 @@ const HomeScreen = (props) => {
       //ListHeaderComponent={renderHeader}
       ListFooterComponent={renderFooter}
       onEndReached={onEndReached}
-      onEndReachedThreshold={0.5}
+      onEndReachedThreshold={1}
       refreshing={refreshing}
       onRefresh={() => handleRefresh()}
       refreshControl={

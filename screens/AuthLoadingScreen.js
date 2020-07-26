@@ -26,6 +26,7 @@ const  AuthLoadingScreen = (props) => {
 
           const prefixPlayer = "https://papyrusapp.page.link/player/";
           const prefixFlip = "https://papyrusapp.page.link/flips/";
+          //const notificationFlip = "trackplayer://notification.click";
 
           const playerIndex = url["url"].search("player");
           const flipsIndex = url["url"].search("flips");
@@ -42,6 +43,7 @@ const  AuthLoadingScreen = (props) => {
             console.log("[AUTH LOADING] handleOpenURL podcastID: ",podcastID);
             dispatch({type:"PODCAST_ID_FROM_EXTERNAL_LINK",payload:podcastID});
           }
+          
         }
      }).catch(error => { // Error handling });
      console.log(error);
@@ -72,9 +74,14 @@ const  AuthLoadingScreen = (props) => {
         console.log("DYNAMIC LINK URL: ",url)
         const prefixPlayer = "https://papyrusapp.page.link/player/";
         const prefixFlip = "https://papyrusapp.page.link/flips/";
-
+        //const notificationFlip = "trackplayer://notification.click";
+        //console.log("notificationFlip: ",notificationFlip);
         const playerIndex = url["url"].search("player");
         const flipsIndex = url["url"].search("flips");
+        //const notificationFlipIndex = url["url"].search("notification");
+
+        
+
         if(flipsIndex != -1)
         {
           const flipID = url["url"].slice(prefixFlip.length);
@@ -89,6 +96,12 @@ const  AuthLoadingScreen = (props) => {
           dispatch({type:"PODCAST_ID_FROM_EXTERNAL_LINK",payload:podcastID});
         }
       
+        // if(notificationFlipIndex != -1)
+        // {
+        //   const flipID = url["url"].slice(prefixFlip.length);
+        //   console.log("[AUTH LOADING] handleOpenURL flipID: ",flipID);
+        //   dispatch({type:"FLIP_ID_FROM_EXTERNAL_LINK",payload:flipID});
+        // }
      });
       console.log("[AUTH LOADING] handleOpenURL url: ",url["url"]);
       
@@ -184,6 +197,11 @@ const  AuthLoadingScreen = (props) => {
       Linking.addEventListener("url", handleOpenURL);
       handleDeepLinkingRequests();
       check_User_Auth();
+      dispatch({type:"SET_HANDLE_URL_FUNC_REF",payload:handleOpenURL});
+      return () => {
+        console.log("[AuthLoadingScreen] component unmounting");
+        //Linking.removeEventListener('url', handleOpenURL);
+      };
     },[])
 
 

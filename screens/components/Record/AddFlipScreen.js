@@ -324,7 +324,7 @@ const AddFlipScreen = (props)=> {
 
     return (
         <SafeAreaView style={{flex:1, backgroundColor:'#FFFFFF',}}>
-        <ScrollView >
+        <ScrollView keyboardShouldPersistTaps={'always'}>
         <View style={{backgroundColor:'#101010',paddingHorizontal:10, paddingVertical:height/50, flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
         <TouchableOpacity onPress={()=>props.navigation.goBack(null)}>
             <Icon name="arrow-left" size={20} style={{color:'white'}}/>

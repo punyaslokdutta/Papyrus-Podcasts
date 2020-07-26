@@ -51,6 +51,10 @@ class CategoryScreen extends Component {
     }
   };
 
+  componentWillUnmount = () => {
+    // this.eventListener.remove();  
+  }
+
 
   retrieveData = async () => {
     

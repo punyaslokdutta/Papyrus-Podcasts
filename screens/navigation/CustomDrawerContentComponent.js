@@ -11,7 +11,8 @@ import { Badge } from 'react-native-elements'
 import FontistoIcon from 'react-native-vector-icons/Fontisto';
 import ActivityScreen from '../ActivityScreen';
 import SettingsScreen from '../SettingsScreen';
-
+import firestore from '@react-native-firebase/firestore';
+import {withFirebaseHOC} from '../config/Firebase';
 
 
 var {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
@@ -24,11 +25,25 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
 const CustomDrawerContentComponent = (props) =>
 {
     const name = useSelector(state=>state.userReducer.name);
+    const userID = props.firebase._getUid();
+    const privateDataID = "private" + userID;
     const username = useSelector(state=>state.userReducer.userName);
     const photoURL = useSelector(state=>state.userReducer.displayPictureURL);
     const numNotifications = useSelector(state=>state.userReducer.numNotifications);
     const isMusicEnabled = useSelector(state=>state.userReducer.isMusicEnabled);
     const dispatch = useDispatch();
+
+  async function modifyMusicPreferenceInDatabase(isOn){
+    firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).set({
+      musicPlayerEnabled : isOn 
+    },{merge:true}).then(() => {
+      console.log("Successfully set the musicPlayer preference in database");
+    }).catch((error) => {
+    console.log("Error in setting musicPlayer preference in database");
+    })
+  }
+  
+
 
 return(  
   <Container style={{backgroundColor:'#101010'}}>
@@ -39,11 +54,10 @@ return(
        source={{uri : photoURL}}
      />
      </TouchableOpacity>
-     <TouchableOpacity onPress={() => props.navigation.navigate('Profile_StatsScreen')}>
-     <Block flex={false} row center space="between" style={{paddingTop:10, paddingLeft:5}}>
-<Text style={{color:'white', fontSize:SCREEN_HEIGHT/40,fontFamily:'Montserrat-Bold' }}>{name}</Text>
-          
-    </Block>
+     <TouchableOpacity 
+     style={{paddingTop:8}}
+      onPress={() => props.navigation.navigate('Profile_StatsScreen')}>
+<Text style={{color:'white', textAlign:'center',fontSize:SCREEN_HEIGHT/40,fontFamily:'Montserrat-Bold' }}>{name}</Text>
     </TouchableOpacity>
     {/* <Block flex={false} row center space="between" style={{ paddingLeft:5}}>
 <Text style={{color:'white', fontFamily:'san-serif',textAlign:'center'}}>{username}</Text>
@@ -130,25 +144,25 @@ return(
           }
           } 
           activeBackgroundColor='#101010'   style={{backgroundColor: '#ffffff', }} labelStyle={{color: '#ffffff', fontSize: SCREEN_HEIGHT/35}}/>
-            <View>
           {/* <Text style={{textAlign:"center",fontFamily:'Montserrat-Bold',paddingTop:20,color:'#dddd'}}> Music </Text> */}
-          <View style={{ alignItems:'center',marginTop:10}}>
-          <FontistoIcon name="music-note" size={20} color='white' style={{marginBottom:10}}/>
+          <View style={{ alignItems:'center',marginTop:SCREEN_HEIGHT/10}}>
 
           <ToggleSwitch
             isOn={isMusicEnabled}
-            onColor="rgb(218,165,32)"
+            onColor="white"
             offColor='#dddd'
             labelStyle={{ color: "black", fontWeight: "900" }}
             size="medium"
             onToggle={isOn => {
               console.log("changed to : ", isOn)
+              modifyMusicPreferenceInDatabase(isOn);
               dispatch({type:"SET_IS_MUSIC_ENABLED",payload:isOn})
             }}
           />
+          {/* <FontistoIcon name="music-note" size={20} color='white' style={{marginTop:10}}/> */}
+
           </View>
-          </View>
-          <Text style={{textAlign:'center',fontFamily:'Montserrat-Bold', paddingTop:SCREEN_HEIGHT/4,color:'#dddd'}}>v1.0.21</Text>
+          <Text style={{textAlign:'center',fontFamily:'Montserrat-Bold', paddingTop:SCREEN_HEIGHT/10,color:'#dddd'}}>v1.0.22</Text>
     
     </Content>
 
@@ -157,7 +171,7 @@ return(
  );
  }
 
-export default CustomDrawerContentComponent;
+export default withFirebaseHOC(CustomDrawerContentComponent);
 
 const styles = StyleSheet.create({
     container: {
