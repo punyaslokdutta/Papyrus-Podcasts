@@ -55,6 +55,7 @@ const FlipPreviewScreen = (props)=> {
 
   async function addFlipToFirestore() {
     try{
+      setPublishLoading(true);
       if(props.navigation.state.params.editing === true){
         firestore().collection('flips').doc(props.navigation.state.params.flipID).set({
           flipDescription : flipDescription,
@@ -63,8 +64,14 @@ const FlipPreviewScreen = (props)=> {
           lastEditedOn : moment().format() 
         },{merge:true}).then(() => {
           Toast.show('Flip edited successfully');
+          setFlipAudioDownloadURL(false);
+          setBookName(null);
+          setFlipDescription(null);
+          setPublishLoading(false);
+
         }).catch((err) => {
           console.log("Error in editing text flip in firestore :- ",err)
+          setPublishLoading(false);
           alert('Failed to post edited flip !!!');
         });
       }
@@ -84,9 +91,13 @@ const FlipPreviewScreen = (props)=> {
           firestore().collection('flips').doc(docRef.id).set({
             flipID : docRef.id
           },{merge:true});
+          setPublishLoading(false);
+          setBookName(null);
+          setFlipDescription(null);
           Toast.show('Flip posted successfully');
         }).catch((err) => {
           console.log("Error in adding text flip to firestore :- ",err)
+          setPublishLoading(false);
           alert('Failed to post flip !!!');
         });
       }
@@ -95,10 +106,7 @@ const FlipPreviewScreen = (props)=> {
         console.log(error);
       } 
       finally{
-        setFlipAudioDownloadURL(false);
-        setBookName("");
-        setFlipDescription("");
-        
+        props.navigation.popToTop();
         props.navigation.navigate('HomeScreen');
       }
   }
@@ -112,8 +120,13 @@ const FlipPreviewScreen = (props)=> {
           bookName : bookName,
           lastEditedOn : moment().format() 
         },{merge:true}).then(() => {
+          setPublishLoading(false);
+          setFlipAudioDownloadURL(false);
+          setBookName(null);
+          setFlipDescription(null);
           Toast.show('Flip edited successfully');
         }).catch((err) => {
+          setPublishLoading(false);
           console.log("Error in editing text flip in firestore :- ",err)
           alert('Failed to post edited flip !!!');
         });
@@ -137,8 +150,13 @@ const FlipPreviewScreen = (props)=> {
           firestore().collection('flips').doc(docRef.id).set({
             flipID : docRef.id
           },{merge:true});
+          setPublishLoading(false);
+          setFlipAudioDownloadURL(false);
+          setBookName(null);
+          setFlipDescription(null);
           Toast.show('Audio Flip posted successfully');
         }).catch((err) => {
+          setPublishLoading(false);
           console.log("Error in adding audio flip to firestore :- ",err)
           alert('Failed to post audio flip !!!');
         });
@@ -148,7 +166,8 @@ const FlipPreviewScreen = (props)=> {
         console.log(error);
       } 
       finally{
-        setFlipAudioDownloadURL(false);
+        //setFlipAudioDownloadURL(false);
+        props.navigation.popToTop();
         props.navigation.navigate('HomeScreen');
       }
   }
@@ -162,6 +181,7 @@ const FlipPreviewScreen = (props)=> {
 
 
   async function uploadAudioToStorage() {
+    setPublishLoading(true);
     console.log(flipLocalAudio);
     var refPath = "flips/audio/" + userID + "_" + moment().format() + ".m4a";
     var storageRef = storage().ref(refPath);
@@ -222,7 +242,6 @@ const FlipPreviewScreen = (props)=> {
       return;
     }
 
-   
     if(isAudioFlip == true)
     {
       if(flipLocalAudio == false)

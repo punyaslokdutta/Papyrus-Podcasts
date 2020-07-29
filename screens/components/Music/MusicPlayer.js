@@ -54,7 +54,7 @@ class MusicPlayer extends React.Component {
           this.setup();
           TrackPlayer.play();  
         }
-              // TrackPlayer.addEventListener('remote-play', () => {
+        // TrackPlayer.addEventListener('remote-play', () => {
         //   this.props.dispatch({ type:"SET_MUSIC_PAUSED",payload:false});
         // });
         // TrackPlayer.addEventListener('remote-pause', () => {

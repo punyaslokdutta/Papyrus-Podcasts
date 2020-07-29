@@ -84,25 +84,25 @@ const FlipItem = (props) => {
       }
     },[currentFlipID])
 
-    useEffect(() => {
+    // useEffect(() => {
 
-      TrackPlayer.addEventListener('remote-stop', () => {
-        dispatch({type:"SET_FLIP_ID",payload:null});
-        dispatch({type:"SET_FLIP_PAUSED",payload:true})
-        setPlayerText("play");
-        TrackPlayer.destroy()
-      });
-      TrackPlayer.addEventListener('remote-play', () => {
-        dispatch({type:"SET_FLIP_PAUSED",payload:false})
-        //setPausedState(true);
-        //setPausedState(false);
-      });
-      TrackPlayer.addEventListener('remote-pause', () => {
-        dispatch({type:"SET_FLIP_PAUSED",payload:true})
-        //setPausedState(false);
-        //setPausedState(true);
-      });
-    },[])
+    //   TrackPlayer.addEventListener('remote-stop', () => {
+    //     dispatch({type:"SET_FLIP_ID",payload:null});
+    //     dispatch({type:"SET_FLIP_PAUSED",payload:true})
+    //     setPlayerText("play");
+    //     TrackPlayer.destroy()
+    //   });
+    //   TrackPlayer.addEventListener('remote-play', () => {
+    //     dispatch({type:"SET_FLIP_PAUSED",payload:false})
+    //     //setPausedState(true);
+    //     //setPausedState(false);
+    //   });
+    //   TrackPlayer.addEventListener('remote-pause', () => {
+    //     dispatch({type:"SET_FLIP_PAUSED",payload:true})
+    //     //setPausedState(false);
+    //     //setPausedState(true);
+    //   });
+    // },[])
 
     useEffect(() => {
       if(props.item.flipID == currentFlipID)

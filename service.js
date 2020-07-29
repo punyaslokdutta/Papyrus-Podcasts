@@ -1,12 +1,26 @@
 import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
 import {useSelector, useDispatch} from "react-redux"
+import store from './store';
 
 module.exports = async function() {
 
-    TrackPlayer.addEventListener('remote-play', () => TrackPlayer.play());
+    TrackPlayer.addEventListener('remote-play', () => {
+        store.dispatch({type:"SET_FLIP_PAUSED",payload:false})
+        console.log("In remote-play")
+        TrackPlayer.play()
+    });
 
-    TrackPlayer.addEventListener('remote-pause', () => TrackPlayer.pause());
+    TrackPlayer.addEventListener('remote-pause', () => {
+        store.dispatch({type:"SET_FLIP_PAUSED",payload:true})
+        TrackPlayer.pause()
+    });
 
+    TrackPlayer.addEventListener('remote-stop', () => {
+        store.dispatch({type:"SET_FLIP_ID",payload:null});
+        store.dispatch({type:"SET_FLIP_PAUSED",payload:true});
+        store.dispatch({type:"SET_PODCAST",payload:null});
+        TrackPlayer.destroy()
+      });
     //TrackPlayer.addEventListener('remote-stop', () => TrackPlayer.destroy());
 
     TrackPlayer.addEventListener('remote-duck', async data => {
@@ -30,6 +44,4 @@ module.exports = async function() {
         //TrackPlayer.pause();
         //dispatch({type:"TOGGLE_PLAY_PAUSED"});
     })
-    // ...
-    
 };

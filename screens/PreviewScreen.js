@@ -1,5 +1,5 @@
 import React, { Component, useState, useEffect } from 'react';
-import { TouchableOpacity, StyleSheet, Text, View, Button, SafeAreaView, Dimensions, Image,  TextInput, Platform , BackHandler, ActivityIndicator} from 'react-native';
+import { TouchableOpacity, StyleSheet, Text, View, Button, SafeAreaView, Dimensions, Image,  TextInput, Platform , BackHandler, ActivityIndicator, Alert} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import storage, { firebase } from '@react-native-firebase/storage'
 import { withFirebaseHOC } from '../screens/config/Firebase'
@@ -607,17 +607,23 @@ const PreviewScreen = (props) => {
         } else {
           const source = { uri: response.uri };
           console.log("Before storageRef.putFile");
+          console.log("response : ",response);
           //setImageFromURL(false);
           //setPodcastImage(source);
           setLoadingPodcastImage(true);
           var refPath = "podcasts/images/" + userID + "_" + bookID + "_" + moment().format() + ".jpg";
-          var storageRef = storage().ref(refPath);
-          console.log("Before storageRef.putFile");
-  
-          ImageResizer.createResizedImage(response.path, 720, 720, 'JPEG',100)
-        .then(({path}) => {
-  
-          const unsubscribe=storageRef.putFile(path)//: 'content://com.miui.gallery.open/raw/storage/emulated/DCIM/Camera/IMG_20200214_134628_1.jpg')
+          
+          if(response.path.split('.').pop() == "gif")
+          {
+            if(((response.fileSize/1024)/1024) > 1)
+            {
+              setLoadingPodcastImage(false);
+              Alert.alert("Please upload a GIF file within 1 MB");
+              return;
+            }
+            refPath = "podcasts/gifs/" + userID + "_" + bookID + "-" + moment().format() + ".gif";
+            var storageRef = storage().ref(refPath);
+            const unsubscribe=storageRef.putFile(response.path)//: 'content://com.miui.gallery.open/raw/storage/emulated/DCIM/Camera/IMG_20200214_134628_1.jpg')
             .on(
               firebase.storage.TaskEvent.STATE_CHANGED,
               snapshot => {
@@ -629,7 +635,7 @@ const PreviewScreen = (props) => {
               },
               error => {
                 unsubscribe();
-                console.log("image upload error: " + error.toString());
+                console.log("gif upload error: " + error.toString());
               },
               () => {
                 storageRef.getDownloadURL()
@@ -643,7 +649,45 @@ const PreviewScreen = (props) => {
                   })
               }
             )
-            });
+          }
+          else
+          {
+            var storageRef = storage().ref(refPath);
+            console.log("Before storageRef.putFile");
+    
+            ImageResizer.createResizedImage(response.path, 720, 720, 'JPEG',100)
+          .then(({path}) => {
+    
+            const unsubscribe=storageRef.putFile(path)//: 'content://com.miui.gallery.open/raw/storage/emulated/DCIM/Camera/IMG_20200214_134628_1.jpg')
+              .on(
+                firebase.storage.TaskEvent.STATE_CHANGED,
+                snapshot => {
+                  console.log("snapshot: " + snapshot.state);
+                  console.log("progress: " + (snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                  if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+                    console.log("Success");
+                  }
+                },
+                error => {
+                  unsubscribe();
+                  console.log("image upload error: " + error.toString());
+                },
+                () => {
+                  storageRef.getDownloadURL()
+                    .then((downloadUrl) => {
+                      console.log("File available at: " + downloadUrl);
+                      setPodcastImage(downloadUrl);
+                      setLoadingPodcastImage(false);
+                    })
+                    .catch(err => {
+                      console.log("Error in storageRef.getDownloadURL() in uploadImage in PreviewScreen: ",err);
+                    })
+                }
+              )
+              });
+          }
+          
+          
           }
       });
     }

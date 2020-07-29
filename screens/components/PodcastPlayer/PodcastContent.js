@@ -187,12 +187,12 @@ async function togglePlay  ()  {
 
 }
 
-useEffect(() => {
-  TrackPlayer.addEventListener('remote-stop', () => {
-    dispatch({type:"SET_PODCAST",payload:null});
-    TrackPlayer.destroy()
-  });
-},[])
+// useEffect(() => {
+//   TrackPlayer.addEventListener('remote-stop', () => {
+//     dispatch({type:"SET_PODCAST",payload:null});
+//     TrackPlayer.destroy()
+//   });
+// },[])
 
 useEffect(() => {
   props.podcast !== null && setup();

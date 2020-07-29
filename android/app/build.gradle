@@ -140,8 +140,8 @@ android {
         applicationId "com.papyrus_60"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 23
-        versionName "1.0.22"
+        versionCode 24
+        versionName "1.0.23"
         multiDexEnabled true
     }
     splits {
@@ -211,6 +211,7 @@ android {
 dependencies {
     implementation project(':react-native-extra-dimensions-android')
     implementation project(':react-native-svg')
+    implementation 'com.facebook.fresco:animated-gif:2.0.0'   //use
     implementation(project(":react-native-google-signin")){
         exclude group: "com.google.android.gms" // very important
     }

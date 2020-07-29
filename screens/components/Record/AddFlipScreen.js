@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect, useCallback} from 'react';
-import { TouchableOpacity,StyleSheet, Text,TextInput, Image,View, SafeAreaView, Dimensions, NativeModules,NativeEventEmitter, ActivityIndicator} from 'react-native';
+import { TouchableOpacity,StyleSheet, Text,TextInput,Alert, Image,View, SafeAreaView, Dimensions, NativeModules,NativeEventEmitter, ActivityIndicator} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import EnTypoIcon from 'react-native-vector-icons/Entypo';
 import { TagSelect } from 'react-native-tag-select'
@@ -277,17 +277,25 @@ const AddFlipScreen = (props)=> {
             } else {
               const source = { uri: response.uri };
               console.log("Before storageRef.putFile");
+              console.log("response : ",response);
+
               //setImageFromURL(false);
               //setPodcastImage(source);
               setLoadingImage(true);
+              //filename.split('.').pop();
               var refPath = "flips/images/" + userID + "_" + moment().format() + ".jpg";
-              var storageRef = storage().ref(refPath);
-              console.log("Before storageRef.putFile");
-      
-              ImageResizer.createResizedImage(response.path, 720, 720, 'JPEG',100)
-            .then(({path}) => {
-      
-              const unsubscribe=storageRef.putFile(path)//: 'content://com.miui.gallery.open/raw/storage/emulated/DCIM/Camera/IMG_20200214_134628_1.jpg')
+              if(response.path.split('.').pop() == "gif")
+              {
+                if(((response.fileSize/1024)/1024) > 1)
+                {
+                  setLoadingImage(false);
+                  alert("Please upload a GIF file within 1 MB");
+                  return;
+                }
+                refPath = "flips/gifs/" + userID + "_" + moment().format() + ".gif";
+                var storageRef = storage().ref(refPath);
+
+                const unsubscribe=storageRef.putFile(response.path)//: 'content://com.miui.gallery.open/raw/storage/emulated/DCIM/Camera/IMG_20200214_134628_1.jpg')
                 .on(
                   firebase.storage.TaskEvent.STATE_CHANGED,
                   snapshot => {
@@ -313,7 +321,43 @@ const AddFlipScreen = (props)=> {
                       })
                   }
                 )
-                });
+              }
+              else
+              {
+                var storageRef = storage().ref(refPath);
+                console.log("Before storageRef.putFile");
+                console.log("[AddFlipScreen] response.path : ",response.path);
+                ImageResizer.createResizedImage(response.path, 720, 720, 'JPEG',100)
+              .then(({path}) => {
+        
+                const unsubscribe=storageRef.putFile(path)//: 'content://com.miui.gallery.open/raw/storage/emulated/DCIM/Camera/IMG_20200214_134628_1.jpg')
+                  .on(
+                    firebase.storage.TaskEvent.STATE_CHANGED,
+                    snapshot => {
+                      console.log("snapshot: " + snapshot.state);
+                      console.log("progress: " + (snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                      if (snapshot.state === firebase.storage.TaskState.SUCCESS) {
+                        console.log("Success");
+                      }
+                    },
+                    error => {
+                      unsubscribe();
+                      console.log("image upload error: " + error.toString());
+                    },
+                    () => {
+                      storageRef.getDownloadURL()
+                        .then((downloadUrl) => {
+                          console.log("File available at: " + downloadUrl);
+                          setUploadedImageURL(downloadUrl);
+                          setLoadingImage(false);
+                        })
+                        .catch(err => {
+                          console.log("Error in storageRef.getDownloadURL() in uploadImage in PreviewScreen: ",err);
+                        })
+                    }
+                  )
+                  });
+              }  
               }
           });
         }
@@ -351,7 +395,7 @@ const AddFlipScreen = (props)=> {
           underlineColorAndroid="transparent"
           placeholder={"Tell us a story (use # for tags)"}
           placeholderTextColor={"gray"}
-          //numberOfLines={1}
+          //numberOfLines={6}
           multiline={true}
           onChangeText={(text) => {
               setFlipText(text.slice(0,1000))

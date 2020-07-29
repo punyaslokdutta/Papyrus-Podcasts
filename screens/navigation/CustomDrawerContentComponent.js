@@ -162,7 +162,7 @@ return(
           {/* <FontistoIcon name="music-note" size={20} color='white' style={{marginTop:10}}/> */}
 
           </View>
-          <Text style={{textAlign:'center',fontFamily:'Montserrat-Bold', paddingTop:SCREEN_HEIGHT/10,color:'#dddd'}}>v1.0.22</Text>
+          <Text style={{textAlign:'center',fontFamily:'Montserrat-Bold', paddingTop:SCREEN_HEIGHT/10,color:'#dddd'}}>v1.0.23</Text>
     
     </Content>
 

@@ -5,6 +5,7 @@ import CustomDrawerContentComponent from './screens/navigation/CustomDrawerConte
 import setUserDetails from './screens/setUserDetails'
 import { StyleSheet, View, TouchableOpacity, Image, Text,Dimensions, Button, ScrollView, Alert, NativeModules,Linking,Platform} from 'react-native';
 import AddBookReviewScreen from './screens/components/Record/AddBookReviewScreen'
+import store from './store';
 import {createSwitchNavigator,
   createAppContainer,
   } from 'react-navigation'
@@ -460,16 +461,18 @@ const AppSwitchNavigator = createSwitchNavigator(
 )
 
  const AppContainer = createAppContainer(AppSwitchNavigator);
- const mainReducer = combineReducers({
-  recorderReducer,
-  userReducer,
-  rootReducer,
-  flipReducer,
-  musicReducer,
-  categoryReducer
-})
+//  const mainReducer = combineReducers({
+//   recorderReducer,
+//   userReducer,
+//   rootReducer,
+//   flipReducer,
+//   musicReducer,
+//   categoryReducer
+// })
 
-const store = createStore(mainReducer, applyMiddleware(thunk))
+// const store = createStore(mainReducer, applyMiddleware(thunk))
+
+// export store;
 
 export default class App extends Component {
 
@@ -478,8 +481,10 @@ export default class App extends Component {
      super(props)
      {
       this.state={
-          currentVersionCode : 23,
-          currentVersion : "1.0.22"
+          currentVersionCode : 24,
+          currentVersion : "1.0.23",
+          updateLink : "https://play.google.com/apps/internaltest/4698784295424472878",
+          //updateLink : "https://play.google.com/apps/testing/com.papyrus_60" 
         }
      }
     }
@@ -542,6 +547,14 @@ export default class App extends Component {
        <Text style={{fontFamily:'Montserrat-SemiBold'}}>{"\n"} Current App Version : {this.state.currentVersion} </Text>
       <Text style={{fontFamily:'Montserrat-SemiBold'}}> Latest App Version :  {this.state.latestVersion}</Text>
        </View>
+       <TouchableOpacity style={{width:SCREEN_WIDTH/3,alignItems:'center',justifyContent:'center',height:30,backgroundColor:'#dddd'}}
+            onPress={() => {
+         Linking.openURL(this.state.updateLink).catch(err => { 
+         console.log("Play console Page Linking error: ",err);
+       })
+       }}>
+         <Text> UPDATE </Text>
+         </TouchableOpacity>
        </View>
 
       // <View>
