@@ -86,7 +86,8 @@ const AddBookReviewScreen = (props)=> {
   useEffect(
     ()=>
     {
-       dispatch({type:"SET_PODCAST", payload: null})
+       dispatch({type:"SET_PODCAST", payload: null});
+       dispatch({type:"SET_IS_MUSIC_ENABLED",payload: false});
        TrackPlayer.destroy();
     }, [tagSelected]
   )

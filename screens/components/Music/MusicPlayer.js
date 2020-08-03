@@ -105,8 +105,9 @@ class MusicPlayer extends React.Component {
             <View style={{flexDirection:'row', backgroundColor:'black',borderTopLeftRadius:20,borderBottomLeftRadius:20, height:40,width:70,position:'absolute',right:0,bottom:height/16,justifyContent:'space-evenly',alignItems:'center'}}>
             <TouchableOpacity onPress={() => {
               console.log(this.props.currentMusicIndexRedux);
-              console.log(this.props.allMusicRedux[this.props.currentMusicIndexRedux])
-              this.props.dispatch({type: "SET_MUSIC",payload:this.props.allMusicRedux[this.props.currentMusicIndexRedux]});
+              var musicCount = this.props.allMusicRedux.length;
+              console.log(this.props.allMusicRedux[this.props.currentMusicIndexRedux%musicCount])
+              this.props.dispatch({type: "SET_MUSIC",payload:this.props.allMusicRedux[this.props.currentMusicIndexRedux%musicCount]});
               TrackPlayer.destroy();
               this.props.dispatch({type:"SET_FLIP_ID",payload:null});
               this.setup();
@@ -114,8 +115,8 @@ class MusicPlayer extends React.Component {
               {
                 TrackPlayer.play();
               }
-              Toast.show(this.props.allMusicRedux[this.props.currentMusicIndexRedux].podcastName);
-              const musicCount = this.props.allMusicRedux.length;
+              Toast.show(this.props.allMusicRedux[this.props.currentMusicIndexRedux%musicCount].podcastName);
+              musicCount = this.props.allMusicRedux.length;
               this.props.dispatch({type:"SET_CURRENT_MUSIC_INDEX",payload:(this.props.currentMusicIndexRedux + 1)%musicCount});
             }}>
               <EnTypo name="shuffle" size={15} color="white"/>

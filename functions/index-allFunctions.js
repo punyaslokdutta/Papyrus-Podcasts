@@ -11,7 +11,7 @@ exports.AddToPodcastsIndex = functions.region("asia-northeast1").https.onCall(as
  
   const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
   var algoliaRecords = [];
-  const collectionIndexName='dev_podcasts';
+  const collectionIndexName='prod_podcasts';
   const collectionIndex = algoliaClient.initIndex(collectionIndexName);
 
   const podcastName=data.podcastName;
@@ -27,6 +27,21 @@ exports.AddToPodcastsIndex = functions.region("asia-northeast1").https.onCall(as
   // Adding Podcaster Display Picture to Podcast Doc until all the users are updated with latest app version with previewScreen changes
   const podcastQuery = await db.collectionGroup('podcasts').where('podcastID','==',data.podcastID).get();
   const podcastData = podcastQuery.docs[0].data();
+
+  // try{
+  //   const podcastGenres = podcastData.genres;
+  //   for(var i=0;i<podcastGenres.length;i++)
+  //   {
+  //     const categoryDocs = await db.collection('Categories').where('categoryName','==',podcastGenres[i]).get();
+  //     const categoryID = categoryDocs.docs[0].id;
+  //     await db.collection('Categories').doc(categoryID).set({
+  //       numPodcasts : admin.firestore.FieldValue.increment(1)
+  //     },{merge:true})
+  //   }
+  // }
+  // catch(error){
+  //   console.log("[AddToPodcastsIndex] Error in updating numPodcasts for each category of the podcast:- ",error);
+  // }
 
   console.log("podcastData: ",podcastData);
   
@@ -106,7 +121,7 @@ exports.AddToUsersIndex = functions.region("asia-northeast1").https.onCall(async
   const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
 
   var algoliaRecords = [];
-  const collectionIndexName='dev_users';
+  const collectionIndexName='prod_users';
   const collectionIndex = algoliaClient.initIndex(collectionIndexName);
   
   const name = data.name;
@@ -138,9 +153,9 @@ exports.AddToUsersIndex = functions.region("asia-northeast1").https.onCall(async
 
 exports.deletePodcastFromIndex = functions.region("asia-northeast1").https.onCall(async(data, context) => {
  
-    const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
+  const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
 
-  const collectionIndexName='dev_podcasts';
+  const collectionIndexName='prod_podcasts';
   const collectionIndex = algoliaClient.initIndex(collectionIndexName);
 
   const podcastID=data.podcastID;
@@ -165,7 +180,7 @@ exports.addBookToIndex = functions.region("asia-northeast1").https.onCall((data,
 
     const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
 
-  const collectionIndexName='dev_books';
+  const collectionIndexName='prod_books';
   const collectionIndex = algoliaClient.initIndex(collectionIndexName);
 
   const bookName=data.bookName;
@@ -216,7 +231,7 @@ exports.addChapterToIndex = functions.region("asia-northeast1").https.onCall((da
     const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
 
   var algoliaRecords = [];
-  const collectionIndexName='dev_chapters';
+  const collectionIndexName='prod_chapters';
   const collectionIndex = algoliaClient.initIndex(collectionIndexName);
   
   const bookName=data.bookName;
@@ -278,7 +293,7 @@ exports.AddToMusicIndex = functions.region("asia-northeast1").https.onCall(async
     const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
 
   var algoliaRecords = [];
-  const collectionIndexName='dev_music';
+  const collectionIndexName='prod_music';
   const collectionIndex = algoliaClient.initIndex(collectionIndexName);
 
   const musicID = data.musicID;
@@ -330,7 +345,7 @@ exports.changeDPInPodcastsAsiaEast = functions.region("asia-northeast1").https.o
 
     const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
 
-  const collectionIndexName='dev_users';
+  const collectionIndexName='prod_users';
   const collectionIndex = algoliaClient.initIndex(collectionIndexName);
 
   const DPSetInSettingsScreen = data.changedDP;
@@ -395,7 +410,7 @@ exports.changeUserNameInPodcastsAsiaEast = functions.region("asia-northeast1").h
 
   const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
 
-  const collectionIndexName='dev_users';
+  const collectionIndexName='prod_users';
   const collectionIndex = algoliaClient.initIndex(collectionIndexName);
 
   const nameSetInSettingsScreen = data.changedName;

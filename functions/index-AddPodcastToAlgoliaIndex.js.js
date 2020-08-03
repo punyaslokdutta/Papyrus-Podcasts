@@ -32,16 +32,21 @@ exports.AddToPodcastsIndex = functions.region("asia-northeast1").https.onCall(as
   const podcastQuery = await db.collectionGroup('podcasts').where('podcastID','==',data.podcastID).get();
   const podcastData = podcastQuery.docs[0].data();
 
-  // const podcastGenres = podcastData.genres;
-
-  // for(var i=0;i<podcastGenres.length;i++)
-  // {
-  //   const categoryDocs = await db.collection('Categories').where('categoryName','==',podcastGenres[i]).get();
-  //   const categoryID = categoryDocs.docs[0].id;
-  //   await db.collection('Categories').doc(categoryID).set({
-  //     numPodcasts : admin.firestore.FieldValue.increment(1)
-  //   },{merge:true})
+  // try{
+  //   const podcastGenres = podcastData.genres;
+  //   for(var i=0;i<podcastGenres.length;i++)
+  //   {
+  //     const categoryDocs = await db.collection('Categories').where('categoryName','==',podcastGenres[i]).get();
+  //     const categoryID = categoryDocs.docs[0].id;
+  //     await db.collection('Categories').doc(categoryID).set({
+  //       numPodcasts : admin.firestore.FieldValue.increment(1)
+  //     },{merge:true})
+  //   }
   // }
+  // catch(error){
+  //   console.log("[AddToPodcastsIndex] Error in updating numPodcasts for each category of the podcast:- ",error);
+  // }
+  
 
 
   console.log("podcastData: ",podcastData);

@@ -11,6 +11,7 @@ import moment from 'moment';
 const setUserDetails = (props) => {
     // const bookid = this.props.navigation.state.params;
     const userDoc = props.navigation.state.params.user;
+    const buildVersion = useSelector(state=>state.userReducer.buildVersion);
     console.log("IN SET USER DETAILS\n\n",userDoc);
 
     const  userid = props.firebase._getUid();
@@ -29,9 +30,10 @@ const setUserDetails = (props) => {
         console.log(doc)
         
         doc._data.isAdmin !== undefined && dispatch({type:'SET_ADMIN_USER',payload:doc._data.isAdmin})
-
+      
+        doc._data.musicPreferences !== undefined && dispatch({type:"SET_MUSIC_PREFERENCES_ARRAY",payload:doc._data.musicPreferences});
         doc._data.musicPlayerEnabled!== undefined && dispatch({type:"SET_IS_MUSIC_ENABLED",payload:doc._data.musicPlayerEnabled});
-
+        doc._data.musicEnabledNotificationSeen !== undefined && dispatch({type:"SET_MUSIC_ENABLE_NOTIFICATION",payload:doc._data.musicEnabledNotificationSeen});
         doc._data.flipsLiked && dispatch({type:'SET_FLIPS_LIKED',payload:doc._data.flipsLiked})
         doc._data.podcastsLiked && dispatch({type:'SET_PODCASTS_LIKED',payload:doc._data.podcastsLiked})
         doc._data.podcastsBookmarked && dispatch({type:'SET_PODCASTS_BOOKMARKED',payload:doc._data.podcastsBookmarked})
@@ -67,7 +69,8 @@ const setUserDetails = (props) => {
 
     try{
       await firestore().collection('users').doc(userid).collection('privateUserData').doc(privateDataID).set({
-        lastSeenTime : currentTime 
+        lastSeenTime : currentTime,
+        buildVersion : buildVersion
       },{merge:true});
     } 
     catch(error)

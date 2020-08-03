@@ -1,7 +1,8 @@
 const INITIAL_STATE = {
     paused : true,
     currentFlipID : null,
-    isFlipPlaying : false
+    isFlipPlaying : false,
+    audioRecorderPlayerRef : null
   };
   
   function flipReducer(state = INITIAL_STATE, action)  {
@@ -15,6 +16,8 @@ const INITIAL_STATE = {
           return {...state, currentFlipID:action.payload} 
       case "SET_FLIP_PLAYING":
           return {...state, isFlipPlaying: action.payload} 
+      case "SET_AUDIO_RECORDER_PLAYER_REF":
+          return {...state, audioRecorderPlayerRef: action.payload}
       default:
           return state;
     }

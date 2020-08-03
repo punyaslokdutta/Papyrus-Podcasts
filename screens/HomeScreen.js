@@ -44,7 +44,9 @@ const HomeScreen = (props) => {
   const dispatch = useDispatch();
   var didFocusListener = useRef();
 
+
   useEffect(() => {
+    console.log("userPreferences:- ",userPreferences);
     console.log("[HomeScreen] useEffect LOG");
     if(!didFocusListener.current) {
       didFocusListener.current =  props.navigation.addListener('didFocus', (route) => {

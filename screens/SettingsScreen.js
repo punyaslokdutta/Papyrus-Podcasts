@@ -58,7 +58,7 @@ const SettingsScreen = (props) => {
     if(deviceDetailsUpdated != 0)
     {
         Alert.alert(  
-                    'Are you sure you want to send your device details?',  
+                    'Allow Papyrus to access your device info?',  
                     '',  
                     [  
                         {  
@@ -90,6 +90,63 @@ const SettingsScreen = (props) => {
                 ); 
     }
   },[deviceDetailsUpdated])
+
+  async function retrieveDeviceInfo() {
+    DeviceInfo.getApiLevel().then(apiLevel => {
+      console.log("apiLevel : ",apiLevel);
+      setAPILevelState(apiLevel);
+    }).catch((err) => {
+      console.log(err);
+    });
+
+    DeviceInfo.getAndroidId().then(androidId => {
+      console.log("AndroidID : ",androidId);
+      setAndroidIDState(androidId);
+    }).catch((err) => {
+      console.log(err);
+    });; 
+
+    let type = DeviceInfo.getDeviceType();
+    console.log("Device Type: ",type);
+      setDeviceType(type);
+
+    DeviceInfo.getDeviceName().then(deviceName => {
+      console.log("deviceName: ",deviceName);
+      setDeviceNameState(deviceName);
+    }).catch((err) => {
+      console.log(err);
+    });
+
+    let appName = DeviceInfo.getApplicationName();
+    console.log("appName = ",appName);
+    setAppNameState(appName);
+
+    let systemName = DeviceInfo.getSystemName();
+    console.log("systemName : ",systemName)
+    setSystemNameState(systemName);
+
+    let systemVersion = DeviceInfo.getSystemVersion();
+    console.log("systemVersion: ",systemVersion);
+    setSystemVersionState(systemVersion);
+    
+    let brand = DeviceInfo.getBrand();
+    console.log("brand : ",brand);
+    setBrandState(brand);
+    
+    let buildNumber = DeviceInfo.getBuildNumber();
+    console.log("buildNumber : ",buildNumber);
+    setBuildNumberState(buildNumber);
+
+    DeviceInfo.getLastUpdateTime().then(lastUpdateTime => {
+      console.log("lastUpdateTime : ",moment(lastUpdateTime).format());
+    setLastUpdateTimeState(moment(lastUpdateTime).format());
+    setDeviceDetailsUpdated(deviceDetailsUpdated + 1);
+    }).catch((err) => {
+      console.log(err);
+      setLastUpdateTimeState("Could not fetch");
+      setDeviceDetailsUpdated(deviceDetailsUpdated + 1);
+    }); 
+  }
 
   function handleEdit(name, text) {
     console.log("IN Handle Edit function");
@@ -353,76 +410,28 @@ const SettingsScreen = (props) => {
           <Block style={styles.toggles}>
             <Block row center space="between" >
               <Text black>Report a Problem</Text>
-              <TouchableOpacity onPress={() => {
-                  DeviceInfo.getApiLevel().then(apiLevel => {
-                    console.log("apiLevel : ",apiLevel);
-                    setAPILevelState(apiLevel);
-                  }).catch((err) => {
-                    console.log(err);
-                  });
-
-                  DeviceInfo.getAndroidId().then(androidId => {
-                    console.log("AndroidID : ",androidId);
-                    setAndroidIDState(androidId);
-                  }).catch((err) => {
-                    console.log(err);
-                  });; 
-
-                  let type = DeviceInfo.getDeviceType();
-                  console.log("Device Type: ",type);
-                    setDeviceType(type);
-
-                  DeviceInfo.getDeviceName().then(deviceName => {
-                    console.log("deviceName: ",deviceName);
-                    setDeviceNameState(deviceName);
-                  }).catch((err) => {
-                    console.log(err);
-                  });
-
-                  let appName = DeviceInfo.getApplicationName();
-                  console.log("appName = ",appName);
-                  setAppNameState(appName);
-
-                  let systemName = DeviceInfo.getSystemName();
-                  console.log("systemName : ",systemName)
-                  setSystemNameState(systemName);
-
-                  let systemVersion = DeviceInfo.getSystemVersion();
-                  console.log("systemVersion: ",systemVersion);
-                  setSystemVersionState(systemVersion);
-                  
-                  let brand = DeviceInfo.getBrand();
-                  console.log("brand : ",brand);
-                  setBrandState(brand);
-                  
-                  let buildNumber = DeviceInfo.getBuildNumber();
-                  console.log("buildNumber : ",buildNumber);
-                  setBuildNumberState(buildNumber);
-
-                  DeviceInfo.getLastUpdateTime().then(lastUpdateTime => {
-                    console.log("lastUpdateTime : ",moment(lastUpdateTime).format());
-                  setLastUpdateTimeState(moment(lastUpdateTime).format());
-                  setDeviceDetailsUpdated(deviceDetailsUpdated + 1);
-                  }).catch((err) => {
-                    console.log(err);
-                    setLastUpdateTimeState("Could not fetch");
-                    setDeviceDetailsUpdated(deviceDetailsUpdated + 1);
-                  });
-
-                 
-                  
-                          
-              }}>
-        <View style={{paddingLeft: 15,paddingRight:10 } }>
-          <Icon name="chevron-right" size={20} style={{color:'#101010'}}/>
-        </View>
-        </TouchableOpacity>
-
-              
+              <TouchableOpacity onPress={() => retrieveDeviceInfo()}>
+                <View style={{paddingLeft: 15,paddingRight:10 } }>
+                 <Icon name="chevron-right" size={20} style={{color:'#101010'}}/>
+                </View>
+              </TouchableOpacity>  
             </Block> 
           </Block>
           
-          
+          <Divider />
+
+          <Block style={styles.toggles}>
+            <Block row center space="between" >
+              <Text black>Edit Background Music</Text>
+              <TouchableOpacity onPress={() => {
+                props.navigation.navigate('EditMusicPreferences');
+              }}>
+                <View style={{paddingLeft: 15,paddingRight:10 } }>
+                 <Icon name="chevron-right" size={20} style={{color:'#101010'}}/>
+                </View>
+              </TouchableOpacity>  
+            </Block> 
+          </Block>
 
           <Divider />
           <Block style={styles.toggles}>

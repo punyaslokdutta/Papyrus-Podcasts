@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect, useCallback} from 'react';
 import { TouchableOpacity,StyleSheet, Text,TextInput,Alert, Image,View, SafeAreaView, Dimensions, NativeModules,NativeEventEmitter, ActivityIndicator} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import EnTypoIcon from 'react-native-vector-icons/Entypo';
+import Tooltip from 'react-native-walkthrough-tooltip';
 import { TagSelect } from 'react-native-tag-select'
 import { useDispatch, useSelector} from 'react-redux'
 import { theme } from '../categories/constants';
@@ -25,10 +26,14 @@ const AddFlipScreen = (props)=> {
       
     const [flipImages,setFlipImages] = useState([]);
     const [flipText,setFlipText] = useState("");
+    const [flipTitle,setFlipTitle] = useState("");
     const [uploadedImage,setUploadedImageURL] = useState("");
     const [selectedIndex,setSelectedIndex] = useState(-1);
     const [loadingImage, setLoadingImage] =useState(false);
     const [isModalVisible,setIsModalVisible] = useState(false);
+    const [toolTipFlipVisible,setToolTipFlipVisible] = useState(true);
+    const [toolTipPictureVisible,setToolTipPictureVisible] = useState(false);
+    const [toolTipDescriptionVisible,setToolTipDescriptionVisible] = useState(false);
 
     const name = useSelector(state=>state.userReducer.name);
     const displayPictureURL = useSelector(state=>state.userReducer.displayPictureURL);
@@ -72,6 +77,12 @@ const AddFlipScreen = (props)=> {
       if(flipText.length == 0)
       {
         alert('Please describe your flip');
+        return;
+      }
+
+      if(flipTitle.length == 0)
+      {
+        alert('Please provide a title for your flip');
         return;
       }
       
@@ -170,6 +181,7 @@ const AddFlipScreen = (props)=> {
                   props.navigation.navigate('FlipPreviewScreen',{
                     flipPictures : flipImages.slice(0,flipImages.length-1),
                     flipDescription : flipText,
+                    flipTitle : flipTitle,
                     audioFlip : true
                   });
                   //addFlipToFirestore();
@@ -182,6 +194,7 @@ const AddFlipScreen = (props)=> {
                   props.navigation.navigate('FlipPreviewScreen',{
                     flipPictures : flipImages.slice(0,flipImages.length-1),
                     flipDescription : flipText,
+                    flipTitle : flipTitle,
                     audioFlip : false
                   });
                   //addFlipToFirestore();
@@ -204,6 +217,7 @@ const AddFlipScreen = (props)=> {
                        if(index == selectedIndex)
                         return(
                             <TouchableOpacity style={{width:width/3,height:width/3,marginHorizontal:10}}>
+                            
                             <Image 
                                 style={{width:width/3,height:width/3,backgroundColor:'#dddd',borderWidth:2,borderColor:'blue'}}
                                 source={{uri:item}}/>
@@ -244,11 +258,25 @@ const AddFlipScreen = (props)=> {
                             }}
                             style={{justifyContent:'center',alignItems:'center',borderColor:'white',borderWidth:1}}>
                                 {
+                                  //https://storage.googleapis.com/papyrus-fa45c.appspot.com/flips/Book-Notes.jpg
                                     !loadingImage
                                     ?
+                                    <Tooltip
+                                      isVisible={toolTipPictureVisible}
+                                      content={<View style={{width:width/2}}>
+                                      <Image source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/flips/Book-Notes.jpg"}}
+                                              style={{height:width/2,width:width/2}}/>
+                                      <Text style={{fontFamily:"Andika-R"}}>Add Picture to your flip</Text>
+                                      </View>}
+                                      onClose={() => {
+                                        setToolTipPictureVisible(false);
+                                        setToolTipDescriptionVisible(true);
+                                      }}
+                                    >
                                     <Image
                                         style={{width:width/3,height:width/3,backgroundColor:'#dddd',borderWidth:1,borderColor:'white',marginHorizontal:10}} 
                                         source={{uri:item}}/> 
+                                    </Tooltip>
                                     :
                                     <ActivityIndicator color='black ' size='large' style={{marginVertical:width/8,marginHorizontal:width/8}}/>
                                 }
@@ -277,7 +305,7 @@ const AddFlipScreen = (props)=> {
             } else {
               const source = { uri: response.uri };
               console.log("Before storageRef.putFile");
-              console.log("response : ",response);
+              //console.log("response : ",response);
 
               //setImageFromURL(false);
               //setPodcastImage(source);
@@ -374,7 +402,20 @@ const AddFlipScreen = (props)=> {
             <Icon name="arrow-left" size={20} style={{color:'white'}}/>
         </TouchableOpacity>
         <View>
+        <Tooltip
+          isVisible={toolTipFlipVisible}
+          content={<View style={{width:width/1.5,alignItems:'center',justifyContent:"center",}}>
+          <Text style={{fontSize:25,fontWeight:'bold'}}>Flips</Text>
+          <Text style={{fontSize:20,fontFamily:'Andika-R'}}> Flips are like notes that you make while reading books. You can also make audio flips which are basically 140-second podcasts. </Text>
+          </View>}
+          placement="bottom"
+          onClose={() => {
+            setToolTipFlipVisible(false);
+            setToolTipPictureVisible(true);
+          }}
+        >
         <Text style={{fontFamily:'Montserrat-Regular', color:'white', fontSize:20}}>Create Flip</Text>
+        </Tooltip>
         </View>
         <TouchableOpacity onPress={() =>{
           //renderModal()
@@ -388,7 +429,31 @@ const AddFlipScreen = (props)=> {
         {renderModal()}
 
         {renderAllImages()}
+        <View>
+        <TextInput
+          value={flipTitle}
+          style={{fontFamily:'Montserrat-SemiBold',fontSize:20,borderWidth:0.5,borderColor:'black'}}
+          underlineColorAndroid="transparent"
+          placeholder={"Title"}
+          placeholderTextColor={"gray"}
+          //numberOfLines={6}
+          multiline={false}
+          onChangeText={(text) => {
+              setFlipTitle(text.slice(0,100))
+          }}/>
+        </View>
         <View style={{paddingHorizontal:5}}>
+        <Tooltip
+          isVisible={toolTipDescriptionVisible}
+          content={<View style={{width:width/2}}>
+            <Image source={{uri:"https://pi.tedcdn.com/r/talkstar-assets.s3.amazonaws.com/production/playlists/playlist_62/how_to_tell_a_story_update_1200x627.jpg?c=1050%2C550&w=1050"}}
+                    style={{height:width/2,width:width/2}}/>
+            <Text style={{fontFamily:"Andika-R",fontSize:20}}>Tell us a story about your flip</Text>
+            </View>}
+          onClose={() => {
+            setToolTipDescriptionVisible(false);
+          }}
+        >
         <TextInput
           value={flipText}
           style={{fontFamily:'Montserrat-Regular',fontSize:20}}
@@ -400,6 +465,7 @@ const AddFlipScreen = (props)=> {
           onChangeText={(text) => {
               setFlipText(text.slice(0,1000))
           }}/> 
+        </Tooltip>
         </View>
         </ScrollView>
         </SafeAreaView> 

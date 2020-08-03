@@ -43,14 +43,40 @@ const INITIAL_STATE = {
     lastPlayingCurrentTime: null,
     isAdmin: false,
     uploadPodcastSuccess: false,
-    isMusicEnabled: true,
-    handleOpenUrlFuncRef: null
+    isMusicEnabled: false,
+    handleOpenUrlFuncRef: null,
+    musicEnabledNotificationSeen: false,
+    musicPreferences: {},
+    musicPreferencesArray : [],
+    buildVersion : "",
+    showMusicPlayerTooltip : false
   };
   
   function userReducer(state = INITIAL_STATE, action)  {
     switch (action.type) {
+        case "SHOW_MUSIC_PLAYER_TOOLTIP":
+            return {...state,showMusicPlayerTooltip : action.payload}
+        case "SET_BUILD_VERSION":
+            return {...state,buildVersion : action.payload}
+        case "SET_MUSIC_PREFERENCES_MAP":
+            var tempMusicPreferencesMap = {}
+            for(var i=0;i<state.musicPreferencesArray.length;i++)
+                tempMusicPreferencesMap[state.musicPreferencesArray[i]] = true;
+            return {...state,musicPreferences:tempMusicPreferencesMap}
+        case "SET_MUSIC_PREFERENCES_ARRAY":
+            return {...state,musicPreferencesArray:action.payload}
+        case "ADD_MUSIC_PREFERENCE":
+            var localMapPreferences = state.musicPreferences;
+            localMapPreferences[action.payload] = true;
+            return {...state,musicPreferences:localMapPreferences}
+        case "REMOVE_MUSIC_PREFERENCE":
+            var localMapPreferencesRemove = state.musicPreferences;
+            localMapPreferencesRemove[action.payload] = false;
+            return {...state,musicPreferences:localMapPreferencesRemove}
         case "SET_HANDLE_URL_FUNC_REF":
             return {...state,handleOpenUrlFuncRef:action.payload}
+        case "SET_MUSIC_ENABLE_NOTIFICATION":
+            return {...state,musicEnabledNotificationSeen:action.payload}
         case "SET_IS_MUSIC_ENABLED":
             return {...state,isMusicEnabled:action.payload}
         case "RENDERED_ALL_FLIPS":

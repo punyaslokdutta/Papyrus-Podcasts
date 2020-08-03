@@ -451,9 +451,13 @@ const MainFlipItem = (props) => {
                   renderFlipPlayer()
                 }
             <View style={{marginHorizontal:5,paddingBottom:height/6}}>
-                <Text style={{fontWeight:'bold'}}>{props.navigation.state.params.item.creatorName} 
+                {
+                  props.navigation.state.params.item.flipTitle !== undefined &&
+                  <Text style={{fontFamily:'Montserrat-Bold',lineHeight: width/16,fontSize:width/18}}>{props.navigation.state.params.item.flipTitle} </Text>
+
+                }
                 <Text style={{fontWeight:'normal', fontFamily:'Montserrat-Regular'}}>  {props.navigation.state.params.item.flipDescription} </Text>
-                </Text>
+                
                 <View style={{flexDirection:'row',justifyContent:'space-between'}}>
                 <Text style={{color:"gray",fontSize:10}}>{moment(props.navigation.state.params.item.createdOn).fromNow()}</Text>
                 

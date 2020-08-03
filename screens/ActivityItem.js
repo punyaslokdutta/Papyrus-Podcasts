@@ -29,9 +29,13 @@ const ActivityItem = React.memo((props)=> {
         console.log("[ActivityItem] flipsDoc : ", flipsDoc);
         const flipsDocumentData = flipsDoc.data();
         console.log("[ActivityItem] flipsDocumentData : ", flipsDocumentData);
-        props.navigation.navigate('MainFlipItem',{
-          item : flipsDocumentData
+        if(flipsDocumentData !== null && flipsDocumentData !== undefined)
+          props.navigation.navigate('MainFlipItem',{
+           item : flipsDocumentData
         })
+        else {
+          Toast.show("This flip has been deleted");
+        }
     }
     catch(error){
       console.log("Error in retrieveFlip() in ActivityItem: ",error);

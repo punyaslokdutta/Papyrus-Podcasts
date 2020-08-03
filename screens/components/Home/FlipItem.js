@@ -489,6 +489,7 @@ const FlipItem = (props) => {
             props.navigation.navigate('FlipPreviewScreen',{
               flipDescription : props.item.flipDescription,
               flipPictures : props.item.flipPictures,
+              flipTitle : props.item.flipTitle,
               bookName : props.item.bookName,
               editing : true,
               flipID : props.item.flipID
@@ -614,9 +615,12 @@ const FlipItem = (props) => {
                 
             }
                 
-            <View style={{marginHorizontal:5,height:width/3.5,marginTop:5}}>
-                <Text style={{fontWeight:'bold',height:width/4,lineHeight:width/28}}>{props.item.creatorName} 
-                <Text style={{fontWeight:'normal',fontFamily:'Montserrat-Regular',fontSize:width/28}}>  {props.item.flipDescription.slice(0,100)}
+            <View style={{marginHorizontal:5,height:width/3.5 - 10,marginTop:5}}>
+              {
+                props.item.flipTitle !== undefined &&
+                <Text style={{fontFamily:'Montserrat-Bold',lineHeight: width/16,height:width/8,fontSize:width/20}}>{props.item.flipTitle} </Text>
+              }
+                <Text style={{fontWeight:'normal',height:width/7,fontFamily:'Montserrat-Regular',fontSize:width/28}}>  {props.item.flipDescription.slice(0,100)}
                 
                 {
                   props.item.flipDescription.length > 100
@@ -631,13 +635,11 @@ const FlipItem = (props) => {
                 }
 
                  </Text>
-                </Text>
-                <View style={{flexDirection:'row',justifyContent:'space-between'}}>
+                   
+                
+            </View>
+            <View style={{marginLeft:5,justifyContent:'space-between',height:10}}>
                 <Text style={{color:"gray",fontSize:10}}>{moment(props.item.createdOn).fromNow()}</Text>
-              
-                
-                </View>
-                
             </View>
             <View style={{width:width,flexDirection:'row',alignItems:'flex-start'}}>
                 <TouchableOpacity style={{paddingLeft:10,paddingTop:10,paddingBottom:10,paddingRight:5}} onPress={() => updateLikes()} > 

@@ -25,6 +25,7 @@ import WelcomeScreen from './screens/WelcomeScreen';
 import thunk from 'redux-thunk';
 import LottieView from 'lottie-react-native';
 
+import EditMusicPreferences from './screens/EditMusicPreferences';
 import ExploreFlipScreenVertical from './screens/components/Explore/ExploreFlipScreenVertical';
 import ProfileFlipScreenVertical from './screens/components/Profile/ProfileFlipScreenVertical';
 import updateAnimation from './assets/animations/10251-update-para-coverme.json'
@@ -288,6 +289,14 @@ const AppStackNavigator= createStackNavigator(
         header: null
        }
     },
+    EditMusicPreferences : {screen : EditMusicPreferences,
+      navigationOptions:{
+        title: 'Music Preferences   ',
+        headerTintColor: 'white',
+        headerStyle: {
+          backgroundColor: 'black'
+        }
+     }},
     ExploreFlipScreenVertical : {screen : ExploreFlipScreenVertical},
  
     PlayerProvider: {
@@ -494,6 +503,7 @@ export default class App extends Component {
     try{
       const updateVersionDoc = await firestore().collection('appUpdates').doc('newUpdate').get();
       const updateVersionData = updateVersionDoc.data();
+      store.dispatch({type:"SET_BUILD_VERSION",payload:this.state.currentVersion});
 
       //[IMPORTANT]
     //For alpha update, use this code

@@ -78,22 +78,28 @@ const setPreferences =(props)=> {
         setLoading(true);
         const categoryDocs = await firestore().collection('Categories').get();
         const categoryData = categoryDocs.docs.map(document=>document.data())
-        const categoryLabels = [];
+        var categoryLabels = [];
         var categoryMap = {};
         var i;
         for(i=0;i<categoryData.length;i++)
         {
-          const j = i + 1
-          const categoryLabel = {
+          var j = i + 1
+          var categoryLabel = {
             id : j,
             label : categoryData[i].categoryName
           }
           
+          if(categoryData[i].categoryName === undefined){
+            continue;
+          }
           categoryLabels.push(categoryLabel);
           categoryMap[categoryData[i].categoryName] = false;
         }
 
         setCategorySelectedMap(categoryMap);
+
+        console.log("categoryLabels:- ",categoryLabels);
+        console.log("languageData:- ",languageData);
 
         setCategories(categoryLabels);
         setLoading(false)

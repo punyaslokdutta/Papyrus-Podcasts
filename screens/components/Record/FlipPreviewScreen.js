@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback} from 'react';
 import { TouchableOpacity,StyleSheet,Animated, Text,TextInput, Image,View, SafeAreaView, Dimensions, NativeModules,NativeEventEmitter, ActivityIndicator} from 'react-native';
+import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
+
 import Icon from 'react-native-vector-icons/FontAwesome';
 import EnTypoIcon from 'react-native-vector-icons/Entypo';
 import { TagSelect } from 'react-native-tag-select'
@@ -13,6 +15,7 @@ import firestore from '@react-native-firebase/firestore';
 import storage, { firebase, FirebaseStorageTypes } from '@react-native-firebase/storage'
 import {withFirebaseHOC} from '../../config/Firebase';
 import Toast from 'react-native-simple-toast';
+import DocumentPicker from 'react-native-document-picker';
 import Modal from 'react-native-modal';
 import modalJSON from '../../../assets/animations/modal-microphone.json';
 import modalJSON2 from '../../../assets/animations/modal-animation-2.json';
@@ -20,15 +23,28 @@ import LottieView from 'lottie-react-native';
 import { set } from 'react-native-reanimated';
 import AddAudioFlipComponent from './AddAudioFlipComponent';
 
+import SoundPlayer from 'react-native-sound-player';
+import Sound from 'react-native-sound';
+import RNFetchBlob from 'react-native-fetch-blob'
+import RNGRP from 'react-native-get-real-path';
+
+
+
 const { width, height } = Dimensions.get('window');
 const addPictureImage = 'https://storage.googleapis.com/papyrus-274618.appspot.com/icons8-add-image-64.png';
 const FlipPreviewScreen = (props)=> {
           
   var scrollX = new Animated.Value(0);
 
+
+
+  const { position,duration } = useTrackPlayerProgress()
+
   const [publishLoading,setPublishLoading] = useState(false);
   const [previewHeaderText,setPreviewHeaderText] = useState("Create Flip");
   const [bookName,setBookName] =useState("");
+  const [flipTitle,setFlipTitle] = useState(props.navigation.state.params.flipTitle);
+
   const isAudioFlip = props.navigation.state.params.audioFlip;
   const [flipDescription,setFlipDescription] = useState(props.navigation.state.params.flipDescription);
   const [flipLocalAudio,setFlipLocalAudio] = useState(false);
@@ -37,13 +53,27 @@ const FlipPreviewScreen = (props)=> {
   const name = useSelector(state=>state.userReducer.name);
   const displayPictureURL = useSelector(state=>state.userReducer.displayPictureURL);
 
+  const audioRecorderPlayerRef = useSelector(state=>state.flipReducer.audioRecorderPlayerRef);
   const userID = props.firebase._getUid();
+
+  var _onFinishedLoadingSubscription = useRef();
+
+  // useEffect(() => {
+  //   _onFinishedLoadingSubscription = SoundPlayer.addEventListener('FinishedLoading', ({ success }) => {
+  //     console.log('finished loading', success);
+  //     getInfo();
+  //   })
+  // },[])
+  
+
 
   useEffect(() => {
     if(props.navigation.state.params.bookName !== undefined){
       setBookName(props.navigation.state.params.bookName);
       props.navigation.state.params.flipDescription && 
-      setFlipDescription(props.navigation.state.params.flipDescription)
+      setFlipDescription(props.navigation.state.params.flipDescription);
+      props.navigation.state.params.flipTitle && 
+      setFlipTitle(props.navigation.state.params.flipTitle);
       setPreviewHeaderText("Edit Flip");
     }  
   },[props.navigation.state.params.bookName])
@@ -53,12 +83,22 @@ const FlipPreviewScreen = (props)=> {
     setDurationState(duration);
   }
 
+  async function getInfo() { // You need the keyword `async`
+  try {
+    const info = await SoundPlayer.getInfo() // Also, you need to await this because it is async
+    console.log('getInfo', info) // {duration: 12.416, currentTime: 7.691}
+  } catch (e) {
+    console.log('There is no song playing', e)
+  }
+}
+
   async function addFlipToFirestore() {
     try{
       setPublishLoading(true);
       if(props.navigation.state.params.editing === true){
         firestore().collection('flips').doc(props.navigation.state.params.flipID).set({
           flipDescription : flipDescription,
+          flipTitle : flipTitle,
           flipPictures : props.navigation.state.params.flipPictures,
           bookName : bookName,
           lastEditedOn : moment().format() 
@@ -78,6 +118,7 @@ const FlipPreviewScreen = (props)=> {
       else{
         firestore().collection('flips').add({
           flipDescription : flipDescription,
+          flipTitle : flipTitle,
           flipPictures : props.navigation.state.params.flipPictures,
           creatorID : userID,
           creatorName : name,
@@ -116,6 +157,7 @@ const FlipPreviewScreen = (props)=> {
       if(props.navigation.state.params.editing === true){
         firestore().collection('flips').doc(props.navigation.state.params.flipID).set({
           flipDescription : flipDescription,
+          flipTitle : flipTitle,
           flipPictures : props.navigation.state.params.flipPictures,
           bookName : bookName,
           lastEditedOn : moment().format() 
@@ -134,6 +176,7 @@ const FlipPreviewScreen = (props)=> {
       else{
         firestore().collection('flips').add({
           flipDescription : flipDescription,
+          flipTitle : flipTitle,
           flipPictures : props.navigation.state.params.flipPictures,
           creatorID : userID,
           isAudioFlip : true,
@@ -150,6 +193,7 @@ const FlipPreviewScreen = (props)=> {
           firestore().collection('flips').doc(docRef.id).set({
             flipID : docRef.id
           },{merge:true});
+          audioRecorderPlayerRef.removePlayBackListener();
           setPublishLoading(false);
           setFlipAudioDownloadURL(false);
           setBookName(null);
@@ -236,9 +280,36 @@ const FlipPreviewScreen = (props)=> {
       return;
     }
 
+    if(!flipDescription.replace(/\s/g,'').length)
+    {
+      setFlipDescription(null);
+      alert("Please enter some text in flip Description field");
+      return;
+    }
+
+    if(flipTitle.length == 0)
+    {
+      alert('Please provide a title for your flip');
+      return;
+    }
+
+    if(!flipTitle.replace(/\s/g,'').length)
+    {
+      setFlipTitle(null);
+      alert("Please enter some text in flip Title field");
+      return;
+    }
+
     if(bookName.length == 0)
     {
       alert('Please provide a book related to your flip');
+      return;
+    }
+
+    if(!bookName.replace(/\s/g,'').length)
+    {
+      setBookName(null);
+      alert("Please enter some text in book field");
       return;
     }
 
@@ -246,7 +317,7 @@ const FlipPreviewScreen = (props)=> {
     {
       if(flipLocalAudio == false)
       {
-        alert('Please record an audio for your flip');
+        alert('Please add an audio for your flip');
         return;
       }
       uploadAudioToStorage();
@@ -289,6 +360,17 @@ const FlipPreviewScreen = (props)=> {
       </View>
     )
   }
+
+  function renderAudio() {
+    <View>
+      <View style={{height:height/7,justifyContent:'center',alignItems:'center'}}>
+        <AddAudioFlipComponent savePodcast={savePodcast}/>
+      </View>
+        <TouchableOpacity>
+          <Text> UPLOAD </Text>
+      </TouchableOpacity>
+    </View>    
+  } 
 
     return (
       <ScrollView style={{backgroundColor:'white'}} keyboardShouldPersistTaps={'always'}>
@@ -339,9 +421,33 @@ const FlipPreviewScreen = (props)=> {
           {
             isAudioFlip &&
             <View style={{height:height/7,justifyContent:'center',alignItems:'center'}}>
-            <AddAudioFlipComponent savePodcast={savePodcast}/>
-            </View>
+              <AddAudioFlipComponent savePodcast={savePodcast}/>
+            </View> 
+            //renderAudio()
           }
+
+
+          <View style={{marginTop:20,alignItems:'center',justifyContent:'center'}}>
+          <TextInput
+              style={styles.TextInputStyleClass2}
+              placeholder={"Title"}
+              placeholderTextColor={"gray"}
+              value={flipTitle}
+              underlineColorAndroid="transparent"
+              onBlur={() => {
+                if(flipTitle !== null)
+                {
+                  const trimmedFlipName = flipTitle.trim();
+                  setFlipTitle(trimmedFlipName.slice(0,100));
+                }
+              }}
+              onChangeText={(text) => {
+                setFlipTitle(text);
+              }}
+              multiline={true}
+              numberOfLines={2}
+            />
+          </View>
           <View style={{marginTop:20,alignItems:'center',justifyContent:'center'}} >
             <TextInput
               style={styles.TextInputStyleClass2}
@@ -349,6 +455,13 @@ const FlipPreviewScreen = (props)=> {
               placeholderTextColor={"gray"}
               value={bookName}
               underlineColorAndroid="transparent"
+              onBlur={() => {
+                if(bookName !== null)
+                {
+                  const trimmedBookName = bookName.trim();
+                  setBookName(trimmedBookName.slice(0,100));
+                }
+              }}
               onChangeText={(text) => {
                 setBookName(text);
               }}
@@ -363,6 +476,13 @@ const FlipPreviewScreen = (props)=> {
               //placeholder={"How should your listeners approach this podcast?" }
               //placeholderTextColor={"gray"}
               value={flipDescription}
+              onBlur={() => {
+                if(flipDescription !== null)
+                {
+                  const trimmedFlipDescription = flipDescription.trim();
+                  setFlipDescription(trimmedFlipDescription.slice(0,1000));
+                }
+              }}
               onChangeText={(text) => {
                 setFlipDescription(text.slice(0,1000));
               }}

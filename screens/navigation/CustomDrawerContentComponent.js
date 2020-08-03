@@ -1,7 +1,7 @@
 import { createDrawerNavigator, DrawerItems } from 'react-navigation-drawer';
 import {useSelector, useDispatch} from "react-redux";
 import ToggleSwitch from 'toggle-switch-react-native';
-import React, {Component} from 'react';
+import React, {Component, useState, useEffect} from 'react';
 import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView,NativeModules} from 'react-native';
 import {Container, Content, Header, Body} from 'native-base'
 import { theme } from '../components/categories/constants';
@@ -13,6 +13,7 @@ import ActivityScreen from '../ActivityScreen';
 import SettingsScreen from '../SettingsScreen';
 import firestore from '@react-native-firebase/firestore';
 import {withFirebaseHOC} from '../config/Firebase';
+import Tooltip from 'react-native-walkthrough-tooltip';
 
 
 var {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
@@ -24,26 +25,37 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
 
 const CustomDrawerContentComponent = (props) =>
 {
+    const showMusicPlayerTooltip = useSelector(state=>state.userReducer.showMusicPlayerTooltip);
     const name = useSelector(state=>state.userReducer.name);
     const userID = props.firebase._getUid();
     const privateDataID = "private" + userID;
+    const musicRedux=useSelector(state=>state.musicReducer.music)
     const username = useSelector(state=>state.userReducer.userName);
     const photoURL = useSelector(state=>state.userReducer.displayPictureURL);
     const numNotifications = useSelector(state=>state.userReducer.numNotifications);
     const isMusicEnabled = useSelector(state=>state.userReducer.isMusicEnabled);
+    const musicPreferencesArray = useSelector(state=>state.userReducer.musicPreferencesArray);
+
+    const [toolTipVisible,setToolTipVisible] = useState(false);
     const dispatch = useDispatch();
 
-  async function modifyMusicPreferenceInDatabase(isOn){
-    firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).set({
-      musicPlayerEnabled : isOn 
-    },{merge:true}).then(() => {
-      console.log("Successfully set the musicPlayer preference in database");
-    }).catch((error) => {
-    console.log("Error in setting musicPlayer preference in database");
-    })
-  }
+  useEffect(() => {
+    //setToolTipVisible(false);
+  },[])
   
-
+  useEffect(() => {
+    showMusicPlayerTooltip == true && setToolTipVisible(true);
+  },[showMusicPlayerTooltip])
+  
+    async function modifyMusicPreferenceInDatabase(isOn) {
+      firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).set({
+        musicPlayerEnabled : isOn 
+      },{merge:true}).then(() => {
+        console.log("Successfully set the musicPlayer preference in database");
+      }).catch((error) => {
+      console.log("Error in setting musicPlayer preference in database");
+      })
+    }
 
 return(  
   <Container style={{backgroundColor:'#101010'}}>
@@ -145,23 +157,30 @@ return(
           } 
           activeBackgroundColor='#101010'   style={{backgroundColor: '#ffffff', }} labelStyle={{color: '#ffffff', fontSize: SCREEN_HEIGHT/35}}/>
           {/* <Text style={{textAlign:"center",fontFamily:'Montserrat-Bold',paddingTop:20,color:'#dddd'}}> Music </Text> */}
-          <View style={{ alignItems:'center',marginTop:SCREEN_HEIGHT/10}}>
+          
+            <View style={{ alignItems:'center',marginTop:SCREEN_HEIGHT/10}}>
+            <Tooltip
+            isVisible={toolTipVisible}
+            content={<Text>Use this switch to toggle Music Player</Text>}
+            onClose={() => setToolTipVisible(false)}
+          >
+            <ToggleSwitch
+              isOn={isMusicEnabled}
+              onColor="white"
+              offColor='#dddd'
+              labelStyle={{ color: "black", fontWeight: "900" }}
+              size="medium"
+              onToggle={isOn => {
+                console.log("changed to : ", isOn)
+                modifyMusicPreferenceInDatabase(isOn);
+                console.log("musicRedux: ",musicRedux);
+                dispatch({type:"SET_IS_MUSIC_ENABLED",payload:isOn})
+              }}
+            />
+            </Tooltip>
 
-          <ToggleSwitch
-            isOn={isMusicEnabled}
-            onColor="white"
-            offColor='#dddd'
-            labelStyle={{ color: "black", fontWeight: "900" }}
-            size="medium"
-            onToggle={isOn => {
-              console.log("changed to : ", isOn)
-              modifyMusicPreferenceInDatabase(isOn);
-              dispatch({type:"SET_IS_MUSIC_ENABLED",payload:isOn})
-            }}
-          />
-          {/* <FontistoIcon name="music-note" size={20} color='white' style={{marginTop:10}}/> */}
-
-          </View>
+            </View>
+          
           <Text style={{textAlign:'center',fontFamily:'Montserrat-Bold', paddingTop:SCREEN_HEIGHT/10,color:'#dddd'}}>v1.0.23</Text>
     
     </Content>

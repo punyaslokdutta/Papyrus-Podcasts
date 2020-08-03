@@ -66,12 +66,12 @@ class CategoryScreen extends Component {
       let categoriesQuery = await firestore().collection('Categories').get();
       let documentData = categoriesQuery.docs.map(document => document.data());
 
-      let musicQuery = await firestore().collection('music').where("isBackgroundMusic","==",true).get();
-      let documentMusicData = musicQuery.docs.map(document => document.data());
+      // let musicQuery = await firestore().collection('music').where("isBackgroundMusic","==",true).get();
+      // let documentMusicData = musicQuery.docs.map(document => document.data());
 
-      this.props.dispatch({ type:"SET_ALL_MUSIC",payload:documentMusicData});
-      this.props.dispatch({type:"SET_MUSIC",payload:documentMusicData[0]})
-      this.props.dispatch({type:"SET_CURRENT_MUSIC_INDEX",payload:1});
+      // this.props.dispatch({ type:"SET_ALL_MUSIC",payload:documentMusicData});
+      // this.props.dispatch({type:"SET_MUSIC",payload:documentMusicData[0]})
+      // this.props.dispatch({type:"SET_CURRENT_MUSIC_INDEX",payload:1});
       this.props.dispatch({ type:"SET_CATEGORIES_MAP_NAME_TO_ID",payload:documentData});
 
       this.setState({

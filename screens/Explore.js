@@ -1,6 +1,6 @@
 import React, {Component, useState,useEffect, useRef, createRef,useContext} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import { StyleSheet,BackHandler, Text, View, SafeAreaView, ActivityIndicator, TextInput, Platform, StatusBar,TouchableOpacity,TouchableNativeFeedback, Dimensions, ScrollView, Image, NativeModules, NativeEventEmitter, Linking} from 'react-native';
+import { StyleSheet,BackHandler, Text, View, SafeAreaView,FlatList, ActivityIndicator, TextInput, Platform, StatusBar,TouchableOpacity,TouchableNativeFeedback, Dimensions, ScrollView, Image, NativeModules, NativeEventEmitter, Linking, ImageBackground} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import IconAntDesign from 'react-native-vector-icons/AntDesign'
 import TrendingPodcast from './components/Explore/TrendingPodcast'
@@ -11,6 +11,10 @@ import { Badge } from 'react-native-elements'
 import {useSelector, useDispatch} from "react-redux"
 import Shimmer from 'react-native-shimmer';
 import {withFirebaseHOC} from './config/Firebase';
+import Modal from 'react-native-modal';
+import LottieView from 'lottie-react-native';
+import MusicCategoryItem from './components/Explore/MusicCategoryItem'
+import modalJSON2 from '../assets/animations/modal-animation-2.json';
 import TrendingPodcastsCarousel from './components/Explore/TrendingPodcastsCarousel'
 import ShortStoriesCarousel from './components/Explore/ShortStoriesCarousel';
 import ExploreAnimation from './components/Explore/ExploreAnimation';
@@ -25,18 +29,28 @@ import { NetworkContext } from './config/NetworkProvider';
 
 const {width,height} = Dimensions.get('window')
 
-
-
-
 const Explore = (props) => {
 
   const  userid = props.firebase._getUid();
   const privateUserID = "private" + userid;
   var didFocusListener = useRef();
 
+  // music related redux & state variables
+  const musicPreferencesArray = useSelector(state=>state.userReducer.musicPreferencesArray);
+  const musicEnabledNotificationSeen = useSelector(state=>state.userReducer.musicEnabledNotificationSeen);
+  const [isModalVisible,setIsModalVisible] = useState(!musicEnabledNotificationSeen);
+  const [isMusicCategoryModalVisible,setIsMusicCategoryModalVisible] = useState(false);
+  const [musicCategoriesState,setMusicCategoriesState] = useState([]);
+  const isMusicEnabled = useSelector(state=>state.userReducer.isMusicEnabled);
+  const musicPreferences = useSelector(state=>state.userReducer.musicPreferences);
+  
+  // URL listeners function reference
   const handleOpenUrlFuncRef = useSelector(state=>state.userReducer.handleOpenUrlFuncRef);
+  
+  // Context for checking Internet Connection
   const isConnectedContext = useContext(NetworkContext);
 
+  // Podcast & Flip related states
   const lastPlayingPodcastID = useSelector(state=>state.userReducer.lastPlayingPodcastID);
   const podcast = useSelector(state=>state.rootReducer.podcast);
   const [podcastState,setPodcastState] = useState(podcast);
@@ -67,6 +81,52 @@ const Explore = (props) => {
   {
     startHeaderHeight = StatusBar.currentHeight;
   }
+
+
+  async function addMusicPreferencesToFirestore()
+  {   
+    console.log("musicPreferences: ",musicPreferences);
+    console.log("musicCategoriesState: ",musicCategoriesState);
+    var localMusicPreferences = [];
+    for(var i=0;i<musicCategoriesState.length;i++)
+    {
+       //pair = { musicCategoriesState[i].id, musicCategoriesState[i].musicCategoryName};
+        //musicCategoriesState[i].id,musicCategoriesState[i].musicCategoryName];
+      if(musicPreferences[musicCategoriesState[i].musicCategoryName] == true)
+        localMusicPreferences.push(musicCategoriesState[i].musicCategoryName);
+    }
+    if(localMusicPreferences.length == 0){
+      alert('Please select atleast 1 category for your background theme');
+      return;
+    }
+    dispatch({type:"SET_MUSIC_PREFERENCES_ARRAY",payload:localMusicPreferences});
+    firestore().collection('users').doc(userid).collection('privateUserData').doc(privateUserID).set({
+      musicPreferences : localMusicPreferences
+    },{merge:true}).then(() => {
+      console.log("Added MusicPreferences to user's private document");
+      setIsMusicCategoryModalVisible(false);
+      props.navigation.toggleDrawer()
+      setTimeout(() => {dispatch({type:"SHOW_MUSIC_PLAYER_TOOLTIP",payload:true})}, 500)
+    }).catch((error) => {
+      console.log(error);
+    })
+  }
+
+  async function retrieveAllMusicCategories()
+  {
+    try{
+      const musicCategories = await firestore().collection('musicCategories').get();
+      const musicCategoriesData = musicCategories.docs.map(document=>document.data());
+
+      setMusicCategoriesState(musicCategoriesData);
+      
+
+    }
+    catch(error){
+      console.log("Error in retrieving musicCategories from firestore",error);
+    }
+  }
+
 
   async function fetchExploreItems()
   {
@@ -187,6 +247,29 @@ const Explore = (props) => {
       
     }
 
+    useEffect(() => {
+      musicPreferencesArray.length != 0 && 
+      fetchMusicDocs();
+    },[musicPreferencesArray])
+
+    useEffect(() => {
+      if(isMusicEnabled == true && musicPreferencesArray.length == 0){
+        setIsMusicCategoryModalVisible(true);
+      }
+    },[isMusicEnabled])
+
+    useEffect(() => {
+      if(isMusicCategoryModalVisible == true){
+        retrieveAllMusicCategories();
+      }
+    },[isMusicCategoryModalVisible])
+
+
+      useEffect(() => {
+        setIsModalVisible(!musicEnabledNotificationSeen);
+        //musicEnabledNotificationSeen != true && setIsModalVisible(true);
+      },[musicEnabledNotificationSeen])
+
 
       useEffect(
         () => {
@@ -200,6 +283,7 @@ const Explore = (props) => {
           }
           
           fetchExploreItems();
+
           //dispatch({type:"SET_MUSIC",payload:"Swayam"})
           return () => {
             //exitPodcastPlayerAndsetLastPlaying();
@@ -209,6 +293,22 @@ const Explore = (props) => {
             console.log(" App exited from Explore",podcast);
           };
         },[])
+
+        async function fetchMusicDocs()
+        {
+          console.log("Inside fetchMusicDocs",musicPreferencesArray);
+          try{
+            let musicQuery = await firestore().collection('music').where("genres","array-contains-any",musicPreferencesArray).get();
+            let documentMusicData = musicQuery.docs.map(document => document.data());
+            const musicCount = documentMusicData.length;
+            dispatch({ type:"SET_ALL_MUSIC",payload:documentMusicData});
+            dispatch({type:"SET_MUSIC",payload:documentMusicData[0]})
+            dispatch({type:"SET_CURRENT_MUSIC_INDEX",payload:1%musicCount});
+          }
+          catch(error){
+            console.log("Error in fetching music documents of user's musicPreferences genres: ",error);
+          }
+        }
 
       async function fetchPodcastItem(podcastID)
       {
@@ -289,6 +389,22 @@ const Explore = (props) => {
       //     return false;
       //   }
 
+      async function setMusicEnableNotificationSeen(musicEnabled) {
+        dispatch({type:"SET_IS_MUSIC_ENABLED",payload:musicEnabled});
+        dispatch({type:"SET_MUSIC_ENABLE_NOTIFICATION",payload:true});
+        firestore().collection('users').doc(userid).collection('privateUserData').doc(privateUserID).set({
+            musicPlayerEnabled : musicEnabled,
+            musicEnabledNotificationSeen : true
+        },{merge:true}).then(() => {
+          console.log("Successfully updated musicEnabledNotificationSeen & musicPlayerEnabled in firestore");
+        }).catch((err) => {
+          console.log("Error in updating musicEnabledNotificationSeen & musicPlayerEnabled in firestore",error);
+        })
+
+        musicEnabled == true && setIsMusicCategoryModalVisible(true);
+      }
+
+
       function getWindowDimension(event) { 
         const device_width = event.nativeEvent.layout.width;
         const device_height = event.nativeEvent.layout.height;
@@ -302,6 +418,107 @@ const Explore = (props) => {
         console.log ("nativeEventWidth: ",device_width); 
       }
     
+      function renderMusicCategoryItems({item,index})
+      {
+        return(  
+            <View>      
+            <MusicCategoryItem item={item} index={index}/>
+            </View>
+          )
+      }
+
+      function renderFooter(){
+        return (
+          <View style={{alignItems:'center',marginTop:10}}>
+          <TouchableOpacity onPress={() => {
+            addMusicPreferencesToFirestore();
+          }} style={{width:width/5,height:width/8,borderColor:'black',borderWidth:1,borderRadius:10,alignItems:'center',justifyContent:'center'}}>
+            <Text style={{fontSize:width/16,fontFamily:'Andika-R'}}>Done</Text>
+            </TouchableOpacity>
+            </View>
+        )
+      }
+
+      function renderMusicCategories() {
+        console.log("musicCategoriesState: ",musicCategoriesState)
+        return (
+          <View style={{alignItems:'center'}}>
+          <FlatList
+            data={musicCategoriesState}
+            renderItem={renderMusicCategoryItems}
+            numColumns={2}
+            keyExtractor={item => item.id}
+            ListFooterComponent={renderFooter}
+          /> 
+          </View>
+        )
+        // return musicCategoriesState.map((item,index) => {
+          
+        //   return (
+        //   <View style={{height:width/5,width:width/3}}>
+        //     <Image source={{uri:"https://i.pinimg.com/originals/7d/c1/db/7dc1dbaa904cd562b4288339a8abbf63.jpg"}}
+        //         style={{height:width/5,width:width/3}}/>
+        //       <Text> {item.musicCategoryName} </Text>
+        //     </View>
+        //   )
+        // })
+      }
+
+      function renderMusicCategoriesModal() {
+        return (
+          <Modal isVisible={isMusicCategoryModalVisible} backdropColor={'white'} style={{backgroundColor:'while'}}>
+            <View style={{ backgroundColor:'white',height:height*3/4,borderRadius:10,borderWidth:0.5,borderColor:'black', width:width*3/4,alignSelf:'center' }}>
+              <View style={{justifyContent:'center',alignItems:'center',textAlign:'center'}}>
+                <Text style={{marginHorizontal:5,paddingHorizontal:5,borderWidth:1,borderColor:'#dddd', fontFamily:'Andika-R',fontSize:20,backgroundColor:'white',alignSelf:'center'}}>Select your music preferences</Text>
+                </View>
+                  <View style={{marginTop:width/18,flexDirection:'column'}}>
+                    {renderMusicCategories()}
+                  </View>
+            </View>
+          </Modal>
+        )
+      }
+
+
+      function renderModal() {
+        return (
+          
+          <Modal isVisible={isModalVisible} backdropColor={'white'} style={{backgroundColor:'while'}}>
+            <View style={{ backgroundColor:'white',height:width,borderRadius:10,borderWidth:0.5,borderColor:'black', width:width*3/4,alignSelf:'center' }}>
+              <TouchableOpacity style={{ position:'absolute',right:5,top:0 }} onPress={() => setIsModalVisible(false)}>
+              <Icon name="times-circle" size={24}/> 
+              </TouchableOpacity>
+              <LottieView style={{
+          width:width/2,paddingLeft:width*3/25,paddingTop:10}} source={modalJSON2} autoPlay loop />
+              <View style={{justifyContent:'center',alignItems:'center',textAlign:'center'}}>
+                <Text style={{marginHorizontal:5,paddingHorizontal:5,borderWidth:1,borderColor:'#dddd', fontFamily:'Andika-R',fontSize:20,backgroundColor:'white',alignSelf:'center'}}>Enable Background Music</Text>
+                </View>
+                {/* <View style={{alignItems:'center'}}>
+                  <Text style={{fontSize:30}}> OR </Text>
+                  </View> */}
+                  <View style={{marginTop:width/6,flexDirection:'column'}}>
+                   <View style={{borderBottomWidth:0.25,width:width*3/4}}/> 
+                   <TouchableOpacity onPress={() => {
+                    setIsModalVisible(false);
+                    setMusicEnableNotificationSeen(true);
+                  }}>
+                  <Text style={{fontFamily:'Andika-R',fontSize:18,backgroundColor:'white',alignSelf:'center'}}> Yes </Text>
+                  </TouchableOpacity>
+                  <View style={{borderWidth:0.25,width:width*3/4}}/> 
+                  <TouchableOpacity onPress={async() => {
+                    props.navigation.toggleDrawer()
+                    setTimeout(() => {dispatch({type:"SHOW_MUSIC_PLAYER_TOOLTIP",payload:true})}, 500)
+                    setIsModalVisible(false);
+                    setMusicEnableNotificationSeen(false);
+                  }}>
+                  <Text style={{fontFamily:'Andika-R',fontSize:18,backgroundColor:'white',alignSelf:'center'}}> No </Text>
+                  </TouchableOpacity>
+                  </View>
+            </View>
+          </Modal>
+        )
+      }  
+      
     function renderStoryTellers()
     {
       console.log("storytellers: ",storytellers);
@@ -518,7 +735,13 @@ const Explore = (props) => {
     {
       return (
       <View style={styles.AppHeader}>
-        <TouchableNativeFeedback onPress={()=>props.navigation.toggleDrawer()}>
+        <TouchableNativeFeedback onPress={()=> {
+          //dispatch({type:"SHOW_MUSIC_PLAYER_TOOLTIP",payload:false})
+          props.navigation.toggleDrawer();
+          //setTimeout(() => {dispatch({type:"SHOW_MUSIC_PLAYER_TOOLTIP",payload:true})}, 3000)
+          //dispatch({type:"SHOW_MUSIC_PLAYER_TOOLTIP",payload:true})
+
+          }}>
         <View style={{paddingLeft: 15,paddingRight:10 ,paddingVertical:26} }>
          
           {
@@ -666,7 +889,8 @@ const Explore = (props) => {
      
           <SafeAreaView style={{flex:1, backgroundColor:'white'}} onLayout={(event) => getWindowDimension(event)}>
           {renderMainHeader()}
-          
+          {renderModal()}
+          {renderMusicCategoriesModal()}
           <ScrollView  scrollEventThrottle={16}>
          
           <View style={{flexDirection:'row'}}>
