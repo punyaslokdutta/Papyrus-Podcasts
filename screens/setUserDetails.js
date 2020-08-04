@@ -34,6 +34,11 @@ const setUserDetails = (props) => {
         doc._data.musicPreferences !== undefined && dispatch({type:"SET_MUSIC_PREFERENCES_ARRAY",payload:doc._data.musicPreferences});
         doc._data.musicPlayerEnabled!== undefined && dispatch({type:"SET_IS_MUSIC_ENABLED",payload:doc._data.musicPlayerEnabled});
         doc._data.musicEnabledNotificationSeen !== undefined && dispatch({type:"SET_MUSIC_ENABLE_NOTIFICATION",payload:doc._data.musicEnabledNotificationSeen});
+       
+        doc._data.addFlipWalkthroughDone !== undefined && dispatch({type:"SET_ADD_FLIP_WALKTHROUGH",payload:doc._data.addFlipWalkthroughDone});
+        doc._data.flipPreviewWalkthroughDone !== undefined && dispatch({type:"SET_FLIP_PREVIEW_WALKTHROUGH",payload:doc._data.flipPreviewWalkthroughDone});
+        doc._data.audioFlipWalkthroughDone !== undefined && dispatch({type:"SET_AUDIO_FLIP_WALKTHROUGH",payload:doc._data.audioFlipWalkthroughDone});
+       
         doc._data.flipsLiked && dispatch({type:'SET_FLIPS_LIKED',payload:doc._data.flipsLiked})
         doc._data.podcastsLiked && dispatch({type:'SET_PODCASTS_LIKED',payload:doc._data.podcastsLiked})
         doc._data.podcastsBookmarked && dispatch({type:'SET_PODCASTS_BOOKMARKED',payload:doc._data.podcastsBookmarked})

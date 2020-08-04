@@ -10,6 +10,7 @@ import * as Animatable from 'react-native-animatable'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import {useSelector, useDispatch} from "react-redux"
 import moment from "moment";
+import Toast from 'react-native-simple-toast'
 
 import * as theme from './components/constants/theme';
 
@@ -30,7 +31,7 @@ const RecordBook = (props) => {
   const bookmarked = useSelector(state=>state.userReducer.isBookBookmarked[bookID]);
   const [bookmarkedState,setBookmarkedState] = useState(bookmarked);
 
-  var scrollX = new Animated.Value(0);
+  const scrollX = new Animated.Value(0);
   
   useEffect(() => {
     if(props.navigation.state !== undefined)
@@ -197,15 +198,16 @@ const RecordBook = (props) => {
         <ScrollView  scrollEventThrottle={16} >
         <View style={styles.flex,{paddingBottom:height*2/11}}>
           <View style={[styles.flex]}>
-            <ScrollView
+            <Animated.ScrollView
             horizontal
             pagingEnabled
             scrollEnabled
             showsHorizontalScrollIndicator={false}
             decelerationRate={0.998}
             scrollEventThrottle={16}
-            onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }])}
-            useNativeDriver={true}
+            onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }],
+              {useNativeDriver:true}
+              )}
           >
             {
                article.bookPictures && article.bookPictures.map((img, index) => 
@@ -219,7 +221,7 @@ const RecordBook = (props) => {
                 
               )
             }
-          </ScrollView>
+          </Animated.ScrollView>
           {renderDots()}
         </View>
         <View style={[styles.flex, styles.content]}>

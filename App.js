@@ -66,6 +66,8 @@ import CategoryTabNavigator from './screens/navigation/CategoryTabNavigator'
 import ProfileTabNavigator from './screens/navigation/ProfileTabNavigator'
 import ExploreTabNavigator from './screens/navigation/ExploreTabNavigator'
 import UserStatsScreen from './screens/components/Explore/UserStatsScreen'
+import SaveExploreBooks from './screens/components/Profile/SaveExploreBooks';
+import RepostPodcastsScreen from './screens/components/Profile/RepostPodcastsScreen';
 import {createStore,combineReducers, applyMiddleware} from 'redux'
 import {Provider} from 'react-redux'
 import UserFollowingScreen from './screens/components/Explore/UserFollowingScreen';
@@ -148,6 +150,8 @@ const ExploreStackNavigator=createStackNavigator(
 const ProfileStackNavigator=createStackNavigator(
   {
      ProfileTabNavigator : {screen : ProfileTabNavigator},
+     SaveExploreBooks : {screen : SaveExploreBooks},
+     RepostPodcastsScreen : {screen : RepostPodcastsScreen},
      //MainFlipItem : {screen: MainFlipItem},
      ProfileFlipScreenVertical : {screen : ProfileFlipScreenVertical},
     editProfile : {screen : editProfile,navigationOptions: {

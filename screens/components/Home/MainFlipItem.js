@@ -300,7 +300,7 @@ const MainFlipItem = (props) => {
                   <Slider
                     value={position}
                     minimumValue={1}
-                    maximumValue={props.navigation.state.params.item.duration/1000}
+                    maximumValue={props.navigation.state.params.item.duration/1000 - 1}
                     step={0.01}
                     onValueChange={(value)=>handleOnSlide(value)}
                     //onSlidingStart={handlePlayPause}

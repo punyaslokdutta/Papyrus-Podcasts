@@ -188,7 +188,19 @@ const BookMarkScreenPodcasts = (props) => {
         )
       }
       else {
-        return <View style={[styles.separator]} />;
+        return (
+          <View style={{marginTop:height/15,marginBottom:height/15, alignItems:'center',justifyContent:"center"}}>
+        <Image source={require('../assets/images/repostPodcasts.png')}
+               style={{height:width/1.8,width:width/2}}/>
+        <TouchableOpacity onPress={() => {
+              props.navigation.navigate('RepostPodcastsScreen');
+            }} style={{justifyContent:'center',alignItems:'center',
+            borderRadius:10,width:width/2.8,height:40,borderWidth:0.5,backgroundColor:'black'}}>
+              <Text style={{fontSize:15, fontFamily:'Montserrat-Regular',color:'white'}}>Repost Podcasts</Text>
+              </TouchableOpacity>
+        {/* {renderHomeBooks()} */}
+        </View>
+          )
       }
     }
     catch (error) {
@@ -301,8 +313,16 @@ const BookMarkScreenPodcasts = (props) => {
   else
   {
     return (
-      <View style={{backgroundColor:'#b5b0b0', alignItems:'center'}}>
-        {renderSection2Podcasts()}
+      <View style={{height:height*3/4, alignItems:'center',justifyContent:"center"}}>
+        <Image source={require('../assets/images/repostPodcasts.png')}
+               style={{height:width/1.8,width:width/2}}/>
+        <TouchableOpacity onPress={() => {
+              props.navigation.navigate('RepostPodcastsScreen');
+            }} style={{justifyContent:'center',alignItems:'center',
+            borderRadius:10,width:width/2.8,height:40,borderWidth:0.5,backgroundColor:'black'}}>
+              <Text style={{fontSize:15, fontFamily:'Montserrat-Regular',color:'white'}}>Repost Podcasts</Text>
+              </TouchableOpacity>
+        {/* {renderHomeBooks()} */}
         </View>
     )
   }

@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect, useCallback} from 'react';
 import { TouchableOpacity,StyleSheet,Animated, Text,TextInput, Image,View, SafeAreaView, Dimensions, NativeModules,NativeEventEmitter, ActivityIndicator} from 'react-native';
 import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
 
+import Tooltip from 'react-native-walkthrough-tooltip';
+import ToggleSwitch from 'toggle-switch-react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import EnTypoIcon from 'react-native-vector-icons/Entypo';
 import { TagSelect } from 'react-native-tag-select'
@@ -27,6 +29,7 @@ import SoundPlayer from 'react-native-sound-player';
 import Sound from 'react-native-sound';
 import RNFetchBlob from 'react-native-fetch-blob'
 import RNGRP from 'react-native-get-real-path';
+import { useFirstInstallTime } from 'react-native-device-info';
 
 
 
@@ -40,10 +43,12 @@ const FlipPreviewScreen = (props)=> {
 
   const { position,duration } = useTrackPlayerProgress()
 
+  const dispatch = useDispatch();
   const [publishLoading,setPublishLoading] = useState(false);
   const [previewHeaderText,setPreviewHeaderText] = useState("Create Flip");
   const [bookName,setBookName] =useState("");
   const [flipTitle,setFlipTitle] = useState(props.navigation.state.params.flipTitle);
+  const [showAudioToolTip,setShowAudioToolTip] = useState(false);
 
   const isAudioFlip = props.navigation.state.params.audioFlip;
   const [flipDescription,setFlipDescription] = useState(props.navigation.state.params.flipDescription);
@@ -54,9 +59,15 @@ const FlipPreviewScreen = (props)=> {
   const displayPictureURL = useSelector(state=>state.userReducer.displayPictureURL);
 
   const audioRecorderPlayerRef = useSelector(state=>state.flipReducer.audioRecorderPlayerRef);
-  const userID = props.firebase._getUid();
+  const flipPreviewWalkthroughDone = useSelector(state=>state.userReducer.flipPreviewWalkthroughDone);
+  const audioFlipWalkthroughDone = useSelector(state=>state.userReducer.audioFlipWalkthroughDone);
 
-  var _onFinishedLoadingSubscription = useRef();
+  const [toolTipVisible,setToolTipVisible] = useState(false);
+  const userID = props.firebase._getUid();
+  const privateUserID = "private" + userID;
+  const [flipRelatedToBook,setFlipRelatedToBook] = useState(true);
+  const [bookInputVisible,setBookInputVisible] = useState(false);
+  var scrollViewRef = useRef();
 
   // useEffect(() => {
   //   _onFinishedLoadingSubscription = SoundPlayer.addEventListener('FinishedLoading', ({ success }) => {
@@ -64,6 +75,18 @@ const FlipPreviewScreen = (props)=> {
   //     getInfo();
   //   })
   // },[])
+  useEffect(() => {
+   
+    if(flipPreviewWalkthroughDone == false){
+      setTimeout(() => {
+        scrollViewRef.current.scrollToEnd({animated:true});
+    }, 100);
+
+    setTimeout(() => {
+      setToolTipVisible(true);
+  }, 250)
+    }
+  },[])
   
 
 
@@ -300,18 +323,24 @@ const FlipPreviewScreen = (props)=> {
       return;
     }
 
-    if(bookName.length == 0)
+    if(flipRelatedToBook == true)
     {
-      alert('Please provide a book related to your flip');
-      return;
+      if(bookName.length == 0)
+      {
+        alert('Please provide a book related to your flip');
+        return;
+      }
+  
+      if(!bookName.replace(/\s/g,'').length)
+      {
+        setBookName(null);
+        alert("Please enter some text in book field");
+        return;
+      }
     }
-
-    if(!bookName.replace(/\s/g,'').length)
-    {
+    else
       setBookName(null);
-      alert("Please enter some text in book field");
-      return;
-    }
+    
 
     if(isAudioFlip == true)
     {
@@ -324,6 +353,16 @@ const FlipPreviewScreen = (props)=> {
     }
     else
       addFlipToFirestore();
+  }
+
+  async function setFlipPreviewWalkthroughInFirestore() {
+    firestore().collection('users').doc(userID).collection('privateUserData').doc(privateUserID).set({
+      flipPreviewWalkthroughDone : true
+    },{merge:true}).then(() => {
+        console.log("flipPreviewWalkthroughDone set in firestore successfully");       
+    }).catch((error) => {
+        console.log("Error in updating value of flipPreviewWalkthroughDone in firestore");
+    })
   }
 
   function renderPublishText(){
@@ -364,7 +403,7 @@ const FlipPreviewScreen = (props)=> {
   function renderAudio() {
     <View>
       <View style={{height:height/7,justifyContent:'center',alignItems:'center'}}>
-        <AddAudioFlipComponent savePodcast={savePodcast}/>
+        <AddAudioFlipComponent showAudioToolTip={showAudioToolTip} savePodcast={savePodcast}/>
       </View>
         <TouchableOpacity>
           <Text> UPLOAD </Text>
@@ -373,8 +412,11 @@ const FlipPreviewScreen = (props)=> {
   } 
 
     return (
-      <ScrollView style={{backgroundColor:'white'}} keyboardShouldPersistTaps={'always'}>
+      <ScrollView 
+      ref={scrollViewRef}
+      contentContainerStyle={{backgroundColor:'white',paddingBottom:30}} keyboardShouldPersistTaps={'always'}>
         <View style={{flexDirection:'row', justifyContent:'space-between',alignItems:'center',paddingHorizontal:10,paddingVertical:5}}>
+        
         <TouchableOpacity onPress={() => {
         props.navigation.goBack(null)
       }}>
@@ -421,7 +463,7 @@ const FlipPreviewScreen = (props)=> {
           {
             isAudioFlip &&
             <View style={{height:height/7,justifyContent:'center',alignItems:'center'}}>
-              <AddAudioFlipComponent savePodcast={savePodcast}/>
+              <AddAudioFlipComponent userID={userID} showAudioToolTip={showAudioToolTip} savePodcast={savePodcast}/>
             </View> 
             //renderAudio()
           }
@@ -448,27 +490,7 @@ const FlipPreviewScreen = (props)=> {
               numberOfLines={2}
             />
           </View>
-          <View style={{marginTop:20,alignItems:'center',justifyContent:'center'}} >
-            <TextInput
-              style={styles.TextInputStyleClass2}
-              placeholder={"Which book is this flip related to?"}
-              placeholderTextColor={"gray"}
-              value={bookName}
-              underlineColorAndroid="transparent"
-              onBlur={() => {
-                if(bookName !== null)
-                {
-                  const trimmedBookName = bookName.trim();
-                  setBookName(trimmedBookName.slice(0,100));
-                }
-              }}
-              onChangeText={(text) => {
-                setBookName(text);
-              }}
-              multiline={true}
-              numberOfLines={2}
-            />
-            </View>
+          
             <View style={{marginTop:20,alignItems:'center',justifyContent:'center'}}>
               <TextInput
               style={styles.TextInputStyleClass}
@@ -490,6 +512,57 @@ const FlipPreviewScreen = (props)=> {
               numberOfLines={6}
                 />
               </View>
+              <View style={{alignItems:'center',justifyContent:'center',marginTop:20}}>
+              <Text style={{fontFamily:'Montserrat-SemiBold'}}> Is this flip related to any book?</Text>
+              <Tooltip
+                isVisible={toolTipVisible}
+                content={
+                <Text style={{fontSize:20,fontFamily:'Andika-R'}}>If your flip is not related to any book, you can switch off this option</Text>}
+                onClose={() => {
+                  setToolTipVisible(false);
+                  dispatch({type:"SET_FLIP_PREVIEW_WALKTHROUGH",payload:true})
+                  setFlipPreviewWalkthroughInFirestore();
+                  setShowAudioToolTip(true);
+                }}
+              >
+              <ToggleSwitch
+                    isOn={flipRelatedToBook}
+                    onColor="#79cced"
+                    offColor='#808080'
+                    labelStyle={{ color: "white", fontWeight: "900" }}
+                    size="medium"
+                    onToggle={isOn => {
+                      console.log("changed to : ", isOn)
+                      setFlipRelatedToBook(isOn);
+                    }}
+                  />
+                </Tooltip>
+              </View>
+            {
+              flipRelatedToBook == true  && 
+              <View style={{marginTop:20,alignItems:'center',justifyContent:'center'}} >
+              <TextInput
+                style={styles.TextInputStyleClass2}
+                placeholder={"Which book is this flip related to?"}
+                placeholderTextColor={"gray"}
+                value={bookName}
+                underlineColorAndroid="transparent"
+                onBlur={() => {
+                  if(bookName !== null)
+                  {
+                    const trimmedBookName = bookName.trim();
+                    setBookName(trimmedBookName.slice(0,100));
+                  }
+                }}
+                onChangeText={(text) => {
+                  setBookName(text);
+                }}
+                multiline={true}
+                numberOfLines={2}
+              />
+              </View> 
+            }
+              
       </ScrollView>        
     )
 }

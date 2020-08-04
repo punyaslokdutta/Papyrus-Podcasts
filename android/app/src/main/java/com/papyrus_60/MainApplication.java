@@ -15,6 +15,9 @@ import com.rngrp.RNGRPPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
+
+import com.opensettings.OpenSettingsPackage;
+
 //import io.invertase.firebase.auth.RNFirebaseAuthPackage;
 //import io.invertase.firebase.firestore.RNFirebaseFirestorePackage;
 import com.facebook.FacebookSdk;
@@ -41,6 +44,7 @@ public class MainApplication extends Application implements ReactApplication {
       //packages.add(new RNCStatusBarPackage());
       //packages.add(new ReactNativeRecorderPackage());
       packages.add(new ReactVideoPackage() );
+      //packages.add(new OpenSettingsPackage());
       //packages.add(new RNGRPPackage() );
       //packages.add(new RNDetectNavbarAndroidPackage());
       return packages;

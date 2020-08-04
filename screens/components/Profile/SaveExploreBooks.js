@@ -1,32 +1,28 @@
 import React, {Component,useState,useEffect} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import { StyleSheet,ImageBackground, View,SafeAreaView, TextInput, Platform, StatusBar,NativeModules,TouchableOpacity, ScrollView, Image,Dimensions, Animated,SectionList,ActivityIndicator , NativeEventEmitter} from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome'
 import { FlatList } from 'react-native-gesture-handler';
-import BookList from './components/Home/BookList'
-import * as theme from '../screens/components/constants/theme';
-import Podcast from './components/Home/Podcast'
-import {Text} from './components/categories/components';
+import * as theme from '../constants/theme';
 import { useSelector} from 'react-redux';
-import { Badge } from 'react-native-elements'
 import Shimmer from 'react-native-shimmer';
-import { withFirebaseHOC } from './config/Firebase';
-import BookmarkBookItem from './components/Profile/BookmarkBookItem';
-import BookItem from './components/Home/BookItem';
+import { withFirebaseHOC } from '../../config/Firebase';
+import SaveBookItem from '../Explore/SaveBookItem';
 var {width, height}=Dimensions.get('window')
 
-const BookmarkScreenBooks = (props) => {
+const SaveExploreScreen = (props) => {
   
   const  userID = props.firebase._getUid();
   const privateUserID = "private" + userID;
   const [books,setBooks] = useState([]);
-  const limit = 4;
+  const limit = 8;
   const [lastVisible,setLastVisible] = useState(null);
   const [loading,setLoading] = useState(false);
   const [refreshing,setRefreshing] = useState(false);
   const [onEndReachedCalledDuringMomentum,setOnEndReachedCalledDuringMomentum] = useState(true);
   const [homeBooks,setHomeBooks] = useState([]);
   const userPreferences = useSelector(state=>state.userReducer.userPreferences);
+  
+  
   useEffect(() => {
     retrieveData();
   },[])  
@@ -35,25 +31,22 @@ const BookmarkScreenBooks = (props) => {
   {
     setLoading(true);
     try{
-      console.log("[BookMarkScreen] Retrieving Data");
+      console.log("[SaveExploreScreen] Retrieving Data");
 
-        let query = await firestore().collection('users').doc(userID).collection('privateUserData').doc(privateUserID)
-            .collection('bookmarkContent').orderBy('bookmarkedOn','desc').limit(limit).onSnapshot((querySnapshot) => {
-            var documentData_books = [];
+        let query = await firestore().collection('books').
+        where('genres','array-contains-any',userPreferences).
+        orderBy('createdOn','desc').limit(6).get();
 
-            querySnapshot.forEach(function(doc) {
-                documentData_books.push(doc.data());
-            });
-            var lastVisibleBook = lastVisible;
-            if(documentData_books.length != 0)      
-                lastVisibleBook = documentData_books[documentData_books.length - 1].bookmarkedOn; 
-        
-            setBooks(documentData_books);
-            setLastVisible(lastVisibleBook);
-        },function(error) {
-            console.log("Error in onSnapshot Listener in BookmarkScreen: ",error);
-            })
-     
+        var userPreferredBooksData = query.docs.map(document=>document.data());
+
+        var lastVisibleBook = lastVisible;
+        if(userPreferredBooksData.length != 0){
+            lastVisibleBook = userPreferredBooksData[userPreferredBooksData.length - 1].createdOn;
+        }
+
+        setBooks(userPreferredBooksData);
+        setLastVisible(lastVisibleBook);
+
       }
     catch (error) {
       console.log(error);
@@ -61,32 +54,24 @@ const BookmarkScreenBooks = (props) => {
     finally {
       setLoading(false);
     }
-
-    try{
-      let bookDocuments =  await firestore().collection('books').where('genres','array-contains-any',userPreferences)//.where('reviewPending','==',false)
-                           .orderBy('createdOn','desc').limit(6).get()
-      let bookData = bookDocuments.docs.map(document => document.data());
-      setHomeBooks(bookData) 
-    }
-    catch(error){
-      console.log("Error in fetching HomeScreen Books from database",error);
-    }
   };
 
   
   async function retrieveMoreBooks()
   {
-    console.log("[BookMarkScreen] retrieveMoreBooks starts()")
+    console.log("[SaveExploreScreen] retrieveMoreBooks starts()")
     setRefreshing(true);
     try{   
-      let additionalBookDocuments =  await firestore().collection('users').doc(userID).collection('privateUserData').doc(privateUserID)
-                                        .collection('bookmarkContent').orderBy('bookmarkedOn','desc').startAfter(lastVisible).limit(limit).get()
+        console.log("lastVi");
+      let additionalBookDocuments =  await firestore().collection('books').
+      where('genres','array-contains-any',userPreferences).
+      orderBy('createdOn','desc').startAfter(lastVisible).limit(limit).get();
       console.log(lastVisible);
       let documentData = additionalBookDocuments.docs.map(document => document.data());
       console.log(documentData);
       if(documentData.length != 0) 
       {
-        let lastVisibleBook = documentData[documentData.length - 1].bookmarkedOn;
+        let lastVisibleBook = documentData[documentData.length - 1].createdOn;
         if(lastVisible != lastVisibleBook) 
         {
           setBooks([...books, ...documentData]);
@@ -107,7 +92,7 @@ const BookmarkScreenBooks = (props) => {
 
   function onEndReached({ distanceFromEnd }) {
     console.log("\n\nON END REACHED\n\n")
-    if(books.length >= 3 && books.length < 48)
+    if(books.length >= 3)
     {
         if(!onEndReachedCalledDuringMomentum){
             retrieveMoreBooks();
@@ -115,21 +100,13 @@ const BookmarkScreenBooks = (props) => {
           }
     }
   }
-  
-function renderHomeBook({item,index}) {
-  return (
-    <View style={{margin:30}}>
-      <BookItem item={item} index={index} navigation={props.navigation}/>
-      </View>
-)
-}
 
 function renderBook({item,index})  {
        //console.log("item: ",item);
     return (
         <View>
         <View style={{height:5}}/>
-        <BookmarkBookItem book={item} index={index} navigation={props.navigation}/>
+        <SaveBookItem book={item} index={index} navigation={props.navigation}/>
         <View style={{height:5}}/>
         </View>
     )
@@ -145,42 +122,12 @@ function renderBook({item,index})  {
         )
       }
       else {
-        return <View style={{marginTop:height/15,marginBottom:height/15, alignItems:'center',justifyContent:"center"}}>
-        <Image source={require('../assets/images/savedBooks.png')}
-               style={{height:width/1.8,width:width/2}}/>
-        <TouchableOpacity onPress={() => {
-              props.navigation.navigate('SaveExploreBooks');
-            }} style={{justifyContent:'center',alignItems:'center',
-            borderRadius:10,width:width/3,height:40,borderWidth:0.5,backgroundColor:'black'}}>
-              <Text style={{fontSize:15, fontFamily:'Montserrat-Regular',color:'white'}}>Explore Books</Text>
-              </TouchableOpacity>
-        {/* {renderHomeBooks()} */}
-        </View>
+        return <View style={[styles.separator]} />;
       }
     }
     catch (error) {
       console.log(error);
     }
-  }
-
-  function renderHeader(){
-    return (
-      <View style={{alignItems:'center',justifyContent:'center', height:100}}>
-        <Text style={{fontFamily:'Montserrat-Bold',fontSize:20}}>Save Books in your collection</Text>
-
-        </View>
-    )
-  }
-
-  function renderHomeBooksFooter(){
-    return (
-      <TouchableOpacity onPress={() => {
-        props.navigation.navigate('SearchBookChapterTabNavigator');
-      }} style={{backgroundColor:'#dddd', alignItems:'center',justifyContent:'center',borderRadius:10,borderWidth:0.5, height:40,marginHorizontal:20,marginBottom:20}}>
-        <Text style={{fontFamily:'Montserrat-Bold',fontSize:20}}>Find Other Books</Text>
-
-        </TouchableOpacity>
-    )
   }
 
   function separator(){
@@ -189,31 +136,13 @@ function renderBook({item,index})  {
     )
   }
 
-  function renderHomeBooks()
-  {
-    return (
-      <View>
-      <FlatList
-      showsVerticalScrollIndicator={false}
-      data={homeBooks}
-      renderItem={renderHomeBook}
-      ListHeaderComponent={renderHeader}
-      ListFooterComponent={renderHomeBooksFooter}
-      numColumns={2}
-      keyExtractor={item => item.bookID}
-      />
-      </View>
-    )
-  }
-
-
   function renderBooks()
   {
     return (  
       <FlatList
       data={books}
       renderItem={renderBook}
-      //numColumns={2}
+      numColumns={2}
       showsVerticalScrollIndicator={false}
       keyExtractor={item => item.bookID}
       //style={{backgroundColor:'#212121'}}
@@ -221,7 +150,7 @@ function renderBook({item,index})  {
       ItemSeparatorComponent={separator}
       ListFooterComponent={renderFooter}
       onEndReached={onEndReached}
-      onEndReachedThreshold={0.5}
+      onEndReachedThreshold={0.01}
       refreshing={refreshing}
       onMomentumScrollBegin={() => { setOnEndReachedCalledDuringMomentum(false); }}
     />   
@@ -238,7 +167,7 @@ function renderBook({item,index})  {
           <View style={{alignItems:'center'}}>
           
       <Image 
-      source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/BookMarkScreen/WhatsApp%20Image%202020-03-29%20at%206.17.51%20PM.jpeg"}}
+      source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/SaveExploreScreen/WhatsApp%20Image%202020-03-29%20at%206.17.51%20PM.jpeg"}}
       style={{height: height/3,width: width/3}}/>
       </View>
       </Shimmer>  
@@ -246,7 +175,7 @@ function renderBook({item,index})  {
        
     )
   }
-  else if(books.length != 0)
+  else 
   {
     return (
     <View> 
@@ -254,26 +183,11 @@ function renderBook({item,index})  {
       </View>
     );
   }
-  else
-  {
-    return (
-      <View style={{height:height*3/4, alignItems:'center',justifyContent:"center"}}>
-        <Image source={require('../assets/images/savedBooks.png')}
-               style={{height:width/1.8,width:width/2}}/>
-        <TouchableOpacity onPress={() => {
-              props.navigation.navigate('SaveExploreBooks');
-            }} style={{justifyContent:'center',alignItems:'center',
-            borderRadius:10,width:width/3,height:40,borderWidth:0.5,backgroundColor:'black'}}>
-              <Text style={{fontSize:15, fontFamily:'Montserrat-Regular',color:'white'}}>Explore Books</Text>
-              </TouchableOpacity>
-        {/* {renderHomeBooks()} */}
-        </View>
-    )
-  }
+  
 }
 
 
-export default withFirebaseHOC(BookmarkScreenBooks);
+export default withFirebaseHOC(SaveExploreScreen);
 
 
 const styles = StyleSheet.create({

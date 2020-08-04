@@ -88,6 +88,10 @@ const AddBookReviewScreen = (props)=> {
     {
        dispatch({type:"SET_PODCAST", payload: null});
        dispatch({type:"SET_IS_MUSIC_ENABLED",payload: false});
+       dispatch({type:"SET_FLIP_PAUSED",payload:true});
+       dispatch({type:"SET_FLIP_ID",payload:null});
+
+
        TrackPlayer.destroy();
     }, [tagSelected]
   )

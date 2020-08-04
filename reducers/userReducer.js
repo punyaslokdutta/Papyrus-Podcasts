@@ -49,11 +49,20 @@ const INITIAL_STATE = {
     musicPreferences: {},
     musicPreferencesArray : [],
     buildVersion : "",
-    showMusicPlayerTooltip : false
+    showMusicPlayerTooltip : false,
+    addFlipWalkthroughDone : false,
+    flipPreviewWalkthroughDone : false,
+    audioFlipWalkthroughDone : false
   };
   
   function userReducer(state = INITIAL_STATE, action)  {
     switch (action.type) {
+        case "SET_ADD_FLIP_WALKTHROUGH":
+            return {...state,addFlipWalkthroughDone:action.payload}
+        case "SET_FLIP_PREVIEW_WALKTHROUGH":
+            return {...state,flipPreviewWalkthroughDone:action.payload}
+        case "SET_AUDIO_FLIP_WALKTHROUGH":
+            return {...state,audioFlipWalkthroughDone:action.payload}
         case "SHOW_MUSIC_PLAYER_TOOLTIP":
             return {...state,showMusicPlayerTooltip : action.payload}
         case "SET_BUILD_VERSION":

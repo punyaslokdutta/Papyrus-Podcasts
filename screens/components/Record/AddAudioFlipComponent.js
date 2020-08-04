@@ -3,6 +3,8 @@ import {Platform} from 'react-native';
 import { TouchableOpacity,StyleSheet,Animated, Text,TextInput, Image,View, 
 SafeAreaView, Dimensions, NativeModules,NativeEventEmitter, 
 ActivityIndicator,Alert} from 'react-native';
+import firestore from '@react-native-firebase/firestore';
+
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -12,6 +14,8 @@ import {request, PERMISSIONS,RESULTS} from 'react-native-permissions';
 //import flipRecorderJSON from '../../../assets/animations/flipRecorder.json';
 import Slider from '@react-native-community/slider';
 import {useSelector, useDispatch,connect} from "react-redux"
+import OpenSettings from 'react-native-open-settings';
+import Tooltip from 'react-native-walkthrough-tooltip';
 
 import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
 import DocumentPicker from 'react-native-document-picker';
@@ -37,6 +41,8 @@ class AddAudioFlipComponent extends React.Component {
     super(props)
     {
     this.state={
+        toolTipVisible : false,
+        toolTipUploadVisible : false,
         audioFromLocalStorage: false,
         isRecording:false,
         showRecorder:true,
@@ -58,6 +64,33 @@ class AddAudioFlipComponent extends React.Component {
 
     componentDidMount = () => {
       this.props.dispatch({ type : "SET_AUDIO_RECORDER_PLAYER_REF",payload : this.audioRecorderPlayer });
+      
+      if(this.props.flipPreviewWalkthroughDone && this.props.audioFlipWalkthroughDone == false){
+        setTimeout(() => {
+          console.log("350 ms have passed");
+          this.setState({ toolTipVisible : true })
+        },350)
+      }
+    }
+
+    componentDidUpdate = (prevprops) => {
+      if(prevprops.showAudioToolTip == false && this.props.showAudioToolTip == true)
+      {
+        this.setState({
+          toolTipVisible : true
+        })
+      }
+
+      if(prevprops.flipPreviewWalkthroughDone == false && this.props.flipPreviewWalkthroughDone == true)
+      {
+        this.setState({ toolTipVisible:true })
+      }
+      // if(this.state.toolTipVisible == false && this.props.audioFlipWalkthroughDone == false)
+      // {
+      //   this.setState({
+      //     toolTipVisible : true 
+      //   })
+      // }
     }
 
     handleOnSlide = async(time) => {
@@ -146,10 +179,13 @@ class AddAudioFlipComponent extends React.Component {
         console.log(err);
         console.log("error string = ",err.toString())
         const errorString = err.toString();
-        const stringToFind = "Error: For input string";
+        const stringsToFind = ["Error: For input string","Error: stat error"];
+        
 
-        if(errorString.indexOf(stringToFind) !== -1)
+        if(errorString.indexOf(stringsToFind[0]) !== -1)
           console.log("File has raw attached to it from Downloads");
+        else if(errorString.indexOf(stringsToFind[1]) !== -1)
+          console.log("File path couldn't be stat");
         else
           alert('Please select an audio from local storage');
       });
@@ -242,8 +278,16 @@ class AddAudioFlipComponent extends React.Component {
     }
 
     onStartRecord = async () => {
-      const permissionResult = await request(PERMISSIONS.ANDROID.RECORD_AUDIO);
+      var permissionResult = await request(PERMISSIONS.ANDROID.RECORD_AUDIO);
       
+        // while(permissionResult !== RESULTS.GRANTED){
+        //   console.log("Inside permissionResult: ",permissionResult);
+        //   OpenSettings.openSettings()
+
+        //   // permissionResult = await request(PERMISSIONS.ANDROID.RECORD_AUDIO);
+        //   // alert('Please enable your microphone permissions');
+        // }
+
         if (permissionResult === RESULTS.GRANTED) {
           console.log('You can use the storage');
           const startRecordingResult = await this.audioRecorderPlayer.startRecorder();
@@ -270,6 +314,28 @@ class AddAudioFlipComponent extends React.Component {
         } 
         else {
           console.log('permission denied');
+          //alert('Papyrus needs access to microphone to record flips.');
+          Alert.alert(  
+            'Papyrus needs access to microphone to record flips',  
+            '',  
+            [  
+                {  
+                    text: 'Cancel',  
+                    onPress: () => console.log('Cancel Pressed'),  
+                    style: 'cancel',  
+                },  
+                {text: 'OK', onPress: () => {
+                  OpenSettings.openSettings()
+                  console.log('OK Pressed')
+                }},  
+            ]  
+        ); 
+
+         
+
+          //const permissionResult = await request(PERMISSIONS.ANDROID.RECORD_AUDIO);
+
+
           return;
         }
       };
@@ -324,7 +390,19 @@ class AddAudioFlipComponent extends React.Component {
       });
       }
 
-       
+      setAudioFlipWalkthroughInFirestore = async() => {
+        const userID = this.props.userID;
+        const privateUserID = "private" + userID;
+        
+        firestore().collection('users').doc(userID).collection('privateUserData').doc(privateUserID).set({
+          audioFlipWalkthroughDone : true
+        },{merge:true}).then(() => {
+            console.log("audioFlipWalkthroughDone set in firestore successfully");       
+        }).catch((error) => {
+            console.log("Error in updating value of audioFlipWalkthroughDone in firestore");
+        })
+      }
+
       onStartPlay = async () => {
         console.log('onStartPlay');
         const msg = await this.audioRecorderPlayer.startPlayer();
@@ -395,14 +473,38 @@ class AddAudioFlipComponent extends React.Component {
           if(!this.state.isRecording) 
           {
             return (
-                <View>
+                <View style={{alignItems:'center'}}>
+                 
                   <TouchableOpacity style={{alignItems:'flex-end',width:width }} onPress={() => this.uploadAudioFromGallery()}>
+                  <Tooltip
+                    isVisible={this.state.toolTipUploadVisible}
+                    placement='top'
+                    content={
+                    <Text style={{fontSize:20,fontFamily:'Andika-R'}}>Press this to upload a 140-seconds flip from your gallery</Text>}
+                    onClose={() => {
+                      this.setState({ toolTipUploadVisible : false });
+                      this.props.dispatch({type:"SET_AUDIO_FLIP_WALKTHROUGH",payload:true});
+                      this.setAudioFlipWalkthroughInFirestore();
+                  }}
+                    
+                  >
                     <Image source={require('../../../assets/images/outbox.png')} 
                            style={{height:20,width:20,marginRight:20}}/>
+                  </Tooltip>
                   </TouchableOpacity>
-                  <TouchableOpacity style={{ paddingTop :10,  alignItems:'center'}} onPress={this.onStartRecord}>
+                  <Tooltip
+                    isVisible={this.state.toolTipVisible}
+                    content={
+                    <Text style={{fontSize:20,fontFamily:'Andika-R'}}>Press this to start recording your 140-seconds flip</Text>}
+                    onClose={() => this.setState({
+                      toolTipVisible : false,
+                      toolTipUploadVisible : true
+                    })}
+                  >
+                  <TouchableOpacity style={{ paddingTop :10}} onPress={this.onStartRecord}>
                   <FontAwesome name="microphone" color='black' size={40} />
                   </TouchableOpacity>
+                  </Tooltip>
                 </View>
               ) 
           }
@@ -429,7 +531,7 @@ class AddAudioFlipComponent extends React.Component {
           return (
             <View>
             <View style={{paddingTop :20, flexDirection:'row'}}>
-            <TouchableOpacity style={{alignItems:'center'}} onPress={() => {
+            <TouchableOpacity style={{alignItems:'center',marginRight:10}} onPress={() => {
               if(this.state.audioFromLocalStorage == false)
                 this.onStartPlay()
               else  
@@ -439,6 +541,7 @@ class AddAudioFlipComponent extends React.Component {
             {/* <Text style={{borderWidth : 1,borderColor : 'black'}}>PLAY</Text> */}
             <FontAwesome name='play' size={20}/>
            </TouchableOpacity>
+           <Text>{this.state.playTime} </Text>
            <View style={{width:width/2}}>
            <Slider
               value={this.state.currentPositionSec}
@@ -448,19 +551,16 @@ class AddAudioFlipComponent extends React.Component {
               onValueChange={(value)=>this.handleOnSlide(value)}
               minimumTrackTintColor={'black'}
               maximumTrackTintColor={'black'}
-              thumbTintColor={'#F44336'}
+              thumbTintColor={'black'}
             />
              </View>
-           <TouchableOpacity onPress={() => {
+             <Text> {this.state.duration}</Text>
+
+           <TouchableOpacity style={{paddingLeft:10}} onPress={() => {
             this.onStopPlay();
           }}>
           <FontAwesome name='times' size={20}/>
           </TouchableOpacity>
-           </View>
-           <View style={{paddingTop :20, flexDirection:'row'}}>
-           <Text>{this.state.playTime} </Text>
-           <View style={{width:width/4}}/>
-           <Text> {this.state.duration}</Text>
            </View>
            </View>
           )
@@ -468,9 +568,10 @@ class AddAudioFlipComponent extends React.Component {
           return (
           <View>
             <View style={{paddingTop :20, flexDirection:'row'}}>
-          <TouchableOpacity style={{alignItems:'center'}} onPress={this.onPausePlay}>
+          <TouchableOpacity style={{alignItems:'center',marginRight:10}} onPress={this.onPausePlay}>
           <FontAwesome name='pause' size={20}/>
           </TouchableOpacity>
+          <Text>{this.state.playTime} </Text>
           <View style={{width:width/2}}>
            <Slider
               value={this.state.currentPositionSec}
@@ -482,21 +583,18 @@ class AddAudioFlipComponent extends React.Component {
               //onSlidingComplete={handlePlayPause}
               minimumTrackTintColor={'black'}
               maximumTrackTintColor={'black'}
-              thumbTintColor={'#F44336'}
+              thumbTintColor={'black'}
               //disabled={true}
             />
              </View>
-          <TouchableOpacity onPress={() => {
+             <Text> {this.state.duration}</Text>
+
+          <TouchableOpacity style={{paddingLeft:10}} onPress={() => {
             this.onStopPlay();
           }}>
           <FontAwesome name='times' size={20}/>
           </TouchableOpacity>
           </View>
-          <View style={{paddingTop :20, flexDirection:'row'}}>
-           <Text>{this.state.playTime} </Text>
-           <View style={{width:width/4}}/>
-           <Text> {this.state.duration}</Text>
-           </View>
           </View>
           )
         
@@ -526,4 +624,10 @@ const mapDispatchToProps = (dispatch) =>{
   dispatch,
   }}
 
-export default connect(null,mapDispatchToProps)(AddAudioFlipComponent);
+const mapStateToProps = (state) => {
+  return{
+    audioFlipWalkthroughDone: state.userReducer.audioFlipWalkthroughDone,
+    flipPreviewWalkthroughDone: state.userReducer.flipPreviewWalkthroughDone
+  }}
+
+export default connect(mapStateToProps,mapDispatchToProps)(AddAudioFlipComponent);

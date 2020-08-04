@@ -26,17 +26,21 @@ module.exports = async function() {
     TrackPlayer.addEventListener('remote-duck', async data => {
         console.log("remote-duck triggered: ",data);
 
-        if(data.paused) {
+        if(data.paused && data.permanent) {
+            store.dispatch({type:"SET_FLIP_PAUSED",payload:true})
             TrackPlayer.pause();
             //wasPlaying = true;
-        } else if(data.ducking) {
+        } else if(data.paused && !data.permanent) {
             TrackPlayer.setVolume(0.5);
         } else {
             const state = await TrackPlayer.getState();
-            if(state == TrackPlayer.STATE_PLAYING)
+             if(state == TrackPlayer.STATE_PLAYING){
                 TrackPlayer.play();
-            else
-                TrackPlayer.pause();
+                store.dispatch({type:"SET_FLIP_PAUSED",payload:false})
+             }
+
+            // else
+            //     TrackPlayer.pause();
             TrackPlayer.setVolume(1);
         }
         let { paused: shouldPause, permanent: permanentLoss = false } = data;

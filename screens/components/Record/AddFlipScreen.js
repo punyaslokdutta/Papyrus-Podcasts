@@ -4,6 +4,8 @@ import { TouchableOpacity,StyleSheet, Text,TextInput,Alert, Image,View, SafeArea
 import Icon from 'react-native-vector-icons/FontAwesome';
 import EnTypoIcon from 'react-native-vector-icons/Entypo';
 import Tooltip from 'react-native-walkthrough-tooltip';
+import OpenSettings from 'react-native-open-settings';
+
 import { TagSelect } from 'react-native-tag-select'
 import { useDispatch, useSelector} from 'react-redux'
 import { theme } from '../categories/constants';
@@ -24,6 +26,7 @@ const { width, height } = Dimensions.get('window');
 const addPictureImage = 'https://storage.googleapis.com/papyrus-274618.appspot.com/icons8-add-image-64.png';
 const AddFlipScreen = (props)=> {
       
+    const dispatch = useDispatch();
     const [flipImages,setFlipImages] = useState([]);
     const [flipText,setFlipText] = useState("");
     const [flipTitle,setFlipTitle] = useState("");
@@ -31,19 +34,27 @@ const AddFlipScreen = (props)=> {
     const [selectedIndex,setSelectedIndex] = useState(-1);
     const [loadingImage, setLoadingImage] =useState(false);
     const [isModalVisible,setIsModalVisible] = useState(false);
-    const [toolTipFlipVisible,setToolTipFlipVisible] = useState(true);
     const [toolTipPictureVisible,setToolTipPictureVisible] = useState(false);
     const [toolTipDescriptionVisible,setToolTipDescriptionVisible] = useState(false);
+    const [toolTipTitleVisible,setToolTipTitleVisible] = useState(false);
 
     const name = useSelector(state=>state.userReducer.name);
     const displayPictureURL = useSelector(state=>state.userReducer.displayPictureURL);
+    const addFlipWalkthroughDone = useSelector(state=>state.userReducer.addFlipWalkthroughDone);
 
-    const userID = props.firebase._getUid();;
+    const [toolTipFlipVisible,setToolTipFlipVisible] = useState(!addFlipWalkthroughDone);
+
+    const userID = props.firebase._getUid();
+    const privateUserID = "private" + userID;
     //const dispatch = 
 
     useEffect(() => {
       setFlipImages([addPictureImage]);  
     },[])
+
+    useEffect(() => {
+      setToolTipFlipVisible(!addFlipWalkthroughDone);
+    },[addFlipWalkthroughDone])
 
     useEffect(() => {
         if(uploadedImage !== null && uploadedImage!== undefined && uploadedImage.length>0)
@@ -119,6 +130,17 @@ const AddFlipScreen = (props)=> {
       
 
     }
+
+    async function setAddFlipWalkthroughInFirestore() {
+      firestore().collection('users').doc(userID).collection('privateUserData').doc(privateUserID).set({
+        addFlipWalkthroughDone : true
+      },{merge:true}).then(() => {
+          console.log("AddFlipWalkthrough set in firestore successfully");       
+      }).catch((error) => {
+          console.log("Error in updating value of AddFlipWalkthrough in firestore");
+      })
+    }
+
 
     function deleteFlipImageIndex(index) {
         console.log("In deleteFlipImageIndex")
@@ -270,7 +292,8 @@ const AddFlipScreen = (props)=> {
                                       </View>}
                                       onClose={() => {
                                         setToolTipPictureVisible(false);
-                                        setToolTipDescriptionVisible(true);
+                                        setToolTipTitleVisible(true);
+                                        //setToolTipDescriptionVisible(true);
                                       }}
                                     >
                                     <Image
@@ -300,6 +323,25 @@ const AddFlipScreen = (props)=> {
               console.log('User cancelled image picker');
             } else if (response.error) {
               console.log('ImagePicker Error: ', response.error);
+              if(response.error == "Permissions weren't granted")
+              {
+                Alert.alert(  
+                  'Papyrus needs access to your camera and/or storage.',  
+                  '',  
+                  [  
+                      {  
+                          text: 'Cancel',  
+                          onPress: () => console.log('Cancel Pressed'),  
+                          style: 'cancel',  
+                      },  
+                      {
+                          text: 'OK', onPress: () => {
+                          OpenSettings.openSettings()
+                          console.log('OK Pressed')
+                      }},  
+                  ]  
+              ); 
+              }
             } else if (response.customButton) {
               console.log('User tapped custom button: ', response.customButton);
             } else {
@@ -429,7 +471,19 @@ const AddFlipScreen = (props)=> {
         {renderModal()}
 
         {renderAllImages()}
-        <View>
+        <View style={{paddingHorizontal:5}}>
+        <Tooltip
+          isVisible={toolTipTitleVisible}
+          content={<View style={{width:width/2}}>
+          <Image source={{uri:"https://i1.wp.com/wpcodesnippet.com/assets/uploads/2015/09/separator-in-the-title-tag-in-wordpress.jpg"}}
+                  style={{height:width/2,width:width/2}}/>
+          <Text style={{fontFamily:"Andika-R"}}>Add Title to your flip</Text>
+          </View>}
+          onClose={() => {
+            setToolTipTitleVisible(false);
+            setToolTipDescriptionVisible(true);
+          }}
+        >
         <TextInput
           value={flipTitle}
           style={{fontFamily:'Montserrat-SemiBold',fontSize:20,borderWidth:0.5,borderColor:'black'}}
@@ -441,6 +495,7 @@ const AddFlipScreen = (props)=> {
           onChangeText={(text) => {
               setFlipTitle(text.slice(0,100))
           }}/>
+          </Tooltip>
         </View>
         <View style={{paddingHorizontal:5}}>
         <Tooltip
@@ -452,6 +507,8 @@ const AddFlipScreen = (props)=> {
             </View>}
           onClose={() => {
             setToolTipDescriptionVisible(false);
+            dispatch({type:"SET_ADD_FLIP_WALKTHROUGH",payload:true});
+            setAddFlipWalkthroughInFirestore();
           }}
         >
         <TextInput

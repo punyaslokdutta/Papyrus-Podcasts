@@ -50,17 +50,25 @@ class ProfileFlipScreen extends React.Component {
       const  userid = this.props.firebase._getUid();
         
       const profileFlipDocs = await firestore().collection('flips').where('creatorID','==',userid)
-                                .orderBy('createdOn','desc').limit(this.state.limit).get();
-      const profileFlipData = profileFlipDocs.docs.map(document => document.data());
-      var lastVisible = this.state.lastVisibleFlip;
-      if(profileFlipData.length != 0)
-        lastVisible = profileFlipData[profileFlipData.length - 1].createdOn;
-
-    
-      this.setState({
-          flips : profileFlipData,
-          lastVisibleFlip : lastVisible
-      })
+                                .orderBy('createdOn','desc').limit(this.state.limit).onSnapshot((querySnapshot) => {
+                                  var documentData_flips = [];
+                      
+                                  querySnapshot.forEach(function(doc) {
+                                    documentData_flips.push(doc.data());
+                                  });
+                                  var lastVisible = this.state.lastVisibleFlip;
+                                  if(documentData_flips.length != 0)      
+                                    lastVisible = documentData_flips[documentData_flips.length - 1].createdOn; 
+                              
+                                  this.setState({
+                                    flips : documentData_flips,
+                                    lastVisibleFlip : lastVisible
+                                  })
+                                  
+                              },function(error) {
+                                  console.log("Error in onSnapshot Listener in ProfileFlipScreen: ",error);
+                                  })
+      
     }
     catch (error) {
       console.log("Error in ProfileFlipScreen in retrieveData: ",error);
@@ -134,7 +142,17 @@ class ProfileFlipScreen extends React.Component {
       )
     }
     else {
-      return null;
+      return <View style={{marginTop:height/15,marginBottom:height/10,alignItems:'center',justifyContent:"center"}}>
+      <Image source={require('../../../assets/images/savedBooks.png')}
+             style={{height:width/1.8,width:width/2}}/>
+      <TouchableOpacity onPress={() => {
+            this.props.navigation.navigate('AddFlipScreen');
+          }} style={{justifyContent:'center',alignItems:'center',
+          borderRadius:10,width:width/3,height:40,borderWidth:0.5,backgroundColor:'black'}}>
+            <Text style={{fontSize:15, fontFamily:'Montserrat-Regular',color:'white'}}>Add Flip</Text>
+            </TouchableOpacity>
+      {/* {renderHomeBooks()} */}
+      </View>
     }
   }
 
@@ -183,12 +201,12 @@ class ProfileFlipScreen extends React.Component {
           keyExtractor={item => item.flipID}
           ListFooterComponent={this.renderFooter}
           onEndReached={this.onEndReached}
-          onEndReachedThreshold={0.01}
+          onEndReachedThreshold={0.5}
           refreshing={this.state.refreshing}
           onRefresh={() => this.handleRefresh()}
           refreshControl={
             <RefreshControl
-            refreshing={this.state.refreshing}
+            refreshing={this.state.loading}
             onRefresh={this.handleRefresh}
             />
            }
@@ -201,25 +219,19 @@ class ProfileFlipScreen extends React.Component {
     else
     {
       return(
-        <ScrollView contentContainerStyle={{alignItems:'center',paddingTop:height/15}}>
             
-            <TouchableOpacity onPress={() => {
+            <View style={{height:height*3/4, alignItems:'center',justifyContent:"center"}}>
+        <Image source={require('../../../assets/images/savedBooks.png')}
+               style={{height:width/1.8,width:width/2}}/>
+        <TouchableOpacity onPress={() => {
               this.props.navigation.navigate('AddFlipScreen');
             }} style={{justifyContent:'center',alignItems:'center',
-            borderRadius:10,width:width/3.2,height:50,borderWidth:0.5,backgroundColor:'black',marginBottom:30}}>
-              <Text style={{fontSize:23, fontFamily:'Montserrat-SemiBold',color:'white'}}>Add Flip</Text>
+            borderRadius:10,width:width/3,height:40,borderWidth:0.5,backgroundColor:'black'}}>
+              <Text style={{fontSize:15, fontFamily:'Montserrat-Regular',color:'white'}}>Add Flip</Text>
               </TouchableOpacity>
-              <View style={{alignItems:'center',justifyContent:'center',paddingHorizontal:20}}>
-          <Text style={{fontFamily:'Montserrat-Bold',fontSize:30}}>What are Flips?{"\n"}</Text>
-          <Text style={{fontFamily:'Montserrat-SemiBold',fontSize:15}}>Flips are book notes and highlights which you can share on the go.{"\n"}</Text>
-                </View>
-              <Image source={{uri:'https://storage.googleapis.com/papyrus-274618.appspot.com/illustrations/Flip-I.jpg'}} style={{height:width/2,width:width/1.8,borderWidth:0,borderColor:'black'}}/>
-
-              <Image source={{uri:'https://storage.googleapis.com/papyrus-274618.appspot.com/illustrations/FLIP-II.jpg'}} style={{height:width/2,width:width/1.8,borderWidth:0,borderColor:'black'}}/>
-        {/* <Image 
-        source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/HomeScreen/WhatsApp%20Image%202020-03-29%20at%206.17.51%20PM.jpeg"}}
-        style={{height: height/4,width: width/4}}/> */}
-        </ScrollView>
+        {/* {renderHomeBooks()} */}
+        </View>
+           
       );
       
     }

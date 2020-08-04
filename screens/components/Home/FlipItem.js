@@ -37,6 +37,7 @@ const FlipItem = (props) => {
     const userDisplayPictureURL = useSelector(state=>state.userReducer.displayPictureURL);
     const nameUser = useSelector(state=>state.userReducer.name);
 
+    const [loadingFlip,setLoadingFlip] = useState(false);
     const [numLikes,setNumLikes] = useState(props.item.numUsersLiked);
     const [liked,setLiked] = useState(isFlipLikedRedux[props.item.flipID]);
     const dispatch = useDispatch();
@@ -49,7 +50,7 @@ const FlipItem = (props) => {
     const flipID = props.item.flipID;
 
     const playbackState = usePlaybackState();
-    const { position } = useTrackPlayerProgress()
+    const { position } = useTrackPlayerProgress(750);
 
 
     const [player,setPlayer] = useState(false);
@@ -65,6 +66,10 @@ const FlipItem = (props) => {
     },[paused])
 
     useEffect(() => {
+      player == true && setLoadingFlip(false);
+    },[player])
+
+    useEffect(() => {
       if(props.item.flipID == currentFlipID)
       {
         if(pausedState == true )
@@ -77,10 +82,11 @@ const FlipItem = (props) => {
 
     useEffect(() => {
       console.log("sccdscds");
-      if(props.item.flipID != currentFlipID && playerText == "pause")
+      if(props.item.flipID != currentFlipID && (playerText == "pause" || loadingFlip==true) )
       {
         setPlayerText("play");
         setPlayer(false);
+        setLoadingFlip(false);
       }
     },[currentFlipID])
 
@@ -307,9 +313,9 @@ const FlipItem = (props) => {
         artwork: props.item.flipPictures[0],
         duration: props.item.duration
       });
-      setPlayer(true);
       dispatch({ type:"SET_MUSIC_PAUSED",payload:true});
       await TrackPlayer.play();
+      setPlayer(true);
 
     }
 
@@ -323,8 +329,15 @@ const FlipItem = (props) => {
       else
         return (
           <View style={{flex:1,flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-start',marginVertical:5,height:width/15,marginHorizontal:8}}>
-            <TouchableOpacity style={{width:width/10,height:width/10,paddingLeft:10}} onPress={() => {
+           {
+             loadingFlip == true ?
+             <View style={{width:width/10,height:width/10,paddingLeft:0}}>
+             <ActivityIndicator color='black' size={'small'}/>
+             </View>
+             :
+           <TouchableOpacity style={{width:width/10,height:width/10,paddingLeft:10}} onPress={() => {
               //setPausedState(false);
+              
               if(playerText == "pause")
               {
                 setPlayerText("play");
@@ -341,10 +354,16 @@ const FlipItem = (props) => {
                 if(player == false || (player == true && props.item.flipID != currentFlipID)) 
                 {
                   stopPodcast();
-                  dispatch({type:"SET_FLIP_ID",payload:props.item.flipID});
-                  dispatch({type:"SET_FLIP_PLAYING",payload:false});
-                  dispatch({type:"SET_FLIP_PLAYING",payload:true});
-                  startAudioFlip();
+                  //TrackPlayer.stop();
+                  setLoadingFlip(true);
+                 // setTimeout(() => {
+                    dispatch({type:"SET_FLIP_ID",payload:props.item.flipID});
+                    dispatch({type:"SET_FLIP_PLAYING",payload:false});
+                    dispatch({type:"SET_FLIP_PLAYING",payload:true});
+                 // }, 2500)
+                 startAudioFlip();
+                 
+                 
                 }
                 else
                 {
@@ -356,6 +375,7 @@ const FlipItem = (props) => {
             }}>
               <Icon name={playerText} size={playerText == 'play' ? 23 : 20} color='black'/>
             </TouchableOpacity> 
+            }
             {
               props.item.flipID == currentFlipID 
               ?
@@ -370,14 +390,14 @@ const FlipItem = (props) => {
                 <Slider
                   value={position}
                   minimumValue={1}
-                  maximumValue={props.item.duration/1000}
+                  maximumValue={props.item.duration/1000 - 1}
                   step={0.01}
                   onValueChange={(value)=>handleOnSlide(value)}
                   //onSlidingStart={handlePlayPause}
                   //onSlidingComplete={handlePlayPause}
                   minimumTrackTintColor={'black'}
                   maximumTrackTintColor={'black'}
-                  thumbTintColor={'#F44336'}
+                  thumbTintColor={'black'}
                   //disabled={true}
                 />
                 :
@@ -391,7 +411,7 @@ const FlipItem = (props) => {
                   //onSlidingComplete={handlePlayPause}
                   minimumTrackTintColor={'black'}
                   maximumTrackTintColor={'black'}
-                  thumbTintColor={'#F44336'}
+                  thumbTintColor={'black'}
                   //disabled={true}
                 />
               }

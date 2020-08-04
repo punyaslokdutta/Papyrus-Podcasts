@@ -226,6 +226,7 @@ dependencies {
     implementation "com.facebook.react:react-native:+"  // From node_modules
     compile project(':react-native-get-real-path')
     compile project(':react-native-detect-navbar-android')
+    compile project(':react-native-open-settings')
     compile(project(':react-native-device-info')) {
         exclude group: 'com.google.android.gms'
     }

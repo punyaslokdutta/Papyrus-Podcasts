@@ -266,6 +266,7 @@ const Explore = (props) => {
 
 
       useEffect(() => {
+        console.log("musicEnabledNotificationSeen: ",musicEnabledNotificationSeen);
         setIsModalVisible(!musicEnabledNotificationSeen);
         //musicEnabledNotificationSeen != true && setIsModalVisible(true);
       },[musicEnabledNotificationSeen])
