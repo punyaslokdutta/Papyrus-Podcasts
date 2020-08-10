@@ -21,23 +21,24 @@ const SelectTabNavigator = createMaterialTopTabNavigator(
     AddFlipScreen : { screen: props => <AddFlipScreen {...props}/>,navigationOptions:{
       tabBarLabel:'Flip ',
       tabBarIcon:({tintColor})=>(
-        <Entypo name="news" size={25}/>
+        <Entypo name="news" size={25} color={tintColor}/>
       )
     }}, 
     AddBookReviewScreen : { screen: props => <AddBookReviewScreen {...props}/>,navigationOptions:{
-      tabBarLabel:'Book Podcast ',
+      tabBarLabel:' Podcast ',
       tabBarIcon:({tintColor})=>(
-        <Icon name="microphone" size={30} color='black'/>
+        <Icon name="microphone" size={30} color={tintColor}/>
       )
     }},
     
   },
   {
   tabBarPosition: 'bottom',
+  lazy: true,
   tabBarOptions:  {
     showIcon: true,//props.navigation.state.params.fromExplore ? false : true,
     //showLabel: props.navigation.state.params.fromExplore ? false : false,
-    activeTintColor:'black',
+    activeTintColor:'white',
     inactiveTintColor:'grey',
     borderTopWidth: 0,
     elevation :5,
@@ -45,11 +46,11 @@ const SelectTabNavigator = createMaterialTopTabNavigator(
     style:
     {
       height: 60, 
-      backgroundColor: 'white',
+      backgroundColor: 'black',
       
     },
     indicatorStyle: {
-      borderBottomColor: 'black',
+      borderBottomColor: 'white',
       borderBottomWidth: 2,
     },
     labelStyle: {

@@ -19,10 +19,11 @@ const INITIAL_STATE = {
     introduction : null,
     numCreatedBookPodcasts : 0,
     numCreatedChapterPodcasts : 0,
+    numCreatedOriginalPodcasts : 0,
     totalMinutesRecorded : 0,
     navigation:null,
     website:null,
-    algoliaQuery: "Papyrus",
+    algoliaQuery:"The Existentialist",
     algoliaBookQuery: "",
     selectedOnlyBookItem: null,
     numNotifications: 0,
@@ -52,11 +53,23 @@ const INITIAL_STATE = {
     showMusicPlayerTooltip : false,
     addFlipWalkthroughDone : false,
     flipPreviewWalkthroughDone : false,
-    audioFlipWalkthroughDone : false
+    audioFlipWalkthroughDone : false,
+    addBookReviewScreenWalkthroughDone : false,
+    recordBookWalkthroughDone : false,
+    bookPodcastWalkthroughDone : false,
+    originalPodcastWalkthroughDone : false
   };
   
   function userReducer(state = INITIAL_STATE, action)  {
     switch (action.type) {
+        case "SET_ADD_BOOK_REVIEW_WALKTHROUGH":
+            return {...state,addBookReviewScreenWalkthroughDone:action.payload}
+        case "SET_RECORD_BOOK_WALKTHROUGH":
+            return {...state,recordBookWalkthroughDone:action.payload}
+        case "SET_BOOK_PODCAST_WALKTHROUGH":
+            return {...state,bookPodcastWalkthroughDone:action.payload}
+        case "SET_ORIGINAL_PODCAST_WALKTHROUGH":
+            return {...state,originalPodcastWalkthroughDone:action.payload}       
         case "SET_ADD_FLIP_WALKTHROUGH":
             return {...state,addFlipWalkthroughDone:action.payload}
         case "SET_FLIP_PREVIEW_WALKTHROUGH":
@@ -234,6 +247,10 @@ const INITIAL_STATE = {
               }
               state.numFollowing = length_list;
             return state;
+        case "CLEAR_FOLLOWING_MAP":
+            state.isUserFollowing = {};
+            state.numFollowing = 0;
+            return state;
         case "ADD_TO_FOLLOWING_MAP":
             state.isUserFollowing[action.payload] = true;
             state.numFollowing = state.numFollowing + 1;
@@ -255,6 +272,20 @@ const INITIAL_STATE = {
             return {...state,numCreatedBookPodcasts: action.payload};
         case "ADD_NUM_CREATED_CHAPTER_PODCASTS":
             return {...state,numCreatedChapterPodcasts: action.payload};
+        case "ADD_NUM_CREATED_ORIGINAL_PODCASTS":
+            return {...state,numCreatedOriginalPodcasts: action.payload};
+        case "INCREMENT_NUM_CREATED_BOOK_PODCASTS":
+            return {...state,numCreatedBookPodcasts: state.numCreatedBookPodcasts + 1};
+        case "INCREMENT_NUM_CREATED_CHAPTER_PODCASTS":
+            return {...state,numCreatedChapterPodcasts: state.numCreatedChapterPodcasts + 1};
+        case "INCREMENT_NUM_CREATED_ORIGINAL_PODCASTS":
+            return {...state,numCreatedOriginalPodcasts: state.numCreatedOriginalPodcasts + 1};
+        case "DECREMENT_NUM_CREATED_BOOK_PODCASTS":
+            return {...state,numCreatedBookPodcasts: state.numCreatedBookPodcasts - 1};
+        case "DECREMENT_NUM_CREATED_CHAPTER_PODCASTS":
+            return {...state,numCreatedChapterPodcasts: state.numCreatedChapterPodcasts - 1};
+        case "DECREMENT_NUM_CREATED_ORIGINAL_PODCASTS":
+            return {...state,numCreatedOriginalPodcasts: state.numCreatedOriginalPodcasts - 1};
         case "UPDATE_TOTAL_MINUTES_RECORDED":
             return {...state,totalMinutesRecorded: action.payload};
         case "CLEAR_FOLLOWING_MAP":

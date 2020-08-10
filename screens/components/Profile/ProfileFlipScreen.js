@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import { StyleSheet, Text, View, Image, TouchableOpacity,FlatList,RefreshControl, 
-  Dimensions,SafeAreaView, ScrollView,ActivityIndicator} from 'react-native';
+  Dimensions,SafeAreaView, ScrollView,ActivityIndicator, ImageBackground} from 'react-native';
 import ProfileFlipItem from './ProfileFlipItem';
 import {withFirebaseHOC} from '../../config/Firebase'
 import {useSelector, useDispatch,connect} from "react-redux"
 import IconAntDesign from 'react-native-vector-icons/AntDesign'
+import LinearGradient from 'react-native-linear-gradient';
 
 
 var {width, height}=Dimensions.get('window')
@@ -122,13 +123,34 @@ class ProfileFlipScreen extends React.Component {
       return(
         <TouchableOpacity onPress={() => {
             this.props.navigation.navigate('ProfileFlipScreenVertical',{flips : this.state.flips,scrollIndex:index,lastVisibleFlip:this.state.lastVisibleFlip})
-        }} style={{padding:5}}>
-        <Image source={{uri: item.flipPictures[0]}} style={{width:width/2 - 10, height:width*0.75,borderRadius:5 }}/>
+        }} style={{marginHorizontal:5,marginVertical:5,width:width/2 - 10, height:width*0.75,borderRadius:10}}>
+        <ImageBackground source={{uri: item.flipPictures[0]}} 
+          style={{width:width/2 - 10, height:width*0.75 }}
+          imageStyle={{ borderRadius: 10}}
+          >
+        <LinearGradient style={{borderRadius:10}} colors={['transparent', 'transparent', 'transparent','transparent','transparent','transparent',  'transparent','transparent','black']} >
+              <View style={{width:width/2 - 10, height:width*0.75,borderRadius:20}}>
+               
               {
                 item.isAudioFlip &&
                 <IconAntDesign name="play" size={height/24} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/4 - 5 - height/48,top:width*0.75/2 - height/48}}/>
 
               }
+              {
+                item.bookName !== undefined && item.bookName !== null &&
+<Text style={{color:'white',position:'absolute',fontFamily:'Montserrat-Bold',bottom:2,left:10,fontSize:15}}>
+        {item.bookName.slice(0,35)}
+        {
+          (item.bookName.length > 35)  &&  ".."
+        }
+
+      </Text>
+              }
+               
+              </View>
+            </LinearGradient>
+
+            </ImageBackground>
       {/* <ProfileFlipItem item={item} index={index} navigation={this.props.navigation}/> */}
       </TouchableOpacity>
       )

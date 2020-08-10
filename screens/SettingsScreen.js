@@ -259,31 +259,33 @@ const SettingsScreen = (props) => {
 
       try{
         TrackPlayer.destroy();
-        dispatch({type:'SET_ADMIN_USER',payload:false})
-        dispatch({type:'CLEAR_PODCASTS_LIKED',payload:null})
-        dispatch({type:'CLEAR_FLIPS_LIKED',payload:null})
-        dispatch({type:'CLEAR_PODCASTS_BOOKMARKED',payload:null})
-        dispatch({type:'ADD_NUM_FOLLOWERS',payload:0})
-        dispatch({type:"SET_SIGNUP_MAIL",payload:null});
-        dispatch({type:'CHANGE_EMAIL',payload:null})
-        dispatch({type:'CHANGE_NAME',payload:null})
-        dispatch({type:'CHANGE_USER_NAME',payload:null})
-        dispatch({type:'CHANGE_DISPLAY_PICTURE',payload:null})
-        dispatch({type:'CLEAR_FOLLOWING_MAP',payload:null})
-        dispatch({type:'CHANGE_WEBSITE',payload:null})
-        dispatch({type:'ADD_INTRODUCTION',payload: null})
-        dispatch({type:'ADD_NUM_CREATED_BOOK_PODCASTS',payload: 0})
-        dispatch({type:'ADD_NUM_CREATED_CHAPTER_PODCASTS',payload: 0})
-        dispatch({type:'UPDATE_TOTAL_MINUTES_RECORDED',payload: 0})
-        dispatch({type:'ADD_NUM_NOTIFICATIONS',payload: 0});
-        dispatch({type:"SET_USER_PREFERENCES",payload:[]});
-        dispatch({type:'SET_USER_LANUAGES',payload: []});
-        dispatch({type:'SET_ALGOLIA_API_KEY',payload:null});
-        dispatch({type:'SET_ALGOLIA_APP_ID',payload:null});
-        dispatch({type:"SET_PODCAST",payload:null});
-        dispatch({type:"SET_FLIP_ID",payload:null});
-        dispatch({type:"SET_FLIP_PLAYING",payload:false});
-        dispatch({type:"SET_MUSIC",payload:null});
+        dispatch({type:"USER_LOGOUT"});
+        // dispatch({type:'SET_ADMIN_USER',payload:false})
+        // dispatch({type:'CLEAR_PODCASTS_LIKED',payload:null})
+        // dispatch({type:'CLEAR_FLIPS_LIKED',payload:null})
+        // dispatch({type:'CLEAR_PODCASTS_BOOKMARKED',payload:null})
+        // dispatch({type:'ADD_NUM_FOLLOWERS',payload:0})
+        // dispatch({type:'CLEAR_FOLLOWING_MAP'});
+        // dispatch({type:"SET_SIGNUP_MAIL",payload:null});
+        // dispatch({type:'CHANGE_EMAIL',payload:null})
+        // dispatch({type:'CHANGE_NAME',payload:null})
+        // dispatch({type:'CHANGE_USER_NAME',payload:null})
+        // dispatch({type:'CHANGE_DISPLAY_PICTURE',payload:null})
+        // dispatch({type:'CLEAR_FOLLOWING_MAP',payload:null})
+        // dispatch({type:'CHANGE_WEBSITE',payload:null})
+        // dispatch({type:'ADD_INTRODUCTION',payload: null})
+        // dispatch({type:'ADD_NUM_CREATED_BOOK_PODCASTS',payload: 0})
+        // dispatch({type:'ADD_NUM_CREATED_CHAPTER_PODCASTS',payload: 0})
+        // dispatch({type:'UPDATE_TOTAL_MINUTES_RECORDED',payload: 0})
+        // dispatch({type:'ADD_NUM_NOTIFICATIONS',payload: 0});
+        // dispatch({type:"SET_USER_PREFERENCES",payload:[]});
+        // dispatch({type:'SET_USER_LANUAGES',payload: []});
+        // dispatch({type:'SET_ALGOLIA_API_KEY',payload:null});
+        // dispatch({type:'SET_ALGOLIA_APP_ID',payload:null});
+        // dispatch({type:"SET_PODCAST",payload:null});
+        // dispatch({type:"SET_FLIP_ID",payload:null});
+        // dispatch({type:"SET_FLIP_PLAYING",payload:false});
+        // dispatch({type:"SET_MUSIC",payload:null});
         props.firebase._signOutUser();
         Toast.show("Logged out");
         

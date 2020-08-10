@@ -7,7 +7,7 @@ import categoryReducer from './reducers/categoryReducer';
 import {createStore,combineReducers, applyMiddleware} from 'redux'
 import thunk from 'redux-thunk';
 
-const mainReducer = combineReducers({
+const appReducer = combineReducers({
     recorderReducer,
     userReducer,
     rootReducer,
@@ -15,6 +15,14 @@ const mainReducer = combineReducers({
     musicReducer,
     categoryReducer
   })
+
+const mainReducer = (state, action) => {
+  if (action.type === 'USER_LOGOUT') {
+    state = undefined
+  }
+
+  return appReducer(state, action)
+}
 
 const store = createStore(mainReducer, applyMiddleware(thunk))
 //const store = createStore(reducer);

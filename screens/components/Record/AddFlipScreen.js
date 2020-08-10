@@ -23,7 +23,7 @@ import modalJSON2 from '../../../assets/animations/modal-animation-2.json';
 import LottieView from 'lottie-react-native';
 
 const { width, height } = Dimensions.get('window');
-const addPictureImage = 'https://storage.googleapis.com/papyrus-274618.appspot.com/icons8-add-image-64.png';
+const addPictureImage = 'https://storage.googleapis.com/papyrus-274618.appspot.com/flips/InsertImageFLip.png';
 const AddFlipScreen = (props)=> {
       
     const dispatch = useDispatch();

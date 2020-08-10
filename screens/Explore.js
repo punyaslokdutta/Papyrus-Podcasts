@@ -178,8 +178,9 @@ const Explore = (props) => {
     try{
       let exploreFlipsQuery = await firestore().collection('flips')
                             .where('isExploreFlip','==',true).orderBy('lastEditedOn','desc')
-                            .limit(6).get();
+                            .limit(12).get();
       let exploreFlipsData = exploreFlipsQuery.docs.map(document => document.data());
+      console.log("exploreFlipsData:- ",exploreFlipsData);
       setExploreFlips(exploreFlipsData);
     }
     catch(error){
@@ -430,13 +431,21 @@ const Explore = (props) => {
 
       function renderFooter(){
         return (
-          <View style={{alignItems:'center',marginTop:10}}>
+          <View style={{alignItems:'center',marginTop:0,marginBottom:20}}>
           <TouchableOpacity onPress={() => {
             addMusicPreferencesToFirestore();
           }} style={{width:width/5,height:width/8,borderColor:'black',borderWidth:1,borderRadius:10,alignItems:'center',justifyContent:'center'}}>
             <Text style={{fontSize:width/16,fontFamily:'Andika-R'}}>Done</Text>
             </TouchableOpacity>
             </View>
+        )
+      }
+
+      function renderHeader() {
+        return (
+          <View style={{justifyContent:'center',alignItems:'center',textAlign:'center',marginBottom:10}}>
+                <Text style={{marginHorizontal:5,paddingHorizontal:5, fontFamily:'Andika-R',fontSize:20,backgroundColor:'white',alignSelf:'center'}}>Select your music preferences</Text>
+                </View> 
         )
       }
 
@@ -449,7 +458,9 @@ const Explore = (props) => {
             renderItem={renderMusicCategoryItems}
             numColumns={2}
             keyExtractor={item => item.id}
+            showsVerticalScrollIndicator={false}
             ListFooterComponent={renderFooter}
+            ListHeaderComponent={renderHeader}
           /> 
           </View>
         )
@@ -469,9 +480,9 @@ const Explore = (props) => {
         return (
           <Modal isVisible={isMusicCategoryModalVisible} backdropColor={'white'} style={{backgroundColor:'while'}}>
             <View style={{ backgroundColor:'white',height:height*3/4,borderRadius:10,borderWidth:0.5,borderColor:'black', width:width*3/4,alignSelf:'center' }}>
-              <View style={{justifyContent:'center',alignItems:'center',textAlign:'center'}}>
+              {/* <View style={{justifyContent:'center',alignItems:'center',textAlign:'center'}}>
                 <Text style={{marginHorizontal:5,paddingHorizontal:5,borderWidth:1,borderColor:'#dddd', fontFamily:'Andika-R',fontSize:20,backgroundColor:'white',alignSelf:'center'}}>Select your music preferences</Text>
-                </View>
+                </View> */}
                   <View style={{marginTop:width/18,flexDirection:'column'}}>
                     {renderMusicCategories()}
                   </View>
@@ -532,7 +543,7 @@ const Explore = (props) => {
 
     function renderTetrisFlips()
     {
-      if(exploreFlips.length == 6)
+      if(exploreFlips.length >= 6)
       return (
         <View style={{borderColor:'black',borderWidth:0.5,height:width,width:width}}>
           <View style={{flexDirection:"row"}}>
@@ -632,6 +643,117 @@ const Explore = (props) => {
                   style={{height:width*2/3,width:width*2/3}}/>
               {
                 exploreFlips[5].isAudioFlip &&
+                <IconAntDesign name="play" size={height/24} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/3 - height/48,top:width/3 - height/48}}/>
+
+              }
+              </TouchableOpacity>
+          </View>
+          </View>
+      )
+    }
+
+    function renderTetrisFlipsII()
+    {
+      if(exploreFlips.length >= 12)
+      return (
+        <View style={{borderColor:'black',borderWidth:0.5,height:width,width:width}}>
+          <View style={{flexDirection:"row"}}>
+            <TouchableOpacity onPress={() => {
+              props.navigation.navigate('FlipsExploreScreen',{
+                flips : exploreFlips,
+                scrollIndex:6,
+                lastVisibleFlip:exploreFlips[exploreFlips.length - 1].lastEditedOn,
+            })
+            }}
+            style={{borderColor:'black',borderWidth:0.5,height:width/3,width:width/3}}>
+            <Image source={{uri:exploreFlips[6].flipPictures[0]}} 
+                  style={{height:width/3,width:width/3}}/>
+              {
+                exploreFlips[6].isAudioFlip &&
+                <IconAntDesign name="play" size={height/24} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/6 - height/48,top:width/6 - height/48}}/>
+
+              }
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => {
+              props.navigation.navigate('FlipsExploreScreen',{
+                flips : exploreFlips,
+                scrollIndex:7,
+                lastVisibleFlip:exploreFlips[exploreFlips.length - 1].lastEditedOn,
+            })
+            }}
+            style={{borderColor:'black',borderWidth:0.5,height:width/3,width:width/3}}>
+            <Image source={{uri:exploreFlips[7].flipPictures[0]}} 
+                  style={{height:width/3,width:width/3}}/>
+              {
+                exploreFlips[7].isAudioFlip &&
+                <IconAntDesign name="play" size={height/24} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/6 - height/48,top:width/6 - height/48}}/>
+
+              }
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => {
+              props.navigation.navigate('FlipsExploreScreen',{
+                flips : exploreFlips,
+                scrollIndex:8,
+                lastVisibleFlip:exploreFlips[exploreFlips.length - 1].lastEditedOn,
+            })
+            }}
+             style={{borderColor:'black',borderWidth:0.5,height:width/3,width:width/3}}>
+            <Image source={{uri:exploreFlips[8].flipPictures[0]}} 
+                  style={{height:width/3,width:width/3}}/>
+              {
+                exploreFlips[8].isAudioFlip &&
+                <IconAntDesign name="play" size={height/24} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/6 - height/48,top:width/6 - height/48}}/>
+
+              }
+            </TouchableOpacity>
+          </View>
+          <View style={{flexDirection:"row"}}>
+              <View style={{flexDirection:'column'}}>
+              <TouchableOpacity onPress={() => {
+              props.navigation.navigate('FlipsExploreScreen',{
+                flips : exploreFlips,
+                scrollIndex:9,
+                lastVisibleFlip:exploreFlips[exploreFlips.length - 1].lastEditedOn,
+            })
+            }}
+                style={{borderColor:'black',borderWidth:0.5,height:width/3,width:width/3}}>
+              <Image source={{uri:exploreFlips[9].flipPictures[0]}} 
+                  style={{height:width/3,width:width/3}}/>
+              {
+                exploreFlips[9].isAudioFlip &&
+                <IconAntDesign name="play" size={height/24} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/6 - height/48,top:width/6 - height/48}}/>
+
+              }
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => {
+              props.navigation.navigate('FlipsExploreScreen',{
+                flips : exploreFlips,
+                scrollIndex:10,
+                lastVisibleFlip:exploreFlips[exploreFlips.length - 1].lastEditedOn,
+            })
+            }}
+              style={{borderColor:'black',borderWidth:0.5,height:width/3,width:width/3}}>
+            <Image source={{uri:exploreFlips[10].flipPictures[0]}} 
+                  style={{height:width/3,width:width/3}}/>
+              {
+                exploreFlips[10].isAudioFlip &&
+                <IconAntDesign name="play" size={height/24} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/6 - height/48,top:width/6 - height/48}}/>
+
+              }
+            </TouchableOpacity>
+                </View>
+                <TouchableOpacity onPress={() => {
+              props.navigation.navigate('FlipsExploreScreen',{
+                flips : exploreFlips,
+                scrollIndex:11,
+                lastVisibleFlip:exploreFlips[exploreFlips.length - 1].lastEditedOn,
+            })
+            }}
+                  style={{borderColor:'black',borderWidth:0.5,height:width*2/3,width:width*2/3}}>
+                <Image source={{uri:exploreFlips[11].flipPictures[0]}} 
+                  style={{height:width*2/3,width:width*2/3}}/>
+              {
+                exploreFlips[11].isAudioFlip &&
                 <IconAntDesign name="play" size={height/24} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/3 - height/48,top:width/3 - height/48}}/>
 
               }
@@ -915,7 +1037,7 @@ const Explore = (props) => {
              {renderSection1Podcasts()}
              <View style={{marginTop:20,borderBottomColor:'#d1d0d4',borderBottomWidth:1}}/> 
              {renderTetrisFlips()}
-             <View style={{marginTop:20,borderBottomColor:'#d1d0d4',borderBottomWidth:1}}/> 
+             <View style={{marginTop:20,borderBottomColor:'#d1d0d4',borderBottomWidth:0}}/> 
              {renderSection2PodcastsI()}
              <Text style={{fontSize:23,marginTop:10, color:'black',fontFamily:'HeadlandOne-Regular'}}> Storytellers </Text>
              {renderSectionStoryTellers()}
@@ -924,6 +1046,8 @@ const Explore = (props) => {
             <View style={{height:15}}/>
             <Text style={{fontSize:23,marginBottom:10, color:'black',fontFamily:'HeadlandOne-Regular'}}> Popular Books </Text>
              <BookList navigation={props.navigation} books={recordBooks}/>
+             {renderTetrisFlipsII()}
+             <View style={{height:15}}/>
              {renderSection2PodcastsIII()}
              <View style={{height:15}}/>
              {/* <Text style={{fontSize:23,marginBottom:10, color:'black',fontFamily:'HeadlandOne-Regular'}}> Relaxing Music </Text>

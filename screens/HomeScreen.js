@@ -17,12 +17,17 @@ import Shimmer from 'react-native-shimmer';
 import HomeAnimation from './components/Home/HomeAnimation';
 import { MenuProvider } from 'react-native-popup-menu';
 import { NetworkContext } from './config/NetworkProvider';
+import {withFirebaseHOC} from './config/Firebase'
+import VideoPlayer from 'react-native-video-controls';
 
 var {width, height}=Dimensions.get('window')
 
 const HomeScreen = (props) => {
   
+  const userID = props.firebase._getUid();
+
   const isConnectedContext = useContext(NetworkContext);
+  const flipUploadSuccess = useSelector(state=>state.flipReducer.flipUploadSuccess);
   const uploadPodcastSuccess = useSelector(state=>state.userReducer.uploadPodcastSuccess);
   const numNotifications = useSelector(state=>state.userReducer.numNotifications);
   const userPreferences = useSelector(state=>state.userReducer.userPreferences);
@@ -34,6 +39,7 @@ const HomeScreen = (props) => {
   const flipLimit = 30;
   const headerPodcastsLimit = 8;
   const bookLimit = 5;
+  const [podcastJustUploaded,setPodcastJustUploaded] = useState(null);
   const [isConnected,setIsConnected] = useState(true);
   const [podcastPresentMap,setPodcastPresentMap] = useState({});
   const [lastVisible,setLastVisible] = useState(null);
@@ -43,6 +49,8 @@ const HomeScreen = (props) => {
   const [scrollPosition,setScrollPosition] = useState(0);
   const dispatch = useDispatch();
   var didFocusListener = useRef();
+
+  const [key,setKey] = useState(1);
 
 
   useEffect(() => {
@@ -54,17 +62,8 @@ const HomeScreen = (props) => {
         dispatch({type:"CHANGE_SCREEN"});
         });
     }
-    
-    // if(!netInfoListener.current) {
-    //   netInfoListener.current =  NetInfo.addEventListener(state => {
-    //     console.log("Connection type", state.type);
-    //     console.log("Is connected?", state.isConnected);
-    //     setIsConnected(state.isConnected);
-    //   });
-    // }
       
     retrieveData();
-
     return () => {
       console.log("[HomeScreen] component unmounting");
       didFocusListener.current.remove();
@@ -73,10 +72,24 @@ const HomeScreen = (props) => {
   },[])  
 
   useEffect(() => {
-    
-      console.log("uploadPodcastSuccess1234: ",uploadPodcastSuccess);
-      retrieveData();
-    
+    if(flipUploadSuccess == true){
+      console.log("[HomeScreen] A flip has been added");
+      dispatch({type:"SET_FLIP_UPLOAD_SUCCESS",payload:false});
+      retrieveData();      
+      //setKey(key + 1);
+    }
+  },[flipUploadSuccess])
+
+  useEffect(() => {
+      if(uploadPodcastSuccess == true){
+        console.log("uploadPodcastSuccess1234: ",uploadPodcastSuccess);
+        setLoading(true);
+        retrievePodcastJustUploaded();
+        setLoading(false);
+        dispatch({type:"SET_PODCAST_UPLOAD_SUCCESS",payload:false});
+
+        //retrieveData();
+      }
   },[uploadPodcastSuccess])
 
   function handleConnectivityChange(isConnected) {
@@ -86,6 +99,14 @@ const HomeScreen = (props) => {
       alert("Oops!! No Internet Connection Available");
       //this.setState({ isConnected });
     }
+  }
+
+  async function retrievePodcastJustUploaded(){
+    const justUploadedPodcastQuery = await firestore().collectionGroup('podcasts').where('podcasterID','==',userID)
+      .orderBy('lastEditedOn','desc').limit(1).get();
+    const justUploadedPodcastDocData = justUploadedPodcastQuery.docs[0].data();
+    console.log("justUploadedPodcastDocData: ",justUploadedPodcastDocData);
+    setPodcastJustUploaded(justUploadedPodcastDocData);
   }
 
   async function retrieveData() 
@@ -351,7 +372,10 @@ const HomeScreen = (props) => {
       /> */}
       
       <View>
-         {/* <HomeAnimation/> */}
+        {
+          podcastJustUploaded !== null && podcastJustUploaded !== undefined &&
+          <Podcast podcast={podcastJustUploaded} navigation={props.navigation}/>
+        }
       </View>
       {renderFlipsI()}
 
@@ -487,6 +511,92 @@ const HomeScreen = (props) => {
     )
   }
 
+  function renderVideos() {
+    return (
+      <View>
+      <View style={{height:height*0.9,width:width,marginBottom:25}}>
+       <VideoPlayer
+          source={{uri: 'https://r10---sn-ci5gup-qxa6.googlevideo.com/videoplayback?expire=1596682431&ei=XxwrX8KZCIi8hgbf0or4Cw&ip=2620%3A154%3Aa10%3Aa001%3A250%3A56ff%3Afeaa%3A6996&id=o-ANG2jqhrk0bVyHUxAM7O1PleJeiZZC7XTtKXG1PWN2FO&itag=18&source=youtube&requiressl=yes&vprv=1&mime=video%2Fmp4&gir=yes&clen=47670343&ratebypass=yes&dur=1020.888&lmt=1586399989142540&fvip=1&fexp=23883098&c=WEB&txp=5531432&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cvprv%2Cmime%2Cgir%2Cclen%2Cratebypass%2Cdur%2Clmt&sig=AOq0QJ8wRgIhALPcwi5j910fM5ZIS_SsYFWbki-JaU2q3Q4Wv8rVOhS-AiEAjj_waZ-hRQYXo_X8qBXBraoXXJvxdLzuJ5lfgGHxQwg%3D&video_id=Tke2yVMJaB4&title=Debunking+David+Icke%27s+Crazy+Coronavirus+Conspiracy+on+London+Real&redirect_counter=1&rm=sn-p5qys7e&req_id=a2d348b9ec8fa3ee&cms_redirect=yes&ipbypass=yes&mh=d-&mip=122.177.9.15&mm=31&mn=sn-ci5gup-qxa6&ms=au&mt=1596660755&mv=m&mvi=10&pcm2cms=yes&pl=20&lsparams=ipbypass,mh,mip,mm,mn,ms,mv,mvi,pcm2cms,pl&lsig=AG3C_xAwRgIhALAM07glkFIzyyjb4LHrBpx1abmWA-LcjghLHYESdjMlAiEA2wUhuYfF9EzSUcc0UiI2TUslCHBakEFzI14I03AZQSc%3D'}}
+          disableVolume={true}
+          disableBack={true}
+          controlTimeout={3000}
+          //navigator={this.props.navigator}
+        />
+        </View>
+
+{/* <View style={{height:height/3,width:width*0.8,marginBottom:25}}>
+<VideoPlayer
+   source={{uri: 'https://r2---sn-ci5gup-qxae7.googlevideo.com/videoplayback?expire=1596671289&ei=2fAqX5O0DpHWxwKaxZngDQ&ip=80.211.65.43&id=o-AI21_v6ORSDCbeN0c-l5BDCBgLKa-13ynQYvkKvpunl5&itag=18&source=youtube&requiressl=yes&vprv=1&mime=video%2Fmp4&gir=yes&clen=15202219&ratebypass=yes&dur=194.977&lmt=1576471424554818&fvip=1&fexp=23883098&c=WEB&txp=5531432&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cvprv%2Cmime%2Cgir%2Cclen%2Cratebypass%2Cdur%2Clmt&sig=AOq0QJ8wRQIhANQGve9rj8VmF6VH2SSUmxUbnlj6Fn_aWswmJ17niMcaAiBZl0f2ZWY52ZzCxctu3D43Id-cmPTHfLlWP5IVSJfmfw%3D%3D&video_id=F652A0WP-24&title=Osho+Jain+-+Khush+To+Hai+Na&redirect_counter=1&rm=sn-hpa6d7e&req_id=bfd2b2f0a59ca3ee&cms_redirect=yes&ipbypass=yes&mh=nZ&mip=122.177.9.15&mm=31&mn=sn-ci5gup-qxae7&ms=au&mt=1596658720&mv=m&mvi=7&pl=20&lsparams=ipbypass,mh,mip,mm,mn,ms,mv,mvi,pl&lsig=AG3C_xAwRQIgO7sdldANxg8XjedCGB9WkkOi-MN2jpV9xPfe33w2CZMCIQCFaWxyW7VsVb54NmYQJSsw41jFTG3iKYhfsiJmveH7hA%3D%3D&ir=1&rr=12'}}
+   disableVolume={true}
+   disableBack={true}
+   controlTimeout={3000}
+   //navigator={this.props.navigator}
+ />
+ </View>
+
+<View style={{height:height/3,width:width*0.8,marginBottom:25}}>
+<VideoPlayer
+   source={{uri: 'https://r2---sn-ci5gup-qxae7.googlevideo.com/videoplayback?expire=1596671289&ei=2fAqX5O0DpHWxwKaxZngDQ&ip=80.211.65.43&id=o-AI21_v6ORSDCbeN0c-l5BDCBgLKa-13ynQYvkKvpunl5&itag=18&source=youtube&requiressl=yes&vprv=1&mime=video%2Fmp4&gir=yes&clen=15202219&ratebypass=yes&dur=194.977&lmt=1576471424554818&fvip=1&fexp=23883098&c=WEB&txp=5531432&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cvprv%2Cmime%2Cgir%2Cclen%2Cratebypass%2Cdur%2Clmt&sig=AOq0QJ8wRQIhANQGve9rj8VmF6VH2SSUmxUbnlj6Fn_aWswmJ17niMcaAiBZl0f2ZWY52ZzCxctu3D43Id-cmPTHfLlWP5IVSJfmfw%3D%3D&video_id=F652A0WP-24&title=Osho+Jain+-+Khush+To+Hai+Na&redirect_counter=1&rm=sn-hpa6d7e&req_id=bfd2b2f0a59ca3ee&cms_redirect=yes&ipbypass=yes&mh=nZ&mip=122.177.9.15&mm=31&mn=sn-ci5gup-qxae7&ms=au&mt=1596658720&mv=m&mvi=7&pl=20&lsparams=ipbypass,mh,mip,mm,mn,ms,mv,mvi,pl&lsig=AG3C_xAwRQIgO7sdldANxg8XjedCGB9WkkOi-MN2jpV9xPfe33w2CZMCIQCFaWxyW7VsVb54NmYQJSsw41jFTG3iKYhfsiJmveH7hA%3D%3D&ir=1&rr=12'}}
+   disableVolume={true}
+   disableBack={true}
+   controlTimeout={3000}
+   //navigator={this.props.navigator}
+ />
+ </View>
+
+<View style={{height:height/3,width:width*0.8,marginBottom:25}}>
+<VideoPlayer
+   source={{uri: 'https://r2---sn-ci5gup-qxae7.googlevideo.com/videoplayback?expire=1596671289&ei=2fAqX5O0DpHWxwKaxZngDQ&ip=80.211.65.43&id=o-AI21_v6ORSDCbeN0c-l5BDCBgLKa-13ynQYvkKvpunl5&itag=18&source=youtube&requiressl=yes&vprv=1&mime=video%2Fmp4&gir=yes&clen=15202219&ratebypass=yes&dur=194.977&lmt=1576471424554818&fvip=1&fexp=23883098&c=WEB&txp=5531432&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cvprv%2Cmime%2Cgir%2Cclen%2Cratebypass%2Cdur%2Clmt&sig=AOq0QJ8wRQIhANQGve9rj8VmF6VH2SSUmxUbnlj6Fn_aWswmJ17niMcaAiBZl0f2ZWY52ZzCxctu3D43Id-cmPTHfLlWP5IVSJfmfw%3D%3D&video_id=F652A0WP-24&title=Osho+Jain+-+Khush+To+Hai+Na&redirect_counter=1&rm=sn-hpa6d7e&req_id=bfd2b2f0a59ca3ee&cms_redirect=yes&ipbypass=yes&mh=nZ&mip=122.177.9.15&mm=31&mn=sn-ci5gup-qxae7&ms=au&mt=1596658720&mv=m&mvi=7&pl=20&lsparams=ipbypass,mh,mip,mm,mn,ms,mv,mvi,pl&lsig=AG3C_xAwRQIgO7sdldANxg8XjedCGB9WkkOi-MN2jpV9xPfe33w2CZMCIQCFaWxyW7VsVb54NmYQJSsw41jFTG3iKYhfsiJmveH7hA%3D%3D&ir=1&rr=12'}}
+   disableVolume={true}
+   disableBack={true}
+   controlTimeout={3000}
+   //navigator={this.props.navigator}
+ />
+ </View>
+
+<View style={{height:height/3,width:width*0.8,marginBottom:25}}>
+<VideoPlayer
+   source={{uri: 'https://r2---sn-ci5gup-qxae7.googlevideo.com/videoplayback?expire=1596671289&ei=2fAqX5O0DpHWxwKaxZngDQ&ip=80.211.65.43&id=o-AI21_v6ORSDCbeN0c-l5BDCBgLKa-13ynQYvkKvpunl5&itag=18&source=youtube&requiressl=yes&vprv=1&mime=video%2Fmp4&gir=yes&clen=15202219&ratebypass=yes&dur=194.977&lmt=1576471424554818&fvip=1&fexp=23883098&c=WEB&txp=5531432&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cvprv%2Cmime%2Cgir%2Cclen%2Cratebypass%2Cdur%2Clmt&sig=AOq0QJ8wRQIhANQGve9rj8VmF6VH2SSUmxUbnlj6Fn_aWswmJ17niMcaAiBZl0f2ZWY52ZzCxctu3D43Id-cmPTHfLlWP5IVSJfmfw%3D%3D&video_id=F652A0WP-24&title=Osho+Jain+-+Khush+To+Hai+Na&redirect_counter=1&rm=sn-hpa6d7e&req_id=bfd2b2f0a59ca3ee&cms_redirect=yes&ipbypass=yes&mh=nZ&mip=122.177.9.15&mm=31&mn=sn-ci5gup-qxae7&ms=au&mt=1596658720&mv=m&mvi=7&pl=20&lsparams=ipbypass,mh,mip,mm,mn,ms,mv,mvi,pl&lsig=AG3C_xAwRQIgO7sdldANxg8XjedCGB9WkkOi-MN2jpV9xPfe33w2CZMCIQCFaWxyW7VsVb54NmYQJSsw41jFTG3iKYhfsiJmveH7hA%3D%3D&ir=1&rr=12'}}
+   disableVolume={true}
+   disableBack={true}
+   controlTimeout={3000}
+   //navigator={this.props.navigator}
+ />
+ </View>
+
+<View style={{height:height/3,width:width*0.8,marginBottom:25}}>
+<VideoPlayer
+   source={{uri: 'https://r2---sn-ci5gup-qxae7.googlevideo.com/videoplayback?expire=1596671289&ei=2fAqX5O0DpHWxwKaxZngDQ&ip=80.211.65.43&id=o-AI21_v6ORSDCbeN0c-l5BDCBgLKa-13ynQYvkKvpunl5&itag=18&source=youtube&requiressl=yes&vprv=1&mime=video%2Fmp4&gir=yes&clen=15202219&ratebypass=yes&dur=194.977&lmt=1576471424554818&fvip=1&fexp=23883098&c=WEB&txp=5531432&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cvprv%2Cmime%2Cgir%2Cclen%2Cratebypass%2Cdur%2Clmt&sig=AOq0QJ8wRQIhANQGve9rj8VmF6VH2SSUmxUbnlj6Fn_aWswmJ17niMcaAiBZl0f2ZWY52ZzCxctu3D43Id-cmPTHfLlWP5IVSJfmfw%3D%3D&video_id=F652A0WP-24&title=Osho+Jain+-+Khush+To+Hai+Na&redirect_counter=1&rm=sn-hpa6d7e&req_id=bfd2b2f0a59ca3ee&cms_redirect=yes&ipbypass=yes&mh=nZ&mip=122.177.9.15&mm=31&mn=sn-ci5gup-qxae7&ms=au&mt=1596658720&mv=m&mvi=7&pl=20&lsparams=ipbypass,mh,mip,mm,mn,ms,mv,mvi,pl&lsig=AG3C_xAwRQIgO7sdldANxg8XjedCGB9WkkOi-MN2jpV9xPfe33w2CZMCIQCFaWxyW7VsVb54NmYQJSsw41jFTG3iKYhfsiJmveH7hA%3D%3D&ir=1&rr=12'}}
+   disableVolume={true}
+   disableBack={true}
+   controlTimeout={3000}
+   //navigator={this.props.navigator}
+ />
+ </View>
+
+<View style={{height:height/3,width:width*0.8,marginBottom:25}}>
+<VideoPlayer
+   source={{uri: 'https://r2---sn-ci5gup-qxae7.googlevideo.com/videoplayback?expire=1596671289&ei=2fAqX5O0DpHWxwKaxZngDQ&ip=80.211.65.43&id=o-AI21_v6ORSDCbeN0c-l5BDCBgLKa-13ynQYvkKvpunl5&itag=18&source=youtube&requiressl=yes&vprv=1&mime=video%2Fmp4&gir=yes&clen=15202219&ratebypass=yes&dur=194.977&lmt=1576471424554818&fvip=1&fexp=23883098&c=WEB&txp=5531432&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cvprv%2Cmime%2Cgir%2Cclen%2Cratebypass%2Cdur%2Clmt&sig=AOq0QJ8wRQIhANQGve9rj8VmF6VH2SSUmxUbnlj6Fn_aWswmJ17niMcaAiBZl0f2ZWY52ZzCxctu3D43Id-cmPTHfLlWP5IVSJfmfw%3D%3D&video_id=F652A0WP-24&title=Osho+Jain+-+Khush+To+Hai+Na&redirect_counter=1&rm=sn-hpa6d7e&req_id=bfd2b2f0a59ca3ee&cms_redirect=yes&ipbypass=yes&mh=nZ&mip=122.177.9.15&mm=31&mn=sn-ci5gup-qxae7&ms=au&mt=1596658720&mv=m&mvi=7&pl=20&lsparams=ipbypass,mh,mip,mm,mn,ms,mv,mvi,pl&lsig=AG3C_xAwRQIgO7sdldANxg8XjedCGB9WkkOi-MN2jpV9xPfe33w2CZMCIQCFaWxyW7VsVb54NmYQJSsw41jFTG3iKYhfsiJmveH7hA%3D%3D&ir=1&rr=12'}}
+   disableVolume={true}
+   disableBack={true}
+   controlTimeout={3000}
+   //navigator={this.props.navigator}
+ />
+ </View>
+
+<View style={{height:height/3,width:width*0.8,marginBottom:25}}>
+<VideoPlayer
+   source={{uri: 'https://r2---sn-ci5gup-qxae7.googlevideo.com/videoplayback?expire=1596671289&ei=2fAqX5O0DpHWxwKaxZngDQ&ip=80.211.65.43&id=o-AI21_v6ORSDCbeN0c-l5BDCBgLKa-13ynQYvkKvpunl5&itag=18&source=youtube&requiressl=yes&vprv=1&mime=video%2Fmp4&gir=yes&clen=15202219&ratebypass=yes&dur=194.977&lmt=1576471424554818&fvip=1&fexp=23883098&c=WEB&txp=5531432&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cvprv%2Cmime%2Cgir%2Cclen%2Cratebypass%2Cdur%2Clmt&sig=AOq0QJ8wRQIhANQGve9rj8VmF6VH2SSUmxUbnlj6Fn_aWswmJ17niMcaAiBZl0f2ZWY52ZzCxctu3D43Id-cmPTHfLlWP5IVSJfmfw%3D%3D&video_id=F652A0WP-24&title=Osho+Jain+-+Khush+To+Hai+Na&redirect_counter=1&rm=sn-hpa6d7e&req_id=bfd2b2f0a59ca3ee&cms_redirect=yes&ipbypass=yes&mh=nZ&mip=122.177.9.15&mm=31&mn=sn-ci5gup-qxae7&ms=au&mt=1596658720&mv=m&mvi=7&pl=20&lsparams=ipbypass,mh,mip,mm,mn,ms,mv,mvi,pl&lsig=AG3C_xAwRQIgO7sdldANxg8XjedCGB9WkkOi-MN2jpV9xPfe33w2CZMCIQCFaWxyW7VsVb54NmYQJSsw41jFTG3iKYhfsiJmveH7hA%3D%3D&ir=1&rr=12'}}
+   disableVolume={true}
+   disableBack={true}
+   controlTimeout={3000}
+   //navigator={this.props.navigator}
+ />
+ </View> */}
+ </View>
+    )
+    
+  }
 
   if(isConnectedContext.isConnected && loading == true)
   {
@@ -513,7 +623,10 @@ const HomeScreen = (props) => {
     return (
       <View style = {{paddingBottom:30}}>
           {renderMainHeader()}
-    <View style = {{paddingBottom:100}}>
+          {/* <ScrollView>
+          {renderVideos()}
+          </ScrollView> */}
+    <View key={key} style = {{paddingBottom:100}}>
       {renderPodcasts()}
       </View>
       </View>
@@ -535,7 +648,7 @@ const HomeScreen = (props) => {
 }
 
 
-export default HomeScreen;
+export default withFirebaseHOC(HomeScreen);
 
 
 const styles = StyleSheet.create({

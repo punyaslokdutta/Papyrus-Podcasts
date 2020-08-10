@@ -43,6 +43,7 @@ import Explore from './screens/Explore'
 import PodcastPlayer from './screens/PodcastPlayer'
 import MusicPlayer from './screens/components/Music/MusicPlayer';
 import SelectTabNavigator from './screens/SelectTabNavigator'
+import OriginalsPreviewScreen from './screens/OriginalsPreviewScreen';
 import PreviewScreen from './screens/PreviewScreen'
 import CategoryScreen from './screens/CategoryScreen'
 import RecordBook from './screens/RecordBook'
@@ -395,7 +396,10 @@ const AppStackNavigator= createStackNavigator(
    }},
    PreviewScreen: {screen:PreviewScreen,navigationOptions:{
     header : null
-}},
+   }},
+   OriginalsPreviewScreen: {screen:OriginalsPreviewScreen,navigationOptions:{
+    header : null
+   }},
    SearchTabNavigator: {screen: SearchTabNavigator,navigationOptions:{
          //header : null
    }},

@@ -21,8 +21,8 @@ const areEqual = (prevProps, nextProps) => true
     },[props.selected])
 
       return (
-          <View style={{height:width/4,width:width/3,marginHorizontal:10}}>
-        <TouchableOpacity  onPress={() => { 
+          <View style={{height:width/3,width:width/3,marginHorizontal:10,borderColor:'black',borderWidth:1,borderRadius:5,marginBottom:15}}>
+        <TouchableOpacity   onPress={() => { 
             console.log("Pressed");  
 
             if(isMusicCategorySelected)
@@ -32,17 +32,19 @@ const areEqual = (prevProps, nextProps) => true
             
             setIsMusicCategorySelected(!isMusicCategorySelected);
           }}>
-              <Image source={{uri:"https://i.pinimg.com/originals/7d/c1/db/7dc1dbaa904cd562b4288339a8abbf63.jpg"}}
-                  style={{height:width/6,width:width/3}}/>
-                <View style={{flexDirection:'row',justifyContent:'space-between'}}>
-                <Text style={{fontFamily:'Andika-R'}}> {props.item.musicCategoryName} </Text>
+              <Image source={{uri:props.item.image}}
+                  style={{height:width/6,width:width/3 - 2,borderTopRightRadius:5}}/>
+                <View style={{alignItems:'center',justifyContent:'center',height:width/6 - 20}}>
+                <Text style={{fontFamily:'Andika-R',textAlign:'center'}}> {props.item.musicCategoryName} </Text>
+                </View>
+                <View>
                 { 
                   isMusicCategorySelected == true ?
-                  <Image source={require('../../../assets/images/tick.png')} style = {{height: 20, width: 25, resizeMode : 'stretch',}} />
+                  <Image source={require('../../../assets/images/tick.png')} style = {{height: 17, width: 17, resizeMode : 'stretch',}} />
                   :
                   null
                 }
-          </View>
+                </View>
           </TouchableOpacity>
         </View>
       );

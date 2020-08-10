@@ -9,11 +9,14 @@ const INITIAL_STATE = {
     bookID:null,
     chapterID:null,
     genres : [],
-    editpodcast : false
+    editpodcast : false,
+    isBookPodcast : true
   };
   
   function recorderReducer(state = INITIAL_STATE, action)  {
     switch (action.type) {
+      case "SET_BOOK_PODCAST":
+          return {...state,isBookPodcast:action.payload}
       case "CHANGE_BOOK_ID":
           console.log("CHANGE_BOOK_ID"+" " +action.payload)
             return {...state, bookID:action.payload}

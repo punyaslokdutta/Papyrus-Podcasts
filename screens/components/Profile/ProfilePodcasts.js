@@ -178,7 +178,7 @@ class ProfilePodcasts extends React.Component {
     {
       return (
       
-        <View style = {{paddingBottom:20}}>
+        <View style = {{paddingBottom:20,marginTop:20}}>
         <View>
         <FlatList   nestedScrollEnabled={true}
           data={this.state.bookPodcasts}

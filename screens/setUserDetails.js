@@ -38,7 +38,13 @@ const setUserDetails = (props) => {
         doc._data.addFlipWalkthroughDone !== undefined && dispatch({type:"SET_ADD_FLIP_WALKTHROUGH",payload:doc._data.addFlipWalkthroughDone});
         doc._data.flipPreviewWalkthroughDone !== undefined && dispatch({type:"SET_FLIP_PREVIEW_WALKTHROUGH",payload:doc._data.flipPreviewWalkthroughDone});
         doc._data.audioFlipWalkthroughDone !== undefined && dispatch({type:"SET_AUDIO_FLIP_WALKTHROUGH",payload:doc._data.audioFlipWalkthroughDone});
-       
+        
+        doc._data.addBookReviewScreenWalkthroughDone !== undefined && dispatch({type:"SET_ADD_BOOK_REVIEW_WALKTHROUGH",payload:doc._data.addBookReviewScreenWalkthroughDone});
+        doc._data.recordBookWalkthroughDone !== undefined && dispatch({type:"SET_RECORD_BOOK_WALKTHROUGH",payload:doc._data.recordBookWalkthroughDone});
+        doc._data.bookPodcastWalkthroughDone !== undefined && dispatch({type:"SET_BOOK_PODCAST_WALKTHROUGH",payload:doc._data.bookPodcastWalkthroughDone});
+        doc._data.originalPodcastWalkthroughDone !== undefined && dispatch({type:"SET_ORIGINAL_PODCAST_WALKTHROUGH",payload:doc._data.originalPodcastWalkthroughDone});
+      
+
         doc._data.flipsLiked && dispatch({type:'SET_FLIPS_LIKED',payload:doc._data.flipsLiked})
         doc._data.podcastsLiked && dispatch({type:'SET_PODCASTS_LIKED',payload:doc._data.podcastsLiked})
         doc._data.podcastsBookmarked && dispatch({type:'SET_PODCASTS_BOOKMARKED',payload:doc._data.podcastsBookmarked})
@@ -60,6 +66,7 @@ const setUserDetails = (props) => {
         doc._data.languagesComfortableTalking && dispatch({type:'SET_USER_LANUAGES',payload: doc._data.languagesComfortableTalking})
         doc._data.numCreatedBookPodcasts && dispatch({type:'ADD_NUM_CREATED_BOOK_PODCASTS',payload: doc._data.numCreatedBookPodcasts})
         doc._data.numCreatedChapterPodcasts && dispatch({type:'ADD_NUM_CREATED_CHAPTER_PODCASTS',payload: doc._data.numCreatedChapterPodcasts})
+        doc._data.numCreatedOriginalPodcasts && dispatch({type:'ADD_NUM_CREATED_ORIGINAL_PODCASTS',payload: doc._data.numCreatedOriginalPodcasts})
         doc._data.totalMinutesRecorded && dispatch({type:'UPDATE_TOTAL_MINUTES_RECORDED',payload: doc._data.totalMinutesRecorded})
         doc._data.numNotifications && dispatch({type:'ADD_NUM_NOTIFICATIONS',payload: doc._data.numNotifications});
         doc._data.userPreferences.length && dispatch({type:"SET_USER_PREFERENCES",payload:doc._data.userPreferences});

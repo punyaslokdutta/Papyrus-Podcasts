@@ -96,7 +96,7 @@ const EditMusicPreferences = (props) => {
 
     function renderFooter(){
         return (
-          <View style={{alignItems:'center',marginTop:10}}>
+          <View style={{alignItems:'center',marginTop:10,marginBottom:20}}>
           <TouchableOpacity onPress={() => {
             addMusicPreferencesToFirestore();
           }} style={{width:width/5,height:width/12,borderColor:'black',borderWidth:1,borderRadius:10,alignItems:'center',justifyContent:'center'}}>
@@ -125,12 +125,13 @@ const EditMusicPreferences = (props) => {
         )
     else
         return (
-            <View style={{alignItems:'center',marginTop:30}}>
+            <View style={{alignItems:'center',marginTop:30, width:width}}>
             <FlatList
                 data={musicCategoriesState}
                 renderItem={renderMusicCategoryItems}
                 numColumns={2}
                 keyExtractor={item => item.id}
+                showsVerticalScrollIndicator={false}
                 ListFooterComponent={renderFooter}
                 ListHeaderComponent={renderHeader}
             /> 

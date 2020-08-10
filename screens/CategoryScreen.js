@@ -16,28 +16,41 @@ class CategoryScreen extends Component {
         active: 'books',
         categories: [],
       }
-
     }
 
-  }
-
-  componentDidUpdate=(props)=>
-  {
     const eventEmitter=new NativeEventEmitter(NativeModules.ReactNativeRecorder);
-    console.log("Inside useEffect - componentDidUpdate of ExploreScreen");
-      const fileType=".m4a"
-      const filePath="/storage/emulated/0/AudioRecorder/"
-      var audioFilePath=null;
-      this.eventListener=eventEmitter.addListener('RecordFile', (event) => {
-           audioFilePath=filePath.concat(event.eventName,fileType)
+    const fileType=".m4a"
+    const filePath="/storage/emulated/0/AudioRecorder/"
+    var audioFilePath=null;
+    this.eventListener=eventEmitter.addListener('RecordFile', (event) => {
+          audioFilePath=filePath.concat(event.eventName,fileType)
           console.log(props)
           console.log("RecordedFilePath :" +audioFilePath)
           console.log("timeduration :" , +event.eventDuration)
-         props.navigation.navigate('PreviewScreen', {  
-          recordedFilePath: audioFilePath, 
-          duration:event.eventDuration})
-    })
+          console.log("this.props.isBookPodcast : ",this.props.isBookPodcast);
 
+          if(this.props.isBookPodcast == true)
+          {
+            props.navigation.navigate('PreviewScreen', {  
+              recordedFilePath: audioFilePath, 
+              duration:event.eventDuration
+            })      
+          }
+          else
+          {
+            props.navigation.navigate('OriginalsPreviewScreen', {  
+              recordedFilePath: audioFilePath, 
+              duration:event.eventDuration
+            })
+          }
+        })
+  }
+
+  componentDidUpdate=(prevprops)=>
+  {
+    console.log("[CategoryScreen] componentDidUpdate");
+    console.log("prevprops.isBookPodcast",prevprops.isBookPodcast);
+    console.log("this.props.isBookPodcast",this.props.isBookPodcast)
   }
   
 
@@ -45,6 +58,7 @@ class CategoryScreen extends Component {
     try {
       
       this.retrieveData();
+      
     }
     catch (error) {
       console.log(error);
@@ -66,14 +80,8 @@ class CategoryScreen extends Component {
       let categoriesQuery = await firestore().collection('Categories').get();
       let documentData = categoriesQuery.docs.map(document => document.data());
 
-      // let musicQuery = await firestore().collection('music').where("isBackgroundMusic","==",true).get();
-      // let documentMusicData = musicQuery.docs.map(document => document.data());
-
-      // this.props.dispatch({ type:"SET_ALL_MUSIC",payload:documentMusicData});
-      // this.props.dispatch({type:"SET_MUSIC",payload:documentMusicData[0]})
-      // this.props.dispatch({type:"SET_CURRENT_MUSIC_INDEX",payload:1});
       this.props.dispatch({ type:"SET_CATEGORIES_MAP_NAME_TO_ID",payload:documentData});
-
+      this.props.dispatch({ type:"SET_CATEGORY_NAMES",payload:documentData.map(data=>data.categoryName)})
       this.setState({
         categories: documentData
       });
@@ -143,7 +151,8 @@ CategoryScreen.defaultProps = {
 
 const mapStateToProps = (state) => {
   return{
-    isAdmin : state.userReducer.isAdmin
+    isAdmin : state.userReducer.isAdmin,
+    isBookPodcast : state.recorderReducer.isBookPodcast
   }
 }
 

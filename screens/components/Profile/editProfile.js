@@ -1,9 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { TouchableOpacity, StyleSheet, View, Button, SafeAreaView, Dimensions, Image, TextInput, Platform, KeyboardAvoidingView, ScrollView, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect,useRef } from 'react';
+import { TouchableOpacity, StyleSheet, View, Button, SafeAreaView, 
+  Dimensions, Image, TextInput, Platform, KeyboardAvoidingView, ScrollView, 
+  ActivityIndicator,Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import ImagePicker from 'react-native-image-picker'
-import { Block, Text } from '../categories/components/'
+import OpenSettings from 'react-native-open-settings';
+
+import { Block, Text } from '../categories/components/';
+
+import Video from 'react-native-video';
+import VideoPlayer from 'react-native-video-controls';
+
 import storage, { firebase, FirebaseStorageTypes } from '@react-native-firebase/storage'
 //import firebase from '@react-native-firebase/app';
 //import {anthology} from '../../../assets/images'
@@ -23,6 +31,7 @@ const options = {
 };
 const editProfile = (props) => {
 
+  const player = useRef();
   const userid = props.firebase._getUid();
   var [editing, setEditing] = useState(null);
   var [loading, setLoading] = useState(false);
@@ -169,6 +178,25 @@ const editProfile = (props) => {
         console.log('User cancelled image picker');
       } else if (response.error) {
         console.log('ImagePicker Error: ', response.error);
+              if(response.error == "Permissions weren't granted")
+              {
+                Alert.alert(  
+                  'Papyrus needs access to your camera and/or storage.',  
+                  '',  
+                  [  
+                      {  
+                          text: 'Cancel',  
+                          onPress: () => console.log('Cancel Pressed'),  
+                          style: 'cancel',  
+                      },  
+                      {
+                          text: 'OK', onPress: () => {
+                          OpenSettings.openSettings()
+                          console.log('OK Pressed')
+                      }},  
+                  ]  
+              ); 
+              }
       } else if (response.customButton) {
         console.log('User tapped custom button: ', response.customButton);
       } else {
@@ -340,7 +368,19 @@ const editProfile = (props) => {
               }
               </View>
               </TouchableOpacity>
+
+              
+
             </Block>
+       {/* <View style={{height:height/3,width:width*0.8}}>
+       <VideoPlayer
+          source={{uri: 'https://r2---sn-ci5gup-qxae7.googlevideo.com/videoplayback?expire=1596671289&ei=2fAqX5O0DpHWxwKaxZngDQ&ip=80.211.65.43&id=o-AI21_v6ORSDCbeN0c-l5BDCBgLKa-13ynQYvkKvpunl5&itag=18&source=youtube&requiressl=yes&vprv=1&mime=video%2Fmp4&gir=yes&clen=15202219&ratebypass=yes&dur=194.977&lmt=1576471424554818&fvip=1&fexp=23883098&c=WEB&txp=5531432&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cvprv%2Cmime%2Cgir%2Cclen%2Cratebypass%2Cdur%2Clmt&sig=AOq0QJ8wRQIhANQGve9rj8VmF6VH2SSUmxUbnlj6Fn_aWswmJ17niMcaAiBZl0f2ZWY52ZzCxctu3D43Id-cmPTHfLlWP5IVSJfmfw%3D%3D&video_id=F652A0WP-24&title=Osho+Jain+-+Khush+To+Hai+Na&redirect_counter=1&rm=sn-hpa6d7e&req_id=bfd2b2f0a59ca3ee&cms_redirect=yes&ipbypass=yes&mh=nZ&mip=122.177.9.15&mm=31&mn=sn-ci5gup-qxae7&ms=au&mt=1596658720&mv=m&mvi=7&pl=20&lsparams=ipbypass,mh,mip,mm,mn,ms,mv,mvi,pl&lsig=AG3C_xAwRQIgO7sdldANxg8XjedCGB9WkkOi-MN2jpV9xPfe33w2CZMCIQCFaWxyW7VsVb54NmYQJSsw41jFTG3iKYhfsiJmveH7hA%3D%3D&ir=1&rr=12'}}
+          disableVolume={true}
+          disableBack={true}
+          controlTimeout={3000}
+          //navigator={this.props.navigator}
+        />
+        </View> */}
           </Block>
         </ScrollView>
       </SafeAreaView>

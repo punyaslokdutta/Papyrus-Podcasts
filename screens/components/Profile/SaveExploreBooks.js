@@ -147,7 +147,7 @@ function renderBook({item,index})  {
       keyExtractor={item => item.bookID}
       //style={{backgroundColor:'#212121'}}
       //ListHeaderComponent={renderHeader}
-      ItemSeparatorComponent={separator}
+      //ItemSeparatorComponent={separator}
       ListFooterComponent={renderFooter}
       onEndReached={onEndReached}
       onEndReachedThreshold={0.01}

@@ -171,6 +171,7 @@ const FlipPreviewScreen = (props)=> {
       } 
       finally{
         props.navigation.popToTop();
+        dispatch({type:"SET_FLIP_UPLOAD_SUCCESS",payload:true});
         props.navigation.navigate('HomeScreen');
       }
   }
@@ -235,6 +236,8 @@ const FlipPreviewScreen = (props)=> {
       finally{
         //setFlipAudioDownloadURL(false);
         props.navigation.popToTop();
+        //dispatch({type:"SET_FLIP_UPLOAD_SUCCESS",payload:false});
+        dispatch({type:"SET_FLIP_UPLOAD_SUCCESS",payload:true});
         props.navigation.navigate('HomeScreen');
       }
   }
@@ -310,7 +313,7 @@ const FlipPreviewScreen = (props)=> {
       return;
     }
 
-    if(flipTitle.length == 0)
+    if(flipTitle === undefined || flipTitle.length == 0)
     {
       alert('Please provide a title for your flip');
       return;
@@ -513,7 +516,7 @@ const FlipPreviewScreen = (props)=> {
                 />
               </View>
               <View style={{alignItems:'center',justifyContent:'center',marginTop:20}}>
-              <Text style={{fontFamily:'Montserrat-SemiBold'}}> Is this flip related to any book?</Text>
+              <Text style={{fontFamily:'Montserrat-SemiBold',paddingBottom:15}}> Is this flip related to any book?</Text>
               <Tooltip
                 isVisible={toolTipVisible}
                 content={

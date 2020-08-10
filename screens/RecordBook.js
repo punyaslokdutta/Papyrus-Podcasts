@@ -11,6 +11,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import {useSelector, useDispatch} from "react-redux"
 import moment from "moment";
 import Toast from 'react-native-simple-toast'
+import Tooltip from 'react-native-walkthrough-tooltip';
 
 import * as theme from './components/constants/theme';
 
@@ -31,6 +32,10 @@ const RecordBook = (props) => {
   const bookmarked = useSelector(state=>state.userReducer.isBookBookmarked[bookID]);
   const [bookmarkedState,setBookmarkedState] = useState(bookmarked);
 
+  const recordBookWalkthroughDone = useSelector(state=>state.userReducer.recordBookWalkthroughDone);
+  const [toolTipRecordVisible,setToolTipRecordVisible] = useState(false);
+  const [toolTipBookmarkVisible,setToolTipBookmarkVisible] = useState(false);
+
   const scrollX = new Animated.Value(0);
   
   useEffect(() => {
@@ -42,6 +47,13 @@ const RecordBook = (props) => {
     
   },[props.navigation.state])
 
+  useEffect(() => {
+    if(recordBookWalkthroughDone == false){
+      setTimeout(() => {
+        setToolTipRecordVisible(true)
+      },300)
+    }
+  },[])
   function handleSmallAnimatedBookmarkIconRef  (ref) {
     smallAnimatedBookmarkIcon = ref
   }
@@ -142,6 +154,15 @@ const RecordBook = (props) => {
     
   };
 
+  async function setRecordBookWalkthroughInFirestore() {
+    firestore().collection('users').doc(userID).collection('privateUserData').doc(privateUserID).set({
+      recordBookWalkthroughDone : true
+    },{merge:true}).then(() => {
+        console.log("recordBookWalkthroughDone set in firestore successfully");       
+    }).catch((error) => {
+        console.log("Error in updating value of recordBookWalkthroughDone in firestore");
+    })
+  }
 
   function renderDots () {
     const dotPosition = Animated.divide(scrollX, width);
@@ -234,22 +255,28 @@ const RecordBook = (props) => {
                   article.authors.map(item => (
                     <Text style={{fontFamily:'Andika-R',fontSize:15}}>
                     {item}
+                    {"\n"}
                     </Text>
                    ))
                 } 
                 </Text>
-            <View style={[
-              styles.row,
-              { alignItems: 'center', marginVertical: theme.sizes.margin / 2, flexDirection:'row' }
-            ]}>
-              {renderRatings(article.bookRating)}
-              <Text style={{ color: theme.colors.active }}>
-                {article.bookRating} 
-              </Text>
-              <View style={{paddingLeft:10}}>
-          
-              </View>
-              </View>
+                {
+                  article.bookRating !== undefined && article.bookRating !== null && 
+                  article.bookRating > 0 &&
+                  <View style={[
+                    styles.row,
+                    { alignItems: 'center', marginVertical: theme.sizes.margin / 2, flexDirection:'row' }
+                  ]}>
+                    {renderRatings(article.bookRating)}
+                    <Text style={{ color: theme.colors.active }}>
+                      {article.bookRating} 
+                    </Text>
+                    <View style={{paddingLeft:10}}>
+                
+                    </View>
+                    </View>
+                }
+            
               </View>
                
             </View>
@@ -259,15 +286,50 @@ const RecordBook = (props) => {
             <View style={{width:width/2 - theme.sizes.padding}}>  
             <TouchableNativeFeedback onPress={()=>props.navigation.navigate('AddBookReviewScreen',{bookItem:article,chapterItem:null})}>
             <View style={{width:width/6,alignItems:'center'}}>
-            <FontAwesome name="microphone" color={theme.colors.black} size={theme.sizes.font * 2.0} />
-            <Text style={{fontSize:12,textAlign:'center',fontFamily:'Montserrat-Bold',width:width/6}}>Record</Text>
-            </View>
+              <Tooltip
+              isVisible={toolTipRecordVisible}
+              placement='right'
+              content={
+              <View style={{width:width/3}}>
+              {/* <Image source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/flips/Book-Notes.jpg"}}
+                      style={{height:width/2,width:width/2}}/> */}
+              <Text style={{fontFamily:"Andika-R"}}>Create a book podcast</Text>
+              </View>}
+              onClose={() => {
+                setToolTipRecordVisible(false)
+                setToolTipBookmarkVisible(true);
+              }}
+            >
+              <View style={{alignItems:'center'}}>
+              <FontAwesome name="microphone" color={theme.colors.black} size={theme.sizes.font * 2.0} />
+              <Text style={{fontSize:12,textAlign:'center',fontFamily:'Montserrat-Bold',width:width/6}}>Record</Text>
+              </View>
+              </Tooltip>
+              </View>
+
+
             </TouchableNativeFeedback>
             </View> 
             
             <View style={{width:width/2}}>
           <TouchableNativeFeedback onPress={() => handleOnPressBookmark()}>
-          <View style={{width:width/3,alignItems:'center'}}>
+          <View style={{width:width/3}}>
+          <Tooltip
+              isVisible={toolTipBookmarkVisible}
+              placement='left'
+              content={
+              <View style={{width:width/3}}>
+              {/* <Image source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/flips/Book-Notes.jpg"}}
+                      style={{height:width/2,width:width/2}}/> */}
+              <Text style={{fontFamily:"Andika-R"}}>Save this book in your collections</Text>
+              </View>}
+              onClose={() => {
+                setToolTipBookmarkVisible(false);
+                dispatch({type:"SET_RECORD_BOOK_WALKTHROUGH",payload:true});
+                setRecordBookWalkthroughInFirestore();
+              }}
+            >
+          <View style={{alignItems:'center'}}>
                   <AnimatedIcon
                     ref={handleSmallAnimatedBookmarkIconRef}
                     name={bookmarked ? 'bookmark' : 'bookmark-o'}
@@ -278,7 +340,8 @@ const RecordBook = (props) => {
            <Text style={{fontSize:12,textAlign:'center',fontFamily:'Montserrat-Regular',width:width/3}}>Want to Read</Text>
 
           </View>
-
+          </Tooltip>
+          </View>
                 </TouchableNativeFeedback>
             </View>
             </View> 

@@ -39,6 +39,7 @@ var {width, height}=Dimensions.get('window');
      super(props)
      {
       this.state={
+        userID: this.props.podcast.podcasterID,
         realUserID: this.props.firebase._getUid(),
         createdOn: moment(this.props.podcast.createdOn).fromNow(),
         reposted: this.props.isPodcastBookmarked[this.props.podcast.podcastID],
@@ -51,11 +52,8 @@ var {width, height}=Dimensions.get('window');
 
     componentDidMount = () => {
       
-      this.animation.play(0,0);
-
-      //if(this.props.isPodcastLiked[this.props.podcast.podcastID] == true)
-        //this.likeAnimation.play(38,38);
-      this.likeAnimation.pause();
+       this.animation.play(0,0);
+       this.likeAnimation.pause();
       
       console.log("In componentDidMount");
     }
@@ -475,64 +473,110 @@ var {width, height}=Dimensions.get('window');
     
   }
 
-   updatePodcastCountInCategoryDoc = async() => {
+  deletePodcast = async() => {
+    if(this.props.podcast.isChapterPodcast == false)
+    {
+      firestore().collection("books").doc(this.props.podcast.bookID).collection("podcasts")
+            .doc(this.props.podcast.podcastID).delete().then(function() {
+            console.log("Book Podcast Document successfully deleted. ");
+          }).catch(function(error) {
+        console.error("Error removing document: ", error);
+      });
 
-    this.props.podcast.genres.forEach(genre => {
-      console.log("genreName: ",genre," |  genreID: ",this.props.categoryMapRedux[genre]);
-      firestore().collection('Categories').doc(this.props.categoryMapRedux[genre]).set({
-        numPodcasts : firestore.FieldValue.increment(-1)
+      firestore().collection('users').doc(this.state.userID).collection('privateUserData').doc(privateDataID).set({
+        numCreatedChapterPodcasts : firestore.FieldValue.increment(-1)
       },{merge:true}).then(() => {
-        console.log("Successfully updated numPodcasts in category - ",genre);
-      }).catch((error) => {
-        console.log("Error in updating numPodcasts in category - ",genre);
-        console.log(error);
+        console.log("Successfully updated numCreatedChapterPodcasts in user's private document");
       })
-    });
+
+      this.props.dispatch({type:"DECREMENT_NUM_CREATED_CHAPTER_PODCASTS"})
+    }
+    else if(this.props.podcast.isChapterPodcast == true)
+    {
+      firestore().collection("books").doc(this.props.podcast.bookID).collection("chapters")
+        .doc(this.props.podcast.chapterID).collection("podcasts").doc(this.props.podcast.podcastID)
+          .delete().then(function() {
+            console.log("Chapter Podcast Document successfully deleted. ");
+          }).catch(function(error) {
+        console.error("Error removing document: ", error);
+      });
+
+      firestore().collection('users').doc(this.state.userID).collection('privateUserData').doc(privateDataID).set({
+        numCreatedBookPodcasts : firestore.FieldValue.increment(-1)
+      },{merge:true}).then(() => {
+        console.log("Successfully updated numCreatedBookPodcasts in user's private document");
+      })
+      this.props.dispatch({type:"DECREMENT_NUM_CREATED_BOOK_PODCASTS"})
+    }
+    else if(this.props.podcast.isOriginalPodcast == true)
+    {
+      firestore().collection("podcasts").doc(this.props.podcast.podcastID)
+          .delete().then(function() {
+            console.log("Original Podcast Document successfully deleted. ");
+          }).catch(function(error) {
+        console.error("Error removing document: ", error);
+      });
+
+      firestore().collection('users').doc(this.state.userID).collection('privateUserData').doc(privateDataID).set({
+        numCreatedOriginalPodcasts : firestore.FieldValue.increment(-1)
+      },{merge:true}).then(() => {
+        console.log("Successfully updated numCreatedOriginalPodcasts in user's private document");
+      })
+      this.props.dispatch({type:"DECREMENT_NUM_CREATED_ORIGINAL_PODCASTS"})
+    }
+
+    const instance = firebase.app().functions("asia-northeast1").httpsCallable('deletePodcastFromIndex');
+
+    try 
+    {          
+      await instance({ // change in podcast docs created by  user
+        podcastID : this.props.podcast.podcastID
+      });
+    }
+    catch (e) 
+    {
+      console.log(e);
+    }
   }
 
+    renderPodcastDescription = () => {
+      if(this.props.podcast.podcastDescription !== null && this.props.podcast.podcastDescription !== undefined)
+        return (
+        <View>
+        <Text style={{fontFamily:'Montserrat-Regular',fontSize:13}}>{this.props.podcast.podcastDescription.slice(0,300)}       
+        {
+          this.props.podcast.podcastDescription.length > 300 &&
+          <Text style={{fontSize:13}}>...</Text>
+        }
+        </Text>
+        <View>
+        {
+          this.props.podcast.podcastDescription.length > 300 &&
+          <TouchableNativeFeedback onPress={() => {
+            this.props.navigation.navigate('InfoScreen', {podcast:this.props.podcast})
+          }}>
+            <View style={{paddingHorizontal:3,shadowColor: '#000000',shadowOffset: { width: 0, height: 0.01 },shadowOpacity: 0,
+      shadowRadius: 0.1,elevation: 0.1,marginVertical:10, height:width/15,width:width/5 + 10,borderRadius:4,borderWidth:0,borderColor:'black',alignItems:'center',justifyContent:'center'}}>
+          <Text style={{fontFamily:'Montserrat-SemiBold',fontSize:13,textAlign:'center',textAlignVertical:'center'}}>Read more </Text>
+          </View>
+          </TouchableNativeFeedback>
+        }
+        </View>
+        </View>
+      )
+      else
+        return null;
+    }
     render()
     {
       var duration = parseInt((this.props.podcast.duration)/60);
       if(duration == 0)
         duration = 1;
 
+      const  privateDataID = "private" + this.state.userID;
       return (
-       
-           <View style={{backgroundColor:'white'}}>
-             <View style={{backgroundColor:'#dddd',flexDirection:'row'}}>
-            <TouchableOpacity 
-            onPress={() => {
-              this.retrieveUserPrivateDoc(this.props.podcast.podcasterID);
-            }}
-            style={{flexDirection:'row',padding:5}}>
-                <View>
-                    <Image 
-                        source={{uri:this.props.podcast.podcasterDisplayPicture}}
-                        style={{height:width/12,width :width/12,borderRadius:20}} />
-                </View>
-                <View style={{borderColor:'black',borderWidth:0,justifyContent:'center'}}>
-                    <Text style={{fontFamily:'Montserrat-Bold'}}> {this.props.podcast.podcasterName}</Text>
-                     
-                </View>            
-            </TouchableOpacity>
-            <View style={{flex:1,alignItems:'flex-end',justifyContent:"center",paddingRight:5}}>
-            {
-              this.props.podcast.bookName !== undefined &&
-              <Text style={{fontFamily:'Montserrat-Italic',fontSize:10}}>
-                {this.props.podcast.bookName}
-              </Text>
-            }
-            </View>
-            </View>
-         
-            {/* <View style={{flexDirection:'row',alignItems:'flex-end',justifyContent:'flex-end'}}>
-            <EvilIcon name='retweet' size={20} color='black'/>
-            <Text style={{ color:'black', paddingLeft:5,fontWeight:'400', fontSize:theme.sizes.font * 1.0 }}>
-            {moment(this.props.podcast.bookmarkedOn).fromNow()}
-            </Text>
-            </View>     */}
-             <TouchableNativeFeedback style={[styles.shadow]} onPress={() => {
-               if(!this.context.isConnected) 
+        <TouchableNativeFeedback onPress={() => {
+          if(!this.context.isConnected) 
                {
                  Toast.show('Please check your Internet connection & try again.');
                  return;
@@ -554,121 +598,59 @@ var {width, height}=Dimensions.get('window');
         {
           this.retrievePodcastDocument();
         }
-
         }}>
-          <View>
-            {/* <View>
-              <Text style={{  fontFamily:'Montserrat-Bold',fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green, position:'absolute',right:15 }}>
-            {this.state.createdOn}
-            </Text>
-              </View> */}
-            <View style={{flex:1,flexDirection:"row",paddingBottom:theme.sizes.padding/2,paddingLeft:width/64,width:width,height:height/7,marginTop:10}}>
-            
-            <View style={{flexDirection:'row',marginTop:0}}>
-             <View style={{flexDirection:'column'}}>
-             <View style={{flexDirection: 'row'}}>
-              <View style={{flexDirection:'column'}}>
-            <Image style={{width:height/8,height:height/8,borderRadius:2}} source={ {uri: this.props.podcast.podcastPictures[0]}} />
-            <View
-                    style={{
-                    height:1,
-                    width:height/8 - 3,
-                    marginTop:1,
-                    marginLeft:5,
-                    borderLeftWidth:height/8 - 5,
-                    color: 'black',
-                    }}
-                    />
-               </View>
-                <View
-                    style={{
-                    height:height/8 - 2,
-                    width:3,
-                    marginTop:2,
-                    borderLeftWidth: 1,
-                    color: 'black',
-                    }}
-                    />
-            </View>
-            <View
-                style={{
-                height:1,
-                width:height/8 - 9,
-                marginTop:1.5,
-                marginLeft:12,
-                borderLeftWidth:height/8 - 9,
-                color: 'black',
-                }}
-                />
-            </View>
-            <View
-                style={{
-                height:height/8 - 1,
-                width:5,
-                marginTop:4,
-                borderLeftWidth: 1,
-                color: 'black',
-                }}
-                />
-
-            </View>
+        <View style={{alignSelf:'center',marginBottom:40,width:width-40,borderRadius:10,backgroundColor:'white',
+         shadowColor: '#000000',shadowOffset: { width: 0, height: 2 },shadowOpacity: 0.9,
+          shadowRadius: 3,elevation: 5}}>
+            <View style={{backgroundColor:'#dddd',flexDirection:'row'}}>
+            <View style={{flex:1,alignItems:'flex-end',justifyContent:"center",paddingRight:5}}>
             {
-              this.props.podcastRedux!=null && this.props.podcast.podcastID == this.props.podcastRedux.podcastID
-              ?
-              (
-                this.props.pausedRedux 
-                ?
-                <IconAntDesign name="play" size={height/32} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/64 + height*3/64,top:height*3/64}}/>
-                :
-                <IconAntDesign name="pause" size={height/32} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/64 + height*3/64,top:height*3/64}}/>
-
-              )
-              :
-              <IconAntDesign name="play" size={height/32} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/64 + height*3/64,top:height*3/64}}/>
+              this.props.podcast.bookName !== undefined &&
+              <Text style={{fontFamily:'Montserrat-MediumItalic',fontSize:15,paddingVertical:7,paddingHorizontal:7}}>
+                {this.props.podcast.bookName}
+              </Text>
             }
-
-            <View style={[styles.flex, styles.column, styles.shadow, { width:(width*2)/3,paddingLeft:theme.sizes.padding/2, paddingTop: 0 }]}>
-                <View style={{height:(height)/24,marginBottom:0}}>
-                <Text style={{ fontSize: theme.sizes.font * 1.2, fontFamily:'Montserrat-SemiBold' }}>{this.props.podcast.podcastName.slice(0,50)}
-                    {(this.props.podcast.podcastName.length > 50) ? ".." : ""}</Text> 
-            
             </View>
-            <View>
-            <LottieView 
+            </View>
+          <View>
+            <Image source={{uri:this.props.podcast.podcastPictures[0]}}
+              style={{height:height/4,width:width-40}}/>
+          </View>
+          <View style={{height:height/64}}/>
+          <View style={{paddingHorizontal:15}}>
+            <Text style={{fontFamily:'Montserrat-Bold',fontSize:20}}>{this.props.podcast.podcastName}</Text>
+          </View>
+          <TouchableOpacity onPress={() => {
+            this.retrieveUserPrivateDoc(this.props.podcast.podcasterID);
+          }} style={{paddingHorizontal:15,flexDirection:'row'}}>
+          <View>
+            <Image source={{uri:this.props.podcast.podcasterDisplayPicture}}
+                    style={{height:width/16,width :width/16,borderRadius:20,marginRight:5}} />
+           </View>
+            <Text style={{fontFamily:'Montserrat-SemiBold',fontSize:17,color:'gray'}}>{this.props.podcast.podcasterName}</Text>
+          </TouchableOpacity>
+          <View style={{paddingHorizontal:15}}>
+          <LottieView 
             ref={animation => { this.animation = animation;}}
-            style={{width:(width*3)/5}} 
+            style={{width:width/3}} 
             source={newAnimation}
             loop={true}/>
-            </View>
+          </View>
+          <View style={{paddingHorizontal:15}}>
+            {this.renderPodcastDescription()}
             
-        </View>
-    
-        </View>
-        <View style={{paddingHorizontal:10,marginTop:10,height:width/4}}>
-        <Text style={{fontFamily:'Montserrat-Regular', fontSize:12}}>
-        {
-          this.props.podcast.podcastDescription !== undefined && 
-          this.props.podcast.podcastDescription !== null &&
+            
+          </View>
+          <View style={{flexDirection:'row',paddingHorizontal:15,justifyContent:'space-between'}}>
+            <View>
+              <Text style={{color:'gray',fontSize:13}}>{this.state.createdOn}</Text>
+            </View>
+            <View style={{}}>
+            <Text style={{color:'black',fontSize:13,fontFamily:'Montserrat-Regular'}}>{duration} mins</Text>
+            </View>            
+          </View>
 
-          this.props.podcast.podcastDescription.slice(0, 200)
-        }
-        {
-          this.props.podcast.podcastDescription !== undefined && 
-          this.props.podcast.podcastDescription !== null &&
-
-          this.props.podcast.podcastDescription.length > 200 &&
-          "..."
-        }
-        </Text>
-        </View>
-        <View style={{flexDirection:'row', justifyContent:'space-between',alignItems:'flex-end',marginRight:5}}>
-          <Text style={{color:"gray",fontSize:10}}> {this.state.createdOn} </Text>
-      <Text style={{fontSize:12}}> {duration} mins</Text>
-        </View>
-        </View>
-        </TouchableNativeFeedback>
-
-        <View style={{flexDirection:'row'}}>
+          <View style={{flexDirection:'row',paddingBottom:20}}>
         <View style={{marginTop:5,borderWidth:0,borderColor:'black',width:width/2, paddingTop:0,flexDirection:'row',justifyContent:'center'}}>
         <TouchableOpacity onPress={() => {
           if(!this.props.isPodcastLiked[this.props.podcast.podcastID])
@@ -715,13 +697,13 @@ var {width, height}=Dimensions.get('window');
         {/* <FontAwesome name="comment-o" size={height/50} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white'}}/> */}
         
         </View>
-       
-      
-      {
+        
+
+
+        {
          (this.props.isAdmin == true || this.props.podcast.podcasterID == this.state.realUserID)
          &&
-         <View style={{width:width/2}}>
-          <View style={{width:30,position:'absolute',right:15}}>
+          <View style={{width:(width - 40)/3,alignItems:'flex-end',justifyContent:'flex-end'}}>
             <Menu>
             <MenuTrigger>
             <IconAntDesign name="ellipsis1" size={26}/>
@@ -754,39 +736,7 @@ var {width, height}=Dimensions.get('window');
                         style: 'cancel',  
                     },  
                     {text: 'OK', onPress: async() => {
-                      this.updatePodcastCountInCategoryDoc();
-              if(this.props.podcast.isChapterPodcast == false)
-              {
-                firestore().collection("books").doc(this.props.podcast.bookID).collection("podcasts")
-                      .doc(this.props.podcast.podcastID).delete().then(function() {
-                      console.log("Book Podcast Document successfully deleted. ");
-                    }).catch(function(error) {
-                  console.error("Error removing document: ", error);
-                });
-              }
-              else
-              {
-                firestore().collection("books").doc(this.props.podcast.bookID).collection("chapters")
-                  .doc(this.props.podcast.chapterID).collection("podcasts").doc(this.props.podcast.podcastID)
-                    .delete().then(function() {
-                      console.log("Chapter Podcast Document successfully deleted. ");
-                    }).catch(function(error) {
-                  console.error("Error removing document: ", error);
-                });
-              }
-    
-              const instance = firebase.app().functions("asia-northeast1").httpsCallable('deletePodcastFromIndex');
-          
-              try 
-              {          
-                await instance({ // change in podcast docs created by  user
-                  podcastID : this.props.podcast.podcastID
-                });
-              }
-              catch (e) 
-              {
-                console.log(e);
-              }
+                      this.deletePodcast();
                       console.log('OK Pressed')
                     }},  
                 ]  
@@ -902,13 +852,12 @@ var {width, height}=Dimensions.get('window');
             {/* <MenuOption onSelect={() => alert(`Not called`)} disabled={true} text='Disabled' /> */}
             </MenuOptions>
             </Menu>
-          </View>
+          {/* </View> */}
         </View>
       }
-        </View>
-        
-      <View style={[styles.separator]} />
-    </View>
+          </View>
+          </View>
+          </TouchableNativeFeedback>
     );
     }
       

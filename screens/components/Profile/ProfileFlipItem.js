@@ -19,7 +19,11 @@ const ProfileFlipItem = React.memo((props) => {
     const dispatch = useDispatch();
 
     return (
+      <LinearGradient  colors={['#383131','transparent',  '#383131','white']} >
+        <View style={{width:width/2 - 10, height:width/2 - 10}}>
         <Image source={{uri: props.item.flipPictures[0]}} style={{width:width/2 - 10, height:width/2 - 10 }}/>
+        </View>
+        </LinearGradient>
     )
 
 }, areEqual)

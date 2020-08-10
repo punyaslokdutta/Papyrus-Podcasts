@@ -1,9 +1,12 @@
 const INITIAL_STATE = {
-    categoryMap : {}
+    categoryMap : {},
+    allCategoryNames : []
   };
   
   function categoryReducer(state = INITIAL_STATE, action)  {
     switch (action.type) {
+      case "SET_CATEGORY_NAMES":
+          return {...state,allCategoryNames:action.payload}
       case "SET_CATEGORIES_MAP_NAME_TO_ID":
           const categoriesDocumentData = action.payload;
           for(var i=0;i<categoriesDocumentData.length;i++)
