@@ -17,7 +17,6 @@ import { firebase } from '@react-native-firebase/functions';
 import { Button } from '../categories/components';
 import Toast from 'react-native-simple-toast';
 import EvilIcon from 'react-native-vector-icons/EvilIcons';
-import LottieView from 'lottie-react-native';
 import ForwardAnimation from './ForwardAnimation';
 import BackwardAnimation from './BackwardAnimation';
 import PlayPause from './PlayPause';
@@ -50,14 +49,6 @@ const negativeEndY = animationEndY * -1;
 const AnimatedIconAntDesign = Animatable.createAnimatableComponent(IconAntDesign)
 const AnimatedIcon = Animatable.createAnimatableComponent(EvilIcon)
 
-let heartCount = 0;
-
-
-function getRandomNumber(min,max) {
-  return Math.random() * (max - min) + min;
-}
-
- 
  const PodcastContent=(props)=> {
   const playbackState = usePlaybackState();
   const { position, bufferedPosition, duration } = useTrackPlayerProgress()
@@ -87,11 +78,8 @@ function getRandomNumber(min,max) {
   const userDisplayPictureURL = useSelector(state=>state.userReducer.displayPictureURL);
   const name = useSelector(state=>state.userReducer.name);
   const loadingPodcast = useSelector(state=>state.rootReducer.loadingPodcast)
-  //const duration=useSelector(state=>state.rootReducer.duration)
   const dispatch=useDispatch();
 
-  const heartsStore = useSelector(state=>state.rootReducer.hearts);
-  const [hearts,setHearts] = useState([]);
   var podcastName = props.podcast.podcastName;
 
   
@@ -194,14 +182,9 @@ async function togglePlay  ()  {
 //   });
 // },[])
 
-useEffect(() => {
-  props.podcast !== null && setup();
-},[props.podcast])
-
   useEffect(() => {
-    setHearts([]);
-  },[heartsStore])
-
+    props.podcast !== null && setup();
+  },[props.podcast])
 
   useEffect(() => {
     console.log("playbackState:",playbackState);
@@ -229,31 +212,6 @@ useEffect(() => {
     // }
   },[playbackState])
 
-  
-
-  function addHearts(){
-    console.log("[addHearts] prevHearts : ",hearts);
-    setHearts([...hearts,{id : heartCount , paddingRight : getRandomNumber(20,100)}]);
-    console.log("[addHearts] nextHearts : ",hearts);
-    heartCount++;
-    console.log("[addHearts] heartCount : ",heartCount);
-  }
-
-  function removeHeart(id){
-    console.log("[removeHeart] hearts: ",hearts);
-    console.log("[removeHeart] id to be removed: ",id);
-
-    // var newHearts = hearts;
-
-    // // newHearts.pop();
-    
-    // newHearts.filter(heart => {
-    //   return heart.id !== id
-    // });
-    // console.log("[removeHeart] newHearts: ",newHearts);
-    // setHearts(newHearts);
-  }
-
   function handleSmallAnimatedHeartIconRef  (ref) {
     smallAnimatedHeartIcon = ref
   }
@@ -261,7 +219,6 @@ useEffect(() => {
   function handleSmallAnimatedBookmarkIconRef  (ref) {
     smallAnimatedBookmarkIcon = ref
   }
-  
 
   function handleOnPressLike() {
     setLikedState(!likedState);
@@ -269,7 +226,6 @@ useEffect(() => {
     }
 
   function handleOnPressBookmark() {
-    //smallAnimatedBookmarkIcon.bounceIn();
     if(bookmarked != true)
     {
       smallAnimatedBookmarkIcon.bounceIn();
@@ -283,10 +239,7 @@ useEffect(() => {
       removeFromBookmarks();
       
     }
-    //setBookmarkedState(!bookmarkedState);
   }
-
-  
 
   function skipForward() {
     TrackPlayer.seekTo(position + 10)
@@ -298,37 +251,10 @@ useEffect(() => {
     
   }
 
-  function onLoadEnd(data) {
-    dispatch({type:"SET_DURATION", payload: props.podcast.duration})
-    //dispatch({type:"RESET_TO_INITIAL"})
-    dispatch({type:"SET_LOADING_PODCAST", payload:false});
-
-    //dispatch({type:"SET_PAUSED",payload:true});
-    //****** HAVE TO FIX THIS AFTER TRACK PLAYER WORKS PROPERLY
-    /*
-    lastPlayingCurrentTime != null && 
-    TrackPlayer.seekTo(lastPlayingCurrentTime) ;
-
-
-    dispatch({type:"SET_LAST_PLAYING_CURRENT_TIME",payload:null});
-    const currentTime = moment().format();
-    dispatch({type:"SET_SESSION_START_LISTENING_TIME",payload:currentTime});
-    */
+  function onSeek(data) {
+    TrackPlayer.seekTo(data.seekTime)
+    dispatch({type:"SET_CURRENT_TIME", payload: data.seekTime})
   }
-
- function onSeek(data) {
-  TrackPlayer.seekTo(data.seekTime)
-  dispatch({type:"SET_CURRENT_TIME", payload: data.seekTime})
-}
-function onEnd() {
-  dispatch({type:"TOGGLE_PLAY_PAUSED"})
-  video.current.seek(0);
-}
-function onBuffering()
-{
-  console.log("Buffer Triggered");
-  dispatch({type:"BUFFERING_PODCAST",payload:true})
-}
 
 function handlePlayPause() {
   // If playing, pause and show controls immediately.
@@ -339,10 +265,7 @@ function handlePlayPause() {
 }
 
 function parentSlideDown(){
-  //removeHeart(1);
-  setHearts([]);
   props.slideDown();
-  
 }
 
 
@@ -494,21 +417,6 @@ async function retrieveUserPrivateDoc()
     
   }
 
-
-function pausePodcast()
-{
-  const totalListeningTime = moment(sessionStartListeningTime).fromNow();
-  console.log("Listening time from last interval: ",totalListeningTime);
-  dispatch({type:"SET_SESSION_START_LISTENING_TIME",payload:0});
-  dispatch({type:"TOGGLE_PLAY_PAUSED"});
-}
-
-function playPodcast()
-{
-  dispatch({type:"TOGGLE_PLAY_PAUSED"}); 
-}
-
-
 async function updatePodcastsUnliked(props) {
 
   dispatch({type:'REMOVE_FROM_PODCASTS_LIKED',payload:props.podcast.podcastID});
@@ -588,18 +496,7 @@ async function updatePodcastsLiked(props){
   }
 } 
 
-    function renderHearts(){
-      
-        if(hearts.length != 0)
-        {
-          hearts.map(
-            heart => {
-              console.log("heart.id: ",heart.id);
-              return <HeartContainer item={heart.id} style={{ right : heart.paddingRight}} onComplete={() => {removeHeart(heart.id)}}/>;
-            }
-          )
-        }
-    }
+    
 
     return (
       
@@ -623,8 +520,7 @@ async function updatePodcastsLiked(props){
     
                     </View>
                     <View style={{ marginTop: 2}}>
-                      {
-                      (props.podcast.isMusic === undefined || props.podcast.isMusic === null) &&
+                      
                       <TouchableNativeFeedback onPress={() => {
                         parentSlideDown();
                         retrieveUserPrivateDoc();
@@ -638,7 +534,7 @@ async function updatePodcastsLiked(props){
                         
                         </View>
                     </TouchableNativeFeedback>
-                      }
+                      
                       
                     </View>
 
@@ -702,26 +598,15 @@ async function updatePodcastsLiked(props){
       
       <Text style={{color:'white', fontSize:12, alignItems: 'center'}}>x{rate}</Text></TouchableOpacity>
               
-            </View>
-
-
-            
-         
- 
+          </View>
           <View style={{paddingTop:height/30,paddingBottom:0}}> 
           <ProgressBar
                 position = {position}
                 duration={props.podcast.duration}
-                onSlideStart={handlePlayPause}
-                onSlideComplete={handlePlayPause}
                 onSlideCapture={onSeek}
                 loadingPodcast={loadingPodcast}
-              />
-          
-         </View>
-
-        {
-          props.podcast.isMusic === undefined && 
+              /> 
+         </View> 
 
          <View style={{flexDirection: 'row',
             justifyContent: 'center',
@@ -735,7 +620,6 @@ async function updatePodcastsLiked(props){
                 {
                   handleOnPressLike();
                   updatePodcastsLiked(props);  
-                  addHearts();
                 }
                 else
                 {
@@ -766,108 +650,23 @@ async function updatePodcastsLiked(props){
                   />
                 </TouchableOpacity>
                 </View>
-
-
                 <View>
-              {renderHearts()}
             </View>
 
-                <View style={{paddingLeft:width/4}}>
-                <TouchableOpacity onPress={() => {
-                  //onShare();
-                  buildDynamicURL();
-                }}>
+            <View style={{paddingLeft:width/4}}>
+            <TouchableOpacity onPress={() => {
+              buildDynamicURL();
+            }}>
                 
-                <Icon name="share" size={20} style={{color:'white',height:30,width:30}}/>
-                </TouchableOpacity>
-                </View>
-              </View>
-            }
-        </ScrollView>
+            <Icon name="share" size={20} style={{color:'white',height:30,width:30}}/>
+            </TouchableOpacity>
+            </View>
+          </View>
+        
+    </ScrollView>
       
     );
   }
-
-
-  
-// PODCAST CONTENT ENDS
-//---------------------------------------------------------------
-
-
-const areEqual = (prevProps, nextProps) => {
-  //console.log("prevProps: ",prevProps);
-  //console.log("nextProps: ",nextProps);
-  return (prevProps.item == nextProps.item);
-};
-
-const HeartContainer = React.memo((props)=> {
-  const [position] = useState(new Animated.Value(0));
-   var [yAnimation,setYAnimation] = useState(new Animated.Value(0));
-  var [opacityAnimation,setOpacityAnimation] = useState(new Animated.Value(1));
-  useEffect(() => {
-    //   position.interpolate({
-    //   inputRange : [negativeEndY, 0],
-    //   outputRange : [animationEndY,0]
-    // });
-    
-    // setOpacityAnimation(position.interpolate({
-    //   inputRange : [0, animationEndY],
-    //   outputRange : [1,0]
-    // }));
-    Animated.timing(position, {
-      duration : 2000,
-      toValue : negativeEndY,
-      easing : Easing.ease,
-      useNativeDriver : true
-    }).start(props.onComplete);
-  },[])
-
-  // useEffect(()=> {
-  //   setYAnimation(position.interpolate({
-  //     inputRange : [negativeEndY, 0],
-  //     outputRange : [animationEndY,0]
-  //   }));
-  // },[position])
-
-
-  // useEffect(() => {
-  //   setOpacityAnimation(yAnimation.interpolate({
-  //     inputRange : [0, animationEndY],
-  //     outputRange : [1,0]
-  //   }))
-  // },[yAnimation])
-
-   
-
-        
-
-  function getHeartStyle() {
-    return {
-      transform: [{ translateY : position}],
-      opacity: 0.8
-    };
-  }
-
-  console.log("[HeartContainer] props.key: ",props.item);
-  return (
-    <Animated.View style={[styles.heartContainer,getHeartStyle(), props.style]}>
-      <Heart color="red"/>
-    </Animated.View>
-  );
-},areEqual)
-
-///////////////////////////////////
-
-const Heart = props => {
-
-  return(
-  <View {...props} style={[styles.heart,props.style]}>
-  <IconAntDesign name="heart" size={48} color={props.color}/>
-</View>
-  )
-}
-
-//-----><><><------
   
 const styles = StyleSheet.create({
   content: {
@@ -980,19 +779,7 @@ progress: {
 },
 container: {
   flex: 1,
-},
-  heartContainer: {
-    position : 'absolute',
-    bottom : 30,
-    backgroundColor : "transparent"
-  },
-  heart: {
-    width : 50,
-    height : 50,
-    alignItems : "center",
-    justifyContent : "center",
-    backgroundColor: "transparent"  
-  }
+}
 });
 
 export default PodcastContent;

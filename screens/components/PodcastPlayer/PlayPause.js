@@ -47,7 +47,7 @@ class PlayPause extends React.Component {
           }}>
             <View style={styles.playButtonContainer}>
             <LottieView ref={animation => { this.animation = animation;}} 
-            style={{ height: height/9,color:'white'}} source={playPause} 
+            style={{ height: height/9}} source={playPause} 
             loop={false}/>
             </View>
         </TouchableOpacity>                         

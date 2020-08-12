@@ -1,13 +1,10 @@
 const INITIAL_STATE = {
-    appVersion: 16,
-    userItem: null,
     name: null,
     email: null,
     signupEmail: null,
     userName: null, 
     numFollowers: 0,
     numFollowing: 0,
-    renderedREDUX: true,
     displayPictureURL: null,
     followingList:[],
     isPodcastLiked: {},
@@ -24,13 +21,10 @@ const INITIAL_STATE = {
     navigation:null,
     website:null,
     algoliaQuery:"The Existentialist",
-    algoliaBookQuery: "",
-    selectedOnlyBookItem: null,
     numNotifications: 0,
     bookAdded: null,
     isExplorePreviousScreen: false,
     userPreferences: [],
-    fromSearchChapterScreen: false,
     otherPrivateUserItem: null,
     userLanguages: [],
     algoliaAPPID: null,
@@ -101,8 +95,6 @@ const INITIAL_STATE = {
             return {...state,musicEnabledNotificationSeen:action.payload}
         case "SET_IS_MUSIC_ENABLED":
             return {...state,isMusicEnabled:action.payload}
-        case "RENDERED_ALL_FLIPS":
-            return {...state,renderedREDUX:!state.renderedREDUX}
         case "SET_PODCAST_UPLOAD_SUCCESS":
             console.log("uploadPodcastSuccess : ",action.payload);
             return {...state,uploadPodcastSuccess:action.payload}
@@ -142,14 +134,10 @@ const INITIAL_STATE = {
             return {...state,userLanguages:action.payload}
         case "SET_OTHER_PRIVATE_USER_ITEM":
             return {...state,otherPrivateUserItem:action.payload}
-        case "SET_USER_ITEM":
-            return {...state,userItem:action.payload}
         case "ADD_NAVIGATION":
             return {...state,navigation:action.payload}
         case "SET_USER_PREFERENCES":
             return {...state,userPreferences:action.payload}
-        case "SET_FROM_SEARCH_CHAPTER_SCREEN":
-            return {...state,fromSearchChapterScreen:action.payload}
         case "ADD_NUM_NOTIFICATIONS":
             return {...state,numNotifications:action.payload}
         case "CHANGE_EMAIL":
@@ -158,12 +146,8 @@ const INITIAL_STATE = {
             return {...state,signupEmail:action.payload}
         case "SET_ALGOLIA_QUERY":
             return {...state,algoliaQuery:action.payload}
-        case "SET_ALGOLIA_BOOK_QUERY":
-            return {...state,algoliaBookQuery:action.payload}
         case "ADD_BOOK":
             return {...state,bookAdded:action.payload}
-        case "SELECT_ONLY_BOOK_ITEM":
-            return {...state,selectedOnlyBookItem:action.payload}
         case "CHANGE_NAME":
             return {...state, name:action.payload}
         case "SET_EXPLORE_SCREEN_AS_PREVIOUS_SCREEN":
@@ -259,8 +243,6 @@ const INITIAL_STATE = {
             state.isUserFollowing[action.payload] = false;
             state.numFollowing = state.numFollowing - 1;
             return state;
-        case "ADD_NAVIGATION":
-            return {...state, navigation:action.payload}
         case "SET_IS_USER_FOLLOWING":
             state.isUserFollowing[action.payload] = false;
             return state;

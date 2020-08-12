@@ -11,7 +11,7 @@ import IconAntDesign from 'react-native-vector-icons/AntDesign'
 import {withFirebaseHOC} from './config/Firebase';
 
 import { PanGestureHandler, State, TouchableWithoutFeedback } from 'react-native-gesture-handler';
-var {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window');
+// var {width, height}=Dimensions.get('window')
 const height =ExtraDimensions.getRealWindowHeight();
 const width=ExtraDimensions.getRealWindowWidth();
 const STATUS_BAR_HEIGHT= ExtraDimensions.getStatusBarHeight();
@@ -229,10 +229,7 @@ class PodcastPlayer extends React.Component {
   {
     if(!this.props.isMiniPlayer)
     {
-      //this.props.toggleMiniPlayer();
-      //this.props.removeAllHearts();
       console.log("this.offsetY = ",this.offsetY._value)
-      //this.offsetY.setValue(-100);
       this.velocityY.setValue(8000);
       timing(this.offsetY, {
         toValue: upperBound,
@@ -240,19 +237,7 @@ class PodcastPlayer extends React.Component {
         useNativeDriver: true,
         easing: Easing.inOut(Easing.ease),
       }).start();
-
-     // dispatch({type:"TOGGLE_MINI_PLAYER"})
-
-
-      //return true;
-      //dispatch({type:"TOGGLE_MINI_PLAYER"})
-
     }
-      else
-      {
-        //dispatch({type:"TOGGLE_MINI_PLAYER"})
-        //this.slideUp();
-      }
   }
   
     setLastPlayingPodcastInUserPrivateDoc = async (podcastID) =>
@@ -280,33 +265,18 @@ class PodcastPlayer extends React.Component {
     console.log("Inside BackButton Press");
     if(!this.props.isMiniPlayer)
     {
-      //this.props.toggleMiniPlayer();
-      // this.props.removeAllHearts();
-
-      // timing(this.offsetY, {
-      //   toValue: upperBound,
-      //   duration: 1000,
-      //   easing: Easing.inOut(Easing.ease),
-      //   useNativeDriver: true
-      // }).start();
       this.slideDown();
-
-     // dispatch({type:"TOGGLE_MINI_PLAYER"})
       return true;
-      //dispatch({type:"TOGGLE_MINI_PLAYER"})
-  }
-  console.log("Back Butttttton: ",this.props.podcast.podcastID);
-  if(this.props.podcast!==null)
-  {
-    this.setLastPlayingPodcastInUserPrivateDoc(this.props.podcast.podcastID);
-    //dispatch({type:"SET_PODCAST", payload: null});
-  }
-  return false;
-    //BackHandler.removeEventListener('hardwareBackPress', this.back_Buttton_Press);
+    }
+    console.log("Back Butttttton: ",this.props.podcast.podcastID);
+    if(this.props.podcast!==null)
+    {
+      this.setLastPlayingPodcastInUserPrivateDoc(this.props.podcast.podcastID);
+    }
+    return false;
   }
 
   slideUp = () => {
-    //this.props.toggleMiniPlayer();
     console.log("sliding UP");
     this.velocityY.setValue(-8000);
     timing(this.offsetY, {
@@ -351,7 +321,7 @@ render() {
     });
     const videoHeight = interpolate(translateY, {
       inputRange: [0, midBound, upperBound],
-      outputRange: [height*6/24, minHeight * 1.3, minHeight],
+      outputRange: [height*6/24, minHeight*1.3, minHeight],
       extrapolate: Extrapolate.CLAMP,
     });
 
@@ -381,17 +351,6 @@ render() {
         {
           () => call([this.translateY,this.velocityY,this.snapPoint,this.offsetY,this.offsetY2,this.translationY,this.finalTranslateY], 
             ([val,val6,val4,val1,val2,val3,val5]) => {
-            // console.log("this.translateY = ",val)
-            // console.log("this.translationY = ",val3)
-            // console.log("this.finalTranslateY = ",val5)
-            //console.log("this.snapPoint = ",val4)
-            // console.log("this.offsetY = ",val1)
-            // console.log("this.offsetY2 = ",val2)
-            // console.log("this.velocityY = ",val6)
-
-            // console.log("upperBound = ",upperBound)
-            // console.log("midBound = ",midBound)
-            // console.log("height = ",height)
             val == upperBound && !this.props.isMiniPlayer && this.props.toggleMiniPlayer();
             val == 0 && this.props.isMiniPlayer && this.props.toggleMiniPlayer();
           })
@@ -408,29 +367,30 @@ render() {
                  
               <Animated.View style={{ backgroundColor: '#212121', width: videoContainerWidth }}>
               
-              <Animated.View style={{ ...StyleSheet.absoluteFillObject, opacity: playerControlOpaciy }}>
+              <Animated.View style={{ ...StyleSheet.absoluteFillObject,opacity: playerControlOpaciy }}>
               <PlayerControls back_Button_Press={this.back_Button_Press} setLastPlayingPodcastInUserPrivateDoc={this.setLastPlayingPodcastInUserPrivateDoc} podcastName={this.props.podcast.podcastName} bookName={this.props.podcast.bookName} userID={this.props.userID} onPress={this.slideUp}      />
+              
               </Animated.View>
-                
-                
-                {/* <TouchableNativeFeedback onPress={() => {
+              
+              
+                <TouchableNativeFeedback onPress={() => {
                   if(!this.props.isMiniPlayer)
                   {
-                    this.slideDown()
-                    this.props.navigation.navigate('InfoScreen', {podcast:this.props.podcast});
+                    // this.slideDown()
+                    // this.props.navigation.navigate('InfoScreen', {podcast:this.props.podcast});
                   }
                   else
                   {
                     this.slideUp();
                   }
   
-                }}> */}
+                }}>
                 <Animated.Image
                   source={{uri:this.props.podcast.podcastPictures[0]}}
                   resizeMode='contain'
-                  style={{ width: videoWidth, height: videoHeight, borderColor:'black',borderRadius:5 }}
+                  style={{ width: videoWidth, height: videoHeight }}
                 />
-                {/* </TouchableNativeFeedback> */}
+                </TouchableNativeFeedback>
                   {/* {
                     !this.props.isMiniPlayer && <IconAntDesign name="downcircleo" size={30} color='black' style={{
                     //width: width/15,  
@@ -473,7 +433,6 @@ const mapStateToProps = (state) => {
   const mapDispatchToProps = (dispatch) =>{
     return{
     toggleMiniPlayer:() => dispatch({type:"TOGGLE_MINI_PLAYER"}),
-    removeAllHearts:() => dispatch({type:"REMOVE_ALL_HEARTS"})
     }}
 export default connect(mapStateToProps,mapDispatchToProps)(PodcastPlayer)
 

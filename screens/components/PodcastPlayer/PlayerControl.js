@@ -3,6 +3,7 @@ import React, { useState, useContext, useReducer, useEffect} from 'react';
 import {BackHandler} from 'react-native';
 import Slider from '@react-native-community/slider';
 import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
+import ExtraDimensions from 'react-native-extra-dimensions-android';
 
 import {
   View, StyleSheet, Text, Dimensions, TouchableWithoutFeedback,TouchableOpacity, ActivityIndicator
@@ -16,50 +17,22 @@ import IconAntDesign from 'react-native-vector-icons/AntDesign'
 import firestore from '@react-native-firebase/firestore';
 
 
-const { width,height } = Dimensions.get('window');
+// const { width,height } = Dimensions.get('window');
+const height =ExtraDimensions.getRealWindowHeight();
+const width=ExtraDimensions.getRealWindowWidth();
 export const PLACEHOLDER_WIDTH = width / 4;
 
 const areEqual = (prevProps, nextProps) => true;
  const PlayerControls = (props) => {
 
-  //const [playerControlState,setplayerControlState ] =useState(props)
-  //copied the props to the state of the component 
   console.log( props);
   
-  //const videoRef = useSelector(state=>state.rootReducer.videoRef)
+  const dispatch=useDispatch();
+  const paused=useSelector(state=>state.rootReducer.paused);
+  const { position } = useTrackPlayerProgress()
 
-  /*useEffect(() => {
-   // setplayerControlState(props);
-  }, []);*/
-
-
-  
-const dispatch=useDispatch();
-const paused=useSelector(state=>state.rootReducer.paused);
-const { position } = useTrackPlayerProgress()
-
-  const currentTime=useSelector(state=>state.rootReducer.currentTime);
   const duration=useSelector(state=>state.rootReducer.duration);
-  //const position = getMinutesFromSeconds(currentTime);
-  const fullDuration = getMinutesFromSeconds(duration);
   const loadingPodcast = useSelector(state=>state.rootReducer.loadingPodcast)
-
-  function handlePlayPause() {
-    // If playing, pause and show controls immediately.
-    if (!paused) {
-      dispatch({type:"TOGGLE_PLAY_PAUSED"})
-      return;
-    }
-  }
-
-  function onSeek(data) {
-    videoRef.seek(data.seekTime);
-    dispatch({type:"SET_CURRENT_TIME", payload: data.seekTime})
-  }
-
-  function handleOnSlide(time) {
-    onSeek({seekTime: time});
-  }
 
   function getMinutesFromSeconds(time) {
     
@@ -122,55 +95,60 @@ const { position } = useTrackPlayerProgress()
   
    //const { title, onPress } = this.props;
     return (
-      
-      <TouchableWithoutFeedback onPress={props.onPress} style={{borderColor:'black'}} >
+    
+      <TouchableWithoutFeedback onPress={props.onPress}>
         <View style={styles.container}>
-        <View style={{flexDirection:'column',paddingLeft:width*5/12}}>
-        
-        <TextMarquee podcastName={props.podcastName} bookName={props.bookName}/>
-        
-      <View style={{paddingLeft:10,paddingTop:height/500}}>
-        <Slider
+          <View style={{width:width*3/12,height:height/15,borderColor:'red',borderWidth:0,height:height/15}}>
+            </View>
+        <View style={{flexDirection:'column',width:width*3/4,borderColor:'red',borderWidth:0,height:height/15}}>
+          <View style={{flexDirection:'row',alignItems:'center',height:height/15 - 5,width:width*3/4,borderColor:'yellow',borderWidth:0}}>
+          <View style={{width:width*7/12}}>
+          <TextMarquee podcastName={props.podcastName} bookName={props.bookName}/>
+          </View>
+          <View style={{width:width*2/12,flexDirection:'row'}}>
+            {loadingPodcast && <ActivityIndicator style={styles.icon} color={'white'}/>}
+            {!loadingPodcast && paused && <TouchableOpacity  onPress={(()=>{
+              dispatch({type:"TOGGLE_PLAY_PAUSED"})
+              togglePlay()
+              })}>
+              <IconAntDesign name="play" size={20} style={styles.icon}/></TouchableOpacity>}
+            {!loadingPodcast && !paused && <TouchableOpacity  onPress={(()=>{
+              dispatch({type:"TOGGLE_PLAY_PAUSED"})
+              togglePlay()
+              })}>
+              <IconAntDesign name="pause" size={50} style={styles.icon}/></TouchableOpacity>}
+                  <TouchableOpacity onPress={(()=>{
+                    setLastPlayingPodcastInUserPrivateDoc(null);
+                    dispatch({type:"SET_LAST_PLAYING_CURRENT_TIME",payload:null});
+                    dispatch({type:"SET_LAST_PLAYING_PODCASTID",payload:null});
+                    //BackHandler.removeEventListener("hardwareBackPress",  this.props.back_Button_Press());
+                    dispatch({type:"TOGGLE_PLAY_PAUSED"})
+                    TrackPlayer.destroy()
+                    dispatch({type:"SET_PODCAST", payload: null})
+                    })}>
+                  <Icon name="times-circle" size={24} style={styles.icon}/>
+                  </TouchableOpacity>
+          </View>
+          </View>
+          <View style={{alignItems:'center',width:width*9/12,borderColor:'yellow',borderWidth:0.0}}>
+          <Slider
+          style={{height:5,width:width*9/12,padding:0,marginLeft:0.5}}
         value={position}
         minimumValue={1}
         maximumValue={duration===undefined?600:duration}
-        step={0.01}
+        step={0.0001}
         //onValueChange={(value)=>handleOnSlide(value)}
         //onSlidingStart={handlePlayPause}
         //onSlidingComplete={handlePlayPause}
         minimumTrackTintColor={'#F44336'}
         maximumTrackTintColor={'white'}
-        thumbTintColor={'#F44336'}
-      
-        disabled={true}
+        thumbTintColor={'transparent'}
        />
-      </View>
-      </View>
-          {/* <Text style={styles.title} numberOfLine={3}>{props.title}</Text> */}
-          {loadingPodcast && <ActivityIndicator style={styles.icon} color={'white'}/>}
-          {!loadingPodcast && paused && <TouchableOpacity  onPress={(()=>{
-            dispatch({type:"TOGGLE_PLAY_PAUSED"})
-            togglePlay()
-            })}>
-            <IconAntDesign name="play" size={20} style={styles.icon}/></TouchableOpacity>}
-          {!loadingPodcast && !paused && <TouchableOpacity  onPress={(()=>{
-            dispatch({type:"TOGGLE_PLAY_PAUSED"})
-            togglePlay()
-            })}>
-            <IconAntDesign name="pause" size={50} style={styles.icon}/></TouchableOpacity>}
-                <TouchableOpacity onPress={(()=>{
-                  setLastPlayingPodcastInUserPrivateDoc(null);
-                  dispatch({type:"SET_LAST_PLAYING_CURRENT_TIME",payload:null});
-                  dispatch({type:"SET_LAST_PLAYING_PODCASTID",payload:null});
-                  //BackHandler.removeEventListener("hardwareBackPress",  this.props.back_Button_Press());
-                  dispatch({type:"TOGGLE_PLAY_PAUSED"})
-                  TrackPlayer.destroy()
-                  dispatch({type:"SET_PODCAST", payload: null})
-                  })}>
-                <Icon name="times-circle" size={24} style={styles.icon}/>
-                </TouchableOpacity>
+            </View>
+          </View>
+          
         </View>
-      </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback>  
       
     );
   
@@ -182,8 +160,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    borderWidth:0.25, 
-    backgroundColor:'#212121'
+    height:height/15 * 1,
+    borderWidth:0,
+    backgroundColor:'#212121',
+    borderColor:'white'
   },
   title: {
     flex: 1,
@@ -196,7 +176,7 @@ const styles = StyleSheet.create({
   icon: {
     fontSize: 20,
     color: 'white',
-    padding: 8,
+    padding: 7,
     
   },
 });

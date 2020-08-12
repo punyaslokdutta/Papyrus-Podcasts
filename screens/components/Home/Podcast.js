@@ -474,22 +474,28 @@ var {width, height}=Dimensions.get('window');
   }
 
   deletePodcast = async() => {
+    const privateDataID = "private" + this.state.userID;
     if(this.props.podcast.isChapterPodcast == false)
     {
       firestore().collection("books").doc(this.props.podcast.bookID).collection("podcasts")
             .doc(this.props.podcast.podcastID).delete().then(function() {
             console.log("Book Podcast Document successfully deleted. ");
           }).catch(function(error) {
-        console.error("Error removing document: ", error);
+        console.log("Error removing document: ", error);
       });
-
+      
       firestore().collection('users').doc(this.state.userID).collection('privateUserData').doc(privateDataID).set({
-        numCreatedChapterPodcasts : firestore.FieldValue.increment(-1)
+        numCreatedBookPodcasts : firestore.FieldValue.increment(-1),
+        totalMinutesRecorded : firestore.FieldValue.increment(-this.props.podcast.duration/60)
       },{merge:true}).then(() => {
-        console.log("Successfully updated numCreatedChapterPodcasts in user's private document");
+        console.log("Successfully updated numCreatedBookPodcasts in user's private document");
+      }).catch((err) => {
+        console.log("Error in updating numCreatedBookPodcasts in user's private document - ",err);
       })
 
       this.props.dispatch({type:"DECREMENT_NUM_CREATED_CHAPTER_PODCASTS"})
+      this.props.dispatch({type:"UPDATE_TOTAL_MINUTES_RECORDED",payload:this.props.totalMinutesRecorded - this.props.podcast.duration/60})
+
     }
     else if(this.props.podcast.isChapterPodcast == true)
     {
@@ -498,15 +504,19 @@ var {width, height}=Dimensions.get('window');
           .delete().then(function() {
             console.log("Chapter Podcast Document successfully deleted. ");
           }).catch(function(error) {
-        console.error("Error removing document: ", error);
+        console.log("Error removing document: ", error);
       });
 
       firestore().collection('users').doc(this.state.userID).collection('privateUserData').doc(privateDataID).set({
-        numCreatedBookPodcasts : firestore.FieldValue.increment(-1)
+        numCreatedChapterPodcasts : firestore.FieldValue.increment(-1),
+        totalMinutesRecorded : firestore.FieldValue.increment(-this.props.podcast.duration/60)
       },{merge:true}).then(() => {
-        console.log("Successfully updated numCreatedBookPodcasts in user's private document");
+        console.log("Successfully updated numCreatedChapterPodcasts in user's private document");
+      }).catch((err) => {
+        console.log("Error in updating numCreatedChapterPodcasts in user's private document - ",err);
       })
       this.props.dispatch({type:"DECREMENT_NUM_CREATED_BOOK_PODCASTS"})
+      this.props.dispatch({type:"UPDATE_TOTAL_MINUTES_RECORDED",payload:this.props.totalMinutesRecorded - this.props.podcast.duration/60})
     }
     else if(this.props.podcast.isOriginalPodcast == true)
     {
@@ -514,15 +524,19 @@ var {width, height}=Dimensions.get('window');
           .delete().then(function() {
             console.log("Original Podcast Document successfully deleted. ");
           }).catch(function(error) {
-        console.error("Error removing document: ", error);
+        console.log("Error removing document: ", error);
       });
 
       firestore().collection('users').doc(this.state.userID).collection('privateUserData').doc(privateDataID).set({
-        numCreatedOriginalPodcasts : firestore.FieldValue.increment(-1)
+        numCreatedOriginalPodcasts : firestore.FieldValue.increment(-1),
+        totalMinutesRecorded : firestore.FieldValue.increment(-this.props.podcast.duration/60)
       },{merge:true}).then(() => {
         console.log("Successfully updated numCreatedOriginalPodcasts in user's private document");
+      }).catch((err) => {
+        console.log("Error in updating numCreatedOriginalPodcasts in user's private document - ",err);
       })
       this.props.dispatch({type:"DECREMENT_NUM_CREATED_ORIGINAL_PODCASTS"})
+      this.props.dispatch({type:"UPDATE_TOTAL_MINUTES_RECORDED",payload:this.props.totalMinutesRecorded - this.props.podcast.duration/60})
     }
 
     const instance = firebase.app().functions("asia-northeast1").httpsCallable('deletePodcastFromIndex');
@@ -722,8 +736,11 @@ var {width, height}=Dimensions.get('window');
               this.props.podcastRedux !== null && 
               this.props.dispatch({type:'SET_PODCAST',payload:null}) &&
               TrackPlayer.destroy();
-              
-              this.props.navigation.navigate("PreviewScreen",{podcast:this.props.podcast});
+              if(this.props.podcast.isOriginalPodcast !== undefined && this.props.podcast.isOriginalPodcast !== null &&
+              this.props.podcast.isOriginalPodcast == true)
+                this.props.navigation.navigate("OriginalsPreviewScreen",{podcast:this.props.podcast});
+              else
+                this.props.navigation.navigate("PreviewScreen",{podcast:this.props.podcast});
               }} text='Edit' />
             <MenuOption onSelect={async() => {
               Alert.alert(  
@@ -878,7 +895,7 @@ const mapStateToProps = (state) => {
     isMiniPlayer: state.rootReducer.isMiniPlayer,
     numLikesRedux: state.rootReducer.numLikes,
     numRetweetsRedux: state.rootReducer.numRetweets,
-    categoryMapRedux: state.categoryReducer.categoryMap
+    totalMinutesRecorded: state.userReducer.totalMinutesRecorded
   }}
 
   const mapDispatchToProps = (dispatch) =>{

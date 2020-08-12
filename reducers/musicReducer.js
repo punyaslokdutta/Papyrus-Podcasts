@@ -2,7 +2,7 @@ const INITIAL_STATE = {
     music : null,
     musicPaused : true,
     allMusic : [],
-    currentMusicIndex : 0
+    currentMusicIndex : 0,
   };
   
   function musicReducer(state = INITIAL_STATE, action)  {

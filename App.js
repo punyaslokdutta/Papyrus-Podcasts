@@ -273,12 +273,12 @@ const AppTabNavigator=createBottomTabNavigator(
     inactiveTintColor:'gray',
     backgroundColor:'white',
     borderTopWidth: 0,
-    elevation :5,
+    elevation :0,
     adaptive: true,
     style:
     {
       //paddingBottom: SCREEN_HEIGHT/100,
-      height: SCREEN_HEIGHT/20,
+      //height: SCREEN_HEIGHT/20,
     },
   },
   }

@@ -51,9 +51,8 @@ const OriginalsPreviewScreen = (props) => {
   const [genresSelected,setGenresSelected] = useState([]);
   const [categorySelectedMap,setCategorySelectedMap] = useState({})
   const categoriesSelected = React.createRef(null);
-
-  
-  const categoryMapRedux = useSelector(state=>state.categoryReducer.categoryMap); 
+  const [defaultCategoryKeysSelected,setDefaultCategoryKeysSelected] = useState([]);
+  const [showTagSelect,setShowTagSelect] = useState(false);
   const editpodcast = useSelector(state=>state.recorderReducer.editpodcast);
   const displayPictureURL = useSelector(state=>state.userReducer.displayPictureURL)
   const [isPlaying,setIsPlaying] = useState(false);
@@ -94,7 +93,6 @@ const OriginalsPreviewScreen = (props) => {
         setToolTipPictureVisible(true)
       },300)
     }
-    retrieveCategories();
   },[])
 
   useEffect(() => { 
@@ -317,22 +315,6 @@ const OriginalsPreviewScreen = (props) => {
     }
   }
 
-  // async function updatePodcastCountInCategoryDoc(){
-
-  //   console.log("categoryMapRedux:- ",categoryMapRedux);
-  //   genres.forEach(genre => {
-  //     console.log("genreName: ",genre," |  genreID: ",categoryMapRedux[genre]);
-  //     firestore().collection('Categories').doc(categoryMapRedux[genre]).set({
-  //       numPodcasts : firestore.FieldValue.increment(1)
-  //     },{merge:true}).then(() => {
-  //       console.log("Successfully updated numPodcasts in category - ",genre);
-  //     }).catch((error) => {
-  //       console.log("Error in updating numPodcasts in category - ",genre);
-  //       console.log(error);
-  //     })
-  //   });
-  // }
-
   useEffect(
     () => {
       if(uploadPodcastSuccess == true)
@@ -388,13 +370,47 @@ const OriginalsPreviewScreen = (props) => {
   }
 
   useEffect(() => {
+    if(genres.length!=0)
+    {
+      var localSelectedCategories = {};
+      var selectedTemp = [];
+      const podcast = props.navigation.state.params.podcast;
+      if(podcast !== undefined && podcast !== null)
+      {
+        setShowTagSelect(false);
+        for(var i=0;i<podcast.genres.length;i++)
+        {
+          localSelectedCategories[podcast.genres[i]] = true;
+          var j = 0;
+          console.log("[OriginalsPreviewScreen] genres: ",genres);
+          for(j=0;j<genres.length;j++)
+          {
+            console.log("podcast.genres[i] = ",podcast.genres[i]);
+            if(genres[j].label == podcast.genres[i])
+              break;
+          }
+          selectedTemp.push(j+1);
+        }
+        console.log("selectedTemp = ",selectedTemp);
+        setDefaultCategoryKeysSelected(selectedTemp); 
+        setCategorySelectedMap(localSelectedCategories);
+      }
+      setShowTagSelect(true);
+
+    }
+    
+  },[genres])
+
+  useEffect(() => {
     console.log("In USEEFFECT OF PREVIEW SCREEN");
     console.log("props.podcast = ",props.navigation.state.params.podcast);
     const podcast = props.navigation.state.params.podcast;
+    retrieveCategories();
     if(podcast !== undefined && podcast !== null)
     {
       setPodcastDescription(podcast.podcastDescription);
       setPodcastName(podcast.podcastName);
+      //setSelectedCategories(podcast.genres);  
       setPodcastImage(podcast.podcastPictures[0]);
       setPreviewHeaderText("Edit Podcast");
       
@@ -940,7 +956,11 @@ const OriginalsPreviewScreen = (props) => {
       <View style={{marginTop:10}}>
       <View style={{alignItems:'center',marginHorizontal:width/8,borderWidth:0.5,borderRadius:10,borderColor:'black',paddingHorizontal:5}}>
         <Text style={{fontFamily:'Andika-R',color:'gray', paddingVertical:10}}>Choose categories for your podcast</Text>
-      <TagSelect itemStyle={styles.item}
+      {
+        showTagSelect == true &&
+        <TagSelect 
+            value={defaultCategoryKeysSelected}
+            itemStyle={styles.item}
             itemLabelStyle={styles.label}
             itemStyleSelected={styles.itemSelected}
             itemLabelStyleSelected={styles.labelSelected}
@@ -959,6 +979,8 @@ const OriginalsPreviewScreen = (props) => {
                 console.log(categorySelectedMap)
            }}
           />
+      }
+      
         </View>
         </View>
         </Tooltip>

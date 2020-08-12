@@ -29,7 +29,7 @@ const MusicProvider=(props)=>{
   const navigation=useSelector(state=>state.userReducer.navigation)
   const userID = props.firebase._getUid();
   const isMusicEnabled = useSelector(state=>state.userReducer.isMusicEnabled);
-
+  const isPodcastPlaying = useSelector(state=>state.rootReducer.isPodcastPlaying);
   console.log("Inside MusicProvider\n\n",props,navigation,userID);
 
   animation = new Value(0);
@@ -161,7 +161,7 @@ const MusicProvider=(props)=>{
           }
           {
             
-            !isOS && isMusicEnabled && musicRedux && <MusicPlayer/>
+            !isOS && !isPodcastPlaying && isMusicEnabled && musicRedux && <MusicPlayer/>
            
           
           }

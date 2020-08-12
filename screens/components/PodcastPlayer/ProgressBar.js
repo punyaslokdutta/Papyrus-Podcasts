@@ -3,26 +3,18 @@ import Slider from '@react-native-community/slider';
 import {View, Text, StyleSheet} from 'react-native';
 import {useSelector} from 'react-redux'
 
-
-
- const ProgressBar=(props) => {
-  const currentTime=useSelector(state=>state.rootReducer.currentTime);
+const ProgressBar=(props) => {
   const duration=useSelector(state=>state.rootReducer.duration);
-  const position = getMinutesFromSeconds(currentTime);
   const fullDuration = getMinutesFromSeconds(duration);
   
- 
-
   return (
     <View style={styles.wrapper}>
       <Slider
         value={props.position}
         minimumValue={1}
         maximumValue={duration===undefined?600:duration}
-        step={0.01}
+        step={0.001}
         onValueChange={(value)=>handleOnSlide(value)}
-        onSlidingStart={props.onSlideStart}
-        onSlidingComplete={props.onSlideComplete}
         minimumTrackTintColor={'#F44336'}
         maximumTrackTintColor={'#FFFFFF'}
         thumbTintColor={'#F44336'}

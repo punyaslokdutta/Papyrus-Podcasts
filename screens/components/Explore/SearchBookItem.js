@@ -1,14 +1,6 @@
 import React, {Component, useState, useEffect, useRef,useContext} from 'react';
 import { StyleSheet, Text, View, Image, Dimensions,TouchableNativeFeedback} from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome'
 import * as theme from '../constants/theme'
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import RecordBook from '../../RecordBook' 
-import firestore from '@react-native-firebase/firestore';
-import AddChapter from '../Explore/AddChapter';
-import RBSheet from "react-native-raw-bottom-sheet";
-import {useSelector,useDispatch} from 'react-redux';
-
 
 var {width, height}=Dimensions.get('window')
  /* useContext doesn't let you subscribe to a part of the context value (or some memoized selector) without fully re-rendering.*/
@@ -17,21 +9,13 @@ var {width, height}=Dimensions.get('window')
 
  const SearchBookItem = React.memo((props)=> {
   
-  console.log("PROPS = ",props);
-  const refRBSheet = useRef();
-  const fromSearchChapterScreen = props.fromSearchChapterScreen;
-  console.log("fromSearchChapterScreen : ",fromSearchChapterScreen)
-
+  console.log("PROPS = ",props);  
   console.log("Inside SearchBookItem");
    console.log("Book Authors : ",props.book.authors);
   console.log("Book Name : ",props.book.bookName)
         return (
           <TouchableNativeFeedback onPress={() => {
-              console.log("fromSearchChapterScreen : ",props.fromSearchChapterScreen)
-            if(props.fromSearchChapterScreen === false)
               props.navigation.navigate('RecordBook', {bookID : props.book.objectID })
-             else
-              refRBSheet.current.open()
           }
           }>
 

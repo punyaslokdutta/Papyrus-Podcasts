@@ -44,7 +44,6 @@ const PreviewScreen = (props) => {
   const [toolTipDescriptionVisible,setToolTipDescriptionVisible] = useState(false);
   const [toolTipTagsVisible,setToolTipTagsVisible] = useState(false); 
 
-  const categoryMapRedux = useSelector(state=>state.categoryReducer.categoryMap); 
   const editpodcast = useSelector(state=>state.recorderReducer.editpodcast);
   const displayPictureURL = useSelector(state=>state.userReducer.displayPictureURL)
   const [isPlaying,setIsPlaying] = useState(false);
@@ -365,22 +364,6 @@ const PreviewScreen = (props) => {
         })
     }
   }
-
-  // async function updatePodcastCountInCategoryDoc(){
-
-  //   console.log("categoryMapRedux:- ",categoryMapRedux);
-  //   genres.forEach(genre => {
-  //     console.log("genreName: ",genre," |  genreID: ",categoryMapRedux[genre]);
-  //     firestore().collection('Categories').doc(categoryMapRedux[genre]).set({
-  //       numPodcasts : firestore.FieldValue.increment(1)
-  //     },{merge:true}).then(() => {
-  //       console.log("Successfully updated numPodcasts in category - ",genre);
-  //     }).catch((error) => {
-  //       console.log("Error in updating numPodcasts in category - ",genre);
-  //       console.log(error);
-  //     })
-  //   });
-  // }
 
   useEffect(
     () => {
