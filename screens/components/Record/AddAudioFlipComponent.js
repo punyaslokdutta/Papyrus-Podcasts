@@ -11,7 +11,6 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { renderers } from 'react-native-popup-menu';
 import RNFetchBlob from 'react-native-fetch-blob'
 import {request, PERMISSIONS,RESULTS} from 'react-native-permissions';
-//import flipRecorderJSON from '../../../assets/animations/flipRecorder.json';
 import Slider from '@react-native-community/slider';
 import {useSelector, useDispatch,connect} from "react-redux"
 import OpenSettings from 'react-native-open-settings';

@@ -26,6 +26,8 @@ import IconAntDesign from 'react-native-vector-icons/AntDesign'
 import Animated,{Easing} from 'react-native-reanimated';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 import { TouchableNativeFeedback } from 'react-native-gesture-handler';
+import ImageColors from "react-native-image-colors"
+import LinearGradient from 'react-native-linear-gradient';
 
 //import { styles } from '../categories/components/Block';
 
@@ -58,7 +60,9 @@ const AnimatedIcon = Animatable.createAnimatableComponent(EvilIcon)
   const userID = props.userID;
   const privateDataID = "private" + userID;
 
-  
+  const [dominantBackgroundColor,setDominantBackgroundColor] = useState('#212121')
+  const [averageBackgroundColor,setAverageBackgroundColor] = useState('#212121')
+
   const navBarHeight = useSelector(state=>state.userReducer.navBarHeight);
   const sessionStartListeningTime = useSelector(state=>state.rootReducer.sessionStartListeningTime);
   const rate=useSelector(state=>state.rootReducer.rate);
@@ -83,6 +87,7 @@ const AnimatedIcon = Animatable.createAnimatableComponent(EvilIcon)
   var podcastName = props.podcast.podcastName;
 
   
+
   var podcastDescription = props.podcast.podcastDescription;
   if(podcastDescription === undefined || podcastDescription === null)
     podcastDescription = "";
@@ -105,7 +110,7 @@ const AnimatedIcon = Animatable.createAnimatableComponent(EvilIcon)
       },
       social: {
         title: props.podcast.podcastName,
-        descriptionText: props.podcast.podcastDescription,
+        descriptionText: props.podcast.podcastDescription.slice(0,100),
         imageUrl: props.podcast.podcastPictures[0]
       }
     });
@@ -175,26 +180,25 @@ async function togglePlay  ()  {
 
 }
 
-// useEffect(() => {
-//   TrackPlayer.addEventListener('remote-stop', () => {
-//     dispatch({type:"SET_PODCAST",payload:null});
-//     TrackPlayer.destroy()
-//   });
-// },[])
+
 
   useEffect(() => {
-    props.podcast !== null && setup();
+    props.podcast !== null && setup() && extractDominantColor();
   },[props.podcast])
 
   useEffect(() => {
     console.log("playbackState:",playbackState);
     if(playbackState == TrackPlayer.STATE_PLAYING){
       console.log("IN STATE PLAYING");
+      if(lastPlayingCurrentTime !== null){
+        console.log("[PodcasContent] TRACK PLAYER SEEKING");
+        TrackPlayer.seekTo(lastPlayingCurrentTime);
+        dispatch({type:"SET_LAST_PLAYING_CURRENT_TIME",payload:null});
+      }
       loadingPodcast == true && dispatch({type:"SET_LOADING_PODCAST", payload:false});
       dispatch({type:"SET_PAUSED", payload:false});
       // ONLY ON First TIME LOAD
-      lastPlayingCurrentTime != null && TrackPlayer.seekTo(lastPlayingCurrentTime);
-      dispatch({type:"SET_LAST_PLAYING_CURRENT_TIME",payload:null});
+       
     }
     else if(playbackState == TrackPlayer.STATE_BUFFERING){
       dispatch({type:"SET_LOADING_PODCAST", payload:true});
@@ -211,6 +215,27 @@ async function togglePlay  ()  {
     //   dispatch({type:"SET_PODCAST",payload:null});
     // }
   },[playbackState])
+
+  async function extractDominantColor (){
+    const colors = await ImageColors.getColors(props.podcast.podcastPictures[0], {
+      fallback: "#228B22",
+    })
+    const averageColor = colors.average;
+      console.log("averageColor = ",averageColor);
+      setDominantBackgroundColor(colors.average);
+      setAverageBackgroundColor(colors.lightVibrant);
+    //const colors = await ImageColors.getColors(props.podcast.podcastPictures[0], config)
+    if (colors.platform === "android") {
+      // Access android properties
+      // e.g.
+      const averageColor = colors.average
+      console.log("averageColor = ",averageColor);
+    } else {
+      // Access iOS properties
+      // e.g.
+      const backgroundColor = colors.background
+    }
+  }
 
   function handleSmallAnimatedHeartIconRef  (ref) {
     smallAnimatedHeartIcon = ref
@@ -304,7 +329,7 @@ async function removeFromBookmarks() {
          console.log("Error in decrementing numUsersRetweeted in podcast(chapter) Doc");
        })
     }
-    else
+    else if(props.podcast.isChapterPodcast == false)
     {
      firestore().collection('books').doc(props.podcast.bookID)
        .collection('podcasts').doc(props.podcast.podcastID).set({
@@ -313,6 +338,16 @@ async function removeFromBookmarks() {
          console.log("Successfully decremented numUsersRetweeted in podcast(book) Doc");
        }).catch((error) => {
          console.log("Error in decrementing numUsersRetweeted in podcast(book) Doc");
+       })
+    }
+    else if(props.podcast.isOriginalPodcast == true)
+    {
+     firestore().collection('podcasts').doc(props.podcast.podcastID).set({
+         numUsersRetweeted : firestore.FieldValue.increment(-1)
+       },{merge:true}).then(() => {
+         console.log("Successfully decremented numUsersRetweeted in podcast(original) Doc");
+       }).catch((error) => {
+         console.log("Error in decrementing numUsersRetweeted in podcast(original) Doc");
        })
     }
 
@@ -344,6 +379,7 @@ async function addToBookmarks() {
     podcasterID : props.podcast.podcasterID,
     createdOn : props.podcast.createdOn,
     isChapterPodcast : props.podcast.isChapterPodcast,
+    isOriginalPodcast : props.podcast.isOriginalPodcast,
     duration: props.podcast.duration
   }).then(function(docRef){
     firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('bookmarks').doc(docRef.id).set({
@@ -372,7 +408,7 @@ async function addToBookmarks() {
         console.log("Error in incrementing numUsersRetweeted in podcast(chapter) Doc");
       })
    }
-   else
+   else if(props.podcast.isChapterPodcast == false)
    {
     firestore().collection('books').doc(props.podcast.bookID)
       .collection('podcasts').doc(props.podcast.podcastID).set({
@@ -383,6 +419,17 @@ async function addToBookmarks() {
         console.log("Error in incrementing numUsersRetweeted in podcast(book) Doc");
       })
    }
+   else if(props.podcast.isOriginalPodcast == true)
+   {
+    firestore().collection('podcasts').doc(props.podcast.podcastID).set({
+        numUsersRetweeted : firestore.FieldValue.increment(1)
+      },{merge:true}).then(() => {
+        console.log("Successfully incremented numUsersRetweeted in podcast(original) Doc");
+      }).catch((error) => {
+        console.log("Error in incrementing numUsersRetweeted in podcast(original) Doc");
+      })
+   }
+
 
 }
 
@@ -434,15 +481,19 @@ async function updatePodcastsUnliked(props) {
           numUsersLiked : firestore.FieldValue.increment(-1)
       },{merge:true})
     }
-    else
+    else if(props.podcast.isChapterPodcast === false)
     {
       await firestore().collection('books').doc(props.podcast.bookID).collection('podcasts')
           .doc(props.podcast.podcastID).set({
         numUsersLiked : firestore.FieldValue.increment(-1)
       },{merge:true})
     }
-    
-  
+    else if(props.podcast.isOriginalPodcast === true)    
+    {
+      await firestore().collection('podcasts').doc(props.podcast.podcastID).set({
+        numUsersLiked : firestore.FieldValue.increment(-1)
+      },{merge:true})
+    }
  
   await firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).set({
     podcastsLiked : firestore.FieldValue.arrayRemove(props.podcast.podcastID)
@@ -458,6 +509,28 @@ async function updatePodcastsLiked(props){
   const numUsers = numLikesRedux + 1;  
 
   dispatch({type:'SET_NUM_LIKES',payload:numUsers})
+
+  if(props.podcast.isChapterPodcast === true)
+    {
+      await firestore().collection('books').doc(props.podcast.bookID).collection('chapters').
+        doc(props.podcast.chapterID).collection('podcasts').doc(props.podcast.podcastID).set({
+          numUsersLiked : firestore.FieldValue.increment(1)
+      },{merge:true})
+    }
+    else if(props.podcast.isChapterPodcast === false)
+    {
+      await firestore().collection('books').doc(props.podcast.bookID).collection('podcasts')
+          .doc(props.podcast.podcastID).set({
+        numUsersLiked : firestore.FieldValue.increment(1)
+      },{merge:true})
+    }
+    else if(props.podcast.isOriginalPodcast === true)    
+    {
+      await firestore().collection('podcasts').doc(props.podcast.podcastID).set({
+        numUsersLiked : firestore.FieldValue.increment(1)
+      },{merge:true})
+    }
+
 
   const likedPodcasts = await firestore().collection('users').doc(userID).collection('privateUserData').doc(privateDataID).set({
         podcastsLiked : firestore.FieldValue.arrayUnion(props.podcast.podcastID)
@@ -477,6 +550,7 @@ async function updatePodcastsLiked(props){
   try 
   {          
     await instance({ // change in podcast docs created by  user
+      likeUpdatedInDocument : true, // so that we don't update numUsersLiked in cloud functions
       timestamp : moment().format(),
       photoURL : userDisplayPictureURL,
       podcastID : props.podcast.podcastID,
@@ -487,7 +561,7 @@ async function updatePodcastsLiked(props){
       podcastName : props.podcast.podcastName,
       bookID : props.podcast.bookID,
       chapterID : props.podcast.chapterID,
-      isChapterPodcast: props.podcast.isChapterPodcast 
+      isChapterPodcast: props.podcast.isChapterPodcast,
     });
   }
   catch (e) 
@@ -500,7 +574,13 @@ async function updatePodcastsLiked(props){
 
     return (
       
-        <ScrollView style={styles.content}>
+      <LinearGradient  colors={['transparent',dominantBackgroundColor,'#212121']} >
+        <ScrollView 
+        style={{paddingHorizontal: 8,paddingBottom:40,
+          //backgroundColor:dominantBackgroundColor,
+          height:height
+          }}>
+
         <View>
         <View>
         {/* <TouchableOpacity style={styles.rateButton} onPress={()=>{
@@ -611,7 +691,7 @@ async function updatePodcastsLiked(props){
          <View style={{flexDirection: 'row',
             justifyContent: 'center',
             alignItems: 'center',
-            paddingTop:height/40,marginBottom:48}}>
+            paddingTop:height/40,paddingBottom:50,marginBottom:48}}>
 
            
 
@@ -662,9 +742,11 @@ async function updatePodcastsLiked(props){
             </TouchableOpacity>
             </View>
           </View>
-        
+          <View style={{height:100}}/>
+
     </ScrollView>
-      
+    </LinearGradient>
+
     );
   }
   

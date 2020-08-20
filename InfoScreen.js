@@ -73,6 +73,7 @@ const { width, height } = Dimensions.get("window");
       
         if(podcast[0].isChapterPodcast == true)
         {
+          return (
           <View>
           <Text style={{color:'white',fontFamily:'Montserrat-Regular'}}>Chapter</Text> 
           <TouchableOpacity onPress={() => props.navigation.navigate('RecordChapter',{bookID:podcast[0].bookID,chapterID:podcast[0].chapterID})}>
@@ -84,16 +85,21 @@ const { width, height } = Dimensions.get("window");
           <Text style={{fontSize:20,fontFamily:'Andika-R',fontColor:'white'}}>{podcast[0].bookName}{"  "}</Text>
           </TouchableOpacity>
           </View>
+          )
+        }
+        else if(podcast[0].isOriginalPodcast === undefined)
+        {
+          return (
+            <View>
+            <Text style={{color:'white',fontFamily:'Montserrat-Regular'}}>Book</Text>
+            <TouchableOpacity onPress={() => props.navigation.navigate('RecordBook',{bookID:podcast[0].bookID})}>
+            <Text style={{fontSize:20,fontFamily:'Montserrat-Bold',color:'white'}}>{podcast[0].bookName}{" "}</Text>
+            </TouchableOpacity>
+            </View>
+          )
         }
         else
-        {
-          <View>
-          <Text style={{color:'white',fontFamily:'Montserrat-Regular'}}>Book</Text>
-          <TouchableOpacity onPress={() => props.navigation.navigate('RecordBook',{bookID:podcast[0].bookID})}>
-          <Text style={{fontSize:20,fontFamily:'Montserrat-Bold',color:'white'}}>{podcast[0].bookName}{" "}</Text>
-          </TouchableOpacity>
-          </View>
-        }
+          return null;
     }
 
     return (

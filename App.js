@@ -6,12 +6,16 @@ import setUserDetails from './screens/setUserDetails'
 import { StyleSheet, View, TouchableOpacity, Image, Text,Dimensions, Button, ScrollView, Alert, NativeModules,Linking,Platform} from 'react-native';
 import AddBookReviewScreen from './screens/components/Record/AddBookReviewScreen'
 import store from './store';
+import { connect } from 'react-redux';
+import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
+import moment from 'moment';
 import {createSwitchNavigator,
   createAppContainer,
   } from 'react-navigation'
 import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import { MenuProvider } from 'react-native-popup-menu';
 
+import WriteScreen from './screens/WriteScreen';
 import FlipPreviewScreen from './screens/components/Record/FlipPreviewScreen';
 import TabBar from './screens/navigation/CustomAppTabBar';
 import LikersScreen from './screens/components/PodcastPlayer/LikersScreen'
@@ -25,6 +29,7 @@ import WelcomeScreen from './screens/WelcomeScreen';
 import thunk from 'redux-thunk';
 import LottieView from 'lottie-react-native';
 
+import PopularBooks from './screens/components/Profile/PopularBooks';
 import EditMusicPreferences from './screens/EditMusicPreferences';
 import ExploreFlipScreenVertical from './screens/components/Explore/ExploreFlipScreenVertical';
 import ProfileFlipScreenVertical from './screens/components/Profile/ProfileFlipScreenVertical';
@@ -136,6 +141,7 @@ const ExploreStackNavigator=createStackNavigator(
      Explore : {screen : Explore,navigationOptions:{
        header:null
      }},
+     PopularBooks : {screen : PopularBooks},
      FlipsExploreScreen : {screen : FlipsExploreScreen}
      //MainFlipItem : {screen: MainFlipItem},
   },
@@ -210,6 +216,8 @@ RecordStackNavigator.navigationOptions = ({ navigation }) => {
 const HomeStackNavigator= createStackNavigator(
   {
     HomeScreen :{screen: HomeScreen},
+    SaveExploreBooks : {screen : SaveExploreBooks},
+
     //MainFlipItem : {screen: MainFlipItem}
   },
   {
@@ -442,7 +450,12 @@ const AppDrawerNavigator=createDrawerNavigator(
       navigationOptions: {
         drawerLabel: "Settings ",
        // drawerIcon: () => (<Icon name="cog" size={25} style={{ color: 'white' }} />),
-      }}
+      }},
+    // Write: {screen:WriteScreen,
+    //   navigationOptions: {
+    //     drawerLabel: "Write ",
+    //     // drawerIcon: () => (<Icon name="cog" size={25} style={{ color: 'white' }} />),
+    //   }}
   },
   {
     drawerWidth: SCREEN_WIDTH/2,
@@ -508,7 +521,9 @@ export default class App extends Component {
 
   componentDidMount = async () => {
     
+    console.log("App.js mounts");
     try{
+      
       const updateVersionDoc = await firestore().collection('appUpdates').doc('newUpdate').get();
       const updateVersionData = updateVersionDoc.data();
       store.dispatch({type:"SET_BUILD_VERSION",payload:this.state.currentVersion});
@@ -535,16 +550,135 @@ export default class App extends Component {
     }
     finally{
       SplashScreen.hide();
-    }
+    } 
     
     
-
   }
 
+  validateAndAddLatestPlayingToFirestore = async(continueListeningPodcasts,podcastRedux,userID,privateUserID) => {
+    
+    // [1] if podcast already present in the PodcastsListened docs
+    // [2] if not then check if there are only 10 docs or not.
+    // [3] if there are 10 docs, then replace the last element since array(redux) 
+    //     is sorted in descending order of createdOn
+    // [4] if there are less than 10 docs, then simply add a new document
+    
+    console.log("[App] validateAndAddLatestPlayingToFirestore")
+    const pos =  await TrackPlayer.getPosition();
+    console.log("pos : ",pos);
+    console.log("[validateAndAddLatestPlayingToFirestore] userID = ",userID);
+    
+    // [1] if podcast already present in the PodcastsListened docs
+
+    var idx = -1;
+    for(var i = 0; i < continueListeningPodcasts.length; i++) {
+      if (continueListeningPodcasts[i].podcastID == podcastRedux.podcastID) {
+          idx = i;
+          break;
+      }
+    }
+
+    const currTime = moment().format();
+    try {
+      if(idx !== -1){
+        firestore().collection('users').doc(userID).collection('privateUserData')
+        .doc(privateUserID).collection('PodcastsListened').doc(continueListeningPodcasts[idx].podcastsListenedID).set({
+          lastPlayedPosition : pos,
+          createdOn : currTime,
+          podcastPicture : podcastRedux.podcastPictures[0],
+          podcastName : podcastRedux.podcastName
+        },{merge:true}).then(() => {
+          console.log("[validateAndAddLatestPlayingToFirestore] Successfully updated already existing podcast in the PodcastsListened collection");
+          // continueListeningPodcasts.pop();
+          // continueListeningPodcasts.push({
+          //   podcastID : podcastRedux.podcastID,
+          //   lastPlayedPosition : pos,
+          //   createdOn : currTime,
+          //   podcastPicture : podcastRedux.podcastPictures[0],
+          //   podcastName : podcastRedux.podcastName,
+          //   duration : podcastRedux.duration,
+          //   podcastsListenedID : continueListeningPodcasts[idx].podcastsListenedID
+          // });        
+          // store.dispatch({type:"SET_CONTINUE_LISTENING_PODCASTS",payload:continueListeningPodcasts})
+        }).catch(error => console.log("[validateAndAddLatestPlayingToFirestore] Error in updating already existing podcast in the PodcastsListened collection",error))            
+      }
+      else if(continueListeningPodcasts.length == 10){
+        firestore().collection('users').doc(userID).collection('privateUserData')
+        .doc(privateUserID).collection('PodcastsListened').doc(continueListeningPodcasts[continueListeningPodcasts.length - 1].podcastsListenedID).set({
+          podcastID : podcastRedux.podcastID,
+          lastPlayedPosition : pos,
+          createdOn : currTime,
+          podcastPicture : podcastRedux.podcastPictures[0],
+          podcastName : podcastRedux.podcastName,
+          duration : podcastRedux.duration
+        },{merge:true}).then(() => {
+          console.log("[validateAndAddLatestPlayingToFirestore] Successfully replaced the oldest podcast in terms of user's listening in the PodcastsListened collection");
+          // continueListeningPodcasts.pop();
+          // continueListeningPodcasts.push({
+          //   podcastID : podcastRedux.podcastID,
+          //   lastPlayedPosition : pos,
+          //   createdOn : currTime,
+          //   podcastPicture : podcastRedux.podcastPictures[0],
+          //   podcastName : podcastRedux.podcastName,
+          //   duration : podcastRedux.duration,
+          //   podcastsListenedID : continueListeningPodcasts[continueListeningPodcasts.length - 1].podcastsListenedID
+          // });        
+
+          // store.dispatch({type:"SET_CONTINUE_LISTENING_PODCASTS",payload:continueListeningPodcasts})
+        }).catch(error => console.log("[validateAndAddLatestPlayingToFirestore] Error in replacing oldest podcast in terms of user's listening in PodcastsListened",error))  
+      }
+      else if(continueListeningPodcasts.length < 10){
+        firestore().collection('users').doc(userID).collection('privateUserData')
+        .doc(privateUserID).collection('PodcastsListened').add({
+          podcastID : podcastRedux.podcastID,
+          lastPlayedPosition : pos,
+          createdOn : currTime,
+          podcastPicture : podcastRedux.podcastPictures[0],
+          podcastName : podcastRedux.podcastName,
+          duration : podcastRedux.duration
+        }).then((docRef) => {
+          console.log("[validateAndAddLatestPlayingToFirestore] Successfully added to PodcastsListened");
+        firestore().collection('users').doc(userID).collection('privateUserData')
+        .doc(privateUserID).collection('PodcastsListened').doc(docRef.id).set({
+          podcastsListenedID : docRef.id
+        },{merge:true})
+        // continueListeningPodcasts.push({
+        //   podcastID : podcastRedux.podcastID,
+        //   lastPlayedPosition : pos,
+        //   createdOn : currTime,
+        //   podcastPicture : podcastRedux.podcastPictures[0],
+        //   podcastName : podcastRedux.podcastName,
+        //   duration : podcastRedux.duration,
+        //   podcastsListenedID : docRef.id
+        // });
+        // store.dispatch({type:"SET_CONTINUE_LISTENING_PODCASTS",payload:continueListeningPodcasts})
+        }).catch((error) => {
+          console.log("[validateAndAddLatestPlayingToFirestore] Error in adding to PodcastsListened",error)
+        })
+      } 
+    }
+    catch(error){
+      console.log("[validateAndAddLatestPlayingToFirestore]ERROR: ",error)
+    }
+  }
 
   componentWillUnmount(){
+
+    const state = store.getState();
+
+    const podcastRedux = state.rootReducer.podcast;
+    const userID = state.userReducer.userID;
+    const continueListeningPodcasts = state.userReducer.continueListeningPodcasts;
+    const privateUserID = "private" + userID;
     
+    console.log("podcastRedux: ",podcastRedux);
+    console.log("userID: ",userID);
+    console.log("continueListeningPodcasts: ",continueListeningPodcasts);
+
+    if(podcastRedux !== null)
+      this.validateAndAddLatestPlayingToFirestore(continueListeningPodcasts,podcastRedux,userID,privateUserID);
     console.log("OUT!!!!!!!");
+
   }
 
   render(){

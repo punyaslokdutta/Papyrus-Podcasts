@@ -271,7 +271,7 @@ class PodcastPlayer extends React.Component {
     console.log("Back Butttttton: ",this.props.podcast.podcastID);
     if(this.props.podcast!==null)
     {
-      this.setLastPlayingPodcastInUserPrivateDoc(this.props.podcast.podcastID);
+      //this.setLastPlayingPodcastInUserPrivateDoc(this.props.podcast.podcastID);
     }
     return false;
   }
@@ -385,6 +385,7 @@ render() {
                   }
   
                 }}>
+                  
                 <Animated.Image
                   source={{uri:this.props.podcast.podcastPictures[0]}}
                   resizeMode='contain'

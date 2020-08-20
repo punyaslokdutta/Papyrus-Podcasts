@@ -3,7 +3,8 @@ import {useSelector, useDispatch} from "react-redux";
 import ToggleSwitch from 'toggle-switch-react-native';
 import React, {Component, useState, useEffect} from 'react';
 import { StyleSheet, View, TouchableOpacity, Image, Dimensions, Button, ScrollView,NativeModules} from 'react-native';
-import {Container, Content, Header, Body} from 'native-base'
+import {Container, Content, Header, Body} from 'native-base';
+import Toast from 'react-native-simple-toast';
 import { theme } from '../components/categories/constants';
 import { Block, Text } from '../components/categories/components/';
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -35,6 +36,7 @@ const CustomDrawerContentComponent = (props) =>
     const numNotifications = useSelector(state=>state.userReducer.numNotifications);
     const isMusicEnabled = useSelector(state=>state.userReducer.isMusicEnabled);
     const musicPreferencesArray = useSelector(state=>state.userReducer.musicPreferencesArray);
+    const isPodcastPlaying = useSelector(state=>state.rootReducer.isPodcastPlaying);
 
     const [toolTipVisible,setToolTipVisible] = useState(false);
     const dispatch = useDispatch();
@@ -127,6 +129,13 @@ return(
                   <Text style={{color:'white',fontSize:22,fontFamily:'Montserrat-Bold'}}>{props.getLabel(scene)}{"    "}</Text>
                   </View>
                 )
+              // case "Write":
+              //   return (
+              //     <View style={{flexDirection:'row',paddingBottom:SCREEN_HEIGHT/25}}>
+              //     <Icon name="cog" size={25} style={{ color: 'white',paddingTop:SCREEN_HEIGHT/150,paddingLeft:SCREEN_WIDTH/20,paddingRight:SCREEN_WIDTH/20 }} />
+              //     <Text style={{color:'white',fontSize:22,fontFamily:'Montserrat-Bold'}}>{props.getLabel(scene)}{"    "}</Text>
+              //     </View>
+              //   )
               default:
                 return null   
            }   
@@ -152,6 +161,9 @@ return(
                 case 'Settings':
                   props.onItemPress(route);
                   break;  
+                case 'Write':
+                  props.onItemPress(route);
+                  break;  
             }
           }
           } 
@@ -165,16 +177,21 @@ return(
             onClose={() => setToolTipVisible(false)}
           >
             <ToggleSwitch
-              isOn={isMusicEnabled}
+              isOn={isMusicEnabled && !isPodcastPlaying}
               onColor="white"
               offColor='#dddd'
               labelStyle={{ color: "black", fontWeight: "900" }}
               size="medium"
               onToggle={isOn => {
                 console.log("changed to : ", isOn)
-                modifyMusicPreferenceInDatabase(isOn);
-                console.log("musicRedux: ",musicRedux);
-                dispatch({type:"SET_IS_MUSIC_ENABLED",payload:isOn})
+                if(isOn == true && isPodcastPlaying == true)
+                  Toast.show("Close the podcast to play background music.");
+                else{
+                  modifyMusicPreferenceInDatabase(isOn);
+                  console.log("musicRedux: ",musicRedux);
+                  dispatch({type:"SET_IS_MUSIC_ENABLED",payload:isOn})
+                }
+                
               }}
             />
             </Tooltip>

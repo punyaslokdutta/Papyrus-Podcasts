@@ -122,6 +122,14 @@ class RepostPodcastsScreen extends React.Component {
       )
   }
 
+  renderHeader = () => {
+    return (
+      <View style={{marginVertical:20,marginLeft:20}}>
+        <Text style={{fontFamily:'Montserrat-Bold',fontSize:25}}>Explore Podcasts</Text>
+        </View>
+    )
+  }
+
   renderFooter = () => {
     
     if (this.state.refreshing == true) {
@@ -177,7 +185,8 @@ class RepostPodcastsScreen extends React.Component {
           onScroll={this.handleScroll}
           showsVerticalScrollIndicator={false}
           keyExtractor={item => item.podcastID}
-            ListFooterComponent={this.renderFooter}
+          ListHeaderComponent={this.renderHeader}
+          ListFooterComponent={this.renderFooter}
           onEndReached={this.onEndReached}
           onEndReachedThreshold={1}
           refreshing={this.state.refreshing}

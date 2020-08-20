@@ -76,25 +76,23 @@ const SearchBookScreen=(props)=>
 
     useEffect( ()=>
         {
-            setLoading(true);
-            console.log("Inside useEffect of SearchBookScreen")
-            if(searchQuery == "" || searchQuery == null)
-            {
-                setBooks(null)
-                setLoading(false);
-            }
+          setLoading(true);
+          console.log("Inside useEffect of SearchBookScreen")
+          if(searchQuery == "" || searchQuery == null)
+          {
+              setBooks(null)
+              setLoading(false);
+          }
 
-            searchQuery && index.search(searchQuery,{
-                page : 0,
-                hitsPerPage : numHits
-            }).then(({hits})=>
-            {
-                setBooks(hits);
-                setLoading(false);
-                console.log(hits);
-            })
-            
-            
+          searchQuery && index.search(searchQuery,{
+              page : 0,
+              hitsPerPage : numHits
+          }).then(({hits})=>
+          {
+              setBooks(hits);
+              setLoading(false);
+              console.log(hits);
+          })    
         }, [searchQuery]
     )
 
@@ -114,9 +112,8 @@ const SearchBookScreen=(props)=>
                 hitsPerPage : numHits
             }).then(({hits})=>
             {
-
                 (books != undefined) && (books.length != 0) && (hits.length != 0) && 
-                     setBooks([...books,...hits]);
+                setBooks([...books,...hits]);
                 setRefreshing(false);
                 console.log(hits);
             })

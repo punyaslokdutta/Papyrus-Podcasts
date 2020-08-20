@@ -18,6 +18,7 @@ const setUserDetails = (props) => {
     console.log(userid)
     const dispatch = useDispatch();
 
+    dispatch({type:"SET_USER_ID",payload:userid});
 
     async function retrieveDataPrivate(){
       let doc = null;
@@ -53,8 +54,8 @@ const setUserDetails = (props) => {
         doc._data.bookmarksCountArray && dispatch({type:'SET_BOOKMARKS_COUNT_ARRAY',payload:doc._data.bookmarksCountArray})
         doc._data.likesCountArray != null && doc._data.likesCountArray != undefined
          && dispatch({type:'SET_LIKES_COUNT_ARRAY',payload:doc._data.likesCountArray})
-        doc._data.lastPlayingPodcastID && dispatch({type:'SET_LAST_PLAYING_PODCASTID',payload:doc._data.lastPlayingPodcastID})
-        doc._data.lastPlayingCurrentTime && dispatch({type:'SET_LAST_PLAYING_CURRENT_TIME',payload:doc._data.lastPlayingCurrentTime})
+        //doc._data.lastPlayingPodcastID && dispatch({type:'SET_LAST_PLAYING_PODCASTID',payload:doc._data.lastPlayingPodcastID})
+        //doc._data.lastPlayingCurrentTime && dispatch({type:'SET_LAST_PLAYING_CURRENT_TIME',payload:doc._data.lastPlayingCurrentTime})
 
         doc._data.email && dispatch({type:'CHANGE_EMAIL',payload:doc._data.email})
         doc._data.name && dispatch({type:'CHANGE_NAME',payload:doc._data.name})

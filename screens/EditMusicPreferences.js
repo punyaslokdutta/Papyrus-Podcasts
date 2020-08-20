@@ -20,6 +20,7 @@ const EditMusicPreferences = (props) => {
     const [musicCategoriesState,setMusicCategoriesState] = useState([]);
     const musicPreferences = useSelector(state=>state.userReducer.musicPreferences);
     const isMusicEnabled = useSelector(state=>state.userReducer.isMusicEnabled);
+    const isPodcastPlaying = useSelector(state=>state.rootReducer.isPodcastPlaying);
 
     useEffect(() => {
         dispatch({type:"SET_MUSIC_PREFERENCES_MAP"});
@@ -79,15 +80,18 @@ const EditMusicPreferences = (props) => {
         return (
             <View style={{alignItems:'center',marginBottom:30}}>
             <ToggleSwitch
-            isOn={isMusicEnabled}
+            isOn={isMusicEnabled && !isPodcastPlaying}
             onColor="#79cced"
             offColor='#808080'
             labelStyle={{ color: "white", fontWeight: "900" }}
             size="medium"
             onToggle={isOn => {
-              console.log("changed to : ", isOn)
-              modifyMusicPreferenceInDatabase(isOn);
-              dispatch({type:"SET_IS_MUSIC_ENABLED",payload:isOn})
+              if(isOn == true && isPodcastPlaying == true)
+                  Toast.show("Close the podcast to play background music.");
+                else{
+                  modifyMusicPreferenceInDatabase(isOn);
+                  dispatch({type:"SET_IS_MUSIC_ENABLED",payload:isOn})
+                }
             }}
           />
           </View>
@@ -100,7 +104,7 @@ const EditMusicPreferences = (props) => {
           <TouchableOpacity onPress={() => {
             addMusicPreferencesToFirestore();
           }} style={{width:width/5,height:width/12,borderColor:'black',borderWidth:1,borderRadius:10,alignItems:'center',justifyContent:'center'}}>
-            <Text style={{fontSize:width/20,fontFamily:'Andika-R'}}>Done</Text>
+            <Text style={{fontSize:width/20,fontFamily:'Montserrat-Regular'}}>Done</Text>
             </TouchableOpacity>
             </View>
         )

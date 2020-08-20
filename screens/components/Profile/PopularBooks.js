@@ -9,7 +9,7 @@ import { withFirebaseHOC } from '../../config/Firebase';
 import SaveBookItem from '../Explore/SaveBookItem';
 var {width, height}=Dimensions.get('window')
 
-const SaveExploreBooks = (props) => {
+const PopularBooks = (props) => {
   
   const  userID = props.firebase._getUid();
   const privateUserID = "private" + userID;
@@ -31,20 +31,19 @@ const SaveExploreBooks = (props) => {
   {
     setLoading(true);
     try{
-      console.log("[SaveExploreBooks] Retrieving Data");
+      console.log("[PopularBooks] Retrieving Data");
 
-        let query = await firestore().collection('books').
-        where('genres','array-contains-any',userPreferences).
-        orderBy('createdOn','desc').limit(6).get();
+        let query = await firestore().collection('books').where('isExploreRecordBook','==',true)
+                            .orderBy('createdOn','desc').limit(limit).get();
 
-        var userPreferredBooksData = query.docs.map(document=>document.data());
+        var popularBooksData = query.docs.map(document=>document.data());
 
         var lastVisibleBook = lastVisible;
-        if(userPreferredBooksData.length != 0){
-            lastVisibleBook = userPreferredBooksData[userPreferredBooksData.length - 1].createdOn;
+        if(popularBooksData.length != 0){
+            lastVisibleBook = popularBooksData[popularBooksData.length - 1].createdOn;
         }
 
-        setBooks(userPreferredBooksData);
+        setBooks(popularBooksData);
         setLastVisible(lastVisibleBook);
 
       }
@@ -59,13 +58,13 @@ const SaveExploreBooks = (props) => {
   
   async function retrieveMoreBooks()
   {
-    console.log("[SaveExploreBooks] retrieveMoreBooks starts()")
+    console.log("[PopularBooks] retrieveMoreBooks starts()")
     setRefreshing(true);
     try{   
         console.log("lastVi");
       let additionalBookDocuments =  await firestore().collection('books').
-      where('genres','array-contains-any',userPreferences).
-      orderBy('createdOn','desc').startAfter(lastVisible).limit(limit).get();
+      where('isExploreRecordBook','==',true).orderBy('createdOn','desc').
+      startAfter(lastVisible).limit(limit).get();
       console.log(lastVisible);
       let documentData = additionalBookDocuments.docs.map(document => document.data());
       console.log(documentData);
@@ -188,7 +187,7 @@ function renderBook({item,index})  {
 }
 
 
-export default withFirebaseHOC(SaveExploreBooks);
+export default withFirebaseHOC(PopularBooks);
 
 
 const styles = StyleSheet.create({

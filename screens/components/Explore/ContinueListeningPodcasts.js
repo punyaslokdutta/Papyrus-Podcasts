@@ -20,11 +20,11 @@ import Octicons from 'react-native-vector-icons/Octicons';
 
 import * as theme from '../constants/theme';
 import RecordBook from '../../RecordBook'
-import BookItem from './BookItem';
+import ContinueListeningPodcastItem from './ContinueListeningPodcastItem';
 //const AnimatedFlatList = Animated.createAnimatedComponent(FlatList)
 const { width, height } = Dimensions.get('window');
 
-class BookList extends Component {
+class ContinueListeningPodcasts extends Component {
   constructor(props)
   {
     super(props)
@@ -42,7 +42,7 @@ class BookList extends Component {
     const { activeSlide } = this.state;
     return (
         <Pagination
-          dotsLength={this.props.books.length}
+          dotsLength={this.props.podcasts.length}
           activeDotIndex={activeSlide}
           containerStyle={{ paddingBottom:0,marginBottom:10 }}
           dotStyle={{
@@ -62,10 +62,10 @@ class BookList extends Component {
 }
 
   renderDots() {
-    console.log(this.props.books)
-    const  books  = this.props.books;
+    console.log(this.props.podcasts)
+    const  podcasts  = this.props.podcasts;
       console.log("Swayam")
-      console.log(books)
+      console.log(podcasts)
     
     const dotPosition = this.state.activeSlide;//Animated.divide(this.scrollX, width);
     console.log("dotPosition: ",dotPosition);
@@ -74,7 +74,7 @@ class BookList extends Component {
         styles.flex, styles.row,
         { justifyContent: 'center', alignItems: 'center', marginTop: 10 }
       ]}>
-        {   books.map((item, index) => {
+        {   podcasts.map((item, index) => {
           // const borderWidth = dotPosition.interpolate({
           //   inputRange: [index -1, index, index + 1],
           //   outputRange: [0, 2.5, 0],
@@ -95,7 +95,7 @@ class BookList extends Component {
 
   
 
-  renderBooks = () => {
+  renderPodcasts = () => {
     return (
       <View style={[ styles.column, styles.books ]}>
         {/* <FlatList
@@ -108,46 +108,34 @@ class BookList extends Component {
           snapToInterval={width - 50} 
           snapToAlignment={"center"}
           style={{ overflow:'visible', height: 280 }}
-          data={this.props.books}
+          data={this.props.podcasts}
           keyExtractor={(item, index) => `${item.bookID}`}
           onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX }} }])}
-          renderItem={({ item }) => this.renderBook(item)}
+          renderItem={({ item }) => this.renderPodcast(item)}
         /> */}
+        <Text style={{fontFamily:'HeadlandOne-Regular',fontSize:23,marginBottom:20,alignSelf:'flex-start'}}> Continue Listening </Text>
         <Carousel
               ref={(c) => { this._carousel = c; }}
-              data={this.props.books}
+              data={this.props.podcasts}
               //scrollInterpolator={this.scrollInterpolator}
               //slideInterpolatedStyle={this.animatedStyles}
-              renderItem={this.renderBook}
-              firstItem={2}
+              renderItem={this.renderPodcast}
+              firstItem={1}
               activeSlideAlignment={'center'}
               sliderWidth={width}
               onSnapToItem={(index) => this.setState({ activeSlide: index }) }
-              itemWidth={width/3}
+              itemWidth={width/2}
             />
-        <View style={{flexDirection:'row',width:width,alignItems:'center',justifyContent:'center'}}>
-        <View style={{alignSelf:"center"}}>
-        {this.pagination}
-        </View>
-        <TouchableOpacity onPress={() => {
-          if(this.props.fromScreen == "HomeScreen")
-            this.props.navigation.navigate('SaveExploreBooks')
-          else
-            this.props.navigation.navigate('PopularBooks')
-        }} style={{position:'absolute',right:10,borderWidth:1,padding:5,borderRadius:5,alignSelf:'flex-end', backgroundColor:'#232930', marginBottom:20}}> 
-          <Text style={{fontFamily:'Montserrat-Bold',color:'white',textAlign:'right'}}>VIEW ALL</Text>
-           </TouchableOpacity>
-       </View>
       </View>      
     );
   }
 
-  renderBook = ({item,index}) => {
+  renderPodcast = ({item,index}) => {
     //const { navigation } = this.props;
     console.log("dwdeeedee")
     console.log(item)     
     return (
-      <BookItem item={item} navigation={this.props.navigation}/>
+      <ContinueListeningPodcastItem podcast={item} key={item.podcastID} navigation={this.props.navigation}/>
     )
   }
 
@@ -156,19 +144,19 @@ class BookList extends Component {
 
   render() {
     return (
-      <View key ={this.props.index}
+      <View
       >
-        {this.renderBooks()}
+        {this.renderPodcasts()}
       </View>
     )
   }
 }
 
-// BookList.defaultProps = {
-//   books: mocks
+// ContinueListeningPodcasts.defaultProps = {
+//   podcasts: mocks
 // };
 
-export default BookList;
+export default ContinueListeningPodcasts;
 
 const styles = StyleSheet.create({
   flex: {

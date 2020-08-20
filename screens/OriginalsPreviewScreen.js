@@ -239,6 +239,7 @@ const OriginalsPreviewScreen = (props) => {
       setPublishLoading(false);
       TrackPlayer.destroy();
       dispatch({type:'SET_EDIT_PODCAST',payload:false});
+      dispatch({type:"SET_PODCAST_UPLOAD_SUCCESS",payload:true});
       props.navigation.navigate("HomeScreen");
     }
         
@@ -562,8 +563,8 @@ const OriginalsPreviewScreen = (props) => {
 
     try{
       ImagePicker.showImagePicker(options, async (response) => {
-        console.log('Response URI = ', response.uri);
-        console.log('Response PATH = ', response.path);
+        //console.log('Response URI = ', response.uri);
+        //console.log('Response PATH = ', response.path);
   
         if (response.didCancel) {
           console.log('User cancelled image picker');
@@ -574,7 +575,7 @@ const OriginalsPreviewScreen = (props) => {
         } else {
           const source = { uri: response.uri };
           console.log("Before storageRef.putFile");
-          console.log("response : ",response);
+          //console.log("response : ",response);
           //setImageFromURL(false);
           //setPodcastImage(source);
           setLoadingPodcastImage(true);
@@ -679,14 +680,14 @@ const OriginalsPreviewScreen = (props) => {
     
      <View style={{paddingBottom:20}}>
           
-      <View style={{ width:width,borderWidth:0,borderColor:'black', paddingHorizontal: width / 20, paddingVertical: height / 20,display:'flex',justifyContent:'space-between', flexDirection: 'row' }}>
+      <View style={{width:width,borderWidth:0,borderColor:'black', paddingHorizontal: width / 20, paddingVertical: height / 20,display:'flex',justifyContent:'space-between', flexDirection: 'row' }}>
       <TouchableOpacity onPress={() => {
         TrackPlayer.destroy();
         props.navigation.goBack(null)
       }}>
       <Icon name="arrow-left" size={20} style={{color:'black'}}/>
       </TouchableOpacity>
-      <View>
+      <View style={{alignSelf:'center',position:'absolute',top:height/24,left:width/3.5,alignItems:'center',justifyContent:'center'}}>
       <Text style={{ fontFamily: 'Andika-R', color: 'black',paddingBottom:5, fontSize: 20 }}>
         {previewHeaderText}</Text>
         </View>

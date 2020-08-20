@@ -11,9 +11,10 @@ import IconAntDesign from 'react-native-vector-icons/AntDesign'
 import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
 import PlayPauseOut from '../PodcastPlayer/PlayPauseOut';
 import LottieView from 'lottie-react-native';
-import playPause from '../../../assets/animations/play_pause.json';
-import newAnimation from '../../../assets/animations/waterwaves5.json'
+import newAnimation from '../../../assets/animations/play_pause.json';
+//import newAnimation from '../../../assets/animations/waterwaves5.json'
 import Toast from 'react-native-simple-toast';
+import { NetworkContext } from '../../config/NetworkProvider';
 
 
 var {width, height}=Dimensions.get('window')
@@ -23,6 +24,8 @@ var {width, height}=Dimensions.get('window')
  class RepostItem extends React.Component {
    // if(createdOn === null)
   //   createdOn = props.podcast.createdOn.slice(0,10);
+  static contextType = NetworkContext
+
     constructor(props)
     {
      super(props)
@@ -35,7 +38,7 @@ var {width, height}=Dimensions.get('window')
     }
 
     componentDidMount = () => {
-      this.animation.play(0,0);
+      //this.animation.play(0,0);
       console.log("In componentDidMount");
     }
 
@@ -43,14 +46,14 @@ var {width, height}=Dimensions.get('window')
       
       if(this.props.podcastRedux && this.props.podcastRedux.podcastID == this.props.podcast.podcastID) 
       {
-          if(!this.props.pausedRedux)
-              this.animation.play(0,178);
-          else
-              this.animation.pause();
+          // if(!this.props.pausedRedux)
+          //     this.animation.play(0,178);
+          // else
+          //     this.animation.pause();
       }
       else
       {
-          this.animation.pause();
+          // this.animation.pause();
       }
       
   }
@@ -238,10 +241,52 @@ var {width, height}=Dimensions.get('window')
     }
     
   }
-    render()
-    {
+
+  renderPodcastDescription = () => {
+    if(this.props.podcast.podcastDescription !== null && this.props.podcast.podcastDescription !== undefined)
       return (
+      <View>
+      <Text style={{fontFamily:'Montserrat-Regular',fontSize:13}}>{this.props.podcast.podcastDescription.slice(0,300)}       
+      {
+        this.props.podcast.podcastDescription.length > 300 &&
+        <Text style={{fontSize:13}}>...</Text>
+      }
+      </Text>
+      <View>
+      {
+        this.props.podcast.podcastDescription.length > 300 &&
         <TouchableNativeFeedback onPress={() => {
+          this.props.navigation.navigate('InfoScreen', {podcast:this.props.podcast})
+        }}>
+          <View style={{backgroundColor:'#232930',paddingHorizontal:3,shadowColor: '#000000',shadowOffset: { width: 0, height: 0.01 },shadowOpacity: 0,
+    shadowRadius: 0.1,elevation: 0.1,marginVertical:10, height:width/15,width:width/5 + 10,borderRadius:4,borderWidth:0,borderColor:'black',alignItems:'center',justifyContent:'center'}}>
+        <Text style={{fontFamily:'Montserrat-SemiBold',fontSize:13,textAlign:'center',color:'white', textAlignVertical:'center'}}>Read more </Text>
+        </View>
+        </TouchableNativeFeedback>
+      }
+      </View>
+      </View>
+    )
+    else
+      return null;
+  }
+
+
+
+  render()
+  {
+    var duration = parseInt((this.props.podcast.duration)/60);
+    if(duration == 0)
+      duration = 1;
+
+    const  privateDataID = "private" + this.state.userID;
+    return (
+      <TouchableNativeFeedback onPress={() => {
+        if(!this.context.isConnected) 
+        {
+          Toast.show('Please check your Internet connection & try again.');
+          return;
+        }
         if(this.props.podcastRedux!=null && this.props.podcastRedux.podcastID == this.props.podcast.podcastID)
         {
           if(this.props.pausedRedux)
@@ -259,155 +304,68 @@ var {width, height}=Dimensions.get('window')
         {
           this.retrievePodcastDocument();
         }
-
-        }}>
-          
-            <View style={{flexDirection:'column'}}>
-           
-         
-            <View style={{flexDirection:'row',alignItems:'flex-end',justifyContent:'flex-end'}}>
-            <EvilIcon name='retweet' size={20} color='black'/>
-            <Text style={{ color:'black', paddingLeft:5,fontWeight:'400', fontSize:theme.sizes.font * 1.0 }}>
-            {moment(this.props.podcast.bookmarkedOn).fromNow()}
-            </Text>
-            </View>    
-            <View style={{flex:1,flexDirection:"row",paddingBottom:theme.sizes.padding/2,paddingLeft:width/64,width:width,height:height/7}}>
-            
-            <View style={{flexDirection:'row'}}>
-             <View style={{flexDirection:'column'}}>
-             <View style={{flexDirection: 'row'}}>
-              <View style={{flexDirection:'column'}}>
-            <Image style={{width:height/8,height:height/8,borderRadius:2}} source={ {uri: this.props.podcast.podcastPictures[0]}} />
-            <View
-                    style={{
-                    height:1,
-                    width:height/8 - 3,
-                    marginTop:1,
-                    marginLeft:5,
-                    borderLeftWidth:height/8 - 5,
-                    color: 'black',
-                    }}
-                    />
-               </View>
-                <View
-                    style={{
-                    height:height/8 - 2,
-                    width:3,
-                    marginTop:2,
-                    borderLeftWidth: 1,
-                    color: 'black',
-                    }}
-                    />
-            </View>
-            <View
-                style={{
-                height:1,
-                width:height/8 - 9,
-                marginTop:1.5,
-                marginLeft:12,
-                borderLeftWidth:height/8 - 9,
-                color: 'black',
-                }}
-                />
-            </View>
-            <View
-                style={{
-                height:height/8 - 1,
-                width:5,
-                marginTop:4,
-                borderLeftWidth: 1,
-                color: 'black',
-                }}
-                />
-
-            </View>
-            {
-              
-              this.props.podcastRedux!=null && this.props.podcast.podcastID == this.props.podcastRedux.podcastID
-              ?
-              (
-                this.props.pausedRedux 
-                ?
-                <IconAntDesign name="play" size={height/32} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/64 + height*3/64,top:height*3/64}}/>
-                :
-                <IconAntDesign name="pause" size={height/32} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/64 + height*3/64,top:height*3/64}}/>
-
-              )
-              :
-              <IconAntDesign name="play" size={height/32} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/64 + height*3/64,top:height*3/64}}/>
-
-
-            }
-
-                {/* {
-                  
-                  <LottieView ref={animation1 => { this.animation1 = animation1;}} 
-                style={{ height: height/20,color:'white',borderRadius:30,position:'absolute',top:height*3/64,right:width/76}} source={playPause} 
-                  loop={false}/>
-                  
-                  // <PlayPauseOut loadingPodcast={loadingPodcast}
-                  //   pausePodcast={togglePlay} playPodcast={togglePlay}/>
-                } */}
-
-            <View style={[styles.flex, styles.column, styles.shadow, { width:(width*2)/3,paddingLeft:theme.sizes.padding/2, paddingTop: 0 }]}>
-                <View style={{height:(height)/24,marginBottom:0}}>
-                <Text style={{ fontSize: theme.sizes.font * 1.0, fontFamily:'Montserrat-Bold' }}>{this.props.podcast.podcastName.slice(0,50)}
-                    {(this.props.podcast.podcastName.length > 50) ? ".." : ""}</Text> 
-            {/* {
-                (props.podcast.chapterName !== null && props.podcast.chapterName !== undefined) &&
-                <TouchableOpacity onPress={() => {
-                    console.log("chapterID: ",props.podcast.chapterID);
-                    props.navigation.navigate('RecordChapter',{bookID:props.podcast.bookID,chapterID:props.podcast.chapterID})
-                }}>
-                <Text style={{  fontSize: theme.sizes.font * 0.8,fontFamily:'Montserrat-Bold',color: theme.colors.gray_green }}>
-                {props.podcast.chapterName}
+      }}>
+      <View style={{alignSelf:'center',marginBottom:40,width:width-40,borderRadius:10,backgroundColor:'white',
+       shadowColor: '#000000',shadowOffset: { width: 0, height: 2 },shadowOpacity: 0.9,
+        shadowRadius: 3,elevation: 5}}>
+          <View style={{backgroundColor:'#dddd',flexDirection:'row'}}>
+          <View style={{flex:1,alignItems:'flex-end',justifyContent:"center",paddingRight:5}}>
+          {
+            this.props.podcast.bookName !== undefined && this.props.podcast.bookName !== null &&
+            <TouchableOpacity onPress={() => {
+              if(this.props.podcast.chapterID !== undefined)
+                this.props.navigation.navigate('RecordChapter', { chapterID: this.props.podcast.chapterID, bookID : this.props.podcast.bookID });
+              else
+                this.props.navigation.navigate('RecordBook', { bookID : this.props.podcast.bookID });
+            }}>
+            <Text style={{fontFamily:'Montserrat-MediumItalic',fontSize:15,paddingVertical:7,paddingHorizontal:7}}>
+              {this.props.podcast.bookName}
             </Text>
             </TouchableOpacity>
-            } */}
-
-            {/* <TouchableOpacity onPress={() => props.navigation.navigate('RecordBook',{bookID:props.podcast.bookID})}>
-            <Text style={{  fontSize: theme.sizes.font * 0.8,fontFamily:'Montserrat-Bold',color: theme.colors.gray_green }}>
-                {props.podcast.bookName}
-            </Text>
-            </TouchableOpacity> */}
-
-            </View>
-            <View>
-            {/* <PodcastAnimation podcastID={this.props.podcast.podcastID}/> */}
-            <LottieView 
-            ref={animation => { this.animation = animation;}}
-            style={{width:width*2/3}} 
-            source={newAnimation}
-            loop={true}/>
-            </View>
-
-            {/* <View>
-            <PodcastAnimation/>
-            </View> */}
-            <View style={{flexDirection:'row',paddingTop:5}}>
-                <TouchableOpacity onPress={() => {
-                  this.retrieveUserPrivateDoc(this.props.podcast.podcasterID);
-                }}>
-                <Text style={{ fontFamily:'Montserrat-Bold',fontSize:theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
-                    {this.props.podcast.podcasterName}
-                </Text>
-                </TouchableOpacity>
-                
-              <Text style={{  fontFamily:'Montserrat-Bold',position:'absolute',right:-15,top:3,fontSize: theme.sizes.font * 0.8,color: theme.colors.gray_green }}>
-              {this.state.createdOn}
-              </Text>
-              
-            </View>
-        
-            
-            
+          }
+          </View>
+          </View>
+        <View>
+          <Image source={{uri:this.props.podcast.podcastPictures[0]}}
+            style={{height:height/4,width:width-40}}/>
         </View>
-    
+        <View style={{height:height/64}}/>
+        <View style={{paddingHorizontal:15}}>
+          <Text style={{fontFamily:'Montserrat-Bold',fontSize:20}}>{this.props.podcast.podcastName}</Text>
+        </View>
+        <TouchableOpacity onPress={() => {
+          this.retrieveUserPrivateDoc(this.props.podcast.podcasterID);
+        }} style={{paddingHorizontal:15,flexDirection:'row'}}>
+        {/* <View>
+          <Image source={{uri:this.props.podcast.podcasterDisplayPicture}}
+                  style={{height:width/16,width :width/16,borderRadius:20,marginRight:5}} />
+         </View> */}
+          <Text style={{fontFamily:'Montserrat-SemiBold',fontSize:17,color:'gray'}}>{this.props.podcast.podcasterName}</Text>
+        </TouchableOpacity>
+        <View style={{paddingHorizontal:15}}>
+        {/* <LottieView 
+          ref={animation => { this.animation = animation;}}
+          style={{width:width/3}} 
+          source={newAnimation}
+          loop={true}/> */}
+        </View>
+        <View style={{paddingHorizontal:15}}>
+          {this.renderPodcastDescription()}
+          
+          
+        </View>
+        <View style={{flexDirection:'row',paddingHorizontal:15,justifyContent:'space-between',marginBottom:10}}>
+          <View>
+            <Text style={{color:'gray',fontSize:13}}>{this.state.createdOn}</Text>
+          </View>
+          <View style={{}}>
+          <Text style={{color:'black',fontSize:13,fontFamily:'Montserrat-Regular'}}>{duration} mins</Text>
+          </View>            
         </View>
         </View>
-    </TouchableNativeFeedback>
-    );
-    }
+        </TouchableNativeFeedback>
+  );
+  }
       
   }
 

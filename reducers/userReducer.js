@@ -1,4 +1,5 @@
 const INITIAL_STATE = {
+    userID: null,
     name: null,
     email: null,
     signupEmail: null,
@@ -6,7 +7,7 @@ const INITIAL_STATE = {
     numFollowers: 0,
     numFollowing: 0,
     displayPictureURL: null,
-    followingList:[],
+    followingList:[], // no limit
     isPodcastLiked: {},
     isFlipLiked: {},
     isPodcastBookmarked : {},
@@ -24,9 +25,9 @@ const INITIAL_STATE = {
     numNotifications: 0,
     bookAdded: null,
     isExplorePreviousScreen: false,
-    userPreferences: [],
+    userPreferences: [], // max 10 size
     otherPrivateUserItem: null,
-    userLanguages: [],
+    userLanguages: [], // max 5 size
     algoliaAPPID: null,
     algoliaAPIKey: null,
     externalPodcastID: null,
@@ -42,7 +43,7 @@ const INITIAL_STATE = {
     handleOpenUrlFuncRef: null,
     musicEnabledNotificationSeen: false,
     musicPreferences: {},
-    musicPreferencesArray : [],
+    musicPreferencesArray : [], // max value = number of musicCategories we provide
     buildVersion : "",
     showMusicPlayerTooltip : false,
     addFlipWalkthroughDone : false,
@@ -51,11 +52,16 @@ const INITIAL_STATE = {
     addBookReviewScreenWalkthroughDone : false,
     recordBookWalkthroughDone : false,
     bookPodcastWalkthroughDone : false,
-    originalPodcastWalkthroughDone : false
+    originalPodcastWalkthroughDone : false,
+    continueListeningPodcasts : [] // max 10 items
   };
   
   function userReducer(state = INITIAL_STATE, action)  {
     switch (action.type) {
+        case "SET_CONTINUE_LISTENING_PODCASTS":
+            return {...state,continueListeningPodcasts:action.payload} 
+        case "SET_USER_ID":
+            return {...state,userID: action.payload}
         case "SET_ADD_BOOK_REVIEW_WALKTHROUGH":
             return {...state,addBookReviewScreenWalkthroughDone:action.payload}
         case "SET_RECORD_BOOK_WALKTHROUGH":

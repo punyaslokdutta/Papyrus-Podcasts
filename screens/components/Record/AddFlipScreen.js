@@ -18,7 +18,6 @@ import storage, { firebase, FirebaseStorageTypes } from '@react-native-firebase/
 import {withFirebaseHOC} from '../../config/Firebase';
 import Toast from 'react-native-simple-toast';
 import Modal from 'react-native-modal';
-import modalJSON from '../../../assets/animations/modal-microphone.json';
 import modalJSON2 from '../../../assets/animations/modal-animation-2.json';
 import LottieView from 'lottie-react-native';
 

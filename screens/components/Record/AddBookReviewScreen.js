@@ -44,7 +44,9 @@ const data = [
 const AddBookReviewScreen = (props)=> {
 
   const animation = useRef();
-  const [isBookPodcast,setIsBookPodcast] = useState(true);
+  var [isBookPodcast,setIsBookPodcast] = useState(true);
+  const [bookOpacity,setBookOpacity] = useState(1);
+  const [originalOpacity,setOriginalOpacity] = useState(0.5);
   var itemSelected = null;
   var itemPictureURL = null;
   var genres = null;
@@ -57,7 +59,7 @@ const AddBookReviewScreen = (props)=> {
   const [toolTipBookVisible,setToolTipBookVisible] = useState(false);
   const [toolTipUploadVisible,setToolTipUploadVisible] = useState(false);
   const [toolTipRecordVisible,setToolTipRecordVisible] = useState(false);
-
+  const fromRecordBookChapter = useSelector(state=>state.recorderReducer.fromRecordBookChapter);
   const userID = props.firebase._getUid();
   const privateUserID = "private" + userID;
   
@@ -100,6 +102,25 @@ const AddBookReviewScreen = (props)=> {
     
     setLanguageDataArray(tempLangArray);
   },[userLanguages])
+
+  useEffect(() => {
+    if(fromRecordBookChapter == true)
+    {
+      setIsBookPodcast(true);
+      dispatch({type:"SET_FROM_RECORD_BOOK_CHAPTER",payload:false})
+    }
+  },[fromRecordBookChapter])
+
+  useEffect(() => {
+    if(isBookPodcast){
+      setBookOpacity(1);
+      setOriginalOpacity(0.5);
+    }
+    else{
+      setBookOpacity(0.5);
+      setOriginalOpacity(1);
+    } 
+  },[isBookPodcast])
 
   useEffect(
     ()=>
@@ -289,7 +310,9 @@ const AddBookReviewScreen = (props)=> {
         </View>
         </View>
         <View style={{flexDirection:'row',marginTop:20,alignItems:'center',justifyContent:'center'}}>
-            <Text style={{fontFamily:'Montserrat-SemiBold',fontSize:17,paddingRight:20,color:'white'}}> Original </Text>
+            <TouchableOpacity onPress={() => setIsBookPodcast(false)}>
+            <Text style={{fontFamily:'Montserrat-SemiBold',fontSize:17,paddingRight:20,color:'white',opacity:originalOpacity}}> Original </Text>
+            </TouchableOpacity>
             <Tooltip
               isVisible={toolTipSwitchVisible}
               placement="bottom"
@@ -316,8 +339,9 @@ const AddBookReviewScreen = (props)=> {
           }}
         />
         </Tooltip>
-        <Text style={{fontFamily:'Montserrat-SemiBold',fontSize:17,paddingLeft:20,color:'white'}}> Book </Text>
-
+        <TouchableOpacity onPress={() => setIsBookPodcast(true)}>
+        <Text style={{fontFamily:'Montserrat-SemiBold',fontSize:17,paddingLeft:20,color:'white',opacity:bookOpacity}}> Book </Text>
+        </TouchableOpacity>
         </View>
         <Tooltip
               isVisible={toolTipLanguageVisible}

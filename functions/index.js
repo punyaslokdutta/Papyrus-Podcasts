@@ -23,58 +23,6 @@ exports.AddToPodcastsIndex = functions.region("asia-northeast1").https.onCall(as
   const createdOn=data.createdOn
   const language =data.language
 
-  
-  // Adding Podcaster Display Picture to Podcast Doc until all the users are updated with latest app version with previewScreen changes
-  const podcastQuery = await db.collectionGroup('podcasts').where('podcastID','==',data.podcastID).get();
-  const podcastData = podcastQuery.docs[0].data();
-
-  // try{
-  //   const podcastGenres = podcastData.genres;
-  //   for(var i=0;i<podcastGenres.length;i++)
-  //   {
-  //     const categoryDocs = await db.collection('Categories').where('categoryName','==',podcastGenres[i]).get();
-  //     const categoryID = categoryDocs.docs[0].id;
-  //     await db.collection('Categories').doc(categoryID).set({
-  //       numPodcasts : admin.firestore.FieldValue.increment(1)
-  //     },{merge:true})
-  //   }
-  // }
-  // catch(error){
-  //   console.log("[AddToPodcastsIndex] Error in updating numPodcasts for each category of the podcast:- ",error);
-  // }
-
-  console.log("podcastData: ",podcastData);
-  
-  const podcasterQuery = await db.collection('users').doc(podcastData.podcasterID).get();
-  const podcasterData = podcasterQuery.data();
-
-  console.log("podcasterData: ",podcasterData);
-
-  if(podcastData.lastEditedOn === undefined || podcastData.lastEditedOn === null)
-  {
-    if(podcastData.isChapterPodcast === true)
-    {
-      await db.collection('books').doc(podcastData.bookID).collection('chapters').doc(podcastData.chapterID).collection('podcasts')
-                .doc(podcastData.podcastID).set({
-                  podcasterDisplayPicture : podcasterData.displayPicture,
-                  lastEditedOn : podcastData.createdOn 
-                },{merge:true}).then(() => {
-                  console.log("Successfully added podcasterDisplayPicture & lastEditedOn to podcast Document.");
-                  return null;
-                }).catch((err) => console.log(err))
-    }
-    else
-    {
-      await db.collection('books').doc(podcastData.bookID).collection('podcasts').doc(podcastData.podcastID).set({
-                  podcasterDisplayPicture : podcasterData.displayPicture,
-                  lastEditedOn : podcastData.createdOn 
-                },{merge:true}).then(() => {
-                  console.log("Successfully added podcasterDisplayPicture & lastEditedOn to podcast Document.");
-                  return null;
-                }).catch((err) => console.log(err))
-    }
-  }
-
   console.log("AddToPodcastsIndex cloud function");
 
   console.log("podcastName: ",podcastName);
@@ -97,18 +45,18 @@ exports.AddToPodcastsIndex = functions.region("asia-northeast1").https.onCall(as
     podcasterName:podcasterName, 
     createdOn:createdOn, 
     language :language
-};
+  };
 
-algoliaRecords.push(record);
+  algoliaRecords.push(record);
 
-collectionIndex.saveObjects(algoliaRecords, (_error, content) => {
-  console.log("content : ",content);
-  console.log("ERROR LOG : ",_error);
+  collectionIndex.saveObjects(algoliaRecords, (_error, content) => {
+    console.log("content : ",content);
+    console.log("ERROR LOG : ",_error);
 
-  if(_error === null || _error === undefined)
-    console.log("The uploaded podcast has been indexed in algolia.");
+    if(_error === null || _error === undefined)
+      console.log("The uploaded podcast has been indexed in algolia.");
 
-});
+  });
 });
 
 
@@ -167,7 +115,7 @@ exports.deletePodcastFromIndex = functions.region("asia-northeast1").https.onCal
       console.log("Deleted podcast from podcasts Index");
       return 1;
   }).catch((error) => {
-    console.error("Error removing podcast from podcatsIndex: ", error);
+    console.error("Error removing podcast from podcastsIndex: ", error);
   });
 
 });
@@ -389,6 +337,11 @@ exports.changeDPInPodcastsAsiaEast = functions.region("asia-northeast1").https.o
            }
           
          }
+         else if(doc._fieldsProto.isOriginalPodcast.booleanValue === true)
+          {
+            const docRef = db.collection('podcasts').doc(doc._fieldsProto.podcastID.stringValue);
+            batch.update(docRef, {podcasterDisplayPicture : DPSetInSettingsScreen}) 
+          }
         
     })
     return batch.commit().then(() => {
@@ -453,6 +406,11 @@ exports.changeUserNameInPodcastsAsiaEast = functions.region("asia-northeast1").h
               batch.update(docRef, {podcasterName : nameSetInSettingsScreen}) 
             }
           
+          }
+          else if(doc._fieldsProto.isOriginalPodcast.booleanValue === true)
+          {
+            const docRef = db.collection('podcasts').doc(doc._fieldsProto.podcastID.stringValue);
+            batch.update(docRef, {podcasterName : nameSetInSettingsScreen}) 
           }   
     })
     return batch.commit().then(() => {

@@ -22,7 +22,7 @@ exports.addActivity = functions.region("asia-northeast1").https.onCall(async(dat
   const bookID = data.bookID;
   const chapterID = data.chapterID;
   const isChapterPodcast = data.isChapterPodcast;
-
+  const likeUpdatedInDocument = data.likeUpdatedInDocument;
 
   console.log("ACTIVITY DETAILS: ");
 
@@ -38,7 +38,7 @@ exports.addActivity = functions.region("asia-northeast1").https.onCall(async(dat
   console.log("bookID: ",bookID);
   console.log("chapterID: ",chapterID);
   console.log("isChapterPodcast: ",isChapterPodcast);
-
+  console.log("likeUpdatedInDocument: ",likeUpdatedInDocument);
   console.log("context.auth = ",context.auth);
   
   const db = admin.firestore();
@@ -69,22 +69,36 @@ exports.addActivity = functions.region("asia-northeast1").https.onCall(async(dat
   else // LIKE activity
     {
       try{
-        if(isChapterPodcast === true)// && props.podcast.chapterID !== undefined)
+        if(likeUpdatedInDocument === true)
         {
-          console.log("updating numUsersLiked in chapterpodcast")
-           await db.collection('books').doc(bookID).collection('chapters').doc(chapterID)
-                                .collection('podcasts').doc(podcastID).update({
-                    numUsersLiked : admin.firestore.FieldValue.increment(1)
-              })
+          console.log("[addActivity] numUsersLiked has already been updated in firestore.So, not updating here.");
         }
         else
         {
-           console.log("updating numUsersLiked in bookpodcast")
-           await db.collection('books').doc(bookID).collection('podcasts').doc(podcastID)
-                     .update({
-              numUsersLiked : admin.firestore.FieldValue.increment(1)
-          })
-        }
+          if(isChapterPodcast === true)// && props.podcast.chapterID !== undefined)
+          {
+            console.log("updating numUsersLiked in chapterpodcast")
+            await db.collection('books').doc(bookID).collection('chapters').doc(chapterID)
+                                  .collection('podcasts').doc(podcastID).update({
+                      numUsersLiked : admin.firestore.FieldValue.increment(1)
+                })
+          }
+          else if(isChapterPodcast === false)
+          {
+            console.log("updating numUsersLiked in bookpodcast")
+            await db.collection('books').doc(bookID).collection('podcasts').doc(podcastID)
+                      .update({
+                numUsersLiked : admin.firestore.FieldValue.increment(1)
+            })
+          }
+          else if(isChapterPodcast === undefined || isChapterPodcast === null)
+          {
+            console.log("updating numUsersLiked in original podcast")
+            await db.collection('podcasts').doc(podcastID).update({
+                numUsersLiked : admin.firestore.FieldValue.increment(1)
+            })
+          }
+        }   
       }
       catch(error){
         console.log("Error in updating numUsersLiked: ",error)

@@ -13,7 +13,7 @@ import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-nati
 import PlayPauseOut from '../PodcastPlayer/PlayPauseOut';
 import LottieView from 'lottie-react-native';
 import playPause from '../../../assets/animations/play_pause.json';
-import newAnimation from '../../../assets/animations/waterwaves5.json'
+import newAnimation from '../../../assets/animations/double-sided-bars.json';
 import FontAwesome, { Icons } from 'react-native-vector-icons/FontAwesome';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 import Toast from 'react-native-simple-toast';
@@ -45,6 +45,7 @@ var {width, height}=Dimensions.get('window');
         reposted: this.props.isPodcastBookmarked[this.props.podcast.podcastID],
         liked: this.props.isPodcastLiked[this.props.podcast.podcastID],
         numLikes: this.props.podcast.numUsersLiked,
+        podcastColor : "white",
         numRetweets: this.props.podcast.numUsersRetweeted === undefined ? 0 : this.props.podcast.numUsersRetweeted
         }
      }
@@ -52,7 +53,7 @@ var {width, height}=Dimensions.get('window');
 
     componentDidMount = () => {
       
-       this.animation.play(0,0);
+       //this.animation.play(0,30);
        this.likeAnimation.pause();
       
       console.log("In componentDidMount");
@@ -60,10 +61,14 @@ var {width, height}=Dimensions.get('window');
 
   componentDidUpdate =(prevProps)=> { 
       
-      if(this.props.podcastRedux && this.props.podcastRedux.podcastID == this.props.podcast.podcastID) 
+    
+      if(this.props.podcastRedux !== null && this.props.podcastRedux.podcastID == this.props.podcast.podcastID) 
       {
-          if(!this.props.pausedRedux)
-              this.animation.play(0,178);
+
+          if(!this.props.pausedRedux){
+            this.animation.play(0,33);
+            console.log("srfsdf");
+          }
           else
               this.animation.pause();
 
@@ -85,10 +90,21 @@ var {width, height}=Dimensions.get('window');
               }
           }
           
+          this.state.podcastColor == 'white' &&
+          this.setState({ podcastColor : '#cfe6e3' });
       }
       else
       {
-          this.animation.pause();
+          console.log("This podcast not playing",this.state.podcastColor);
+          console.log("this.props.podcastRedux = ",this.props.podcastRedux);
+          this.animation !== null && this.animation.pause();
+          console.log("this.state.podcastColor == ",this.state.podcastColor);
+          if(this.state.podcastColor == '#cfe6e3') 
+          {
+            console.log("This podcast not playing22",this.state.podcastColor);
+            this.setState({ podcastColor : 'white' });
+          }
+
       }
       
   }
@@ -122,7 +138,7 @@ var {width, height}=Dimensions.get('window');
       },
       social: {
         title: this.props.podcast.podcastName,
-        descriptionText: this.props.podcast.podcastDescription,
+        descriptionText: this.props.podcast.podcastDescription.slice(0,100),
         imageUrl: this.props.podcast.podcastPictures[0]
       }
     });
@@ -183,7 +199,7 @@ var {width, height}=Dimensions.get('window');
          console.log("Error in removing podcastID from podcastsBookmarked in user's private document: ",error);
        })
    
-       if(this.props.podcast.isChapterPodcast == true)
+      if(this.props.podcast.isChapterPodcast == true)
       {
         firestore().collection('books').doc(this.props.podcast.bookID).collection('chapters').
           doc(this.props.podcast.chapterID).collection('podcasts').doc(this.props.podcast.podcastID).set({
@@ -194,7 +210,7 @@ var {width, height}=Dimensions.get('window');
             console.log("Error in decrementing numUsersRetweeted in podcast(chapter) Doc");
           })
       }
-      else
+      else if(this.props.podcast.isChapterPodcast == false)
       {
         firestore().collection('books').doc(this.props.podcast.bookID)
           .collection('podcasts').doc(this.props.podcast.podcastID).set({
@@ -204,6 +220,16 @@ var {width, height}=Dimensions.get('window');
           }).catch((error) => {
             console.log("Error in decrementing numUsersRetweeted in podcast(book) Doc");
           })
+      }
+      else if(this.props.podcast.isOriginalPodcast == true)
+      {
+        firestore().collection('podcasts').doc(this.props.podcast.podcastID).set({
+          numUsersRetweeted : firestore.FieldValue.increment(-1)
+        },{merge:true}).then(() => {
+          console.log("Successfully decremented numUsersRetweeted in podcast(original) Doc");
+        }).catch((error) => {
+          console.log("Error in decrementing numUsersRetweeted in podcast(original) Doc");
+        })
       }
 
    }
@@ -243,6 +269,7 @@ var {width, height}=Dimensions.get('window');
        podcasterID : this.props.podcast.podcasterID,
        createdOn : this.props.podcast.createdOn,
        isChapterPodcast : this.props.podcast.isChapterPodcast,
+       isOriginalPodcast : this.props.podcast.isOriginalPodcast,
        duration: this.props.podcast.duration
      }).then(function(docRef){
        firestore().collection('users').doc(localUserID).collection('privateUserData').doc(privateDataID).collection('bookmarks').doc(docRef.id).set({
@@ -271,7 +298,7 @@ var {width, height}=Dimensions.get('window');
             console.log("Error in incrementing numUsersRetweeted in podcast(chapter) Doc");
           })
       }
-      else
+      else if(this.props.podcast.isChapterPodcast == false)
       {
         firestore().collection('books').doc(this.props.podcast.bookID)
           .collection('podcasts').doc(this.props.podcast.podcastID).set({
@@ -281,6 +308,16 @@ var {width, height}=Dimensions.get('window');
           }).catch((error) => {
             console.log("Error in incrementing numUsersRetweeted in podcast(book) Doc");
           })
+      }
+      else if(this.props.podcast.isOriginalPodcast == true)
+      {
+        firestore().collection('podcasts').doc(this.props.podcast.podcastID).set({
+          numUsersRetweeted : firestore.FieldValue.increment(1)
+        },{merge:true}).then(() => {
+          console.log("Successfully incremented numUsersRetweeted in podcast(original) Doc");
+        }).catch((error) => {
+          console.log("Error in incrementing numUsersRetweeted in podcast(original) Doc");
+        })
       }
 
       Toast.show("Reposted");
@@ -311,14 +348,19 @@ var {width, height}=Dimensions.get('window');
             numUsersLiked : firestore.FieldValue.increment(-1)
         },{merge:true})
       }
-      else
+      else if(this.props.podcast.isChapterPodcast === false)
       {
         await firestore().collection('books').doc(this.props.podcast.bookID).collection('podcasts')
             .doc(this.props.podcast.podcastID).set({
           numUsersLiked : firestore.FieldValue.increment(-1)
         },{merge:true})
       }
-      
+      else if(this.props.podcast.isOriginalPodcast === true)
+      {
+        await firestore().collection('podcasts').doc(this.props.podcast.podcastID).set({
+          numUsersLiked : firestore.FieldValue.increment(-1)
+        },{merge:true})
+      }
     
    
     await firestore().collection('users').doc(this.state.realUserID).collection('privateUserData').doc(privateDataID).set({
@@ -345,6 +387,27 @@ var {width, height}=Dimensions.get('window');
       numLikes : this.state.numLikes + 1
     })
   
+    if(this.props.podcast.isChapterPodcast === true)
+      {
+        await firestore().collection('books').doc(this.props.podcast.bookID).collection('chapters').
+          doc(this.props.podcast.chapterID).collection('podcasts').doc(this.props.podcast.podcastID).set({
+            numUsersLiked : firestore.FieldValue.increment(1)
+        },{merge:true})
+      }
+      else if(this.props.podcast.isChapterPodcast === false)
+      {
+        await firestore().collection('books').doc(this.props.podcast.bookID).collection('podcasts')
+            .doc(this.props.podcast.podcastID).set({
+          numUsersLiked : firestore.FieldValue.increment(1)
+        },{merge:true})
+      }
+      else if(this.props.podcast.isOriginalPodcast === true)
+      {
+        await firestore().collection('podcasts').doc(this.props.podcast.podcastID).set({
+          numUsersLiked : firestore.FieldValue.increment(1)
+        },{merge:true})
+      }
+
     const likedPodcasts = await firestore().collection('users').doc(this.state.realUserID).collection('privateUserData').doc(privateDataID).set({
           podcastsLiked : firestore.FieldValue.arrayUnion(this.props.podcast.podcastID)
     },{merge:true})
@@ -363,6 +426,7 @@ var {width, height}=Dimensions.get('window');
     try 
     {          
       await instance({ // change in podcast docs created by  user
+        likeUpdatedInDocument : true, // so that we don't update numUsersLiked in cloud functions
         timestamp : moment().format(),
         photoURL : this.props.displayPictureURL,
         podcastID : this.props.podcast.podcastID,
@@ -373,7 +437,7 @@ var {width, height}=Dimensions.get('window');
         podcastName : this.props.podcast.podcastName,
         bookID : this.props.podcast.bookID,
         chapterID : this.props.podcast.chapterID,
-        isChapterPodcast: this.props.podcast.isChapterPodcast 
+        isChapterPodcast: this.props.podcast.isChapterPodcast,
       });
     }
     catch (e) 
@@ -443,7 +507,7 @@ var {width, height}=Dimensions.get('window');
   }
 
   removePodcastFromHomeScreen = async() => {
-    if(!this.props.podcast.isChapterPodcast)
+    if(this.props.podcast.isChapterPodcast == false)
     {
       firestore().collection('books').doc(this.props.podcast.bookID).
       collection('podcasts').doc(this.props.podcast.podcastID).set({
@@ -456,19 +520,31 @@ var {width, height}=Dimensions.get('window');
       Toast.show("Failed to remove podcast from HomeScreen");
     })
     }
-    else if(this.props.podcast.isChapterPodcast)
+    else if(this.props.podcast.isChapterPodcast == true)
     {
       firestore().collection('books').doc(this.props.podcast.bookID).
       collection('chapters').doc(this.props.podcast.chapterID).
       collection('podcasts').doc(this.props.podcast.podcastID).set({
         lastEditedOn : moment().subtract(20,'d').format()
-    },{merge:true}).then(() => {
-      console.log("Removed this chapter podcast from HomeScreen");
-      Toast.show("Successfully removed podcast from HomeScreen");
-    }).catch((error) => {
-      console.log("Error in removing this chapter podcast from HomeScreen",error);
-      Toast.show("Failed to remove podcast from HomeScreen");
-    })
+      },{merge:true}).then(() => {
+        console.log("Removed this chapter podcast from HomeScreen");
+        Toast.show("Successfully removed podcast from HomeScreen");
+      }).catch((error) => {
+        console.log("Error in removing this chapter podcast from HomeScreen",error);
+        Toast.show("Failed to remove podcast from HomeScreen");
+      })
+    }
+    else if(this.props.podcast.isOriginalPodcast == true)
+    {
+      firestore().collection('podcasts').doc(this.props.podcast.podcastID).set({
+        lastEditedOn : moment().subtract(20,'d').format()
+      },{merge:true}).then(() => {
+        console.log("Removed this original podcast from HomeScreen");
+        Toast.show("Successfully removed podcast from HomeScreen");
+      }).catch((error) => {
+        console.log("Error in removing this original podcast from HomeScreen",error);
+        Toast.show("Failed to remove podcast from HomeScreen");
+      })
     }
     
   }
@@ -569,9 +645,9 @@ var {width, height}=Dimensions.get('window');
           <TouchableNativeFeedback onPress={() => {
             this.props.navigation.navigate('InfoScreen', {podcast:this.props.podcast})
           }}>
-            <View style={{paddingHorizontal:3,shadowColor: '#000000',shadowOffset: { width: 0, height: 0.01 },shadowOpacity: 0,
+            <View style={{backgroundColor:'#232930',paddingHorizontal:3,shadowColor: '#000000',shadowOffset: { width: 0, height: 0.01 },shadowOpacity: 0,
       shadowRadius: 0.1,elevation: 0.1,marginVertical:10, height:width/15,width:width/5 + 10,borderRadius:4,borderWidth:0,borderColor:'black',alignItems:'center',justifyContent:'center'}}>
-          <Text style={{fontFamily:'Montserrat-SemiBold',fontSize:13,textAlign:'center',textAlignVertical:'center'}}>Read more </Text>
+          <Text style={{fontFamily:'Montserrat-SemiBold',fontSize:13,color:'white',textAlign:'center',textAlignVertical:'center'}}>Read more </Text>
           </View>
           </TouchableNativeFeedback>
         }
@@ -613,16 +689,23 @@ var {width, height}=Dimensions.get('window');
           this.retrievePodcastDocument();
         }
         }}>
-        <View style={{alignSelf:'center',marginBottom:40,width:width-40,borderRadius:10,backgroundColor:'white',
+        <View style={{alignSelf:'center',marginBottom:40,width:width-40,borderRadius:10,backgroundColor:this.state.podcastColor,
          shadowColor: '#000000',shadowOffset: { width: 0, height: 2 },shadowOpacity: 0.9,
           shadowRadius: 3,elevation: 5}}>
             <View style={{backgroundColor:'#dddd',flexDirection:'row'}}>
             <View style={{flex:1,alignItems:'flex-end',justifyContent:"center",paddingRight:5}}>
             {
               this.props.podcast.bookName !== undefined &&
+              <TouchableOpacity onPress={() => {
+                if(this.props.podcast.chapterID !== undefined)
+                  this.props.navigation.navigate('RecordChapter', { chapterID: this.props.podcast.chapterID, bookID : this.props.podcast.bookID });
+                else
+                  this.props.navigation.navigate('RecordBook', { bookID : this.props.podcast.bookID });
+              }}>
               <Text style={{fontFamily:'Montserrat-MediumItalic',fontSize:15,paddingVertical:7,paddingHorizontal:7}}>
                 {this.props.podcast.bookName}
               </Text>
+              </TouchableOpacity>
             }
             </View>
             </View>
@@ -634,22 +717,21 @@ var {width, height}=Dimensions.get('window');
           <View style={{paddingHorizontal:15}}>
             <Text style={{fontFamily:'Montserrat-Bold',fontSize:20}}>{this.props.podcast.podcastName}</Text>
           </View>
+          
+          <View style={{paddingHorizontal:15,flexDirection:'row'}}>
           <TouchableOpacity onPress={() => {
             this.retrieveUserPrivateDoc(this.props.podcast.podcasterID);
-          }} style={{paddingHorizontal:15,flexDirection:'row'}}>
-          <View>
+          }} >
             <Image source={{uri:this.props.podcast.podcasterDisplayPicture}}
                     style={{height:width/16,width :width/16,borderRadius:20,marginRight:5}} />
-           </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => {
+            this.retrieveUserPrivateDoc(this.props.podcast.podcasterID);
+          }} >
             <Text style={{fontFamily:'Montserrat-SemiBold',fontSize:17,color:'gray'}}>{this.props.podcast.podcasterName}</Text>
-          </TouchableOpacity>
-          <View style={{paddingHorizontal:15}}>
-          <LottieView 
-            ref={animation => { this.animation = animation;}}
-            style={{width:width/3}} 
-            source={newAnimation}
-            loop={true}/>
-          </View>
+            </TouchableOpacity>
+           </View>
+           
           <View style={{paddingHorizontal:15}}>
             {this.renderPodcastDescription()}
             
@@ -665,7 +747,7 @@ var {width, height}=Dimensions.get('window');
           </View>
 
           <View style={{flexDirection:'row',paddingBottom:20}}>
-        <View style={{marginTop:5,borderWidth:0,borderColor:'black',width:width/2, paddingTop:0,flexDirection:'row',justifyContent:'center'}}>
+        <View style={{marginTop:5,borderWidth:0,borderColor:'black',width:width/2, paddingTop:0,flexDirection:'row',justifyContent:'flex-start'}}>
         <TouchableOpacity onPress={() => {
           if(!this.props.isPodcastLiked[this.props.podcast.podcastID])
           {
@@ -717,7 +799,16 @@ var {width, height}=Dimensions.get('window');
         {
          (this.props.isAdmin == true || this.props.podcast.podcasterID == this.state.realUserID)
          &&
-          <View style={{width:(width - 40)/3,alignItems:'flex-end',justifyContent:'flex-end'}}>
+          <View style={{flex:1,alignItems:'flex-end',justifyContent:'flex-end',flexDirection:'row',marginRight:20}}>
+            <View style={{paddingHorizontal:15,alignItems:'flex-end'}}>
+          <LottieView 
+            ref={animation => { this.animation = animation;}}
+            //style={{width:width/3}} 
+            style={{width:30}}
+            source={newAnimation}
+            //autoPlay={true}
+            loop={true}/>
+          </View>
             <Menu>
             <MenuTrigger>
             <IconAntDesign name="ellipsis1" size={26}/>
@@ -788,7 +879,7 @@ var {width, height}=Dimensions.get('window');
                     console.error("Error removing document: ", error);
                   });
                 }
-                else
+                else if(this.props.podcast.isChapterPodcast == true)
                 {
                   firestore().collection("books").doc(this.props.podcast.bookID).collection("chapters")
                     .doc(this.props.podcast.chapterID).collection("podcasts").doc(this.props.podcast.podcastID)
@@ -802,6 +893,20 @@ var {width, height}=Dimensions.get('window');
                     console.error("Error removing document: ", error);
                   });
                 }
+                else if(this.props.podcast.isOriginalPodcast == true)
+                {
+                  firestore().collection("podcasts").doc(this.props.podcast.podcastID)
+                      .set({
+                          isExploreSection1 : true,
+                          lastAddedToExplore1 : moment().format()
+                      },{merge:true}).then(function() {
+                        console.log("Original Podcast Document successfully added to Explore Section I. ");
+                        Toast.show("Added to Explore Section-I");
+                      }).catch(function(error) {
+                    console.error("Error removing document: ", error);
+                  });
+                }
+
                 console.log('OK Pressed')
                   }},  
                 ]  
@@ -837,7 +942,7 @@ var {width, height}=Dimensions.get('window');
                   console.error("Error removing document: ", error);
                 });
               }
-              else
+              else if(this.props.podcast.isChapterPodcast == true)
               {
                 firestore().collection("books").doc(this.props.podcast.bookID).collection("chapters")
                   .doc(this.props.podcast.chapterID).collection("podcasts").doc(this.props.podcast.podcastID)
@@ -846,6 +951,19 @@ var {width, height}=Dimensions.get('window');
                         lastAddedToExplore2 : moment().format()
                     },{merge:true}).then(function() {
                       console.log("Chapter Podcast Document successfully added to Explore Section II. ");
+                      Toast.show("Added to Explore Section-II");
+                    }).catch(function(error) {
+                  console.error("Error removing document: ", error);
+                });
+              }
+              else if(this.props.podcast.isOriginalPodcast == true)
+              {
+                firestore().collection("podcasts").doc(this.props.podcast.podcastID)
+                    .set({
+                        isExploreSection2 : true,
+                        lastAddedToExplore2 : moment().format()
+                    },{merge:true}).then(function() {
+                      console.log("Original Podcast Document successfully added to Explore Section II. ");
                       Toast.show("Added to Explore Section-II");
                     }).catch(function(error) {
                   console.error("Error removing document: ", error);

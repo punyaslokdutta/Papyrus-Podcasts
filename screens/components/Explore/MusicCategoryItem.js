@@ -35,7 +35,7 @@ const areEqual = (prevProps, nextProps) => true
               <Image source={{uri:props.item.image}}
                   style={{height:width/6,width:width/3 - 2,borderTopRightRadius:5}}/>
                 <View style={{alignItems:'center',justifyContent:'center',height:width/6 - 20}}>
-                <Text style={{fontFamily:'Andika-R',textAlign:'center'}}> {props.item.musicCategoryName} </Text>
+                <Text style={{fontFamily:'Montserrat-Regular',textAlign:'center'}}> {props.item.musicCategoryName} </Text>
                 </View>
                 <View>
                 { 
@@ -83,7 +83,7 @@ username: {
     alignSelf: 'center',
     fontWeight: '200',
     fontSize: 15,
-    fontFamily: 'Andika-R',
+    fontFamily: 'Montserrat-Regular',
     paddingBottom:10
 },
 shadow: {

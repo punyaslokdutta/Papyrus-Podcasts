@@ -193,7 +193,7 @@ const BookItem = React.memo((props) => {
 
               <ImageBackground
             style={{height:height/4,width:width/3,borderRightWidth:1}}
-            imageStyle={{ borderBottomLeftRadius:10,borderTopLeftRadius:10 }}
+            imageStyle={{ borderBottomLeftRadius:10,borderTopLeftRadius:0 }}
             source={{ uri: props.item.bookPictures['0'] }}
           >
                   <LinearGradient  colors={['transparent','transparent','transparent','transparent','transparent','transparent','transparent','transparent','black','black','black']} >

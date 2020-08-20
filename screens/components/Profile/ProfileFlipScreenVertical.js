@@ -185,7 +185,7 @@ class ProfileFlipScreenVertical extends React.Component {
           onRefresh={() => this.handleRefresh()}
           refreshControl={
             <RefreshControl
-            refreshing={this.state.refreshing}
+            refreshing={this.state.loading}
             onRefresh={this.handleRefresh}
             />
            }

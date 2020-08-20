@@ -183,7 +183,17 @@ const BookMarkScreenPodcasts = (props) => {
     try {
       if (refreshing === true) {
         return (
-          <ActivityIndicator color={'black'}/>
+          <View style={{marginTop:height/15,marginBottom:height/15, alignItems:'center',justifyContent:"center"}}>
+        <Image source={require('../assets/images/repostPodcasts.png')}
+               style={{height:width/1.8,width:width/2}}/>
+        <TouchableOpacity onPress={() => {
+              props.navigation.navigate('RepostPodcastsScreen');
+            }} style={{justifyContent:'center',alignItems:'center',
+            borderRadius:10,width:width/2.8,height:40,borderWidth:0.5,backgroundColor:'black',marginBottom:20}}>
+              <Text style={{fontSize:15, fontFamily:'Montserrat-Regular',color:'white'}}>Repost Podcasts</Text>
+              </TouchableOpacity>
+              <ActivityIndicator color={'black'}/>
+        </View>
            
         )
       }
@@ -198,7 +208,6 @@ const BookMarkScreenPodcasts = (props) => {
             borderRadius:10,width:width/2.8,height:40,borderWidth:0.5,backgroundColor:'black'}}>
               <Text style={{fontSize:15, fontFamily:'Montserrat-Regular',color:'white'}}>Repost Podcasts</Text>
               </TouchableOpacity>
-        {/* {renderHomeBooks()} */}
         </View>
           )
       }
@@ -277,7 +286,7 @@ const BookMarkScreenPodcasts = (props) => {
       ItemSeparatorComponent={separator}
       ListFooterComponent={renderFooter}
       onEndReached={onEndReached}
-      onEndReachedThreshold={0.001}
+      onEndReachedThreshold={0.01}
       refreshing={refreshing}
       onMomentumScrollBegin={() => { setOnEndReachedCalledDuringMomentum(false); }}
     />   
@@ -305,7 +314,7 @@ const BookMarkScreenPodcasts = (props) => {
   else if(podcasts.length != 0)
   {
     return (
-    <View> 
+    <View style={{marginTop:20}}> 
       {renderPodcasts()}
       </View>
     );

@@ -140,8 +140,18 @@ function renderBook({item,index})  {
     try {
       if (refreshing === true) {
         return (
+          <View style={{marginTop:height/15,marginBottom:height/15, alignItems:'center',justifyContent:"center"}}>
+        <Image source={require('../assets/images/savedBooks.png')}
+               style={{height:width/1.8,width:width/2}}/>
+        <TouchableOpacity onPress={() => {
+              props.navigation.navigate('SaveExploreBooks');
+            }} style={{justifyContent:'center',alignItems:'center',
+            borderRadius:10,width:width/3,height:40,borderWidth:0.5,backgroundColor:'black',marginBottom:20}}>
+              <Text style={{fontSize:15, fontFamily:'Montserrat-Regular',color:'white'}}>Explore Books</Text>
+              </TouchableOpacity>
           <ActivityIndicator color={'black'}/>
-           
+        </View>
+
         )
       }
       else {
@@ -154,7 +164,6 @@ function renderBook({item,index})  {
             borderRadius:10,width:width/3,height:40,borderWidth:0.5,backgroundColor:'black'}}>
               <Text style={{fontSize:15, fontFamily:'Montserrat-Regular',color:'white'}}>Explore Books</Text>
               </TouchableOpacity>
-        {/* {renderHomeBooks()} */}
         </View>
       }
     }
@@ -221,7 +230,7 @@ function renderBook({item,index})  {
       ItemSeparatorComponent={separator}
       ListFooterComponent={renderFooter}
       onEndReached={onEndReached}
-      onEndReachedThreshold={0.5}
+      onEndReachedThreshold={0.001}
       refreshing={refreshing}
       onMomentumScrollBegin={() => { setOnEndReachedCalledDuringMomentum(false); }}
     />   

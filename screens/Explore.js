@@ -26,7 +26,9 @@ import BookList from './components/Home/BookList';
 import Podcast from './components/Home/Podcast';
 import FlipItem from './components/Home/FlipItem';
 import { NetworkContext } from './config/NetworkProvider';
-
+import ContinueListeningPodcasts from './components/Explore/ContinueListeningPodcasts';
+import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
+import moment from 'moment';
 const {width,height} = Dimensions.get('window')
 
 const Explore = (props) => {
@@ -36,6 +38,7 @@ const Explore = (props) => {
   var didFocusListener = useRef();
 
   // music related redux & state variables
+  const currentTime = useSelector(state=>state.rootReducer.currentTime);
   const musicPreferencesArray = useSelector(state=>state.userReducer.musicPreferencesArray);
   const musicEnabledNotificationSeen = useSelector(state=>state.userReducer.musicEnabledNotificationSeen);
   const [isModalVisible,setIsModalVisible] = useState(!musicEnabledNotificationSeen);
@@ -43,7 +46,8 @@ const Explore = (props) => {
   const [musicCategoriesState,setMusicCategoriesState] = useState([]);
   const isMusicEnabled = useSelector(state=>state.userReducer.isMusicEnabled);
   const musicPreferences = useSelector(state=>state.userReducer.musicPreferences);
-  
+  const { position } = useTrackPlayerProgress(750);
+
   // URL listeners function reference
   const handleOpenUrlFuncRef = useSelector(state=>state.userReducer.handleOpenUrlFuncRef);
   
@@ -56,7 +60,10 @@ const Explore = (props) => {
   const [podcastState,setPodcastState] = useState(podcast);
   const externalPodcastID = useSelector(state=>state.userReducer.externalPodcastID);
   const externalFlipID = useSelector(state=>state.userReducer.externalFlipID);
+  const lastPlayingPodcast = useSelector(state=>state.rootReducer.lastPlayingPodcast);
+  //const podcastsLocal = useSelector(state=>state.userReducer.continueListeningPodcasts);
 
+  var [localLastPlayingPodcast,setLocalLastPlayingPodcast] = useState(null);
   var [storytellers,setStorytellers] = useState([]);
   var [exploreFlips,setExploreFlips] = useState([]);
   var [section1Podcasts,setSection1Podcasts] = useState([]);
@@ -65,7 +72,10 @@ const Explore = (props) => {
   var [music,setMusic] = useState([]);
   var [chapters,setChapters] = useState([]);
   var [loading,setLoading] = useState(false);
+  const [podcastsLocal,setContinueListeningPodcastsLocal] = useState([]);
   var [sections,setSections] = useState([]);
+  var [lastPodcastID,setLastPodcastID] = useState(null);
+
   const dispatch=useDispatch();
   //const eventEmitter=useRef(new NativeEventEmitter(NativeModules.ReactNativeRecorder));
  
@@ -134,14 +144,21 @@ const Explore = (props) => {
     setLoading(true);
 
     try{
-      let sectionsQuery = await firestore().collection('exploreSections').orderBy('screenPosition').get();
-      let documentSections = sectionsQuery._docs.map(document => document.data());
-      setSections(documentSections);
+      const continueListeningQuery = await firestore().collection('users').doc(userid).collection('privateUserData')
+      .doc(privateUserID).collection('PodcastsListened').orderBy('createdOn','desc').get();
+      
+      const continueListeningData = continueListeningQuery._docs.map(document => document.data());
+      console.log("[Explore] continueListeningData: ",continueListeningData);
+      if(podcastsLocal.length == 0)
+        setContinueListeningPodcastsLocal(continueListeningData);
+      
+      dispatch({type:"SET_CONTINUE_LISTENING_PODCASTS",payload:continueListeningData})
     }
     catch(error){
       console.log("Error in fetching exploreSection names ",error);
     }
 
+    
     //Top Storytellers
     try{
       let userQuery = await firestore().collectionGroup('privateUserData').where('isTopStoryTeller','==',true).get();
@@ -237,21 +254,178 @@ const Explore = (props) => {
             },{merge:true})
     }
 
+
+
     function exitPodcastPlayerAndsetLastPlaying(){
 
       console.log("Inside exitPodcastPlayerAndsetLastPlaying : ",podcastState);
       if(podcastState!==null)
       {
         //setLastPlayingPodcastInUserPrivateDoc(podcastState.podcastID);
-        dispatch({type:"SET_PODCAST", payload: null});
       }
       
+    }
+
+    function insertAt(array, index, ...elementsArray) {
+      array.splice(index, 0, ...elementsArray);
+    }
+
+      async function validateAndAddLatestPlayingToFirestore (lastPodcast)  {
+
+      // [1] if podcast already present in the PodcastsListened docs
+      // [2] if not then check if there are only 10 docs or not.
+      // [3] if there are 10 docs, then replace the last element since array(redux) 
+      //     is sorted in descending order of createdOn
+      // [4] if there are less than 10 docs, then simply add a new document
+      
+      console.log("[App] validateAndAddLatestPlayingToFirestore")
+      console.log("[EXPLORE] positions: ",position);
+      console.log("[validateAndAddLatestPlayingToFirestore] userid = ",userid);
+      
+      // [1] if podcast already present in the PodcastsListened docs
+  
+      var idx = -1;
+      for(var i = 0; i < podcastsLocal.length; i++) {
+        if (podcastsLocal[i].podcastID == lastPodcast.podcastID) {
+            idx = i;
+            break;
+        }
+      }
+  
+      console.log("[Explore11] podcastsLocal: ",podcastsLocal);
+      const currTime = moment().format();
+      try {
+        if(idx != -1){
+          firestore().collection('users').doc(userid).collection('privateUserData')
+          .doc(privateUserID).collection('PodcastsListened').doc(podcastsLocal[idx].podcastsListenedID).set({
+            lastPlayedPosition : position,
+            createdOn : currTime,
+            podcastPicture : lastPodcast.podcastPictures[0],
+            podcastName : lastPodcast.podcastName
+          },{merge:true}).then(() => {
+            console.log("[validateAndAddLatestPlayingToFirestore] Successfully updated already existing podcast in the PodcastsListened collection");
+            
+          }).catch(error => console.log("[validateAndAddLatestPlayingToFirestore] Error in updating already existing podcast in the PodcastsListened collection",error))            
+         
+            var localArray = podcastsLocal;
+            console.log("[Explore - Before updating localArray] localArray = ",localArray);
+            
+            const JSON = {
+              podcastID : lastPodcast.podcastID,
+              lastPlayedPosition : position,
+              createdOn : currTime,
+              podcastPicture : lastPodcast.podcastPictures[0],
+              podcastName : lastPodcast.podcastName,
+              duration : lastPodcast.duration,
+              podcastsListenedID : podcastsLocal[idx].podcastsListenedID
+            } 
+            localArray.splice(idx,1); //deleion of specific index
+            console.log("[!!!!!] localArray",localArray);
+            insertAt(localArray,0,JSON);
+            //setContinueListeningPodcastsLocal(localArray);
+            console.log("[Explore - After updating podcastsListened document] podcastsLocal = ",podcastsLocal);
+            dispatch({type:"SET_CONTINUE_LISTENING_PODCASTS",payload:localArray})
+        }
+        else if(podcastsLocal.length >= 10){
+          firestore().collection('users').doc(userid).collection('privateUserData')
+          .doc(privateUserID).collection('PodcastsListened').doc(podcastsLocal[podcastsLocal.length - 1].podcastsListenedID).set({
+            podcastID : lastPodcast.podcastID,
+            lastPlayedPosition : position,
+            createdOn : currTime,
+            podcastPicture : lastPodcast.podcastPictures[0],
+            podcastName : lastPodcast.podcastName,
+            duration : lastPodcast.duration
+          },{merge:true}).then(() => {
+            console.log("[validateAndAddLatestPlayingToFirestore] Successfully replaced the oldest podcast in terms of user's listening in the PodcastsListened collection");
+            
+          }).catch(error => console.log("[validateAndAddLatestPlayingToFirestore] Error in replacing oldest podcast in terms of user's listening in PodcastsListened",error))  
+          
+          var localArray = podcastsLocal;
+          const JSON = {
+            podcastID : lastPodcast.podcastID,
+            lastPlayedPosition : position,
+            createdOn : currTime,
+            podcastPicture : lastPodcast.podcastPictures[0],
+            podcastName : lastPodcast.podcastName,
+            duration : lastPodcast.duration,
+            podcastsListenedID : podcastsLocal[podcastsLocal.length - 1].podcastsListenedID
+          };
+          localArray.pop();
+          insertAt(localArray,0,JSON);
+          console.log("[Explore - After replacing podcastsListened document] localArray = ",localArray);
+     
+            dispatch({type:"SET_CONTINUE_LISTENING_PODCASTS",payload:localArray})
+        }
+        else if(podcastsLocal.length < 10){
+          firestore().collection('users').doc(userid).collection('privateUserData')
+          .doc(privateUserID).collection('PodcastsListened').add({
+            // podcastID : lastPodcast.podcastID,
+            // lastPlayedPosition : position,
+            // createdOn : currTime,
+            // podcastPicture : lastPodcast.podcastPictures[0],
+            // podcastName : lastPodcast.podcastName,
+            // duration : lastPodcast.duration
+            podcastID : lastPodcast.podcastID,
+            lastPlayedPosition : position,
+            createdOn : currTime,
+            podcastPicture : lastPodcast.podcastPictures[0],
+            podcastName : lastPodcast.podcastName,
+            duration : lastPodcast.duration
+          }).then((docRef) => {
+            console.log("[validateAndAddLatestPlayingToFirestore] Successfully added to PodcastsListened");
+          firestore().collection('users').doc(userid).collection('privateUserData')
+          .doc(privateUserID).collection('PodcastsListened').doc(docRef.id).set({
+            podcastsListenedID : docRef.id
+          },{merge:true})
+          setLastPodcastID(docRef.id);
+          }).catch((error) => {
+            console.log("[validateAndAddLatestPlayingToFirestore] Error in adding to PodcastsListened",error)
+          })
+        } 
+      }
+      catch(error){
+        console.log("[validateAndAddLatestPlayingToFirestore]ERROR: ",error)
+      }
     }
 
     useEffect(() => {
       musicPreferencesArray.length != 0 && 
       fetchMusicDocs();
     },[musicPreferencesArray])
+
+    useEffect(() => {
+      if(lastPodcastID !== null && localLastPlayingPodcast !== null){
+        let localArray1 = podcastsLocal;
+        const JSON1 = {
+          podcastID : localLastPlayingPodcast.podcastID,
+          lastPlayedPosition : position,
+          createdOn : moment().format(),
+          podcastPicture : localLastPlayingPodcast.podcastPictures[0],
+          podcastName : localLastPlayingPodcast.podcastName,
+          //podcastName : "WHATEVER",
+          duration : localLastPlayingPodcast.duration,
+          podcastsListenedID : lastPodcastID
+        };
+        insertAt(localArray1,0,JSON1);
+        setContinueListeningPodcastsLocal(localArray1);
+        console.log("[useEffect - lastPlayingPodcast] podcastsLocal = ",podcastsLocal);
+        console.log("[Explore - After adding to podcastsListened collection] localArray = ",localArray1);
+
+        dispatch({type:"SET_CONTINUE_LISTENING_PODCASTS",payload:localArray1})
+        setLocalLastPlayingPodcast(null);
+        setLastPodcastID(null);
+      }
+    },[lastPodcastID])
+
+    useEffect(() => {
+      console.log("[Explore - useEffect - lastPlayingPodcast]",lastPlayingPodcast);
+      if(lastPlayingPodcast !== null){
+        setLocalLastPlayingPodcast(lastPlayingPodcast);
+        validateAndAddLatestPlayingToFirestore(lastPlayingPodcast);
+        dispatch({type:"SET_LAST_PLAYING_PODCAST_ITEM",payload:null});
+      }
+        
+    },[lastPlayingPodcast])
 
     useEffect(() => {
       if(isMusicEnabled == true && musicPreferencesArray.length == 0){
@@ -287,11 +461,11 @@ const Explore = (props) => {
           fetchExploreItems();
 
           //dispatch({type:"SET_MUSIC",payload:"Swayam"})
-          return () => {
+          return async () => {
             //exitPodcastPlayerAndsetLastPlaying();
-            dispatch({type:"SET_PODCAST", payload: null});
+            //dispatch({type:"SET_PODCAST", payload: null});
             didFocusListener.current.remove();
-            Linking.removeEventListener("url",handleOpenUrlFuncRef);
+            //Linking.removeEventListener("url",handleOpenUrlFuncRef);
             console.log(" App exited from Explore",podcast);
           };
         },[])
@@ -341,7 +515,7 @@ const Explore = (props) => {
         else
         {
           dispatch({type:"PODCAST_ID_FROM_EXTERNAL_LINK",payload:null});
-          setLastPlayingPodcastInUserPrivateDoc(null);
+          //setLastPlayingPodcastInUserPrivateDoc(null);
         }
 
       },[externalPodcastID])
@@ -368,9 +542,9 @@ const Explore = (props) => {
       },[externalFlipID])
 
       useEffect(() => {
-        if(lastPlayingPodcastID !== null && externalPodcastID=== null)
+        if(lastPlayingPodcastID !== null &&  externalPodcastID=== null)
         {
-          fetchPodcastItem(lastPlayingPodcastID);
+          //fetchPodcastItem(lastPlayingPodcastID);
           //setLastPlayingPodcastInUserPrivateDoc(null);
         }
 
@@ -435,7 +609,7 @@ const Explore = (props) => {
           <TouchableOpacity onPress={() => {
             addMusicPreferencesToFirestore();
           }} style={{width:width/5,height:width/8,borderColor:'black',borderWidth:1,borderRadius:10,alignItems:'center',justifyContent:'center'}}>
-            <Text style={{fontSize:width/16,fontFamily:'Andika-R'}}>Done</Text>
+            <Text style={{fontSize:width/16,fontFamily:'Montserrat-Regular'}}>Done</Text>
             </TouchableOpacity>
             </View>
         )
@@ -444,7 +618,7 @@ const Explore = (props) => {
       function renderHeader() {
         return (
           <View style={{justifyContent:'center',alignItems:'center',textAlign:'center',marginBottom:10}}>
-                <Text style={{marginHorizontal:5,paddingHorizontal:5, fontFamily:'Andika-R',fontSize:20,backgroundColor:'white',alignSelf:'center'}}>Select your music preferences</Text>
+                <Text style={{marginHorizontal:5,paddingHorizontal:5, fontFamily:'Montserrat-Regular',fontSize:20,backgroundColor:'white',alignSelf:'center'}}>Select your music preferences</Text>
                 </View> 
         )
       }
@@ -791,6 +965,19 @@ const Explore = (props) => {
 
     }
 
+    function renderContinueListeningPodcasts()
+    {
+      console.log("[renderContinueListeningPodcasts]podcastsLocal: ",podcastsLocal);
+     if(podcastsLocal.length != 0)
+        return (
+          <View style={{width:width,paddingTop:10}}>
+          <ContinueListeningPodcasts podcasts={podcastsLocal} navigation={props.navigation}/>
+          </View> 
+        )
+       else
+         return null;
+    }
+
     function renderSection1Podcasts()
     {
         return (
@@ -800,6 +987,7 @@ const Explore = (props) => {
          
         )
     }
+
     function renderChapters()
     {
        return chapters.map((item, index)=>
@@ -1033,9 +1221,10 @@ const Explore = (props) => {
 
             <View style={{backgroundColor:'#e1e6e1'}}>
             <View style={{height:15}}/>
-
              {renderSection1Podcasts()}
              <View style={{marginTop:20,borderBottomColor:'#d1d0d4',borderBottomWidth:1}}/> 
+             {renderContinueListeningPodcasts()}
+
              {renderTetrisFlips()}
              <View style={{marginTop:20,borderBottomColor:'#d1d0d4',borderBottomWidth:0}}/> 
              {renderSection2PodcastsI()}
@@ -1045,7 +1234,8 @@ const Explore = (props) => {
             {renderSection2PodcastsII()}
             <View style={{height:15}}/>
             <Text style={{fontSize:23,marginBottom:10, color:'black',fontFamily:'HeadlandOne-Regular'}}> Popular Books </Text>
-             <BookList navigation={props.navigation} books={recordBooks}/>
+             <BookList navigation={props.navigation} books={recordBooks} fromScreen="Explore"/>
+              
              {renderTetrisFlipsII()}
              <View style={{height:15}}/>
              {renderSection2PodcastsIII()}

@@ -287,6 +287,7 @@ const PreviewScreen = (props) => {
       setPublishLoading(false);
       TrackPlayer.destroy();
       dispatch({type:'SET_EDIT_PODCAST',payload:false});
+      dispatch({type:"SET_PODCAST_UPLOAD_SUCCESS",payload:true});
       props.navigation.navigate("HomeScreen");
     }
         
@@ -598,8 +599,8 @@ const PreviewScreen = (props) => {
 
     try{
       ImagePicker.showImagePicker(options, async (response) => {
-        console.log('Response URI = ', response.uri);
-        console.log('Response PATH = ', response.path);
+        //console.log('Response URI = ', response.uri);
+        //console.log('Response PATH = ', response.path);
   
         if (response.didCancel) {
           console.log('User cancelled image picker');
@@ -610,7 +611,7 @@ const PreviewScreen = (props) => {
         } else {
           const source = { uri: response.uri };
           console.log("Before storageRef.putFile");
-          console.log("response : ",response);
+          //console.log("response : ",response);
           //setImageFromURL(false);
           //setPodcastImage(source);
           setLoadingPodcastImage(true);

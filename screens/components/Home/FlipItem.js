@@ -578,10 +578,10 @@ const FlipItem = (props) => {
                      
                 </View>            
             </TouchableOpacity>
-            <View style={{flex:1,alignItems:'flex-end',justifyContent:"center",paddingRight:5}}>
+            <View style={{flex:1,alignItems:'flex-end',justifyContent:"center",paddingRight:5,height:width/12}}>
             {
               props.item.bookName !== undefined &&
-              <Text style={{fontFamily:'Montserrat-Italic',fontSize:10}}>
+              <Text style={{fontFamily:'Montserrat-Italic',textAlignVertical:'center',fontSize:10,height:width/12,lineHeight:width/24}}>
                 {props.item.bookName}
               </Text>
             }
@@ -640,7 +640,7 @@ const FlipItem = (props) => {
                 props.item.flipTitle !== undefined &&
                 <Text style={{fontFamily:'Montserrat-Bold',lineHeight: width/16,height:width/8,fontSize:width/20}}>{props.item.flipTitle} </Text>
               }
-                <Text style={{fontWeight:'normal',height:width/7,fontFamily:'Montserrat-Regular',fontSize:width/28}}>  {props.item.flipDescription.slice(0,100)}
+                <Text style={{fontWeight:'normal',height:width/7,fontFamily:'Montserrat-Regular',fontSize:width/28}}>{props.item.flipDescription.slice(0,100)}
                 
                 {
                   props.item.flipDescription.length > 100

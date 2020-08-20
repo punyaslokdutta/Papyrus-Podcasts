@@ -284,7 +284,10 @@ const RecordBook = (props) => {
             
             <View style={{flexDirection:'row',alignItems:'center',justifyContent:'center',paddingTop:20,paddingBottom:20,paddingLeft:width/4}}>
             <View style={{width:width/2 - theme.sizes.padding}}>  
-            <TouchableNativeFeedback onPress={()=>props.navigation.navigate('AddBookReviewScreen',{bookItem:article,chapterItem:null})}>
+            <TouchableNativeFeedback onPress={()=>{
+              dispatch({type:"SET_FROM_RECORD_BOOK_CHAPTER",payload:true})
+              props.navigation.navigate('AddBookReviewScreen',{bookItem:article,chapterItem:null})
+            }}>
             <View style={{width:width/6,alignItems:'center'}}>
               <Tooltip
               isVisible={toolTipRecordVisible}

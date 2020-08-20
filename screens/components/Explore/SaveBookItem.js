@@ -4,14 +4,14 @@ import { StyleSheet, Text, View, Image, Dimensions,TouchableNativeFeedback, Touc
 import Icon from 'react-native-vector-icons/FontAwesome'
 import * as Animatable from 'react-native-animatable'
 import * as theme from '../constants/theme';
-import {useDispatch,useSelector} from "react-redux"
+import {useDispatch,useSelector} from "react-redux";
 import moment from 'moment';
 import { Divider } from '../categories/components';
 import {withFirebaseHOC} from '../../config/Firebase';
 import firestore from '@react-native-firebase/firestore';
-import Toast from 'react-native-simple-toast'
+import Toast from 'react-native-simple-toast';
 
-var {width, height}=Dimensions.get('window')
+var {width, height}=Dimensions.get('window');
 const AnimatedIcon = Animatable.createAnimatableComponent(Icon)
 
  /* useContext doesn't let you subscribe to a part of the context value (or some memoized selector) without fully re-rendering.*/

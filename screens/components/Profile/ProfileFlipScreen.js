@@ -118,6 +118,30 @@ class ProfileFlipScreen extends React.Component {
     }
   }
 
+  renderTitle = (item) => {
+    if(item.flipTitle !== undefined)
+      return (
+        <Text style={{color:'white',position:'absolute',fontFamily:'Montserrat-Bold',bottom:2,left:10,fontSize:20}}>
+        {item.flipTitle.slice(0,35)}
+        {
+          (item.flipTitle.length > 35)  &&  ".."
+        }
+      </Text>
+      )
+    else if(item.bookName !== undefined)
+        return (
+          <Text style={{color:'white',position:'absolute',fontFamily:'Montserrat-Bold',bottom:2,left:10,fontSize:20}}>
+          {item.bookName.slice(0,35)}
+          {
+            (item.bookName.length > 35)  &&  ".."
+          }
+        </Text>
+        )
+    else
+          return null;
+        
+  }
+
   renderData = ({item,index}) =>
   {
       return(
@@ -136,16 +160,8 @@ class ProfileFlipScreen extends React.Component {
                 <IconAntDesign name="play" size={height/24} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/4 - 5 - height/48,top:width*0.75/2 - height/48}}/>
 
               }
-              {
-                item.bookName !== undefined && item.bookName !== null &&
-<Text style={{color:'white',position:'absolute',fontFamily:'Montserrat-Bold',bottom:2,left:10,fontSize:15}}>
-        {item.bookName.slice(0,35)}
-        {
-          (item.bookName.length > 35)  &&  ".."
-        }
-
-      </Text>
-              }
+              {this.renderTitle(item)}
+              
                
               </View>
             </LinearGradient>
@@ -160,7 +176,17 @@ class ProfileFlipScreen extends React.Component {
     
     if (this.state.refreshing == true) {
       return (
-        <ActivityIndicator />
+        <View style={{marginTop:height/15,marginBottom:height/10,alignItems:'center',justifyContent:"center"}}>
+      <Image source={require('../../../assets/images/savedBooks.png')}
+             style={{height:width/1.8,width:width/2}}/>
+      <TouchableOpacity onPress={() => {
+            this.props.navigation.navigate('AddFlipScreen');
+          }} style={{justifyContent:'center',alignItems:'center',
+          borderRadius:10,width:width/3,height:40,borderWidth:0.5,backgroundColor:'black',marginBottom:20}}>
+            <Text style={{fontSize:15, fontFamily:'Montserrat-Regular',color:'white'}}>Add Flip</Text>
+            </TouchableOpacity>
+            <ActivityIndicator color='black'/>
+      </View>
       )
     }
     else {

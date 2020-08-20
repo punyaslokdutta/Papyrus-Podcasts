@@ -456,7 +456,7 @@ const MainFlipItem = (props) => {
                   <Text style={{fontFamily:'Montserrat-Bold',lineHeight: width/16,fontSize:width/18}}>{props.navigation.state.params.item.flipTitle} </Text>
 
                 }
-                <Text style={{fontWeight:'normal', fontFamily:'Montserrat-Regular'}}>  {props.navigation.state.params.item.flipDescription} </Text>
+                <Text style={{fontWeight:'normal', fontFamily:'Montserrat-Regular'}}>{props.navigation.state.params.item.flipDescription} </Text>
                 
                 <View style={{flexDirection:'row',justifyContent:'space-between'}}>
                 <Text style={{color:"gray",fontSize:10}}>{moment(props.navigation.state.params.item.createdOn).fromNow()}</Text>

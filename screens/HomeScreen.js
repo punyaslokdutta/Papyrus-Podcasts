@@ -14,7 +14,6 @@ import {Text} from './components/categories/components';
 import { useSelector,useDispatch} from 'react-redux';
 import { Badge } from 'react-native-elements'
 import Shimmer from 'react-native-shimmer';
-import HomeAnimation from './components/Home/HomeAnimation';
 import { MenuProvider } from 'react-native-popup-menu';
 import { NetworkContext } from './config/NetworkProvider';
 import {withFirebaseHOC} from './config/Firebase'
@@ -83,10 +82,10 @@ const HomeScreen = (props) => {
   useEffect(() => {
       if(uploadPodcastSuccess == true){
         console.log("uploadPodcastSuccess1234: ",uploadPodcastSuccess);
-        setLoading(true);
+        //setLoading(true);
         retrievePodcastJustUploaded();
-        setLoading(false);
         dispatch({type:"SET_PODCAST_UPLOAD_SUCCESS",payload:false});
+        //setLoading(false);
 
         //retrieveData();
       }
@@ -102,11 +101,22 @@ const HomeScreen = (props) => {
   }
 
   async function retrievePodcastJustUploaded(){
-    const justUploadedPodcastQuery = await firestore().collectionGroup('podcasts').where('podcasterID','==',userID)
+    //setLoading(true);
+    try{
+      const justUploadedPodcastQuery = await firestore().collectionGroup('podcasts').where('podcasterID','==',userID)
       .orderBy('lastEditedOn','desc').limit(1).get();
-    const justUploadedPodcastDocData = justUploadedPodcastQuery.docs[0].data();
-    console.log("justUploadedPodcastDocData: ",justUploadedPodcastDocData);
-    setPodcastJustUploaded(justUploadedPodcastDocData);
+      const justUploadedPodcastDocData = justUploadedPodcastQuery.docs[0].data();
+      console.log("justUploadedPodcastDocData: ",justUploadedPodcastDocData);
+      setPodcastJustUploaded(justUploadedPodcastDocData);
+      //setLoading(false);
+    }
+    catch(error){
+      //setLoading(false);
+      console.log("Error in retrieving newly uploaded podcast",error);
+    }
+    
+    
+
   }
 
   async function retrieveData() 
@@ -284,6 +294,7 @@ const HomeScreen = (props) => {
           <View style={{backgroundColor:'white'}}>  
           <Text h2 style={{fontFamily:'Montserrat-Bold',paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Book Podcasts</Text>
           <BookList navigation={props.navigation} books={books.slice(0,5)}/>
+          
           </View>
           </View>
         );
@@ -388,7 +399,11 @@ const HomeScreen = (props) => {
       <View>
           <View style={{backgroundColor:'white'}}>  
           <Text h2 style={{fontFamily:'Montserrat-Bold',paddingHorizontal: 30,paddingTop:10,paddingBottom:10,   textShadowColor:'black'}}>Record Book Podcasts</Text>
-          <BookList navigation={props.navigation} books={books.slice(0,5)}/>
+          <BookList navigation={props.navigation} books={books.slice(0,5)} fromScreen="HomeScreen"/>
+          {/* <TouchableOpacity onPress={() => props.navigation.navigate('SaveExploreBooks')} 
+                    style={{borderWidth:1,padding:5,borderRadius:5,alignSelf:'center',marginBottom:20}}> 
+          <Text style={{fontFamily:'Montserrat-Bold'}}>VIEW MORE BOOKS</Text>
+           </TouchableOpacity>  */}
           </View>
       </View>
       {
@@ -496,7 +511,7 @@ const HomeScreen = (props) => {
       onRefresh={() => handleRefresh()}
       refreshControl={
         <RefreshControl
-          refreshing={refreshing}
+          refreshing={loading}
           onRefresh={handleRefresh}
         />
       }

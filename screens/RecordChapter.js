@@ -266,7 +266,10 @@ class RecordChapter extends Component {
 
             
             <View style={{paddingTop:20,paddingBottom:20, paddingLeft:10}}>
-            <TouchableOpacity onPress={()=>this.props.navigation.navigate('AddBookReviewScreen',{bookItem:null,chapterItem:this.state.article})}>
+            <TouchableOpacity onPress={()=>{
+              dispatch({type:"SET_FROM_RECORD_BOOK_CHAPTER",payload:true})
+              this.props.navigation.navigate('AddBookReviewScreen',{bookItem:null,chapterItem:this.state.article})
+            }}>
             <View style={{alignItems:'center'}}>  
              <FontAwesome name="microphone" color={theme.colors.black} size={theme.sizes.font * 1.5} />
             <Text style={{fontSize:12}}>Record</Text>

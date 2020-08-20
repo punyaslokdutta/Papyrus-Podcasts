@@ -2,7 +2,7 @@
 
 import React from 'react';
 import LottieView from 'lottie-react-native';
-import newAnimation from '../../../assets/animations/homeFinalAnimation.json';
+import newAnimation from '../../../assets/animations/play_pause.json';
 import {ScrollView,Dimensions} from 'react-native';
 
 const {width,height} = Dimensions.get('window')

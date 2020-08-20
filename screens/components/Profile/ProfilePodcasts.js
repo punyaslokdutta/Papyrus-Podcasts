@@ -135,7 +135,7 @@ class ProfilePodcasts extends React.Component {
     
     if (this.state.refreshing == true) {
       return (
-        <ActivityIndicator />
+        <ActivityIndicator color='black'/>
       )
     }
     else {
@@ -170,7 +170,7 @@ class ProfilePodcasts extends React.Component {
     {
       return (
         <View style={{paddingTop: height/3}}>
-        <ActivityIndicator/>
+        <ActivityIndicator color='black'/>
         </View>
       )       
     }
@@ -193,7 +193,7 @@ class ProfilePodcasts extends React.Component {
           onRefresh={() => this.handleRefresh()}
           refreshControl={
             <RefreshControl
-            refreshing={this.state.refreshing}
+            refreshing={this.state.loading}
             onRefresh={this.handleRefresh}
             />
            }

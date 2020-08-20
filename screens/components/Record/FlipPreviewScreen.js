@@ -19,7 +19,6 @@ import {withFirebaseHOC} from '../../config/Firebase';
 import Toast from 'react-native-simple-toast';
 import DocumentPicker from 'react-native-document-picker';
 import Modal from 'react-native-modal';
-import modalJSON from '../../../assets/animations/modal-microphone.json';
 import modalJSON2 from '../../../assets/animations/modal-animation-2.json';
 import LottieView from 'lottie-react-native';
 import { set } from 'react-native-reanimated';
@@ -418,19 +417,18 @@ const FlipPreviewScreen = (props)=> {
       <ScrollView 
       ref={scrollViewRef}
       contentContainerStyle={{backgroundColor:'white',paddingBottom:30}} keyboardShouldPersistTaps={'always'}>
-        <View style={{flexDirection:'row', justifyContent:'space-between',alignItems:'center',paddingHorizontal:10,paddingVertical:5}}>
+        <View style={{flexDirection:'row', justifyContent:'space-between',alignItems:'center',paddingHorizontal:10,paddingVertical:5,height:height/12}}>
         
         <TouchableOpacity onPress={() => {
         props.navigation.goBack(null)
       }}>
       <Icon name="arrow-left" size={20} style={{color:'black'}}/>
       </TouchableOpacity>
-      <View>
+      <View style={{alignSelf:'center',position:'absolute',left:width/3,alignItems:'center',justifyContent:'center'}}>
       <Text style={{ fontFamily: 'Montserrat-Regular', color: 'black',paddingBottom:5, fontSize: 20 }}>
         {previewHeaderText}</Text>
         </View>
         {renderPublishText()}  
-
           </View>
         <Animated.ScrollView
             horizontal

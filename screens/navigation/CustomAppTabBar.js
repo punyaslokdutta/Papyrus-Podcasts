@@ -2,9 +2,9 @@ import React from "react";
 import { View, Text, StyleSheet, ScrollView,TouchableOpacity,Image,TouchableNativeFeedback,Dimensions } from "react-native";
 import { useSelector } from "react-redux";
 import ExtraDimensions from 'react-native-extra-dimensions-android';
-const height =ExtraDimensions.getRealWindowHeight();
-const width=ExtraDimensions.getRealWindowWidth();
-// var {width, height}=Dimensions.get('window')
+//const height =ExtraDimensions.getRealWindowHeight();
+//const width=ExtraDimensions.getRealWindowWidth();
+var {width, height}=Dimensions.get('window')
 
 const S = StyleSheet.create({
   container: { flexDirection: "row", height: height/15, elevation: 0,borderColor:'gray',borderWidth:0 },

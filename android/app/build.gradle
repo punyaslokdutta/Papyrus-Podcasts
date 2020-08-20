@@ -129,7 +129,7 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     dexOptions {
-        javaMaxHeapSize "3g"
+        javaMaxHeapSize "4g"
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
