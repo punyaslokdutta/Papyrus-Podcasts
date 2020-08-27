@@ -14,7 +14,7 @@ var {width, height}=Dimensions.get('window')
  //const areEqual = (prevProps, nextProps) => true;
  const areEqual = (prevProps, nextProps) => true
 
- const BookmarkBookItem = React.memo((props)=> {
+ const BookmarkBookItem = (props)=> {
   
   console.log("PROPS = ",props);
 
@@ -119,7 +119,7 @@ var {width, height}=Dimensions.get('window')
       </TouchableNativeFeedback>
         );
       
-  }, areEqual);
+  };
 
 export default BookmarkBookItem;
 

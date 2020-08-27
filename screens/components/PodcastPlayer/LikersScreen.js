@@ -50,8 +50,21 @@ class LikersScreen extends React.Component {
         // Cloud Firestore: Query
         const podcastId = this.props.navigation.state.params.podcastID;// props.firebase._getUid();
         
-        let likersQuery =  await firestore().collectionGroup('privateUserData').where('podcastsLiked','array-contains',podcastId).orderBy('id')
-                                                .limit(this.state.limit).get();
+        const flipID = this.props.navigation.state.params.flipID;
+
+        let likersQuery = null;
+         
+        if(podcastId !== undefined){
+          likersQuery = await firestore().collectionGroup('privateUserData').
+          where('podcastsLiked','array-contains',podcastId).orderBy('id')
+          .limit(this.state.limit).get();
+        }
+        else if(flipID !== undefined){
+          likersQuery = await firestore().collectionGroup('privateUserData').
+          where('flipsLiked','array-contains',flipID).orderBy('id')
+          .limit(this.state.limit).get();
+        }
+
         let likersData = likersQuery.docs.map(document=>document.data());
         var lastVisibleLiker = this.state.lastVisibleLiker;
 
@@ -79,6 +92,7 @@ class LikersScreen extends React.Component {
          }); 
 
          const podcastId = this.props.navigation.state.params.podcastID;// props.firebase._getUid();
+         const flipID = this.props.navigation.state.params.flipID;
 
          let additionalQuery = 9;
          try{
@@ -88,10 +102,17 @@ class LikersScreen extends React.Component {
 // var lastVisibleLiker = this.state.lastVisibleLiker;
 
 // lastVisibleLiker = likersData[likersData.length - 1].id;        
-
-           additionalQuery = await firestore().collection('users').where('podcastsLiked','array-contains',podcastId).orderBy('id')
+          if(podcastId !== undefined){
+            additionalQuery = await firestore().collection('users').where('podcastsLiked','array-contains',podcastId).orderBy('id')
                             .startAfter(this.state.lastVisibleLiker)
                             .limit(this.state.limit);
+          }
+          else if(flipID !== undefined){
+            additionalQuery = await firestore().collection('users').where('flipsLiked','array-contains',flipID).orderBy('id')
+                            .startAfter(this.state.lastVisibleLiker)
+                            .limit(this.state.limit);
+          }
+           
         
       // Cloud Firestore: Query Snapshot
       {console.log("retrieveMoreLikers afterQuery()")}

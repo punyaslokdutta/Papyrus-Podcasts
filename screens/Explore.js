@@ -638,28 +638,15 @@ const Explore = (props) => {
           /> 
           </View>
         )
-        // return musicCategoriesState.map((item,index) => {
-          
-        //   return (
-        //   <View style={{height:width/5,width:width/3}}>
-        //     <Image source={{uri:"https://i.pinimg.com/originals/7d/c1/db/7dc1dbaa904cd562b4288339a8abbf63.jpg"}}
-        //         style={{height:width/5,width:width/3}}/>
-        //       <Text> {item.musicCategoryName} </Text>
-        //     </View>
-        //   )
-        // })
       }
 
       function renderMusicCategoriesModal() {
         return (
           <Modal isVisible={isMusicCategoryModalVisible} backdropColor={'white'} style={{backgroundColor:'while'}}>
             <View style={{ backgroundColor:'white',height:height*3/4,borderRadius:10,borderWidth:0.5,borderColor:'black', width:width*3/4,alignSelf:'center' }}>
-              {/* <View style={{justifyContent:'center',alignItems:'center',textAlign:'center'}}>
-                <Text style={{marginHorizontal:5,paddingHorizontal:5,borderWidth:1,borderColor:'#dddd', fontFamily:'Andika-R',fontSize:20,backgroundColor:'white',alignSelf:'center'}}>Select your music preferences</Text>
-                </View> */}
-                  <View style={{marginTop:width/18,flexDirection:'column'}}>
-                    {renderMusicCategories()}
-                  </View>
+              <View style={{marginTop:width/18,flexDirection:'column'}}>
+                {renderMusicCategories()}
+              </View>
             </View>
           </Modal>
         )
@@ -679,9 +666,6 @@ const Explore = (props) => {
               <View style={{justifyContent:'center',alignItems:'center',textAlign:'center'}}>
                 <Text style={{marginHorizontal:5,paddingHorizontal:5,borderWidth:1,borderColor:'#dddd', fontFamily:'Andika-R',fontSize:20,backgroundColor:'white',alignSelf:'center'}}>Enable Background Music</Text>
                 </View>
-                {/* <View style={{alignItems:'center'}}>
-                  <Text style={{fontSize:30}}> OR </Text>
-                  </View> */}
                   <View style={{marginTop:width/6,flexDirection:'column'}}>
                    <View style={{borderBottomWidth:0.25,width:width*3/4}}/> 
                    <TouchableOpacity onPress={() => {
@@ -704,22 +688,12 @@ const Explore = (props) => {
           </Modal>
         )
       }  
-      
-    function renderStoryTellers()
-    {
-      console.log("storytellers: ",storytellers);
-
-      return storytellers.map((item, index)=>
-      {
-        return(<Story item={item} index={index} key ={index} navigation={props.navigation}/>)
-      })
-    };
 
     function renderTetrisFlips()
     {
       if(exploreFlips.length >= 6)
-      return (
-        <View style={{borderColor:'black',borderWidth:0.5,height:width,width:width}}>
+        return (
+          <View style={{borderColor:'black',borderWidth:1,height:width,width:width}}>
           <View style={{flexDirection:"row"}}>
             <TouchableOpacity onPress={() => {
               props.navigation.navigate('FlipsExploreScreen',{
@@ -728,7 +702,7 @@ const Explore = (props) => {
                 lastVisibleFlip:exploreFlips[exploreFlips.length - 1].lastEditedOn,
             })
             }}
-            style={{borderColor:'black',borderWidth:0.5,height:width/3,width:width/3}}>
+            style={{borderColor:'black',borderWidth:1,height:width/3,width:width/3}}>
             <Image source={{uri:exploreFlips[0].flipPictures[0]}} 
                   style={{height:width/3,width:width/3}}/>
               {
@@ -744,7 +718,7 @@ const Explore = (props) => {
                 lastVisibleFlip:exploreFlips[exploreFlips.length - 1].lastEditedOn,
             })
             }}
-            style={{borderColor:'black',borderWidth:0.5,height:width/3,width:width/3}}>
+            style={{borderColor:'black',borderWidth:1,height:width/3,width:width/3}}>
             <Image source={{uri:exploreFlips[1].flipPictures[0]}} 
                   style={{height:width/3,width:width/3}}/>
               {
@@ -760,7 +734,7 @@ const Explore = (props) => {
                 lastVisibleFlip:exploreFlips[exploreFlips.length - 1].lastEditedOn,
             })
             }}
-             style={{borderColor:'black',borderWidth:0.5,height:width/3,width:width/3}}>
+             style={{borderColor:'black',borderWidth:1,height:width/3,width:width/3}}>
             <Image source={{uri:exploreFlips[2].flipPictures[0]}} 
                   style={{height:width/3,width:width/3}}/>
               {
@@ -779,7 +753,7 @@ const Explore = (props) => {
                 lastVisibleFlip:exploreFlips[exploreFlips.length - 1].lastEditedOn,
             })
             }}
-                style={{borderColor:'black',borderWidth:0.5,height:width/3,width:width/3}}>
+                style={{borderColor:'black',borderWidth:1,height:width/3,width:width/3}}>
               <Image source={{uri:exploreFlips[3].flipPictures[0]}} 
                   style={{height:width/3,width:width/3}}/>
               {
@@ -795,7 +769,7 @@ const Explore = (props) => {
                 lastVisibleFlip:exploreFlips[exploreFlips.length - 1].lastEditedOn,
             })
             }}
-              style={{borderColor:'black',borderWidth:0.5,height:width/3,width:width/3}}>
+              style={{borderColor:'black',borderWidth:1,height:width/3,width:width/3}}>
             <Image source={{uri:exploreFlips[4].flipPictures[0]}} 
                   style={{height:width/3,width:width/3}}/>
               {
@@ -812,7 +786,7 @@ const Explore = (props) => {
                 lastVisibleFlip:exploreFlips[exploreFlips.length - 1].lastEditedOn,
             })
             }}
-                  style={{borderColor:'black',borderWidth:0.5,height:width*2/3,width:width*2/3}}>
+                  style={{borderColor:'black',borderWidth:1,height:width*2/3,width:width*2/3}}>
                 <Image source={{uri:exploreFlips[5].flipPictures[0]}} 
                   style={{height:width*2/3,width:width*2/3}}/>
               {
@@ -946,82 +920,34 @@ const Explore = (props) => {
       )
     }
 
-    function renderSectionMusic()
-    {
-      return (
-        <View style={{width:width,paddingTop:height/50}}>
-          <MusicCarousel data={music} navigation={props.navigation}/>
-          </View>
-      )
-    }
-
-
-    function renderPodcasts()
-    {
-       return section1Podcasts.map((item, index)=>
-      {
-        return(<TrendingPodcast item={item} index={index} key ={index} navigation={props.navigation}/>)
-      })
-
-    }
-
     function renderContinueListeningPodcasts()
     {
-      console.log("[renderContinueListeningPodcasts]podcastsLocal: ",podcastsLocal);
-     if(podcastsLocal.length != 0)
+      console.log("[Explore][renderContinueListeningPodcasts] ContinueListeningPodcasts before rendering");
+      if(podcastsLocal.length != 0)
         return (
           <View style={{width:width,paddingTop:10}}>
           <ContinueListeningPodcasts podcasts={podcastsLocal} navigation={props.navigation}/>
           </View> 
         )
-       else
-         return null;
+      else
+        return null;
     }
 
     function renderSection1Podcasts()
     {
-        return (
-          <View style={{width:width,paddingTop:10}}>
-          <TrendingPodcastsCarousel data={section1Podcasts} navigation={props.navigation}/>
-          </View>
-         
-        )
-    }
-
-    function renderChapters()
-    {
-       return chapters.map((item, index)=>
-      {
-        return(<TopChapters item={item} index={index} key ={index} navigation={props.navigation}/>)
-      })
-
-    }
-
-    function renderSectionChapters()
-    {
       return (
-
         <View style={{width:width,paddingTop:10}}>
-          <ClassicPoemsCarousel data={chapters} navigation={props.navigation}/>
-          </View>
+        <TrendingPodcastsCarousel data={section1Podcasts} navigation={props.navigation}/>
+        </View>
         
-      )
-    }
-
-    function renderBooks()
-    {
-       return section2Podcasts.map((item, index)=>
-      {
-        return(<ExploreBook item={item} index={index} key ={index} navigation={props.navigation}/>)
-      })
-
+        )
     }
 
     function renderSection2PodcastsI()
     {
       return section2Podcasts.slice(0,4).map((item, index)=>
       {
-        return(<Podcast podcast={item} key ={item.podcastID} navigation={props.navigation}/>)
+        return <Podcast podcast={item} key ={item.podcastID} navigation={props.navigation}/>
       })
     }
 
@@ -1029,7 +955,7 @@ const Explore = (props) => {
     {
       return section2Podcasts.slice(4,8).map((item, index)=>
       {
-        return(<Podcast podcast={item} key ={item.podcastID} navigation={props.navigation}/>)
+        return <Podcast podcast={item} key ={item.podcastID} navigation={props.navigation}/>
       })
     }
 
@@ -1037,22 +963,17 @@ const Explore = (props) => {
     {
       return section2Podcasts.slice(8,10).map((item, index)=>
       {
-        return(<Podcast podcast={item} key ={item.podcastID} navigation={props.navigation}/>)
+        return <Podcast podcast={item} key ={item.podcastID} navigation={props.navigation}/>
       })
     }
-    
  
     function renderMainHeader() 
     {
       return (
       <View style={styles.AppHeader}>
         <TouchableNativeFeedback onPress={()=> {
-          //dispatch({type:"SHOW_MUSIC_PLAYER_TOOLTIP",payload:false})
           props.navigation.toggleDrawer();
-          //setTimeout(() => {dispatch({type:"SHOW_MUSIC_PLAYER_TOOLTIP",payload:true})}, 3000)
-          //dispatch({type:"SHOW_MUSIC_PLAYER_TOOLTIP",payload:true})
-
-          }}>
+        }}>
         <View style={{paddingLeft: 15,paddingRight:10 ,paddingVertical:26} }>
          
           {
@@ -1102,91 +1023,55 @@ const Explore = (props) => {
       {
         return (
           
-          <View style={{flexDirection:'column'}} onLayout={(event) => getWindowDimension(event)}>
+          <View style={{flexDirection:'column'}} onLayout={(event) => getWindowDimension(event)}>   
+            {renderMainHeader()}
+            <View style={{flexDirection:'row'}}>
+          <View style={{width:width/2}}>
+            <Shimmer>
+          <Text style={{paddingLeft: 30, paddingTop:height/20,fontFamily:'Montserrat-Bold',  fontSize:18,textShadowColor:'black'}}> App is under construction.
+          </Text>
+          </Shimmer>
+          <Shimmer>
+          <Text style={{paddingLeft: 30, paddingTop:5, fontFamily:'Montserrat-Regular', fontSize:15,textShadowColor:'black'}}>Caution: There may be bugs.
+          </Text>
+          </Shimmer>
+          <Text style={{paddingLeft: 30, paddingTop:0, fontFamily:'Montserrat-Bold',  fontSize:12,textShadowColor:'black'}}>
+          </Text>
+          </View>
+          <View style={{paddingTop:height/6,paddingRight:15}}>
+          <ExploreAnimation/>
           
-            
-        {renderMainHeader()}
-          
-           
-              <View>
-              
-            <View style={{color:'#dddd',flexDirection:'row'}}>
-              <View style={{width:width/20}}/>
+          </View>
+          </View>
+            <View style={{backgroundColor:'#e1e6e1'}}>
+            <View style={{height:25}}/>
+            <View style={{flexDirection:'row',paddingLeft:0.1*width}}>
+              <View style={{flexDirection:'column',height:height/3,width:width*0.8}}>
               <Shimmer>
-              <View style={{backgroundColor :'#dddd', height:width/6,width:width/6,borderRadius:100}}/>
+                <View style={{backgroundColor:'#A9A9A9',height:height/5,width:width*0.8}}/>  
               </Shimmer>
-              <View style={{width:width/15}}/>
               <Shimmer>
-              <View style={{backgroundColor :'#dddd', height:width/6,width:width/6,borderRadius:100}}/>
+                <View style={{backgroundColor:'white',height:height*2/15,width:width*0.8}}/>
               </Shimmer>
-              <View style={{width:width/15}}/>
+              </View>
+            
+            </View>
+            <View style={{flexDirection:'row',marginTop:100}}>
+              <View style={{width:0.03*width}}/>
               <Shimmer>
-              <View style={{backgroundColor :'#dddd', height:width/6,width:width/6,borderRadius:100}}/>
-              </Shimmer>
-              <View style={{width:width/15}}/>
-              <Shimmer>
-              <View style={{backgroundColor :'#dddd', height:width/6,width:width/6,borderRadius:100}}/>
-              </Shimmer>
+                <View style={{backgroundColor:'#A9A9A9',height:height*2/30,width:width*0.3}}/>
+                </Shimmer>
+                <View style={{width:0.03*width}}/>
+                <Shimmer>
+                <View style={{backgroundColor:'#A9A9A9',height:height*2/30,width:width*0.4}}/>
+                </Shimmer>
+                <View style={{width:0.03*width}}/>
+                <Shimmer>
+                <View style={{backgroundColor:'#A9A9A9',height:height*2/30,width:width*0.4}}/>
+                </Shimmer>
+                <View style={{width:0.03*width}}/>
+
             </View>
-
-            <View><Text>{"\n"}</Text></View>
-
-            <View style={{color:'#dddd',flexDirection:'row'}}>
-            <View style={{width:width/20}}/>
-            <Shimmer>
-            <View style={{backgroundColor :'#dddd', height:height/5,width:width/2}}/>
-            </Shimmer>
-            
-            <View style={{width:width/12}}/>
-            <Shimmer>
-            <View style={{backgroundColor :'#dddd', height:width/5,width:width/2}}/>
-            </Shimmer>
-            
-            <View style={{width:width/12}}/>
-            <Shimmer>
-            <View style={{backgroundColor :'#dddd', height:width/5,width:width/2}}/>
-            </Shimmer>
-            </View>
-
-            <View><Text>{"\n"}</Text></View>
-
-            <View style={{color:'#dddd',flexDirection:'row'}}>
-            
-            <View style={{width:width/20}}/>
-            <Shimmer>
-            <View style={{backgroundColor :'#dddd', height:height/7, width:(width*5)/12 + 10}}/>
-            </Shimmer>
-            
-            <View style={{width:width/12}}/>
-            <Shimmer>
-            <View style={{backgroundColor :'#dddd', height:height/7, width:(width*5)/12 + 10}}/>
-            </Shimmer>
-            
-            <View style={{width:width/12}}/>
-            <Shimmer>
-            <View style={{backgroundColor :'#dddd', height:height/7, width:(width*5)/12 + 10}}/>
-            </Shimmer>
-            </View>
-            <View><Text>{"\n"}</Text></View>
-            <View style={{color:'#dddd',flexDirection:'row'}}>
-            
-            <View style={{width:width/20}}/>
-            <Shimmer>
-            <View style={{backgroundColor :'#dddd', height:height/4, width:width/3}}/>
-            </Shimmer>
-            
-            <View style={{width:width/12}}/>
-            <Shimmer>
-            <View style={{backgroundColor :'#dddd', height:height/4, width:width/3}}/>
-            </Shimmer>
-            
-            <View style={{width:width/12}}/>
-            <Shimmer>
-            <View style={{backgroundColor :'#dddd', height:height/4, width:width/3}}/>
-            </Shimmer>
-            </View>
-
-            
             </View>
               
             
@@ -1222,7 +1107,7 @@ const Explore = (props) => {
             <View style={{backgroundColor:'#e1e6e1'}}>
             <View style={{height:15}}/>
              {renderSection1Podcasts()}
-             <View style={{marginTop:20,borderBottomColor:'#d1d0d4',borderBottomWidth:1}}/> 
+             <View style={{marginTop:20,borderBottomColor:'#d1d0d4',borderBottomWidth:0}}/> 
              {renderContinueListeningPodcasts()}
 
              {renderTetrisFlips()}
@@ -1230,7 +1115,7 @@ const Explore = (props) => {
              {renderSection2PodcastsI()}
              <Text style={{fontSize:23,marginTop:10, color:'black',fontFamily:'HeadlandOne-Regular'}}> Storytellers </Text>
              {renderSectionStoryTellers()}
-            <View style={{marginTop:20,borderBottomColor:'#d1d0d4',borderBottomWidth:1}}/> 
+            <View style={{marginTop:20,borderBottomColor:'#d1d0d4',borderBottomWidth:0}}/> 
             {renderSection2PodcastsII()}
             <View style={{height:15}}/>
             <Text style={{fontSize:23,marginBottom:10, color:'black',fontFamily:'HeadlandOne-Regular'}}> Popular Books </Text>
@@ -1240,9 +1125,6 @@ const Explore = (props) => {
              <View style={{height:15}}/>
              {renderSection2PodcastsIII()}
              <View style={{height:15}}/>
-             {/* <Text style={{fontSize:23,marginBottom:10, color:'black',fontFamily:'HeadlandOne-Regular'}}> Relaxing Music </Text>
-             {renderSectionMusic()}
-             <View style={{height:30}}/> */}
              </View>
               </ScrollView>
           </SafeAreaView>
@@ -1256,7 +1138,6 @@ const Explore = (props) => {
 
           <View style={{alignItems:'center',justifyContent:'center'}}>
             <Image source={require('../assets/images/NoInternet.jpg')} style={{height:height/1.5,width:width}}/>
-            {/* <Text> No Internet Connection</Text> */}
             </View>
             </View>
         )

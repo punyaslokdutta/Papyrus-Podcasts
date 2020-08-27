@@ -1,4 +1,4 @@
-import { Text, Dimensions,ScrollView, Image,View,Animated,StyleSheet,ImageBackground, TouchableOpacity,TouchableNativeFeedback,Alert } from 'react-native'
+import { Text, Dimensions,ScrollView,TouchableWithoutFeedback, Image,View,Animated,StyleSheet,ImageBackground, TouchableOpacity,TouchableNativeFeedback,Alert } from 'react-native'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import React, { Component, useEffect,useState,useRef } from 'react';
 import * as theme from '../constants/theme';
@@ -12,6 +12,8 @@ import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-nati
 import moment from "moment";
 import Slider from '@react-native-community/slider';
 import LinearGradient from 'react-native-linear-gradient';
+import ImageZoom from 'react-native-image-pan-zoom';
+
 import {
   Menu,
   MenuOptions,
@@ -26,7 +28,7 @@ const areEqual = (prevProps, nextProps) => true
 
 const MainFlipItem = (props) => {
     
-
+    const isFlipLikedRedux = useSelector(state=>state.userReducer.isFlipLiked);
     const [loading,setLoading] = useState(false);
     const realUserID = props.firebase._getUid();
     const [resizeModes,setResizeModes] = useState([]);
@@ -37,6 +39,8 @@ const MainFlipItem = (props) => {
     const paused = useSelector(state=>state.flipReducer.paused);
     const isAdmin = useSelector(state=>state.userReducer.isAdmin);
     const currentFlipID = useSelector(state=>state.flipReducer.currentFlipID);
+    const [numLikes,setNumLikes] = useState(props.navigation.state.params.numLikes);
+
 
     const dispatch = useDispatch();
     const flipID = props.navigation.state.params.item.flipID;
@@ -238,6 +242,15 @@ const MainFlipItem = (props) => {
         }
       }
 
+      function updateLocalStateLikes() {
+        if(isFlipLikedRedux[props.navigation.state.params.item.flipID]){
+          setNumLikes(numLikes-1);
+        }
+        else{
+          setNumLikes(numLikes+1);
+        }
+      }
+
       function handleOnSlide(time) {
         TrackPlayer.seekTo(time)
         //props.onSlideCapture({seekTime: time});
@@ -399,7 +412,7 @@ const MainFlipItem = (props) => {
             <View style={{flex:1,alignItems:'flex-end',justifyContent:"center",paddingRight:5}}>
             {
               props.navigation.state.params.item.bookName !== undefined &&
-              <Text style={{fontFamily:'Montserrat-Italic',fontSize:10}}>
+              <Text style={{fontFamily:'Montserrat-MediumItalic',fontSize:10}}>
                 {props.navigation.state.params.item.bookName}
               </Text>
             }
@@ -421,21 +434,22 @@ const MainFlipItem = (props) => {
                       )}
                 >
             {
-               loadingResizeModes === false
-               ?
-               props.navigation.state.params.item.flipPictures && 
                props.navigation.state.params.item.flipPictures.map((img, index) => 
                 
-               
+               <ImageZoom cropWidth={width}
+               cropHeight={width*1.5}
+               imageWidth={width}
+               imageHeight={width*1.5}>
+                 <TouchableWithoutFeedback>
                     <Image
                   key={`${index}-${img}`}
                   source={{ uri: img }}
-                  resizeMode={resizeModes[index]}
+                  resizeMode='contain'
                   style={{ width:width, height: width*1.5 }}
-                />      
+                />
+                </TouchableWithoutFeedback>
+               </ImageZoom>      
               )
-              :
-              <View style={{ backgroundColor:'#dddd', width:width, height: width*1.5 }}/>  
             }
           </Animated.ScrollView>
 
@@ -468,6 +482,26 @@ const MainFlipItem = (props) => {
                 }
 
                 
+                </View>
+                <View style={{width:width,flex:1,flexDirection:'row',alignItems:'flex-start'}}>
+                <TouchableOpacity style={{paddingLeft:10,paddingTop:10,paddingBottom:10,paddingRight:5}} onPress={() => {
+                    updateLocalStateLikes();
+                    props.navigation.state.params.updateLikes()
+                  }} > 
+                  <IconAntDesign 
+                    name={isFlipLikedRedux[props.navigation.state.params.item.flipID] ? "heart" : "hearto"}
+                    color={isFlipLikedRedux[props.navigation.state.params.item.flipID] ? 'red' : 'black' } 
+                    size={16} />
+                </TouchableOpacity>
+                <TouchableOpacity style={{padding:10}} onPress={() => props.navigation.state.params.buildDynamicURL()} > 
+                  <Icon name="share" size={16} style={{color:'black'}}/>
+                </TouchableOpacity>
+                  <TouchableOpacity onPress={() => {
+                    props.navigation.navigate('LikersScreen', {
+                      flipID : props.navigation.state.params.item.flipID
+                      })}} style={{position:'absolute',padding:10,right:5}}>
+                    <Text style={{fontFamily:'Montserrat-Regular'}}>{numLikes} likes </Text>
+                  </TouchableOpacity>
                 </View>
             </View>
            

@@ -13,7 +13,7 @@ var {width, height}=Dimensions.get('window')
 const areEqual = (prevProps, nextProps) => true
 
 //const eventSourceTrendingPodcast = "TrendingPodcast";
-const TopChapters = React.memo((props)=> {
+const TopChapters = (props)=> {
   
   console.log("Inside TopChapters")
   console.log(props);
@@ -79,7 +79,7 @@ const TopChapters = React.memo((props)=> {
        </View>
                  
       );
-    },areEqual);
+    };
   
 
 export default TopChapters;

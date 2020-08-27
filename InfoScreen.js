@@ -6,7 +6,7 @@ import {
   FlatList,
   StyleSheet,
   ScrollView,
-  TouchableOpacity, View
+  TouchableOpacity, View,TouchableWithoutFeedback
 } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome'
 
@@ -15,10 +15,11 @@ import { theme, mocks } from "./screens/components/categories/constants";
 import LikersScreen from './screens/components/PodcastPlayer/LikersScreen'
 import {useSelector,useDispatch } from 'react-redux'
 import { withFirebaseHOC } from "./screens/config/Firebase";
+import ImageZoom from 'react-native-image-pan-zoom';
 
 const { width, height } = Dimensions.get("window");
 
- const InfoScreen=(props)=> {
+const InfoScreen=(props)=> {
   
   const realUserID = props.firebase._getUid();
   const podcast=useState(props.navigation.state.params.podcast)
@@ -46,7 +47,6 @@ const { width, height } = Dimensions.get("window");
   }
 
    function renderGallery() {
-    const { product } = props;
     return (
       <FlatList
         horizontal
@@ -57,11 +57,18 @@ const { width, height } = Dimensions.get("window");
         data={podcast[0].podcastPictures}
         keyExtractor={(item, index) => `${index}`}
         renderItem={( {item} ) => (
+          <ImageZoom cropWidth={width}
+               cropHeight={width}
+               imageWidth={width}
+               imageHeight={width}>
+          <TouchableWithoutFeedback>
           <Image
             source={{uri:item}}
             resizeMode="contain"
-            style={{ width, height: height / 2.8 }}
+            style={{ width : width, height: width }}
           />
+          </TouchableWithoutFeedback>
+          </ImageZoom>
         )}
       />
     );

@@ -75,11 +75,6 @@ class ContinueListeningPodcasts extends Component {
         { justifyContent: 'center', alignItems: 'center', marginTop: 10 }
       ]}>
         {   podcasts.map((item, index) => {
-          // const borderWidth = dotPosition.interpolate({
-          //   inputRange: [index -1, index, index + 1],
-          //   outputRange: [0, 2.5, 0],
-          //  // extrapolate: 'clamp'
-          // });
           return (
             <View
               key={`step-${index}`}
@@ -98,27 +93,10 @@ class ContinueListeningPodcasts extends Component {
   renderPodcasts = () => {
     return (
       <View style={[ styles.column, styles.books ]}>
-        {/* <FlatList
-          horizontal
-          //pagingEnabled
-          scrollEnabled
-          showsHorizontalScrollIndicator={false}
-          decelerationRate={0}
-          scrollEventThrottle={50}
-          snapToInterval={width - 50} 
-          snapToAlignment={"center"}
-          style={{ overflow:'visible', height: 280 }}
-          data={this.props.podcasts}
-          keyExtractor={(item, index) => `${item.bookID}`}
-          onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: this.scrollX }} }])}
-          renderItem={({ item }) => this.renderPodcast(item)}
-        /> */}
         <Text style={{fontFamily:'HeadlandOne-Regular',fontSize:23,marginBottom:20,alignSelf:'flex-start'}}> Continue Listening </Text>
         <Carousel
               ref={(c) => { this._carousel = c; }}
               data={this.props.podcasts}
-              //scrollInterpolator={this.scrollInterpolator}
-              //slideInterpolatedStyle={this.animatedStyles}
               renderItem={this.renderPodcast}
               firstItem={1}
               activeSlideAlignment={'center'}
@@ -131,11 +109,9 @@ class ContinueListeningPodcasts extends Component {
   }
 
   renderPodcast = ({item,index}) => {
-    //const { navigation } = this.props;
-    console.log("dwdeeedee")
-    console.log(item)     
+    console.log("[ContinueListeningPodcasts] ContinueListeningPodcastItem indexed - ",index," before rendering")
     return (
-      <ContinueListeningPodcastItem podcast={item} key={item.podcastID} navigation={this.props.navigation}/>
+      <ContinueListeningPodcastItem podcast={item} key={item.podcastID} index={index} navigation={this.props.navigation}/>
     )
   }
 

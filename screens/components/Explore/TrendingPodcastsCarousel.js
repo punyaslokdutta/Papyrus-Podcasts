@@ -183,8 +183,6 @@ const {width,height} = Dimensions.get('window')
             <Carousel
               ref={(c) => { this._carousel = c; }}
               data={this.props.data}
-              //scrollInterpolator={this.scrollInterpolator}
-              //slideInterpolatedStyle={this.animatedStyles}
               activeSlideAlignment={'center'}
               renderItem={this.renderItem}
               sliderWidth={width}

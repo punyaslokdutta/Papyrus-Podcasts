@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
  //const areEqual = (prevProps, nextProps) => true;
  const areEqual = (prevProps, nextProps) => true
 
- const FollowingItem = React.memo((props)=> {
+ const FollowingItem = (props)=> {
   console.log("Inside Following Item")
   console.log(props);
   console.log("userData = ",props.item);
@@ -212,6 +212,6 @@ const styles = StyleSheet.create({
       </View>
         );
       
-  }, areEqual);
+  };
 
 export default withFirebaseHOC(FollowingItem);

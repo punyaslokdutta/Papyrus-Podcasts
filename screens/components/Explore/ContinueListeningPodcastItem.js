@@ -17,7 +17,7 @@ const { width, height } = Dimensions.get('window');
 const areEqual = (prevProps, nextProps) => true
 
 const ContinueListeningPodcastItem = React.memo((props) => {
-  console.log("ContinueListeningPodcastItem rendered");
+  console.log("rendering ContinueListeningPodcastItem indexed - ",props.index);
 
   const  userID = props.firebase._getUid();
   const privateUserID = "private" + userID;

@@ -17,7 +17,7 @@ const AnimatedIcon = Animatable.createAnimatableComponent(Icon)
  /* useContext doesn't let you subscribe to a part of the context value (or some memoized selector) without fully re-rendering.*/
  //const areEqual = (prevProps, nextProps) => true;
  const areEqual = (prevProps, nextProps) => true
- const SaveBookItem = React.memo((props)=> {
+ const SaveBookItem = (props)=> {
   console.log("Inside SaveBookItem")
 
   const  userID = props.firebase._getUid();
@@ -175,7 +175,7 @@ const AnimatedIcon = Animatable.createAnimatableComponent(Icon)
         );
     
 
-}, areEqual);
+};
 
 export default withFirebaseHOC(SaveBookItem);
 

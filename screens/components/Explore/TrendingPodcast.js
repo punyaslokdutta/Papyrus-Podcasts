@@ -23,7 +23,7 @@ var {width, height}=Dimensions.get('window')
 // const eventSourceTrendingPodcast = "TrendingPodcast";
 const areEqual = (prevProps, nextProps) => true
 
-const TrendingPodcast= React.memo((props)=> {
+const TrendingPodcast= (props)=> {
   
   const dispatch=useDispatch();
   const isConnectedContext = useContext(NetworkContext);
@@ -92,37 +92,15 @@ const TrendingPodcast= React.memo((props)=> {
             } 
           
         })}> 
-        <Image style={{height:height/5,borderRadius:0,marginHorizontal:3, resizeMode:'cover',  overflow:'hidden',alignItems:'center'}} source={{ uri:  ((item === null || item === undefined)  ? null : ( (item.podcastPictures.length != 0) && item.podcastPictures[0]))}} />
-        
+      <Image style={{height:height/5,borderRadius:0,marginHorizontal:3, resizeMode:'cover',  overflow:'hidden',alignItems:'center'}} source={{ uri:  ((item === null || item === undefined)  ? null : ( (item.podcastPictures.length != 0) && item.podcastPictures[0]))}}/>  
       <View style={{paddingHorizontal:10,height:height*2/15,borderColor:'black',height:height*10/40}}>
         <Text style={{height:height/15,fontFamily:'Andika-R',fontSize:15}}> {podcastName}{"   "} </Text>
       <Text style={{height:height/17,fontFamily:'Montserrat-Regular',color:'gray',paddingBottom:0,fontSize:12}}> {item.podcastDescription}</Text>
         </View>
-      
-      
-      {/* <LinearGradient  colors={['transparent','#383131','black']} >
-      <View style={{flexDirection:'row',height:height*3/40,width:width,alignItems:'center',justifyContent:'center'}}>
-        
-      
-      
-      <View>
-      <Text style={{paddingLeft:5,color:'white',fontSize:15}}> 
-      <Icon name="play" size={13} style={styles.icon}/> 
-      {"  "}{podcastName.slice(0,40)}   
-
-      {
-        (podcastName.length > 40)  &&  ".."
-      }
-      </Text> 
-      </View>
-      </View>
-      </LinearGradient> */}
-             {/* <Text style={{color:'white',position:'absolute',bottom:0}}>{item.podcastName}</Text>        */}
-             
       </TouchableNativeFeedback>
     
      );
-  }, areEqual);
+  };
 
 export default TrendingPodcast;
 

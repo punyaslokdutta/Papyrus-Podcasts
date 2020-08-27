@@ -82,7 +82,6 @@ import InfoScreen from './InfoScreen'
 import CustomUserHeader from './screens/navigation/CustomUserHeader'
 import SearchTabNavigator from './screens/navigation/SearchTabNavigator';
 import SearchBookChapterTabNavigator from './screens/navigation/SearchBookChapterTabNavigator';
-import { TouchableNativeFeedback } from 'react-native-gesture-handler';
 import MainFlipItem from './screens/components/Home/MainFlipItem';
 import FlipsExploreScreen from './screens/components/Explore/FlipsExploreScreen';
 
@@ -511,8 +510,8 @@ export default class App extends Component {
      super(props)
      {
       this.state={
-          currentVersionCode : 24,
-          currentVersion : "1.0.23",
+          currentVersionCode : 25,
+          currentVersion : "1.0.24",
           updateLink : "https://play.google.com/apps/internaltest/4698784295424472878",
           //updateLink : "https://play.google.com/apps/testing/com.papyrus_60" 
         }
@@ -589,17 +588,6 @@ export default class App extends Component {
           podcastName : podcastRedux.podcastName
         },{merge:true}).then(() => {
           console.log("[validateAndAddLatestPlayingToFirestore] Successfully updated already existing podcast in the PodcastsListened collection");
-          // continueListeningPodcasts.pop();
-          // continueListeningPodcasts.push({
-          //   podcastID : podcastRedux.podcastID,
-          //   lastPlayedPosition : pos,
-          //   createdOn : currTime,
-          //   podcastPicture : podcastRedux.podcastPictures[0],
-          //   podcastName : podcastRedux.podcastName,
-          //   duration : podcastRedux.duration,
-          //   podcastsListenedID : continueListeningPodcasts[idx].podcastsListenedID
-          // });        
-          // store.dispatch({type:"SET_CONTINUE_LISTENING_PODCASTS",payload:continueListeningPodcasts})
         }).catch(error => console.log("[validateAndAddLatestPlayingToFirestore] Error in updating already existing podcast in the PodcastsListened collection",error))            
       }
       else if(continueListeningPodcasts.length == 10){
@@ -613,18 +601,6 @@ export default class App extends Component {
           duration : podcastRedux.duration
         },{merge:true}).then(() => {
           console.log("[validateAndAddLatestPlayingToFirestore] Successfully replaced the oldest podcast in terms of user's listening in the PodcastsListened collection");
-          // continueListeningPodcasts.pop();
-          // continueListeningPodcasts.push({
-          //   podcastID : podcastRedux.podcastID,
-          //   lastPlayedPosition : pos,
-          //   createdOn : currTime,
-          //   podcastPicture : podcastRedux.podcastPictures[0],
-          //   podcastName : podcastRedux.podcastName,
-          //   duration : podcastRedux.duration,
-          //   podcastsListenedID : continueListeningPodcasts[continueListeningPodcasts.length - 1].podcastsListenedID
-          // });        
-
-          // store.dispatch({type:"SET_CONTINUE_LISTENING_PODCASTS",payload:continueListeningPodcasts})
         }).catch(error => console.log("[validateAndAddLatestPlayingToFirestore] Error in replacing oldest podcast in terms of user's listening in PodcastsListened",error))  
       }
       else if(continueListeningPodcasts.length < 10){
@@ -642,16 +618,6 @@ export default class App extends Component {
         .doc(privateUserID).collection('PodcastsListened').doc(docRef.id).set({
           podcastsListenedID : docRef.id
         },{merge:true})
-        // continueListeningPodcasts.push({
-        //   podcastID : podcastRedux.podcastID,
-        //   lastPlayedPosition : pos,
-        //   createdOn : currTime,
-        //   podcastPicture : podcastRedux.podcastPictures[0],
-        //   podcastName : podcastRedux.podcastName,
-        //   duration : podcastRedux.duration,
-        //   podcastsListenedID : docRef.id
-        // });
-        // store.dispatch({type:"SET_CONTINUE_LISTENING_PODCASTS",payload:continueListeningPodcasts})
         }).catch((error) => {
           console.log("[validateAndAddLatestPlayingToFirestore] Error in adding to PodcastsListened",error)
         })
@@ -699,13 +665,15 @@ export default class App extends Component {
        <Text style={{fontFamily:'Montserrat-SemiBold'}}>{"\n"} Current App Version : {this.state.currentVersion} </Text>
       <Text style={{fontFamily:'Montserrat-SemiBold'}}> Latest App Version :  {this.state.latestVersion}</Text>
        </View>
-       <TouchableOpacity style={{width:SCREEN_WIDTH/3,alignItems:'center',justifyContent:'center',height:30,backgroundColor:'#dddd'}}
+       <TouchableOpacity style={{width:SCREEN_WIDTH/4,alignSelf:'center',
+          alignItems:'center',marginTop:20,borderRadius:5,
+        justifyContent:'center',height:30,backgroundColor:'#01875f'}}
             onPress={() => {
          Linking.openURL(this.state.updateLink).catch(err => { 
          console.log("Play console Page Linking error: ",err);
        })
        }}>
-         <Text> UPDATE </Text>
+         <Text style={{color:'white',fontFamily:'Montserrat-SemiBold'}}>UPDATE</Text>
          </TouchableOpacity>
        </View>
 

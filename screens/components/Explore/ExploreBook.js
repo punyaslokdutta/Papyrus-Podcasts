@@ -14,7 +14,7 @@ import LinearGradient from 'react-native-linear-gradient';
 var {width, height}=Dimensions.get('window')
 const areEqual = (prevProps, nextProps) => true
 
-  const ExploreBook = React.memo((props)=> {
+  const ExploreBook = (props)=> {
   
     console.log("Inside ExploreBook")
     console.log(props);
@@ -63,7 +63,7 @@ const areEqual = (prevProps, nextProps) => true
            </View>
           
           );
-    },areEqual);
+    };
   
 
 export default ExploreBook;

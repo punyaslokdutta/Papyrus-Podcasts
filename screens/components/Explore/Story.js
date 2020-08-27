@@ -9,7 +9,7 @@ import { useDispatch } from 'react-redux';
 var {width, height}=Dimensions.get('window')
 const areEqual = (prevProps, nextProps) => true
 
-  const Story = React.memo((props)=> {
+  const Story = (props)=> {
   
     const dispatch = useDispatch();
     console.log("Inside [Story]")
@@ -55,7 +55,7 @@ const areEqual = (prevProps, nextProps) => true
        </View>
                  
       );
-    }, areEqual);
+    };
   
 
 export default withFirebaseHOC(Story);

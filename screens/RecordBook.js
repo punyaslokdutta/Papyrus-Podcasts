@@ -1,6 +1,6 @@
 import React, { Component, useEffect,useState,useRef } from 'react';
 import firestore from '@react-native-firebase/firestore';
-import { Text, StyleSheet, View, Animated, Image, Dimensions, ScrollView,ActivityIndicator, TouchableOpacity,TouchableNativeFeedback } from 'react-native'
+import { Text, StyleSheet, View, Animated, Image, Dimensions, ScrollView,TouchableWithoutFeedback,ActivityIndicator, TouchableOpacity,TouchableNativeFeedback } from 'react-native'
 import {Card, CardItem,  Body} from 'native-base'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { withFirebaseHOC } from './config/Firebase';
@@ -12,6 +12,7 @@ import {useSelector, useDispatch} from "react-redux"
 import moment from "moment";
 import Toast from 'react-native-simple-toast'
 import Tooltip from 'react-native-walkthrough-tooltip';
+import ImageZoom from 'react-native-image-pan-zoom';
 
 import * as theme from './components/constants/theme';
 
@@ -232,13 +233,19 @@ const RecordBook = (props) => {
           >
             {
                article.bookPictures && article.bookPictures.map((img, index) => 
-                
+               <ImageZoom cropWidth={width}
+               cropHeight={width}
+               imageWidth={width}
+               imageHeight={width}>
+                 <TouchableWithoutFeedback>
                 <Image
                   key={`${index}-${img}`}
                   source={{ uri: img }}
                   resizeMode='contain'
                   style={{ width:width, height: width }}
                 />
+                </TouchableWithoutFeedback>
+                </ImageZoom>
                 
               )
             }

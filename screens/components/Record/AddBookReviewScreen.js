@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect, useCallback} from 'react';
-import { TouchableOpacity,StyleSheet, Text, Image,View, SafeAreaView, Dimensions, NativeModules,NativeEventEmitter} from 'react-native';
+import { TouchableOpacity,StyleSheet,Alert, Text, Image,View, SafeAreaView, Dimensions, NativeModules,NativeEventEmitter} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { TagSelect } from 'react-native-tag-select'
 import firestore from '@react-native-firebase/firestore';
@@ -13,6 +13,8 @@ import LottieView from 'lottie-react-native';
 import newAnimation from '../../../assets/animations/lf30_editor_f5ahjf.json'
 import Tooltip from 'react-native-walkthrough-tooltip';
 import {withFirebaseHOC} from '../../config/Firebase';
+import {request, PERMISSIONS,RESULTS} from 'react-native-permissions';
+import OpenSettings from 'react-native-open-settings';
 
 
 const { width, height } = Dimensions.get('window');
@@ -158,7 +160,7 @@ const AddBookReviewScreen = (props)=> {
     },[itemSelected]
   )
 
-    function validate(type)
+    async function validate(type)
     {
       if(isBookPodcast == false) // For Original podcasts
       { 
@@ -210,12 +212,66 @@ const AddBookReviewScreen = (props)=> {
       dispatch({type:'CHANGE_LANGUAGE',payload:languageSelected}) 
       dispatch({type:"SET_PODCAST", payload: null})
 
-      if(type == "record")
+      var permissionRecordAudioResult = await request(PERMISSIONS.ANDROID.RECORD_AUDIO);
+        if (permissionRecordAudioResult === RESULTS.GRANTED) {
+          console.log('You can use the microphone');
+          var permissionUploadAudioResult = await request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
+          if(permissionUploadAudioResult === RESULTS.GRANTED) {
+            console.log('You can use the storage');
+          }
+          else{
+            console.log('permission denied for External storage');
+            Alert.alert(  
+              'Papyrus needs to access media on your device',  
+              '',  
+              [  
+                {  
+                    text: 'Cancel',  
+                    onPress: () => console.log('Cancel Pressed'),  
+                    style: 'cancel',  
+                },  
+                {text: 'OK', onPress: () => {
+                  OpenSettings.openSettings()
+                  console.log('OK Pressed')
+                }},  
+              ]  
+            ); 
+            // OpenSettings.openSettings();
+          return;
+           }
+          }
+        else {
+            console.log('permission denied for Record');
+            //alert('Papyrus needs access to microphone to record flips.');
+            Alert.alert(  
+              'Papyrus needs access to microphone to record a podcast',  
+              '',  
+              [  
+                {  
+                    text: 'Cancel',  
+                    onPress: () => console.log('Cancel Pressed'),  
+                    style: 'cancel',  
+                },  
+                {text: 'OK', onPress: () => {
+                  OpenSettings.openSettings()
+                  console.log('OK Pressed')
+                }},  
+              ]  
+            ); 
+            // OpenSettings.openSettings();
+          return;
+        }
+
+      if(type == "record"){
         NativeModules.ReactNativeRecorder.sampleMethod()
-      else if(type == "upload")
+      } 
+      else if(type == "upload"){
         NativeModules.ReactNativeRecorder.uploadActivity()
-      else
-        console.error("type not recognized. type: ",type); 
+      }
+      else {
+        console.log("type not recognized. type: ",type);
+      }
+         
     } 
 
     async function setAddBookReviewWalkthroughInFirestore() {

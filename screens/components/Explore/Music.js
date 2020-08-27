@@ -8,7 +8,7 @@ import { useDispatch,useSelector } from 'react-redux';
 var {width, height}=Dimensions.get('window')
 const areEqual = (prevProps, nextProps) => true
 
-  const Music = React.memo((props)=> {
+  const Music = (props)=> {
   
     const dispatch = useDispatch();
     const podcastRedux = useSelector(state=>state.rootReducer.podcast);
@@ -52,7 +52,7 @@ const areEqual = (prevProps, nextProps) => true
        </TouchableNativeFeedback>
                  
       );
-    }, areEqual);
+    };
   
 
 export default withFirebaseHOC(Music);

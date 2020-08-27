@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
  //const areEqual = (prevProps, nextProps) => true;
  const areEqual = (prevProps, nextProps) => true
 
- const CategoryPodcastItem = React.memo((props)=> {
+ const CategoryPodcastItem = (props)=> {
   console.log("Inside Category Podcast")
   console.log(props);
   const  realUserID = props.firebase._getUid(); 
@@ -236,6 +236,6 @@ const styles = StyleSheet.create({
     </TouchableOpacity>
       );
       
-  }, areEqual);
+  };
 
 export default withFirebaseHOC(CategoryPodcastItem);

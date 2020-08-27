@@ -7,8 +7,6 @@ import Animated, { Easing } from 'react-native-reanimated';
 import PodcastContent from '../screens/components/PodcastPlayer/PodcastContent';
 import firestore from '@react-native-firebase/firestore';
 import PlayerControls, { PLACEHOLDER_WIDTH } from './components/PodcastPlayer/PlayerControl';
-import IconAntDesign from 'react-native-vector-icons/AntDesign'
-import {withFirebaseHOC} from './config/Firebase';
 
 import { PanGestureHandler, State, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 // var {width, height}=Dimensions.get('window')
@@ -372,7 +370,7 @@ render() {
               
               </Animated.View>
               
-              
+             
                 <TouchableNativeFeedback onPress={() => {
                   if(!this.props.isMiniPlayer)
                   {
@@ -385,13 +383,14 @@ render() {
                   }
   
                 }}>
-                  
+                    
                 <Animated.Image
                   source={{uri:this.props.podcast.podcastPictures[0]}}
                   resizeMode='contain'
                   style={{ width: videoWidth, height: videoHeight }}
                 />
                 </TouchableNativeFeedback>
+
                   {/* {
                     !this.props.isMiniPlayer && <IconAntDesign name="downcircleo" size={30} color='black' style={{
                     //width: width/15,  

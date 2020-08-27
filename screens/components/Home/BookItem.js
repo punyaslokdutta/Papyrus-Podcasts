@@ -17,7 +17,7 @@ const areEqual = (prevProps, nextProps) => true
 const AnimatedIcon = Animatable.createAnimatableComponent(Icon);
 
 const BookItem = React.memo((props) => {
-  console.log("BookItem rendered");
+  console.log("rendering BookItem indexed - ",props.index); 
   var bookmarked = null;
   if(props.item.chapterID !== undefined)
   {

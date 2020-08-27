@@ -149,6 +149,10 @@ class AddAudioFlipComponent extends React.Component {
           alert('Please select an audio file within 140 seconds');
           return;
         }
+        if(uploadedAudioDuration < 15){
+          alert('Please select an audio file of atleast 15 seconds');
+          return;
+        }
           
         console.log('duration in seconds: ' + uploadedAudioDuration + 'number of channels: ' + this.whoosh.getNumberOfChannels());
         console.log("FILEPATH:- ",filePath);
@@ -184,7 +188,7 @@ class AddAudioFlipComponent extends React.Component {
         if(errorString.indexOf(stringsToFind[0]) !== -1)
           console.log("File has raw attached to it from Downloads");
         else if(errorString.indexOf(stringsToFind[1]) !== -1)
-          console.log("File path couldn't be stat");
+          alert('Please select an audio from local storage');
         else
           alert('Please select an audio from local storage');
       });
@@ -340,17 +344,35 @@ class AddAudioFlipComponent extends React.Component {
       };
        
       onStopRecord = async () => {
-        const result = await this.audioRecorderPlayer.stopRecorder();
-        this.props.savePodcast(defaultURI,this.state.recordSecs);
-        this.audioRecorderPlayer.removeRecordBackListener();
-        this.setState({
-          isRecording:false,
-          showRecorder:false,
-          playTime: this.getMinutesFromSeconds(Math.floor(0)),
-          duration: this.getMinutesFromSeconds(Math.floor(this.state.recordSecs/1000)),
-          recordSecs : 0
-        })
         
+        const result = await this.audioRecorderPlayer.stopRecorder();
+        if(this.state.recordSecs/1000 >= 15)
+          this.props.savePodcast(defaultURI,this.state.recordSecs);
+          
+        this.audioRecorderPlayer.removeRecordBackListener();
+        
+        if(this.state.recordSecs/1000 >= 15)
+        {
+          this.setState({
+            isRecording:false,
+            showRecorder:false,
+            playTime: this.getMinutesFromSeconds(Math.floor(0)),
+            duration: this.getMinutesFromSeconds(Math.floor(this.state.recordSecs/1000)),
+            recordSecs : 0
+          })
+        }
+        else if(this.state.recordSecs/1000 < 15)
+        {
+          alert('Audio Flip should be atleast a minimum of 15 seconds');
+          this.setState({
+            isRecording:false,
+            showRecorder: true,
+            playTime: this.getMinutesFromSeconds(Math.floor(0)),
+            //duration: this.getMinutesFromSeconds(Math.floor(this.state.recordSecs/1000)),
+            recordSecs : 0
+          })
+          //return;
+        }
         //setRecordSecs(0);
         console.log(result);
       };

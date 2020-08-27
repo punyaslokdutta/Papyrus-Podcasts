@@ -1,14 +1,17 @@
 import React, {Component, useState, useEffect, useContext} from 'react';
-import { StyleSheet, Text, View, Image, Dimensions,Alert,TouchableNativeFeedback,Share,TouchableOpacity, ImageBackground, ActivityIndicator} from 'react-native';
+import { StyleSheet, Text, View, Image, Dimensions,Alert,TouchableNativeFeedback,TouchableWithoutFeedback,Share,TouchableOpacity, ImageBackground, ActivityIndicator} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import * as theme from '../constants/theme'
 import firestore from '@react-native-firebase/firestore';
 import moment from 'moment';
+import ImageZoom from 'react-native-image-pan-zoom';
+
 import { firebase } from '@react-native-firebase/functions';
 import {withFirebaseHOC} from '../../config/Firebase';
 import {useSelector, useDispatch,connect} from "react-redux"
 import EvilIcon from 'react-native-vector-icons/EvilIcons';
-import IconAntDesign from 'react-native-vector-icons/AntDesign'
+import IconAntDesign from 'react-native-vector-icons/AntDesign';
+import EnTypoIcon from 'react-native-vector-icons/Entypo';
 import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
 import PlayPauseOut from '../PodcastPlayer/PlayPauseOut';
 import LottieView from 'lottie-react-native';
@@ -29,9 +32,8 @@ import {
 
 var {width, height}=Dimensions.get('window');
 
- class Podcast extends React.Component {
-   // if(createdOn === null)
-  //    createdOn = props.podcast.createdOn.slice(0,10);
+class Podcast extends React.Component {
+   
   static contextType = NetworkContext
 
     constructor(props)
@@ -52,59 +54,48 @@ var {width, height}=Dimensions.get('window');
     }
 
     componentDidMount = () => {
-      
+      console.log("[Podcast] componentDidMount of podcastID - ",this.props.podcast.podcastID);
        //this.animation.play(0,30);
        this.likeAnimation.pause();
-      
-      console.log("In componentDidMount");
     }
 
   componentDidUpdate =(prevProps)=> { 
-      
-    
+
+      console.log("[Podcast] componentDidUpdate of podcastID - ",this.props.podcast.podcastID);
       if(this.props.podcastRedux !== null && this.props.podcastRedux.podcastID == this.props.podcast.podcastID) 
       {
+        if(!this.props.pausedRedux){
+          this.animation !== undefined && this.animation.play(0,33);
+        }
+        else
+          this.animation !== undefined && this.animation.pause();
 
-          if(!this.props.pausedRedux){
-            this.animation.play(0,33);
-            console.log("srfsdf");
-          }
-          else
-              this.animation.pause();
+        // isMiniPlayer OR isPodcastLiked
 
-          // isMiniPlayer OR isPodcastLiked
+        if(!prevProps.isMiniPlayer && this.props.isMiniPlayer)
+        {
+          this.setState({
+            numLikes : this.props.numLikesRedux,
+            numRetweets : this.props.numRetweetsRedux
+          })
 
-          if(!prevProps.isMiniPlayer && this.props.isMiniPlayer)
+          if(!this.props.isPodcastLiked[this.props.podcast.podcastID])
           {
-            this.setState({
-              numLikes : this.props.numLikesRedux,
-              numRetweets : this.props.numRetweetsRedux
-            })
-
-            //if(prevProps.isPodcastLiked[this.props.podcast.podcastID]) 
-              //&& 
-              if(!this.props.isPodcastLiked[this.props.podcast.podcastID])
-              {
-                this.likeAnimation.play(0,0);
-                this.likeAnimation.pause();
-              }
+            this.likeAnimation.play(0,0);
+            this.likeAnimation.pause();
           }
-          
-          this.state.podcastColor == 'white' &&
-          this.setState({ podcastColor : '#cfe6e3' });
+        }
+        
+        this.state.podcastColor == 'white' &&
+        this.setState({ podcastColor : '#cfe6e3' });
       }
       else
       {
-          console.log("This podcast not playing",this.state.podcastColor);
-          console.log("this.props.podcastRedux = ",this.props.podcastRedux);
-          this.animation !== null && this.animation.pause();
-          console.log("this.state.podcastColor == ",this.state.podcastColor);
-          if(this.state.podcastColor == '#cfe6e3') 
-          {
-            console.log("This podcast not playing22",this.state.podcastColor);
-            this.setState({ podcastColor : 'white' });
-          }
-
+        this.animation !== undefined && this.animation !== null && this.animation.pause();
+        if(this.state.podcastColor == '#cfe6e3') 
+        {
+          this.setState({ podcastColor : 'white' });
+        }
       }
       
   }
@@ -709,10 +700,40 @@ var {width, height}=Dimensions.get('window');
             }
             </View>
             </View>
-          <View>
+            <ImageZoom cropWidth={Dimensions.get('window').width}
+               cropHeight={Dimensions.get('window').width/2}
+               imageWidth={width}
+               imageHeight={width/2}>
+          <TouchableWithoutFeedback onPress={() => {
+          if(!this.context.isConnected) 
+               {
+                 Toast.show('Please check your Internet connection & try again.');
+                 return;
+               }
+        if(this.props.podcastRedux!=null && this.props.podcastRedux.podcastID == this.props.podcast.podcastID)
+        {
+          if(this.props.pausedRedux)
+          {
+            this.props.dispatch({type:"SET_PAUSED",payload:false})
+            TrackPlayer.play()
+          }
+          else
+          {
+            this.props.dispatch({type:"SET_PAUSED",payload:true})
+            TrackPlayer.pause()
+          }
+        }
+        else
+        {
+          this.retrievePodcastDocument();
+        }
+        }}>
+          
             <Image source={{uri:this.props.podcast.podcastPictures[0]}}
               style={{height:height/4,width:width-40}}/>
-          </View>
+          </TouchableWithoutFeedback>
+          </ImageZoom>
+
           <View style={{height:height/64}}/>
           <View style={{paddingHorizontal:15}}>
             <Text style={{fontFamily:'Montserrat-Bold',fontSize:20}}>{this.props.podcast.podcastName}</Text>
@@ -794,21 +815,28 @@ var {width, height}=Dimensions.get('window');
         
         </View>
         
-
-
-        {
-         (this.props.isAdmin == true || this.props.podcast.podcasterID == this.state.realUserID)
-         &&
-          <View style={{flex:1,alignItems:'flex-end',justifyContent:'flex-end',flexDirection:'row',marginRight:20}}>
-            <View style={{paddingHorizontal:15,alignItems:'flex-end'}}>
-          <LottieView 
+        <View style={{position:'absolute',right:50}}>
+          {
+            this.props.podcastRedux!=null && this.props.podcastRedux.podcastID == this.props.podcast.podcastID
+            ?
+            <LottieView 
             ref={animation => { this.animation = animation;}}
             //style={{width:width/3}} 
             style={{width:30}}
             source={newAnimation}
             //autoPlay={true}
             loop={true}/>
+            :
+            <EnTypoIcon name="controller-play" size={30}/>
+          }
+          
           </View>
+
+        {
+         (this.props.isAdmin == true || this.props.podcast.podcasterID == this.state.realUserID)
+         &&
+          <View style={{flex:1,alignItems:'flex-end',justifyContent:'flex-end',flexDirection:'row',marginRight:20}}>
+           
             <Menu>
             <MenuTrigger>
             <IconAntDesign name="ellipsis1" size={26}/>

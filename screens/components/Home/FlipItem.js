@@ -2,6 +2,7 @@ import { Text, Dimensions,ScrollView,Share, Image,View,Animated,StyleSheet,Image
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import React, { Component, useEffect,useState,useRef } from 'react';
 import * as theme from '../constants/theme';
+import ImageZoom from 'react-native-image-pan-zoom';
 
 import * as Animatable from 'react-native-animatable'
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -580,9 +581,9 @@ const FlipItem = (props) => {
             </TouchableOpacity>
             <View style={{flex:1,alignItems:'flex-end',justifyContent:"center",paddingRight:5,height:width/12}}>
             {
-              props.item.bookName !== undefined &&
-              <Text style={{fontFamily:'Montserrat-Italic',textAlignVertical:'center',fontSize:10,height:width/12,lineHeight:width/24}}>
-                {props.item.bookName}
+              props.item.bookName !== undefined && props.item.bookName !== null &&
+              <Text style={{fontFamily:'Montserrat-MediumItalic',textAlignVertical:'center',fontSize:10,height:width/12,lineHeight:width/24}}>
+                {props.item.bookName.slice(0,100)}
               </Text>
             }
             </View>
@@ -601,22 +602,32 @@ const FlipItem = (props) => {
                 >
             {
                props.item.flipPictures && props.item.flipPictures.map((img, index) => 
+               <ImageZoom cropWidth={Dimensions.get('window').width}
+               cropHeight={Dimensions.get('window').width/2}
+               imageWidth={width}
+               imageHeight={width/2}>
                 <TouchableOpacity onPress={() => {
                   props.navigation.navigate('MainFlipItem',{
                     item : props.item,
+                    numLikes : numLikes,
+                    updateLikes : updateLikes,
+                    buildDynamicURL : buildDynamicURL,
                     playerText : playerText,
                     pausedState : pausedState,
                     player : player
                     // resizeModes : resizeModes
                   })
                 }}>
-                <Image
-                  key={`${index}-${img}`}
-                  source={{ uri: img }}
-                  resizeMode='cover'
-                  style={{ width:width, height: width/2 }}
-                />
+                
+                  <Image
+                    key={`${index}-${img}`}
+                    source={{ uri: img }}
+                    resizeMode='cover'
+                    style={{ width:width, height: width/2 }}
+                  />
                 </TouchableOpacity>
+                </ImageZoom>
+
               )
             }
           </Animated.ScrollView>
@@ -672,6 +683,12 @@ const FlipItem = (props) => {
                 <TouchableOpacity style={{padding:10}} onPress={() => buildDynamicURL()} > 
                   <Icon name="share" size={16} style={{color:'black'}}/>
                 </TouchableOpacity>
+                <TouchableOpacity onPress={() => {
+                    props.navigation.navigate('LikersScreen', {
+                      flipID : props.item.flipID
+                      })}} style={{position:'absolute',padding:10,right:30}}>
+                    <Text style={{fontFamily:'Montserrat-Regular'}}>{numLikes} likes </Text>
+                  </TouchableOpacity>
                 <View style={{position:'absolute',bottom:2,right:10}}>
                 {
                   (isAdmin == true || props.item.creatorID == realUserID)

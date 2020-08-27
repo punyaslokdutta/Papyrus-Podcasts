@@ -706,7 +706,7 @@ const OriginalsPreviewScreen = (props) => {
         {
           !toggleIndicator &&
           <TouchableOpacity onPress={() => {
-            if(podcastName === null || (podcastName !== null && (podcastName.length < 6 || podcastName.length > 50)))
+            if(podcastName === null || (podcastName !== null && (podcastName.length < 6 || podcastName.length > 100)))
             {
               alert("Please enter the name of your podcast as per the given limits.\nMin characters required: 6\nMax characters allowed: 50");
               return;

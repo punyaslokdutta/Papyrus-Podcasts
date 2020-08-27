@@ -140,8 +140,8 @@ android {
         applicationId "com.papyrus_60"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 24
-        versionName "1.0.23"
+        versionCode 25
+        versionName "1.0.24"
         multiDexEnabled true
     }
     splits {

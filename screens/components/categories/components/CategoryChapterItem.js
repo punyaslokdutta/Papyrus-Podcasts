@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
  /* useContext doesn't let you subscribe to a part of the context value (or some memoized selector) without fully re-rendering.*/
  //const areEqual = (prevProps, nextProps) => true;
  const areEqual = (prevProps, nextProps) => true
- const CategoryChapterItem = React.memo((props)=> {
+ const CategoryChapterItem = (props)=> {
   console.log("Inside Category Book")
   console.log(props);
    
@@ -179,6 +179,6 @@ const styles = StyleSheet.create({
       </TouchableOpacity>
         );
       
-  }, areEqual);
+  };
 
 export default CategoryChapterItem;

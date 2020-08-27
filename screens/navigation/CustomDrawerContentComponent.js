@@ -129,13 +129,13 @@ return(
                   <Text style={{color:'white',fontSize:22,fontFamily:'Montserrat-Bold'}}>{props.getLabel(scene)}{"    "}</Text>
                   </View>
                 )
-              // case "Write":
-              //   return (
-              //     <View style={{flexDirection:'row',paddingBottom:SCREEN_HEIGHT/25}}>
-              //     <Icon name="cog" size={25} style={{ color: 'white',paddingTop:SCREEN_HEIGHT/150,paddingLeft:SCREEN_WIDTH/20,paddingRight:SCREEN_WIDTH/20 }} />
-              //     <Text style={{color:'white',fontSize:22,fontFamily:'Montserrat-Bold'}}>{props.getLabel(scene)}{"    "}</Text>
-              //     </View>
-              //   )
+              case "Write":
+                return (
+                  <View style={{flexDirection:'row',paddingBottom:SCREEN_HEIGHT/25}}>
+                  <Icon name="cog" size={25} style={{ color: 'white',paddingTop:SCREEN_HEIGHT/150,paddingLeft:SCREEN_WIDTH/20,paddingRight:SCREEN_WIDTH/20 }} />
+                  <Text style={{color:'white',fontSize:22,fontFamily:'Montserrat-Bold'}}>{props.getLabel(scene)}{"    "}</Text>
+                  </View>
+                )
               default:
                 return null   
            }   
@@ -198,7 +198,7 @@ return(
 
             </View>
           
-          <Text style={{textAlign:'center',fontFamily:'Montserrat-Bold', paddingTop:SCREEN_HEIGHT/10,color:'#dddd'}}>v1.0.23</Text>
+          <Text style={{textAlign:'center',fontFamily:'Montserrat-Bold', paddingTop:SCREEN_HEIGHT/10,color:'#dddd'}}>v1.0.24</Text>
     
     </Content>
 

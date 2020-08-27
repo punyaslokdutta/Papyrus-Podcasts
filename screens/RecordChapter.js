@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import firestore from '@react-native-firebase/firestore';
-import { Text, StyleSheet, View, Animated, Image, Dimensions, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native'
+import { Text, StyleSheet, View, Animated, Image, Dimensions, ScrollView, ActivityIndicator, TouchableOpacity,TouchableWithoutFeedback } from 'react-native'
 import {Card, CardItem,  Body} from 'native-base'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import ImageZoom from 'react-native-image-pan-zoom';
 
 import * as theme from './components/constants/theme';
 
@@ -231,12 +232,19 @@ class RecordChapter extends Component {
           >
             {
                this.state.article.chapterPictures && this.state.article.chapterPictures.map((img, index) => 
+               <ImageZoom cropWidth={width}
+               cropHeight={width}
+               imageWidth={width}
+               imageHeight={width}>
+                 <TouchableWithoutFeedback>
                 <Image
                   key={`${index}-${img}`}
                   source={{ uri: img }}
                   resizeMode='cover'
                   style={{ width, height: width }}
                 />
+                </TouchableWithoutFeedback>
+                </ImageZoom>
               )
             }
           </ScrollView>

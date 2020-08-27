@@ -13,8 +13,7 @@ const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
 
 
 const CustomProfileHeader = props => {
-    {console.log("Inside Custom profile header ")}
-    {console.log(props)}
+    console.log("[CustomProfileHeader] rendering CustomProfileHeader");
 
     const name = useSelector(state=>state.userReducer.name);
     var lastCharacter = null;

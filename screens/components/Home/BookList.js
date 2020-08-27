@@ -144,10 +144,9 @@ class BookList extends Component {
 
   renderBook = ({item,index}) => {
     //const { navigation } = this.props;
-    console.log("dwdeeedee")
-    console.log(item)     
+    console.log("[BookList] BookItem indexed ",index," before rendering");
     return (
-      <BookItem item={item} navigation={this.props.navigation}/>
+      <BookItem item={item} index={index} navigation={this.props.navigation}/>
     )
   }
 

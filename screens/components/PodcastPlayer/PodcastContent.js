@@ -189,7 +189,7 @@ async function togglePlay  ()  {
   useEffect(() => {
     console.log("playbackState:",playbackState);
     if(playbackState == TrackPlayer.STATE_PLAYING){
-      console.log("IN STATE PLAYING");
+      console.log("playbackState = STATE_PLAYING");
       if(lastPlayingCurrentTime !== null){
         console.log("[PodcasContent] TRACK PLAYER SEEKING");
         TrackPlayer.seekTo(lastPlayingCurrentTime);
@@ -201,15 +201,24 @@ async function togglePlay  ()  {
        
     }
     else if(playbackState == TrackPlayer.STATE_BUFFERING){
+      console.log("playbackState = STATE_BUFFERING");
       dispatch({type:"SET_LOADING_PODCAST", payload:true});
     }
     else if(playbackState == TrackPlayer.STATE_PAUSED){
+      console.log("playbackState = STATE_PAUSED");
       dispatch({type:"SET_PAUSED", payload:true});
     }
     else if(playbackState == TrackPlayer.STATE_STOPPED){
       //TrackPlayer.seekTo(0);
+      
+      console.log("[playbackState - useEffect] STOPPED - position: ",position);
+      console.log("playbackState = STATE_STOPPED");
+      console.log("[playbackState] - STOPPED - duration: ",props.podcast.duration);
+      
       dispatch({type:"SET_PAUSED", payload:true});
       TrackPlayer.pause();
+      if(position >= props.podcast.duration - 1)
+        TrackPlayer.seekTo(0);
     }
     // else if(playbackState == TrackPlayer.STATE_STOPPED){
     //   dispatch({type:"SET_PODCAST",payload:null});
@@ -707,7 +716,7 @@ async function updatePodcastsLiked(props){
                   updatePodcastsUnliked(props);
                 }
 
-            }}>
+            }} style={{flexDirection:'row'}}>
 
               <AnimatedIconAntDesign
                 ref={handleSmallAnimatedHeartIconRef}
@@ -716,11 +725,10 @@ async function updatePodcastsLiked(props){
                 size={20}
                 style={{height:30,width:30}}
               />
-
+              <Text style={{fontFamily:'Montserrat-Regular',color:'white'}}>{numLikesRedux}</Text>
                 </TouchableOpacity>
-               
                 <View style={{paddingLeft:width/4}}>
-                <TouchableOpacity onPress={() => handleOnPressBookmark()}>
+                <TouchableOpacity onPress={() => handleOnPressBookmark()} style={{flexDirection:'row'}}>
                   <AnimatedIcon
                     ref={handleSmallAnimatedBookmarkIconRef}
                     name={bookmarked ? 'retweet' : 'retweet'}
@@ -728,6 +736,8 @@ async function updatePodcastsLiked(props){
                     size={30}
                     style={{height:30,width:30}}
                   />
+                <Text style={{fontFamily:'Montserrat-Regular',color:'white',paddingTop:2}}> {numRetweetsRedux}</Text>
+
                 </TouchableOpacity>
                 </View>
                 <View>

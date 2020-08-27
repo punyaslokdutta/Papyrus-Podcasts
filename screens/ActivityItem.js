@@ -11,7 +11,7 @@ import Toast from 'react-native-simple-toast';
 var {width, height}=Dimensions.get('window')
 
  const areEqual = (prevProps, nextProps) => true
-const ActivityItem = React.memo((props)=> {
+const ActivityItem = (props)=> {
   const podcast = useSelector(state=>state.rootReducer.podcast);
   const realUserID = props.firebase._getUid();
   const dispatch = useDispatch();
@@ -204,6 +204,6 @@ const ActivityItem = React.memo((props)=> {
       }
         
     
-}, areEqual);
+};
 
 export default withFirebaseHOC(ActivityItem);
