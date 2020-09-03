@@ -17,35 +17,37 @@ const { width, height } = Dimensions.get('window');
 const areEqual = (prevProps, nextProps) => true
 
 const ContinueListeningPodcastItem = React.memo((props) => {
-  console.log("rendering ContinueListeningPodcastItem indexed - ",props.index);
+  console.log("[ContinueListeningPodcastItem] rendering ContinueListeningPodcastItem indexed - ",props.index);
 
   const  userID = props.firebase._getUid();
   const privateUserID = "private" + userID;
-  const podcastRedux = useSelector(state=>state.rootReducer.podcast)
+  //const podcastRedux = props.podcastRedux;
   const dispatch = useDispatch();
 
-  async function retrievePodcast() {
-    if(podcastRedux === null || (podcastRedux!== null && podcastRedux.podcastID != props.podcast.podcastID))
-    {
-      const podcastCollection = await firestore().collectionGroup('podcasts')
-      .where('podcastID','==',props.podcast.podcastID).get();
+  // async function retrievePodcast() {
+  //   if(podcastRedux === null || (podcastRedux!== null && podcastRedux.podcastID != props.podcast.podcastID))
+  //   {
+  //     const podcastCollection = await firestore().collectionGroup('podcasts')
+  //     .where('podcastID','==',props.podcast.podcastID).get();
 
-      const podcastDocumentData = podcastCollection.docs[0]._data;
+  //     const podcastDocumentData = podcastCollection.docs[0]._data;
 
-      dispatch({type:"SET_FLIP_ID",payload:null});
-      dispatch({type:"SET_CURRENT_TIME", payload:0})
-      dispatch({type:"SET_DURATION", payload:podcastDocumentData.duration})
-      dispatch({type:"SET_PAUSED", payload:false})
-      dispatch({type:"SET_LOADING_PODCAST", payload:true});
-      dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
-      dispatch({type:"SET_LAST_PLAYING_CURRENT_TIME",payload:props.podcast.lastPlayedPosition})
-      props.podcastRedux === null && dispatch({type:"SET_MINI_PLAYER_FALSE"});
-      dispatch({ type:"SET_MUSIC_PAUSED",payload:true});
-      dispatch({type:"SET_PODCAST", payload: podcastDocumentData})
-      dispatch({type:"SET_NUM_LIKES", payload: podcastDocumentData.numUsersLiked})
-    }
+  //     dispatch({type:"SET_FLIP_ID",payload:null});
+  //     dispatch({type:"SET_CURRENT_TIME", payload:0})
+  //     dispatch({type:"SET_DURATION", payload:podcastDocumentData.duration})
+  //     dispatch({type:"SET_PAUSED", payload:false})
+  //     dispatch({type:"SET_LOADING_PODCAST", payload:true});
+  //     dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
+  //     dispatch({type:"SET_LAST_PLAYING_CURRENT_TIME",payload:props.podcast.lastPlayedPosition})
+  //     props.podcastRedux === null && dispatch({type:"SET_MINI_PLAYER_FALSE"});
+  //     dispatch({ type:"SET_MUSIC_PAUSED",payload:true});
+  //     dispatch({type:"SET_PODCAST", payload: podcastDocumentData})
+  //     dispatch({type:"SET_NUM_LIKES", payload: podcastDocumentData.numUsersLiked})
+  //     dispatch({type:"SET_NUM_RETWEETS", payload: podcastDocumentData.numUsersRetweeted})
+
+  //   }
     
-  }
+  // }
 
   var progressPercent = props.podcast.lastPlayedPosition/props.podcast.duration;
   if(progressPercent > 1)
@@ -53,7 +55,8 @@ const ContinueListeningPodcastItem = React.memo((props) => {
 
   return (
       <TouchableNativeFeedback activeOpacity={0.8} onPress={() => {
-          retrievePodcast();
+          //retrievePodcast();
+          props.retrievePodcast(props.podcast.podcastsListenedID,props.podcast.podcastName,props.podcast.podcastID,props.podcast.lastPlayedPosition,)
       }}
       style={{borderRadius:10}}>
         

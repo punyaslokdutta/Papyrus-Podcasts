@@ -90,7 +90,7 @@ username: {
     alignSelf: 'center',
     fontWeight: '200',
     fontSize: 15,
-    fontFamily: 'Andika-R',
+    fontFamily: 'Montserrat-SemiBold',
     paddingBottom:10
 },
 shadow: {

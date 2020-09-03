@@ -21,7 +21,7 @@ const INITIAL_STATE = {
     totalMinutesRecorded : 0,
     navigation:null,
     website:null,
-    algoliaQuery:"The Existentialist",
+    algoliaQuery:"Papyrus",
     numNotifications: 0,
     bookAdded: null,
     isExplorePreviousScreen: false,

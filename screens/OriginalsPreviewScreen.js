@@ -10,6 +10,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import firestore from '@react-native-firebase/firestore';
 import { useSelector, useDispatch } from 'react-redux';
 import ImageResizer from 'react-native-image-resizer';
+import OpenSettings from 'react-native-open-settings';
 import * as Progress from 'react-native-progress';
 import Toast from 'react-native-simple-toast';
 import moment from 'moment';
@@ -29,7 +30,7 @@ const initialTags  = {
   tagsArray: [], 
 }
 
-const defaultPodcastImageURL = "https://storage.googleapis.com/papyrus-fa45c.appspot.com/podcasts/Waves.jpg";
+const defaultPodcastImageURL = "https://storage.googleapis.com/papyrus-274618.appspot.com/walkthrough/Waves.jpg";
 
 const OriginalsPreviewScreen = (props) => {
 
@@ -69,7 +70,7 @@ const OriginalsPreviewScreen = (props) => {
   const [tagsColor, settagsColor]=useState('#3ca897');
   const [tagsText, settagsText]=useState('#fff');
   const [tagsLength,setTagsLength] = useState(0);
-  //const [podcastImageDownloadURL,setPodcastImageDownloadURL] = useState("https://storage.googleapis.com/papyrus-fa45c.appspot.com/podcasts/Waves.jpg");
+  //const [podcastImageDownloadURL,setPodcastImageDownloadURL] = useState("https://storage.googleapis.com/papyrus-274618.appspot.com/walkthrough/Waves.jpg");
   const [podcastAudioDownloadURL,setPodcastAudioDownloadURL] = useState(null);
   const [duration , setDuration]=useState(props.navigation.getParam('duration'))
   const [progress, setProgress]=useState(0)
@@ -570,6 +571,25 @@ const OriginalsPreviewScreen = (props) => {
           console.log('User cancelled image picker');
         } else if (response.error) {
           console.log('ImagePicker Error: ', response.error);
+            if(response.error == "Permissions weren't granted")
+            {
+              Alert.alert(  
+                'Papyrus needs access to your camera and/or storage.',  
+                '',  
+                [  
+                    {  
+                        text: 'Cancel',  
+                        onPress: () => console.log('Cancel Pressed'),  
+                        style: 'cancel',  
+                    },  
+                    {
+                        text: 'OK', onPress: () => {
+                        OpenSettings.openSettings()
+                        console.log('OK Pressed')
+                    }},  
+                ]  
+            ); 
+            }
         } else if (response.customButton) {
           console.log('User tapped custom button: ', response.customButton);
         } else {
@@ -668,7 +688,7 @@ const OriginalsPreviewScreen = (props) => {
       if(publishLoading == true)
         return <ActivityIndicator color='black'/>;
       else
-        return <Text style={{ borderRadius:10,textAlignVertical: 'center',padding:8,backgroundColor:'black',color:'white',fontSize:15 }} >Publish</Text>
+        return <Text style={{ borderRadius:10,textAlignVertical: 'center',padding:8,backgroundColor:'black',color:'white',fontSize:15,fontFamily:'Montserrat-SemiBold' }} >Publish</Text>
   }
 
   return (
@@ -688,7 +708,7 @@ const OriginalsPreviewScreen = (props) => {
       <Icon name="arrow-left" size={20} style={{color:'black'}}/>
       </TouchableOpacity>
       <View style={{alignSelf:'center',position:'absolute',top:height/24,left:width/3.5,alignItems:'center',justifyContent:'center'}}>
-      <Text style={{ fontFamily: 'Andika-R', color: 'black',paddingBottom:5, fontSize: 20 }}>
+      <Text style={{ fontFamily: 'Montserrat-SemiBold', color: 'black',paddingBottom:5, fontSize: 20 }}>
         {previewHeaderText}</Text>
         </View>
         {
@@ -706,9 +726,9 @@ const OriginalsPreviewScreen = (props) => {
         {
           !toggleIndicator &&
           <TouchableOpacity onPress={() => {
-            if(podcastName === null || (podcastName !== null && (podcastName.length < 6 || podcastName.length > 100)))
+            if(podcastName === null || (podcastName !== null && (podcastName.length < 6 || podcastName.length > 150)))
             {
-              alert("Please enter the name of your podcast as per the given limits.\nMin characters required: 6\nMax characters allowed: 50");
+              alert("Please enter the name of your podcast as per the given limits.\nMin characters required: 6\nMax characters allowed: 150");
               return;
             }
             else if(!podcastName.replace(/\s/g,'').length)
@@ -717,9 +737,9 @@ const OriginalsPreviewScreen = (props) => {
               alert("Please enter some text in Podcast Name field");
               return;
             }
-            else if(podcastDescription === null || (podcastDescription != null && (podcastDescription.length < 6 || podcastDescription.length > 1000)))
+            else if(podcastDescription === null || (podcastDescription != null && (podcastDescription.length < 6 || podcastDescription.length > 3000)))
             {
-              alert("Please enter the description of your podcast as per the given limits.\nMin characters required: 6\nMax characters allowed: 1000");
+              alert("Please enter the description of your podcast as per the given limits.\nMin characters required: 6\nMax characters allowed: 3000");
               return;
             }
             else if(!podcastDescription.replace(/\s/g,'').length)
@@ -779,7 +799,7 @@ const OriginalsPreviewScreen = (props) => {
               <View style={{width:width/3}}>
               {/* <Image source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/flips/Book-Notes.jpg"}}
                       style={{height:width/2,width:width/2}}/> */}
-              <Text style={{fontFamily:"Andika-R"}}>Add a picture that relates to your original podcast.</Text>
+              <Text style={{fontFamily:"Montserrat-Bold"}}>Add a picture that relates to your original podcast.</Text>
               </View>}
               onClose={() => {
                 setToolTipPictureVisible(false);
@@ -829,7 +849,7 @@ const OriginalsPreviewScreen = (props) => {
               //onSlidingComplete={handlePlayPause}
               minimumTrackTintColor={'black'}
               maximumTrackTintColor={'black'}
-              thumbTintColor={'#F44336'}
+              thumbTintColor={'black'}
               //disabled={true}
             />
             {/* <ProgressBar
@@ -854,7 +874,7 @@ const OriginalsPreviewScreen = (props) => {
               <View style={{width:width/3}}>
               {/* <Image source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/flips/Book-Notes.jpg"}}
                       style={{height:width/2,width:width/2}}/> */}
-              <Text style={{fontFamily:"Andika-R"}}>Add a title to your original podcast.</Text>
+              <Text style={{fontFamily:"Montserrat-SemiBold"}}>Add a title to your original podcast.</Text>
               </View>}
               onClose={() => {
                 setToolTipNameVisible(false);
@@ -874,16 +894,16 @@ const OriginalsPreviewScreen = (props) => {
               const trimmedPodcastName = podcastName.trim();
               setPodcastName(trimmedPodcastName);
             }
-            if(podcastName !== null && (podcastName.length < 6 || podcastName.length > 50))
+            if(podcastName !== null && (podcastName.length < 6 || podcastName.length > 150))
             {
-              const slicedPodcastName = podcastName.slice(0,50);
+              const slicedPodcastName = podcastName.slice(0,150);
               setPodcastName(slicedPodcastName);
-              alert('The name of the podcast should follow the given limits.\nMin characters required: 6\nMax characters allowed: 50');
+              alert('The name of the podcast should follow the given limits.\nMin characters required: 6\nMax characters allowed: 150');
             }
             
           }}
           onChangeText={(text) => {
-            setPodcastName(text)
+            setPodcastName(text.slice(0,150))
           }}
           numberOfLines={1}
           multiline={false}
@@ -902,7 +922,7 @@ const OriginalsPreviewScreen = (props) => {
               <View style={{width:width/3}}>
               {/* <Image source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/flips/Book-Notes.jpg"}}
                       style={{height:width/2,width:width/2}}/> */}
-              <Text style={{fontFamily:"Andika-R"}}>Add a description to your original podcast</Text>
+              <Text style={{fontFamily:"Montserrat-SemiBold"}}>Add a description to your original podcast</Text>
               </View>}
               onClose={() => {
                 setToolTipDescriptionVisible(false);
@@ -922,15 +942,15 @@ const OriginalsPreviewScreen = (props) => {
               const trimmedPodcastDescription = podcastDescription.trim();
               setPodcastDescription(trimmedPodcastDescription);
             }
-            if(podcastDescription != null && (podcastDescription.length < 6 || podcastDescription.length > 1000))
+            if(podcastDescription != null && (podcastDescription.length < 6 || podcastDescription.length > 3000))
             {
-              const slicedPodcastDescription = podcastDescription.slice(0,1000);
+              const slicedPodcastDescription = podcastDescription.slice(0,3000);
               setPodcastDescription(slicedPodcastDescription);
-              alert('The description of the podcast should follow the given limits.\nMin characters required: 6\nMax characters allowed: 1000');
+              alert('The description of the podcast should follow the given limits.\nMin characters required: 6\nMax characters allowed: 3000');
             }
             
           }}
-          onChangeText={(text) => setPodcastDescription(text)}
+          onChangeText={(text) => setPodcastDescription(text.slice(0,3000))}
           numberOfLines={6}
           multiline={true}
         />
@@ -944,7 +964,7 @@ const OriginalsPreviewScreen = (props) => {
               <View style={{width:width/3}}>
               {/* <Image source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/flips/Book-Notes.jpg"}}
                       style={{height:width/2,width:width/2}}/> */}
-              <Text style={{fontFamily:"Andika-R"}}>Add categories to your original podcast</Text>
+              <Text style={{fontFamily:"Montserrat-SemiBold"}}>Add categories to your original podcast</Text>
               </View>}
               onClose={() => {
                 setToolTipGenresVisible(false);
@@ -956,7 +976,7 @@ const OriginalsPreviewScreen = (props) => {
             >
       <View style={{marginTop:10}}>
       <View style={{alignItems:'center',marginHorizontal:width/8,borderWidth:0.5,borderRadius:10,borderColor:'black',paddingHorizontal:5}}>
-        <Text style={{fontFamily:'Andika-R',color:'gray', paddingVertical:10}}>Choose categories for your podcast</Text>
+        <Text style={{fontFamily:'Montserrat-SemiBold',color:'gray', paddingVertical:10}}>Choose categories for your podcast</Text>
       {
         showTagSelect == true &&
         <TagSelect 
@@ -995,7 +1015,7 @@ const OriginalsPreviewScreen = (props) => {
               <View style={{width:width/3}}>
               {/* <Image source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/flips/Book-Notes.jpg"}}
                       style={{height:width/2,width:width/2}}/> */}
-              <Text style={{fontFamily:"Andika-R"}}>Add tags that relate to your original podcast</Text>
+              <Text style={{fontFamily:"Montserrat-SemiBold"}}>Add tags that relate to your original podcast</Text>
               </View>}
               onClose={() => {
                 setToolTipTagsVisible(false);
@@ -1013,7 +1033,7 @@ const OriginalsPreviewScreen = (props) => {
          leftElementContainerStyle={{marginLeft: 5}}
          containerStyle={{width:(width * 3.2) / 4}}
           inputContainerStyle={[styles.textInput, {backgroundColor: 'white'}]}
-          inputStyle={{fontFamily: 'Andika-R',fontSize:15}}
+          inputStyle={{fontFamily: 'Montserrat-SemiBold',fontWeight:'normal',fontSize:15}}
          tagStyle={styles.tag}
           tagTextStyle={styles.tagText}
           keysForTag={','}
@@ -1074,7 +1094,8 @@ const styles = StyleSheet.create({
   TextInputStyleClass: {
 
     //textAlign: 'center',
-    fontFamily: 'Andika-R',
+    fontFamily: 'Montserrat-SemiBold',
+    fontWeight: 'normal',
     //fontStyle: 'italic',
     color: 'black',
     height: height / 6,
@@ -1099,7 +1120,8 @@ const styles = StyleSheet.create({
   TextInputStyleClass2: {
 
     //textAlign: 'center',
-    fontFamily: 'Andika-R',
+    fontFamily: 'Montserrat-SemiBold',
+    fontWeight: 'normal',
     //fontStyle: 'italic',
     color: 'black',
     borderWidth: 1,
@@ -1137,7 +1159,7 @@ const styles = StyleSheet.create({
   label: {
     color: 'black',
     fontSize:12,
-    fontFamily: 'Andika-R'
+    fontFamily: 'Montserrat-SemiBold'
   },
   itemSelected: {
     backgroundColor: '#333',
@@ -1150,7 +1172,7 @@ const styles = StyleSheet.create({
   }, 
   tagText: {
     color: 'black',
-    fontFamily: 'Andika-R'
+    fontFamily: 'Montserrat-SemiBold'
   },
   
 });

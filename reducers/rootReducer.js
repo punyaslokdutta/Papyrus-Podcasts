@@ -38,6 +38,8 @@ function rootReducer(state = INITIAL_STATE, action)  {
       else
         state.isPodcastPlaying = false;
       //state.podcast = action.payload; 
+      if(state.podcast!== null && action.payload!==null && state.podcast.podcastID == action.payload.podcastID)
+        return state;
       return {...state,podcast:action.payload}
     case "SET_VOLUME":
         return {...state, volume:action.payload}

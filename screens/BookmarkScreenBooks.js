@@ -20,7 +20,7 @@ const BookmarkScreenBooks = (props) => {
   const  userID = props.firebase._getUid();
   const privateUserID = "private" + userID;
   const [books,setBooks] = useState([]);
-  const limit = 4;
+  const limit = 6;
   const [lastVisible,setLastVisible] = useState(null);
   const [loading,setLoading] = useState(false);
   const [refreshing,setRefreshing] = useState(false);

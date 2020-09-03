@@ -162,7 +162,7 @@ const AddBook=(props)=>{
            {
              bookImage == null
              ?
-             <Image source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/Insert-Image.png"}} style={{ width: height / 6, height: height / 6, borderRadius: 20, borderColor: 'black', borderWidth: 1 }} />
+             <Image source={{uri:"https://storage.googleapis.com/papyrus-274618.appspot.com/walkthrough/Insert-Image.png"}} style={{ width: height / 6, height: height / 6, borderRadius: 20, borderColor: 'black', borderWidth: 1 }} />
              :
              <Image source={bookImage} style={{ width: height / 6, height: height / 6, borderRadius: 20, borderColor: 'black', borderWidth: 1 }} />
            }
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     }, 
     tagText: {
       color: 'black',
-      fontFamily: 'Andika-R'
+      fontFamily: 'Montserrat-Regular'
     },
     seperator: {
       borderBottomColor: '#d1d0d4',
@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
     TextInputStyleClass2: {
   
       //textAlign: 'center',
-      fontFamily: 'Andika-R',
+      fontFamily: 'Montserrat-Regular',
       fontSize: 15,
       //fontStyle: 'italic',
       color: 'black',

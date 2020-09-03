@@ -31,7 +31,11 @@ const ActivityItem = (props)=> {
         console.log("[ActivityItem] flipsDocumentData : ", flipsDocumentData);
         if(flipsDocumentData !== null && flipsDocumentData !== undefined)
           props.navigation.navigate('MainFlipItem',{
-           item : flipsDocumentData
+           item : flipsDocumentData,
+           numLikes : flipsDocumentData.numUsersLiked,
+           playerText : "play",
+           pausedState : true,
+           player : false
         })
         else {
           Toast.show("This flip has been deleted");
@@ -63,6 +67,7 @@ const ActivityItem = (props)=> {
         dispatch({ type:"SET_MUSIC_PAUSED",payload:true});
         dispatch({type:"SET_PODCAST", payload: podcastDocumentData});
         dispatch({type:"SET_NUM_LIKES", payload: podcastDocumentData.numUsersLiked})
+        dispatch({type:"SET_NUM_RETWEETS", payload: podcastDocumentData.numUsersRetweeted})
       }
       
     }
@@ -117,91 +122,101 @@ const ActivityItem = (props)=> {
     activityText = <Text style={{}}>{props.activity.actorName} started following you</Text>
     
   if(props.activity.type == "flipLike")
-    activityText = <Text>{props.activity.actorName} liked your flip for the book - 
-    <Text style={{fontFamily:'Montserrat-Bold'}}>{props.activity.bookName}</Text>
+  {
+    if(props.activity.bookName !== undefined && props.activity.bookName !== null)
+    {
+      activityText = <Text>{props.activity.actorName} liked your flip for the book - 
+      <Text style={{fontFamily:'Montserrat-Bold'}}>{props.activity.bookName}</Text>
+      </Text>
+    }
+    else
+    {
+      activityText = <Text>{props.activity.actorName} liked your flip - 
+      <Text style={{fontFamily:'Montserrat-Bold'}}> {props.activity.flipTitle}</Text>
     </Text>
-
-
-      if(props.activity.type == "follow")
-      {
-        return (
-          <TouchableOpacity onPress={() => {
-            console.log("userClicked");
-
-            retrieveUser(props,props.activity.actorID);
-            
-          }}>
-          <View style={{flex:1,alignItems:'center',flexDirection:"row",height:height/8}}>
-          
-          <View style={{paddingLeft:width/25}}>
-            <Image style={{borderRadius:60,width:height/16,height:height/16}} source={{uri: props.activity.actorImage}} />
-          </View>
-         
-          <View style={{width:width*2/3,paddingLeft:width/25}}>
-      
-          {activityText}
-          <Text style={{color:'gray'}}>{timeDiff}</Text>
-          </View>
-          </View>
-          </TouchableOpacity>
-        );
-      }
-      else
-      {
-        return (
-          
-          <View style={{flex:1,alignItems:'center',flexDirection:"row",height:height/8}}>
-         <View>
-          <TouchableOpacity onPress={() => {
-            console.log("userClicked");
-            retrieveUser(props,props.activity.actorID);
-          }}>
-            <View style={{paddingLeft:width/25}}>
-            <Image style={{borderRadius:60,paddingLeft:width/15,width:height/16,height:height/16}} source={{uri: props.activity.actorImage}} />
-            </View>
-          </TouchableOpacity>
-          </View>
-          <View style={{flexDirection:'row'}}>
-          <TouchableOpacity onPress={() => {
-              if(props.activity.type == "flipLike")
-              {
-                console.log("flipClicked");
-                retrieveFlip(props.activity.flipID);
-              }
-              else if(props.activity.type == "like")
-              {
-                console.log("podcastClicked");
-                retrievePodcast(props.activity.podcastID);
-              }
-              
-            }}>
-               <View style={{flexDirection:'row'}}>
-          <View style={{width:width*2/3,paddingLeft:width/25}}>
-      
-          {activityText}
-          <Text style={{color:'gray'}}>{timeDiff}</Text>
-          </View>
-         
-          
-            <View style={{paddingLeft:width/30}}>
-              {
-                props.activity.type == "flipLike"
-                ?
-                <Image style={{borderRadius:10,width:height/16,height:height/16}} source={{uri: props.activity.flipPicture}} />
-                :
-                <Image style={{borderRadius:10,width:height/16,height:height/16}} source={{uri: props.activity.podcastPicture}} />
-
-              }
-            </View>
-            </View>
-            </TouchableOpacity>
-
-            </View>
-           
-        </View>
+    }
+  }
     
-      );
-      }
+  if(props.activity.type == "follow")
+  {
+    return (
+      <TouchableOpacity onPress={() => {
+        console.log("userClicked");
+
+        retrieveUser(props,props.activity.actorID);
+        
+      }}>
+      <View style={{flex:1,alignItems:'center',flexDirection:"row",height:height/8}}>
+      
+      <View style={{paddingLeft:width/25}}>
+        <Image style={{borderRadius:60,width:height/16,height:height/16}} source={{uri: props.activity.actorImage}} />
+      </View>
+      
+      <View style={{width:width*2/3,paddingLeft:width/25}}>
+  
+      {activityText}
+      <Text style={{color:'gray'}}>{timeDiff}</Text>
+      </View>
+      </View>
+      </TouchableOpacity>
+    );
+  }
+  else
+  {
+    return (
+      
+      <View style={{flex:1,alignItems:'center',flexDirection:"row",height:height/8}}>
+      <View>
+      <TouchableOpacity onPress={() => {
+        console.log("userClicked");
+        retrieveUser(props,props.activity.actorID);
+      }}>
+        <View style={{paddingLeft:width/25}}>
+        <Image style={{borderRadius:60,paddingLeft:width/15,width:height/16,height:height/16}} source={{uri: props.activity.actorImage}} />
+        </View>
+      </TouchableOpacity>
+      </View>
+      <View style={{flexDirection:'row'}}>
+      <TouchableOpacity onPress={() => {
+          if(props.activity.type == "flipLike")
+          {
+            console.log("flipClicked");
+            retrieveFlip(props.activity.flipID);
+          }
+          else if(props.activity.type == "like")
+          {
+            console.log("podcastClicked");
+            retrievePodcast(props.activity.podcastID);
+          }
+          
+        }}>
+            <View style={{flexDirection:'row'}}>
+      <View style={{width:width*2/3,paddingLeft:width/25}}>
+  
+      {activityText}
+      <Text style={{color:'gray'}}>{timeDiff}</Text>
+      </View>
+      
+      
+        <View style={{paddingLeft:width/30}}>
+          {
+            props.activity.type == "flipLike"
+            ?
+            <Image style={{borderRadius:10,width:height/16,height:height/16}} source={{uri: props.activity.flipPicture}} />
+            :
+            <Image style={{borderRadius:10,width:height/16,height:height/16}} source={{uri: props.activity.podcastPicture}} />
+
+          }
+        </View>
+        </View>
+        </TouchableOpacity>
+
+        </View>
+        
+    </View>
+
+  );
+  }
         
     
 };

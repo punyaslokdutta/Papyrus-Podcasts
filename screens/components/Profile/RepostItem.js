@@ -205,6 +205,7 @@ var {width, height}=Dimensions.get('window')
       this.props.dispatch({ type:"SET_MUSIC_PAUSED",payload:true});
       this.props.dispatch({type:"SET_PODCAST", payload: podcastDocumentData})
       this.props.dispatch({type:"SET_NUM_LIKES", payload: podcastDocumentData.numUsersLiked})
+      this.props.dispatch({type:"SET_NUM_RETWEETS", payload: podcastDocumentData.numUsersRetweeted})
     }
     
     }

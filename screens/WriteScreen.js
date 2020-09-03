@@ -11,10 +11,10 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import { firebase } from '@react-native-firebase/functions';
 import DeviceInfo from 'react-native-device-info';
 import moment from 'moment';
-import HTML from 'react-native-render-html';
+//import HTML from 'react-native-render-html';
 import ExtraDimensions from 'react-native-extra-dimensions-android';
 
-import { WebView } from 'react-native-webview';
+//import { WebView } from 'react-native-webview';
 import sampleHtml from '../assets/Web/sample.html';
 var {width, height}=Dimensions.get('window')
 
@@ -23,8 +23,6 @@ const height1 =ExtraDimensions.getRealWindowHeight();
 const STATUS_BAR_HEIGHT= ExtraDimensions.getStatusBarHeight();
 
 import {useSelector,useDispatch} from 'react-redux'
-import Toast from 'react-native-simple-toast';
-import { renderers } from 'react-native-popup-menu';
 
 class WriteScreen extends Component {
 
@@ -61,20 +59,20 @@ class WriteScreen extends Component {
       var htmlContent = `<html><head><style>@font-face { font-family: Baskerville Normal; src: url('baskvl.woff') ; } h1 {font-family: "Baskerville Normal"}</style></head><body><h1 style={font-family:"Baskerville Normal"}>Hey, June bvshdw dhdhw dwbdwbdw bn</h1></body></html>`
   
       return (
-        
-        <SafeAreaView style={{flex:1, backgroundColor:'white'}}>
-<View style={{height:50,backgroundColor:'black',width:width}}>
-<View style={{height:50,backgroundColor:'white',width:this.state.percent*width}}/>
-            </View>
-          <ScrollView style={{ flex: 1 }} 
-                      onScroll={this.handleScroll}
-                      scrollEventThrottle={16}
-                      onContentSizeChange={(width, height) => { console.log("ScrollView : ",width, height); }}>
+        null
+//         <SafeAreaView style={{flex:1, backgroundColor:'white'}}>
+// <View style={{height:50,backgroundColor:'black',width:width}}>
+// <View style={{height:50,backgroundColor:'white',width:this.state.percent*width}}/>
+//             </View>
+//           <ScrollView style={{ flex: 1 }} 
+//                       onScroll={this.handleScroll}
+//                       scrollEventThrottle={16}
+//                       onContentSizeChange={(width, height) => { console.log("ScrollView : ",width, height); }}>
                 
                 
-                <HTML html={HTML1}  />
-            </ScrollView>
-            </SafeAreaView>
+//                 <HTML html={HTML1}  />
+//             </ScrollView>
+//             </SafeAreaView>
 
           // Some points for using webview to show & edit articles:-
           // * VIEWING article inside webview

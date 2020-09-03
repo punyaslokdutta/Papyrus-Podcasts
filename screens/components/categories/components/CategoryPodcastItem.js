@@ -182,6 +182,8 @@ const styles = StyleSheet.create({
           dispatch({ type:"SET_MUSIC_PAUSED",payload:true});
           dispatch({type:"SET_PODCAST", payload: props.podcast})
           dispatch({type:"SET_NUM_LIKES", payload: props.podcast.numUsersLiked})
+          dispatch({type:"SET_NUM_RETWEETS", payload: props.podcast.numUsersRetweeted})
+
         })}>
             <View style={{flex:1,flexDirection:"row",paddingLeft:width/64,width:width,height:height/5}}>
               
@@ -192,10 +194,13 @@ const styles = StyleSheet.create({
                 </View>
 
                 <View style={{height:(height)/20}}>
-                <TouchableOpacity onPress={() => props.navigation.navigate('RecordBook',{bookID:props.podcast.bookID})}>
-                <Text style={{ color: theme.colors.gray_green,fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.podcast.bookName.slice(0,40)}
-                      {(props.podcast.bookName.length > 40) ? ".." : ""}</Text>
-                </TouchableOpacity> 
+                { 
+                  props.podcast.bookName !== undefined && props.podcast.bookName !== null &&
+                  <TouchableOpacity onPress={() => props.navigation.navigate('RecordBook',{bookID:props.podcast.bookID})}>
+                    <Text style={{ color: theme.colors.gray_green,fontSize: theme.sizes.font * 1.0, fontWeight: '500' }}>{props.podcast.bookName.slice(0,40)}
+                        {(props.podcast.bookName.length > 40) ? ".." : ""}</Text>
+                  </TouchableOpacity> 
+                } 
                 </View>
 
               <View style ={{height:(height)/25}}>

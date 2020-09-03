@@ -173,7 +173,7 @@ return(
             <View style={{ alignItems:'center',marginTop:SCREEN_HEIGHT/10}}>
             <Tooltip
             isVisible={toolTipVisible}
-            content={<Text>Use this switch to toggle Music Player</Text>}
+            content={<Text style={{fontSize:20,fontFamily:'Montserrat-SemiBold'}}>Use this switch to toggle Music Player</Text>}
             onClose={() => setToolTipVisible(false)}
           >
             <ToggleSwitch
@@ -198,7 +198,7 @@ return(
 
             </View>
           
-          <Text style={{textAlign:'center',fontFamily:'Montserrat-Bold', paddingTop:SCREEN_HEIGHT/10,color:'#dddd'}}>v1.0.24</Text>
+          <Text style={{textAlign:'center',fontFamily:'Montserrat-Bold', paddingTop:SCREEN_HEIGHT/10,color:'#dddd'}}>v1.0.27</Text>
     
     </Content>
 

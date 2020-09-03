@@ -134,7 +134,7 @@ const CustomUserHeader = (props) => {
               style={styles.avatar}
             />
             
-        <View style={{flexDirection:'column',paddingLeft:10,width:SCREEN_WIDTH*3/5}}>      
+        <View style={{flexDirection:'column',paddingLeft:10,width:SCREEN_WIDTH*4/5 - 94}}>      
 <Text style={{fontSize:theme.sizes.h3,fontFamily:'Montserrat-Bold'}}>{otherPrivateUserItem.name}{"   "}</Text>
         <Text style={{fontSize:14,paddingRight:10,fontFamily:'Montserrat-Regular'}}>{otherPrivateUserItem.introduction}</Text>
         

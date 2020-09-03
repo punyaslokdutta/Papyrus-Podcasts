@@ -42,6 +42,7 @@ const areEqual = (prevProps, nextProps) => true
                 dispatch({type:"SET_PODCAST", payload: props.item})
                 dispatch({type:"ADD_NAVIGATION", payload:props.navigation})
                 dispatch({type:"SET_NUM_LIKES", payload: props.item.numUsersLiked})
+                dispatch({type:"SET_NUM_RETWEETS", payload: props.item.numUsersRetweeted})
               }
               
             })}>

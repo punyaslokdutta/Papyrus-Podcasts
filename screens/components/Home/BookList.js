@@ -36,7 +36,9 @@ class BookList extends Component {
   }
 
   scrollX = new Animated.Value(0);
-
+  shouldComponentUpdate = (nextProps, nextState) => {
+    return (this.state.activeSlide != nextState.activeSlide);//this.state.value != nextState.value;
+  }
 
   get pagination () {
     const { activeSlide } = this.state;

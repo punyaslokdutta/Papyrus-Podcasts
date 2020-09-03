@@ -6,6 +6,7 @@ import setUserDetails from './screens/setUserDetails'
 import { StyleSheet, View, TouchableOpacity, Image, Text,Dimensions, Button, ScrollView, Alert, NativeModules,Linking,Platform} from 'react-native';
 import AddBookReviewScreen from './screens/components/Record/AddBookReviewScreen'
 import store from './store';
+import InAppUpdate from './screens/components/InAppUpdate';
 import { connect } from 'react-redux';
 import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
 import moment from 'moment';
@@ -55,10 +56,12 @@ import RecordBook from './screens/RecordBook'
 import RecordChapter from './screens/RecordChapter'
 import StatisticsScreen from './screens/StatisticsScreen'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import IconAntDesign from 'react-native-vector-icons/AntDesign'
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5'
 import Entypo from 'react-native-vector-icons/Entypo'
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons'
-import SimpleLineIcon from 'react-native-vector-icons/SimpleLineIcons'
+import SimpleLineIcon from 'react-native-vector-icons/SimpleLineIcons';
+import EvilIcon from 'react-native-vector-icons/EvilIcons';
 import { theme } from './screens/components/categories/constants';
 import ActivityScreen from './screens/ActivityScreen'
 import SettingsScreen from './screens/SettingsScreen'
@@ -239,7 +242,7 @@ const AppTabNavigator=createBottomTabNavigator(
     
     Explore: {screen:ExploreStackNavigator,
       navigationOptions:{
-        tabBarIcon:({tintColor})=>( <Icon name="search" color={tintColor}  size={24}/> )
+        tabBarIcon:({tintColor})=>( <EvilIcon name="search" color={tintColor}  size={36}/> )
       }
     },
     Record: {screen:RecordStackNavigator,
@@ -510,49 +513,54 @@ export default class App extends Component {
      super(props)
      {
       this.state={
-          currentVersionCode : 25,
-          currentVersion : "1.0.24",
+          currentVersionCode : 28,
+          currentVersion : "1.0.27",
           updateLink : "https://play.google.com/apps/internaltest/4698784295424472878",
           //updateLink : "https://play.google.com/apps/testing/com.papyrus_60" 
         }
      }
     }
 
-  componentDidMount = async () => {
-    
-    console.log("App.js mounts");
-    try{
-      
-      const updateVersionDoc = await firestore().collection('appUpdates').doc('newUpdate').get();
-      const updateVersionData = updateVersionDoc.data();
-      store.dispatch({type:"SET_BUILD_VERSION",payload:this.state.currentVersion});
-
-      //[IMPORTANT]
-    //For alpha update, use this code
-      // this.setState({
-      //   latestVersion : updateVersionData.updateVersion,
-      //   latestVersionCode : updateVersionData.updateVersionCode,
-      //   isForcedUpdate : updateVersionData.isForcedUpdate,
-      //   updateMessage : updateVersionData.updateMessage
-      // })
-
-      // For internal update, use this code
-    this.setState({
-      latestVersion : updateVersionData.updateInternalTestVersion,
-      latestVersionCode : updateVersionData.updateInternalTestVersionCode,
-      isForcedUpdate : updateVersionData.isForcedUpdate,
-      updateMessage : updateVersionData.updateMessage
-    })
-    }
-    catch(error){
-      console.log("Error in reading appUpdates document newUpdate: ",error);
-    }
-    finally{
+    componentDidMount () {
       SplashScreen.hide();
-    } 
+      InAppUpdate.checkUpdate() // this is how you check for update 
+    }
+
+  // componentDidMount = async () => {
+    
+  //   console.log("App.js mounts");
+  //   try{
+      
+  //     const updateVersionDoc = await firestore().collection('appUpdates').doc('newUpdate').get();
+  //     const updateVersionData = updateVersionDoc.data();
+  //     store.dispatch({type:"SET_BUILD_VERSION",payload:this.state.currentVersion});
+
+  //     //[IMPORTANT]
+  //   //For alpha update, use this code
+  //     // this.setState({
+  //     //   latestVersion : updateVersionData.updateVersion,
+  //     //   latestVersionCode : updateVersionData.updateVersionCode,
+  //     //   isForcedUpdate : updateVersionData.isForcedUpdate,
+  //     //   updateMessage : updateVersionData.updateMessage
+  //     // })
+
+  //     // For internal update, use this code
+  //   this.setState({
+  //     latestVersion : updateVersionData.updateInternalTestVersion,
+  //     latestVersionCode : updateVersionData.updateInternalTestVersionCode,
+  //     isForcedUpdate : updateVersionData.isForcedUpdate,
+  //     updateMessage : updateVersionData.updateMessage
+  //   })
+  //   }
+  //   catch(error){
+  //     console.log("Error in reading appUpdates document newUpdate: ",error);
+  //   }
+  //   finally{
+  //     SplashScreen.hide();
+  //   } 
     
     
-  }
+  // }
 
   validateAndAddLatestPlayingToFirestore = async(continueListeningPodcasts,podcastRedux,userID,privateUserID) => {
     
@@ -691,15 +699,15 @@ export default class App extends Component {
       return(
         <Provider store ={store}>
         <FirebaseProvider value={firebaseApi}>
-        <PlayerProvider>
         <MusicProvider>
         <MenuProvider>
         <NetworkProvider>
+        <PlayerProvider>
         <AppContainer/>
+        </PlayerProvider>
         </NetworkProvider>
         </MenuProvider>
         </MusicProvider>
-        </PlayerProvider>
         </FirebaseProvider>
         </Provider>
         );

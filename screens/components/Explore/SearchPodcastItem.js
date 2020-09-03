@@ -150,6 +150,7 @@ const styles = StyleSheet.create({
     dispatch({ type:"SET_MUSIC_PAUSED",payload:true});
     dispatch({type:"SET_PODCAST", payload: podcastDocumentData})
     dispatch({type:"SET_NUM_LIKES", payload: podcastDocumentData.numUsersLiked})
+    dispatch({type:"SET_NUM_RETWEETS", payload: podcastDocumentData.numUsersRetweeted})
     }
     catch(error){
       console.log("Error in retrievePodcastDocument() in SearchPodcastItem: ",error);

@@ -4,6 +4,7 @@ import Carousel,{getInputRangeFromIndexes,Pagination} from 'react-native-snap-ca
 import {View, Text, Dimensions,StyleSheet} from 'react-native'
 import Story from './Story';
 import TrendingPodcast from './TrendingPodcast';
+import {useSelector, useDispatch,connect} from "react-redux"
 
 const {width,height} = Dimensions.get('window')
 
@@ -19,10 +20,33 @@ const {width,height} = Dimensions.get('window')
         }
     }
 
+
+    shouldComponentUpdate = (nextProps, nextState) => {
+        return (this.state.activeSlide != nextState.activeSlide);//this.state.value != nextState.value;
+      }
+
+    retrievePodcast = (item) => {
+        if(this.props.podcastRedux === null || (this.props.podcastRedux!== null && this.props.podcastRedux.podcastID != item.podcastID))
+          {
+            this.props.dispatch({type:"SET_FLIP_ID",payload:null});
+            this.props.dispatch({type:"SET_CURRENT_TIME", payload:0});
+            this.props.dispatch({type:"SET_PAUSED", payload:false});
+            this.props.dispatch({type:"SET_LOADING_PODCAST", payload:true});
+            this.props.podcastRedux === null && this.props.dispatch({type:"SET_MINI_PLAYER_FALSE"});
+            this.props.dispatch({ type:"SET_MUSIC_PAUSED",payload:true});
+            this.props.dispatch({type:"SET_PODCAST", payload: item});
+            this.props.dispatch({type:"SET_DURATION", payload:item.duration});
+            this.props.dispatch({type:"ADD_NAVIGATION", payload:this.props.navigation});
+            this.props.dispatch({type:"SET_NUM_LIKES", payload: item.numUsersLiked});
+            this.props.dispatch({type:"SET_NUM_RETWEETS", payload: item.numUsersRetweeted})
+          } 
+    };
+
     renderItem = ({item, index}) => {
+        console.log("[TrendingPodcastsCarousel] Before rendering TrendingPodcast");
         return (
             <View>
-            <TrendingPodcast item={item} index={index} key ={index} navigation={this.props.navigation}/>
+            <TrendingPodcast item={item} retrievePodcast={this.retrievePodcast} index={index} key ={index} navigation={this.props.navigation}/>
             </View>
         );
     }
@@ -222,5 +246,16 @@ const styles = StyleSheet.create({
     }
 });
 
-
-export default TrendingPodcastsCarousel;
+const mapStateToProps = (state) => {
+    return{
+      podcastRedux: state.rootReducer.podcast,
+    }
+  }
+  
+  const mapDispatchToProps = (dispatch) =>{
+    return{
+    dispatch,
+    }}
+  
+export default connect(mapStateToProps,mapDispatchToProps)(TrendingPodcastsCarousel);
+// export default TrendingPodcastsCarousel;

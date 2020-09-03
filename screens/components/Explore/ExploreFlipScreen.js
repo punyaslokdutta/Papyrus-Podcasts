@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import { StyleSheet, Text, View, Image, TouchableOpacity,FlatList,RefreshControl, 
-  Dimensions,SafeAreaView, ScrollView,ActivityIndicator} from 'react-native';
+  Dimensions,SafeAreaView, ScrollView,ActivityIndicator,ImageBackground} from 'react-native';
 import {withFirebaseHOC} from '../../config/Firebase'
 import {useSelector, useDispatch,connect} from "react-redux"
 import IconAntDesign from 'react-native-vector-icons/AntDesign'
+import LinearGradient from 'react-native-linear-gradient';
 
 var {width, height}=Dimensions.get('window')
 
@@ -106,6 +107,30 @@ class ExploreFlipScreen extends React.Component {
     }
   }
 
+  renderTitle = (item) => {
+    if(item.flipTitle !== undefined)
+      return (
+        <Text style={{color:'white',position:'absolute',fontFamily:'Montserrat-Bold',bottom:2,left:10,fontSize:20}}>
+        {item.flipTitle.slice(0,35)}
+        {
+          (item.flipTitle.length > 35)  &&  ".."
+        }
+      </Text>
+      )
+    else if(item.bookName !== undefined)
+        return (
+          <Text style={{color:'white',position:'absolute',fontFamily:'Montserrat-Bold',bottom:2,left:10,fontSize:20}}>
+          {item.bookName.slice(0,35)}
+          {
+            (item.bookName.length > 35)  &&  ".."
+          }
+        </Text>
+        )
+    else
+          return null;
+        
+  }
+
   renderData = ({item,index}) =>
   {
       return(
@@ -116,13 +141,32 @@ class ExploreFlipScreen extends React.Component {
                 lastVisibleFlip:this.state.lastVisibleFlip,
                 userID : this.props.navigation.state.params.userData.id
             })
-        }} style={{padding:5}}>
-        <Image source={{uri: item.flipPictures[0]}} style={{width:width/2 - 10, height:width*0.75,borderRadius:5 }}/>
+        }} style={{marginHorizontal:5,marginVertical:5,width:width/2 - 10, height:width*0.75,borderRadius:10}}>
+          <ImageBackground source={{uri: item.flipPictures[0]}} 
+          style={{width:width/2 - 10, height:width*0.75 }}
+          imageStyle={{ borderRadius: 10}}
+          >
+        <LinearGradient style={{borderRadius:10}} colors={['transparent', 'transparent', 'transparent','transparent','transparent','transparent',  'transparent','black','black']} >
+              <View style={{width:width/2 - 10, height:width*0.75,borderRadius:20}}>
+               
               {
                 item.isAudioFlip &&
                 <IconAntDesign name="play" size={height/24} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/4 - 5 - height/48,top:width*0.75/2 - height/48}}/>
 
               }
+              {this.renderTitle(item)}
+              
+               
+              </View>
+            </LinearGradient>
+
+            </ImageBackground>
+        {/* <Image source={{uri: item.flipPictures[0]}} style={{width:width/2 - 10, height:width*0.75,borderRadius:5 }}/>
+              {
+                item.isAudioFlip &&
+                <IconAntDesign name="play" size={height/24} style={{position:'absolute',borderRadius:30, color:'black',backgroundColor:'white', left:width/4 - 5 - height/48,top:width*0.75/2 - height/48}}/>
+
+              } */}
       </TouchableOpacity>
       )
   }
@@ -189,7 +233,7 @@ class ExploreFlipScreen extends React.Component {
           onRefresh={() => this.handleRefresh()}
           refreshControl={
             <RefreshControl
-            refreshing={this.state.refreshing}
+            refreshing={this.state.loading}
             onRefresh={this.handleRefresh}
             />
            }
@@ -220,7 +264,7 @@ class ExploreFlipScreen extends React.Component {
         dispatch,
     }}
   
-  export default connect(null,mapDispatchToProps)(withFirebaseHOC(ExploreFlipScreen))
+export default connect(null,mapDispatchToProps)(withFirebaseHOC(ExploreFlipScreen))
   
 
 

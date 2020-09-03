@@ -13,10 +13,13 @@ import {
   Animated
 } from 'react-native'
 import Carousel,{getInputRangeFromIndexes,Pagination} from 'react-native-snap-carousel';
+import {useSelector, useDispatch,connect} from "react-redux"
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Octicons from 'react-native-vector-icons/Octicons';
 //import Animated, { Easing } from 'react-native-reanimated';
+import firestore from '@react-native-firebase/firestore';
+import {withFirebaseHOC} from '../../config/Firebase';
 
 import * as theme from '../constants/theme';
 import RecordBook from '../../RecordBook'
@@ -37,6 +40,49 @@ class ContinueListeningPodcasts extends Component {
 
   scrollX = new Animated.Value(0);
 
+  shouldComponentUpdate = (nextProps, nextState) => {
+    return (this.state.activeSlide != nextState.activeSlide);//this.state.value != nextState.value;
+  }
+
+  updatePodcastNameInContinueListeningItem = async(podcastsListenedID,modifiedPodcastName) => {
+    const userID = this.props.firebase._getUid();
+    const privateUserID = "private" + userID;
+    await firestore().collection('users').doc(userID).collection('privateUserData').doc(privateUserID)
+          .collection('PodcastsListened').doc(podcastsListenedID).set({
+            podcastName : modifiedPodcastName
+          },{merge:true}).then(() => {
+            console.log("Podcast name updated ssuccessfully in PodcastsListened Doc");
+          }).catch((err) => {
+            console.log("Error in updating name in PodcastsListened doc",err);
+          })
+  }
+
+  retrievePodcast = async(podcastsListenedID,podcastName,podcastID,lastPlayedPosition) => {
+    if(this.props.podcastRedux === null || (this.props.podcastRedux!== null && this.props.podcastRedux.podcastID != podcastID))
+    {
+      const podcastCollection = await firestore().collectionGroup('podcasts')
+      .where('podcastID','==',podcastID).get();
+
+      const podcastDocumentData = podcastCollection.docs[0]._data;
+
+      this.props.dispatch({type:"SET_FLIP_ID",payload:null});
+      this.props.dispatch({type:"SET_CURRENT_TIME", payload:0})
+      this.props.dispatch({type:"SET_DURATION", payload:podcastDocumentData.duration})
+      this.props.dispatch({type:"SET_PAUSED", payload:false})
+      this.props.dispatch({type:"SET_LOADING_PODCAST", payload:true});
+      this.props.dispatch({type:"ADD_NAVIGATION", payload:this.props.navigation})
+      this.props.dispatch({type:"SET_LAST_PLAYING_CURRENT_TIME",payload:lastPlayedPosition})
+      this.props.podcastRedux === null && this.props.dispatch({type:"SET_MINI_PLAYER_FALSE"});
+      this.props.dispatch({ type:"SET_MUSIC_PAUSED",payload:true});
+      this.props.dispatch({type:"SET_PODCAST", payload: podcastDocumentData})
+      this.props.dispatch({type:"SET_NUM_LIKES", payload: podcastDocumentData.numUsersLiked})
+      this.props.dispatch({type:"SET_NUM_RETWEETS", payload: podcastDocumentData.numUsersRetweeted})
+
+      if(podcastName != podcastDocumentData.podcastName)
+        this.updatePodcastNameInContinueListeningItem(podcastsListenedID,podcastDocumentData.podcastName);
+    }
+
+  }
 
   get pagination () {
     const { activeSlide } = this.state;
@@ -111,7 +157,7 @@ class ContinueListeningPodcasts extends Component {
   renderPodcast = ({item,index}) => {
     console.log("[ContinueListeningPodcasts] ContinueListeningPodcastItem indexed - ",index," before rendering")
     return (
-      <ContinueListeningPodcastItem podcast={item} key={item.podcastID} index={index} navigation={this.props.navigation}/>
+      <ContinueListeningPodcastItem podcast={item} retrievePodcast={this.retrievePodcast} key={item.podcastID} index={index} navigation={this.props.navigation}/>
     )
   }
 
@@ -131,8 +177,19 @@ class ContinueListeningPodcasts extends Component {
 // ContinueListeningPodcasts.defaultProps = {
 //   podcasts: mocks
 // };
+const mapStateToProps = (state) => {
+  return{
+    podcastRedux: state.rootReducer.podcast,
+  }
+}
 
-export default ContinueListeningPodcasts;
+const mapDispatchToProps = (dispatch) =>{
+  return{
+  dispatch,
+  }}
+
+export default connect(mapStateToProps,mapDispatchToProps)(withFirebaseHOC(ContinueListeningPodcasts))
+//export default ContinueListeningPodcasts;
 
 const styles = StyleSheet.create({
   flex: {

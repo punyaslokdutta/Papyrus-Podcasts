@@ -14,14 +14,10 @@ import {withFirebaseHOC} from './config/Firebase';
 import Modal from 'react-native-modal';
 import LottieView from 'lottie-react-native';
 import MusicCategoryItem from './components/Explore/MusicCategoryItem'
-import modalJSON2 from '../assets/animations/modal-animation-2.json';
+import modalJSON2 from '../assets/animations/HeadPhone.json';
 import TrendingPodcastsCarousel from './components/Explore/TrendingPodcastsCarousel'
-import ShortStoriesCarousel from './components/Explore/ShortStoriesCarousel';
 import ExploreAnimation from './components/Explore/ExploreAnimation';
 import StoryTellerCarousel from './components/Explore/StoryTellerCarousel';
-import MusicCarousel from './components/Explore/MusicCarousel';
-import ClassicPoemsCarousel from './components/Explore/ClassicPoemsCarousel';
-import SplashScreen from 'react-native-splash-screen';
 import BookList from './components/Home/BookList';
 import Podcast from './components/Home/Podcast';
 import FlipItem from './components/Home/FlipItem';
@@ -31,7 +27,10 @@ import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-nati
 import moment from 'moment';
 const {width,height} = Dimensions.get('window')
 
-const Explore = (props) => {
+const areEqual = (prevProps, nextProps) => {
+  return true;
+}
+const Explore = React.memo((props) => {
 
   const  userid = props.firebase._getUid();
   const privateUserID = "private" + userid;
@@ -113,7 +112,7 @@ const Explore = (props) => {
     firestore().collection('users').doc(userid).collection('privateUserData').doc(privateUserID).set({
       musicPreferences : localMusicPreferences
     },{merge:true}).then(() => {
-      console.log("Added MusicPreferences to user's private document");
+      console.log("[Explore]sAdded MusicPreferences to user's private document");
       setIsMusicCategoryModalVisible(false);
       props.navigation.toggleDrawer()
       setTimeout(() => {dispatch({type:"SHOW_MUSIC_PLAYER_TOOLTIP",payload:true})}, 500)
@@ -197,7 +196,7 @@ const Explore = (props) => {
                             .where('isExploreFlip','==',true).orderBy('lastEditedOn','desc')
                             .limit(12).get();
       let exploreFlipsData = exploreFlipsQuery.docs.map(document => document.data());
-      console.log("exploreFlipsData:- ",exploreFlipsData);
+      //console.log("exploreFlipsData:- ",exploreFlipsData);
       setExploreFlips(exploreFlipsData);
     }
     catch(error){
@@ -449,7 +448,6 @@ const Explore = (props) => {
 
       useEffect(
         () => {
-          //SplashScreen.hide();
           console.log("[ExploreScreen] useEffect LOG");
           if(!didFocusListener.current) {
             didFocusListener.current = props.navigation.addListener('didFocus', (route) => {
@@ -502,6 +500,7 @@ const Explore = (props) => {
         dispatch({ type:"SET_MUSIC_PAUSED",payload:true});
         dispatch({type:"SET_PODCAST", payload: podcastData}) 
         dispatch({type:"SET_NUM_LIKES", payload: podcastData.numUsersLiked})
+        dispatch({type:"SET_NUM_RETWEETS", payload: podcastData.numUsersRetweeted})
 
         dispatch({type:"PODCAST_ID_FROM_EXTERNAL_LINK",payload:null});
 
@@ -527,6 +526,7 @@ const Explore = (props) => {
         
         props.navigation.navigate('MainFlipItem',{
           item : flipItemData,
+          numLikes : flipItemData.numUsersLiked,
           playerText : "play",
           pausedState : true,
           player : false
@@ -658,30 +658,29 @@ const Explore = (props) => {
           
           <Modal isVisible={isModalVisible} backdropColor={'white'} style={{backgroundColor:'while'}}>
             <View style={{ backgroundColor:'white',height:width,borderRadius:10,borderWidth:0.5,borderColor:'black', width:width*3/4,alignSelf:'center' }}>
-              <TouchableOpacity style={{ position:'absolute',right:5,top:0 }} onPress={() => setIsModalVisible(false)}>
+              {/* <TouchableOpacity style={{ position:'absolute',right:5,top:0 }} onPress={() => setIsModalVisible(false)}>
               <Icon name="times-circle" size={24}/> 
-              </TouchableOpacity>
+              </TouchableOpacity> */}
               <LottieView style={{
           width:width/2,paddingLeft:width*3/25,paddingTop:10}} source={modalJSON2} autoPlay loop />
               <View style={{justifyContent:'center',alignItems:'center',textAlign:'center'}}>
-                <Text style={{marginHorizontal:5,paddingHorizontal:5,borderWidth:1,borderColor:'#dddd', fontFamily:'Andika-R',fontSize:20,backgroundColor:'white',alignSelf:'center'}}>Enable Background Music</Text>
+                <Text style={{marginHorizontal:5,paddingHorizontal:5,borderWidth:0,borderColor:'#dddd', fontFamily:'Montserrat-SemiBold',fontSize:30,backgroundColor:'white',alignSelf:'center'}}>Enable Background Music</Text>
                 </View>
-                  <View style={{marginTop:width/6,flexDirection:'column'}}>
-                   <View style={{borderBottomWidth:0.25,width:width*3/4}}/> 
+                  <View style={{marginTop:0,position:'absolute',bottom:4,flexDirection:'column'}}>
                    <TouchableOpacity onPress={() => {
                     setIsModalVisible(false);
                     setMusicEnableNotificationSeen(true);
-                  }}>
-                  <Text style={{fontFamily:'Andika-R',fontSize:18,backgroundColor:'white',alignSelf:'center'}}> Yes </Text>
+                  }} style={{backgroundColor:'#dddd'}}>
+                  <Text style={{fontFamily:'Montserrat-SemiBold',fontSize:18,alignSelf:'center'}}> Yes </Text>
                   </TouchableOpacity>
-                  <View style={{borderWidth:0.25,width:width*3/4}}/> 
+                  <View style={{borderWidth:0,width:width*3/4,height:10}}/> 
                   <TouchableOpacity onPress={async() => {
                     props.navigation.toggleDrawer()
                     setTimeout(() => {dispatch({type:"SHOW_MUSIC_PLAYER_TOOLTIP",payload:true})}, 500)
                     setIsModalVisible(false);
                     setMusicEnableNotificationSeen(false);
-                  }}>
-                  <Text style={{fontFamily:'Andika-R',fontSize:18,backgroundColor:'white',alignSelf:'center'}}> No </Text>
+                  }} style={{backgroundColor:'#dddd'}}>
+                  <Text style={{fontFamily:'Montserrat-SemiBold',fontSize:18,alignSelf:'center'}}> No </Text>
                   </TouchableOpacity>
                   </View>
             </View>
@@ -1051,7 +1050,14 @@ const Explore = (props) => {
                 <View style={{backgroundColor:'#A9A9A9',height:height/5,width:width*0.8}}/>  
               </Shimmer>
               <Shimmer>
-                <View style={{backgroundColor:'white',height:height*2/15,width:width*0.8}}/>
+                <View style={{backgroundColor:'white',height:height*2/15,width:width*0.8,paddingLeft:10}}>
+                  <View style={{marginTop:10,height:5,backgroundColor:"#A9A9A9",width:width*0.75}}/>
+                  <View style={{marginTop:2,height:5,backgroundColor:"#A9A9A9",width:width*0.6}}/>
+                  <View style={{marginTop:30,height:7,backgroundColor:"#A9A9A9",width:width*0.75}}/>
+                  <View style={{marginTop:5,height:7,backgroundColor:"#A9A9A9",width:width*0.75}}/>
+                  <View style={{marginTop:5,height:7,backgroundColor:"#A9A9A9",width:width*0.75}}/>
+
+                  </View>
               </Shimmer>
               </View>
             
@@ -1142,7 +1148,7 @@ const Explore = (props) => {
             </View>
         )
       }
-  }
+},areEqual)
 
 export default withFirebaseHOC(Explore);
 

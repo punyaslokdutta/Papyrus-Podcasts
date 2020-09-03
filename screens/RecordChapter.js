@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import firestore from '@react-native-firebase/firestore';
 import { Text, StyleSheet, View, Animated, Image, Dimensions, ScrollView, ActivityIndicator, TouchableOpacity,TouchableWithoutFeedback } from 'react-native'
-import {Card, CardItem,  Body} from 'native-base'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import ImageZoom from 'react-native-image-pan-zoom';
 
@@ -285,23 +284,23 @@ class RecordChapter extends Component {
           </TouchableOpacity>
             </View> 
 
-            <Card style={{borderRadius: 10 ,width:((width*4)/5 ), paddingTop :5}}>
-              <CardItem>
+            <View style={{borderRadius: 10 ,width:((width*4)/5 ), paddingTop :5}}>
+              <View>
             <TouchableOpacity>
               <Text style={{fontSize:20, paddingBottom:10, fontFamily:'san-serif-light'}}>Description</Text>
               <Text style={{fontSize:15}}>
                 {this.state.article.chapterDescription}
               </Text>
             </TouchableOpacity>
-            </CardItem>
-            </Card>
-            <Card style={{borderRadius: 10 ,width:((width*4)/5 ), paddingTop :5}}>
-              <CardItem>
+            </View>
+            </View>
+            <View style={{borderRadius: 10 ,width:((width*4)/5 ), paddingTop :5}}>
+              <View>
             <TouchableOpacity>
               <Text style={{fontSize:20, paddingBottom:10, fontFamily:'san-serif-light'}}>Author(s)</Text>
                 {
                   this.state.article.authors.map(item => (
-                    <Text style={{fontSize:15}}>
+                    <Text style={{color:'gray',fontFamily:'Montserrat-SemiBold',fontSize:15}}>
                     {item}
                     </Text>
                    ))
@@ -309,8 +308,8 @@ class RecordChapter extends Component {
                 
               
             </TouchableOpacity>
-            </CardItem>
-            </Card>
+            </View>
+            </View>
           </View>
         </View>
       </View>

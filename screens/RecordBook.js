@@ -1,7 +1,6 @@
 import React, { Component, useEffect,useState,useRef } from 'react';
 import firestore from '@react-native-firebase/firestore';
 import { Text, StyleSheet, View, Animated, Image, Dimensions, ScrollView,TouchableWithoutFeedback,ActivityIndicator, TouchableOpacity,TouchableNativeFeedback } from 'react-native'
-import {Card, CardItem,  Body} from 'native-base'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { withFirebaseHOC } from './config/Firebase';
 //import Animated, { Easing } from 'react-native-reanimated';
@@ -260,7 +259,7 @@ const RecordBook = (props) => {
             <Text> 
                 {
                   article.authors.map(item => (
-                    <Text style={{fontFamily:'Andika-R',fontSize:15}}>
+                    <Text style={{color:'gray',fontFamily:'Montserrat-SemiBold',fontSize:15}}>
                     {item}
                     {"\n"}
                     </Text>
@@ -303,7 +302,7 @@ const RecordBook = (props) => {
               <View style={{width:width/3}}>
               {/* <Image source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/flips/Book-Notes.jpg"}}
                       style={{height:width/2,width:width/2}}/> */}
-              <Text style={{fontFamily:"Andika-R"}}>Create a book podcast</Text>
+              <Text style={{fontFamily:"Montserrat-SemiBold"}}>Create a podcast for this book</Text>
               </View>}
               onClose={() => {
                 setToolTipRecordVisible(false)
@@ -324,6 +323,8 @@ const RecordBook = (props) => {
             <View style={{width:width/2}}>
           <TouchableNativeFeedback onPress={() => handleOnPressBookmark()}>
           <View style={{width:width/3}}>
+          
+          <View style={{alignItems:'center'}}>
           <Tooltip
               isVisible={toolTipBookmarkVisible}
               placement='left'
@@ -331,7 +332,7 @@ const RecordBook = (props) => {
               <View style={{width:width/3}}>
               {/* <Image source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/flips/Book-Notes.jpg"}}
                       style={{height:width/2,width:width/2}}/> */}
-              <Text style={{fontFamily:"Andika-R"}}>Save this book in your collections</Text>
+              <Text style={{fontFamily:"Montserrat-SemiBold"}}>Save this book in your collections</Text>
               </View>}
               onClose={() => {
                 setToolTipBookmarkVisible(false);
@@ -339,7 +340,6 @@ const RecordBook = (props) => {
                 setRecordBookWalkthroughInFirestore();
               }}
             >
-          <View style={{alignItems:'center'}}>
                   <AnimatedIcon
                     ref={handleSmallAnimatedBookmarkIconRef}
                     name={bookmarked ? 'bookmark' : 'bookmark-o'}
@@ -347,10 +347,10 @@ const RecordBook = (props) => {
                     size={20}
                     style={{height:30,width:30}}
                   />
+              </Tooltip>
            <Text style={{fontSize:12,textAlign:'center',fontFamily:'Montserrat-Regular',width:width/3}}>Want to Read</Text>
 
           </View>
-          </Tooltip>
           </View>
                 </TouchableNativeFeedback>
             </View>
@@ -359,9 +359,8 @@ const RecordBook = (props) => {
             <View style={{borderRadius: 10 ,width:((width*4)/5 ), paddingTop :5}}>
             <View>
               {/* <Text style={{fontSize:20, paddingBottom:10, fontFamily:'Montserrat-SemiBold'}}>Description</Text> */}
-              <Text style={{fontFamily:'Benne-Regular',fontSize:19,lineHeight:30}}>
-                {article.bookDescription}
-              </Text>
+              <Text style={{fontFamily:'Benne-Regular',fontSize:19,lineHeight:25}}>{article.bookDescription}</Text>
+              
             </View>
             </View>
             

@@ -91,6 +91,7 @@ const FlipPreviewScreen = (props)=> {
 
   useEffect(() => {
     if(props.navigation.state.params.bookName !== undefined){
+      
       setBookName(props.navigation.state.params.bookName);
       props.navigation.state.params.flipDescription && 
       setFlipDescription(props.navigation.state.params.flipDescription);
@@ -327,7 +328,7 @@ const FlipPreviewScreen = (props)=> {
 
     if(flipRelatedToBook == true)
     {
-      if(bookName.length == 0)
+      if(bookName == null || bookName.length == 0)
       {
         alert('Please provide a book related to your flip');
         return;
@@ -481,11 +482,11 @@ const FlipPreviewScreen = (props)=> {
                 if(flipTitle !== null)
                 {
                   const trimmedFlipName = flipTitle.trim();
-                  setFlipTitle(trimmedFlipName.slice(0,100));
+                  setFlipTitle(trimmedFlipName.slice(0,150));
                 }
               }}
               onChangeText={(text) => {
-                setFlipTitle(text);
+                setFlipTitle(text.slice(0,150));
               }}
               multiline={true}
               numberOfLines={2}
@@ -503,11 +504,11 @@ const FlipPreviewScreen = (props)=> {
                 if(flipDescription !== null)
                 {
                   const trimmedFlipDescription = flipDescription.trim();
-                  setFlipDescription(trimmedFlipDescription.slice(0,1000));
+                  setFlipDescription(trimmedFlipDescription.slice(0,3000));
                 }
               }}
               onChangeText={(text) => {
-                setFlipDescription(text.slice(0,1000));
+                setFlipDescription(text.slice(0,3000));
               }}
               multiline={true}
               numberOfLines={6}
@@ -518,7 +519,7 @@ const FlipPreviewScreen = (props)=> {
               <Tooltip
                 isVisible={toolTipVisible}
                 content={
-                <Text style={{fontSize:20,fontFamily:'Andika-R'}}>If your flip is not related to any book, you can switch off this option</Text>}
+                <Text style={{fontSize:20,fontFamily:'Montserrat-SemiBold'}}>If your flip is not related to any book, you can switch off this option</Text>}
                 onClose={() => {
                   setToolTipVisible(false);
                   dispatch({type:"SET_FLIP_PREVIEW_WALKTHROUGH",payload:true})
@@ -552,11 +553,11 @@ const FlipPreviewScreen = (props)=> {
                   if(bookName !== null)
                   {
                     const trimmedBookName = bookName.trim();
-                    setBookName(trimmedBookName.slice(0,100));
+                    setBookName(trimmedBookName.slice(0,150));
                   }
                 }}
                 onChangeText={(text) => {
-                  setBookName(text);
+                  setBookName(text.slice(0,150));
                 }}
                 multiline={true}
                 numberOfLines={2}
@@ -600,7 +601,8 @@ const styles = StyleSheet.create({
   TextInputStyleClass2: {
 
     //textAlign: 'center',
-    fontFamily: 'Montserrat-Bold',
+    fontFamily: 'Montserrat-SemiBold',
+    fontWeight: 'normal',
     //fontStyle: 'italic',
     fontSize: 17,
     color: 'black',

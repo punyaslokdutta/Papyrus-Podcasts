@@ -501,7 +501,7 @@ class AddAudioFlipComponent extends React.Component {
                     isVisible={this.state.toolTipUploadVisible}
                     placement='top'
                     content={
-                    <Text style={{fontSize:20,fontFamily:'Andika-R'}}>Press this to upload a 140-seconds flip from your gallery</Text>}
+                    <Text style={{fontSize:20,fontFamily:'Montserrat-SemiBold'}}>Press this to upload a 140-seconds flip from your gallery</Text>}
                     onClose={() => {
                       this.setState({ toolTipUploadVisible : false });
                       this.props.dispatch({type:"SET_AUDIO_FLIP_WALKTHROUGH",payload:true});
@@ -516,7 +516,7 @@ class AddAudioFlipComponent extends React.Component {
                   <Tooltip
                     isVisible={this.state.toolTipVisible}
                     content={
-                    <Text style={{fontSize:20,fontFamily:'Andika-R'}}>Press this to start recording your 140-seconds flip</Text>}
+                    <Text style={{fontSize:20,fontFamily:'Montserrat-SemiBold'}}>Press this to start recording your 140-seconds flip</Text>}
                     onClose={() => this.setState({
                       toolTipVisible : false,
                       toolTipUploadVisible : true

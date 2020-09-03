@@ -1,4 +1,4 @@
-import { Text, Dimensions,ScrollView,Share, Image,View,Animated,StyleSheet,ImageBackground, TouchableOpacity,TouchableNativeFeedback,Alert, ActivityIndicator } from 'react-native'
+import { Text, Dimensions,FlatList,ScrollView,Share, Image,View,Animated,StyleSheet,ImageBackground, TouchableOpacity,TouchableNativeFeedback,Alert, ActivityIndicator } from 'react-native'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import React, { Component, useEffect,useState,useRef } from 'react';
 import * as theme from '../constants/theme';
@@ -48,6 +48,7 @@ const FlipItem = (props) => {
     const currentFlipID = useSelector(state=>state.flipReducer.currentFlipID);
     const [pausedState,setPausedState] = useState(true);
     const [playerText,setPlayerText] = useState("play");
+    const [likeString,setLikeString] = useState("likes");
     const flipID = props.item.flipID;
 
     const playbackState = usePlaybackState();
@@ -57,6 +58,10 @@ const FlipItem = (props) => {
     const [player,setPlayer] = useState(false);
 
     const scrollX = new Animated.Value(0);
+
+    useEffect(() => {
+     numLikes == 1 ? setLikeString("like") : setLikeString("likes")
+    },[numLikes])
 
     useEffect(() => {
       if(paused == true && props.item.flipID == currentFlipID)
@@ -165,6 +170,9 @@ const FlipItem = (props) => {
     }
 
     async function buildDynamicURL() {
+      var ans = props.item.flipTitle;
+      if(ans === undefined || ans === null)
+        ans = props.item.bookName;
       const link = await dynamicLinks().buildShortLink({
         //link: 'https://newpodcast.com/' + props.podcast.podcastID,
         link: 'https://papyrusapp.page.link/flips/' + props.item.flipID,
@@ -181,15 +189,15 @@ const FlipItem = (props) => {
           fallbackUrl: 'http://www.papyruspodcasts.com'
         },
         social: {
-          title: props.item.bookName,
-          descriptionText: props.item.flipDescription,
+          title: ans,
+          descriptionText: props.item.flipDescription.slice(0,200),
           imageUrl: props.item.flipPictures[0]
         }
       });
     
       console.log("dynamicURL created for the link: ",link);
       Share.share({
-        title : props.item.bookName,
+        title : ans,
         //url : link,
         message: link
       },{
@@ -226,6 +234,7 @@ const FlipItem = (props) => {
             flipImageURL : props.item.flipPictures[0],
             type : "flipLike",
             Name : nameUser,
+            flipTitle : props.item.flipTitle,
             bookName : props.item.bookName,
           });
         }
@@ -321,6 +330,7 @@ const FlipItem = (props) => {
     }
 
     function renderFlipPlayer() {
+      //console.log("[FlipItem] props.position = ",props.position);
       if(loading)
         return (
           <View>
@@ -476,7 +486,7 @@ const FlipItem = (props) => {
 
       async function removeFlipFromHomeScreen() {
         firestore().collection('flips').doc(props.item.flipID).set({
-          lastEditedOn : moment().subtract(7,'d').format()
+          lastEditedOn : moment().subtract(60,'d').format()
         },{merge:true}).then(() => {
           console.log("Removed this flip from HomeScreen");
           Toast.show("Successfully removed flip from HomeScreen");
@@ -563,6 +573,37 @@ const FlipItem = (props) => {
       )
     }
 
+    function renderImage(item){
+      return (
+        
+<TouchableOpacity onPress={() => {
+                  props.navigation.navigate('MainFlipItem',{
+                    item : props.item,
+                    numLikes : numLikes,
+                    updateLikes : updateLikes,
+                    playerText : playerText,
+                    pausedState : pausedState,
+                    player : player
+                    // resizeModes : resizeModes
+                  })
+                }}>
+                  <Image
+                    key={`${item}`}
+                    source={{ uri: item }}
+                    resizeMode='cover'
+                    style={{ width:width, height: width/2 }}
+                  />
+                </TouchableOpacity>
+      )
+    }
+    
+    var rightValue = 10;
+    if(isAdmin == true || props.item.creatorID == realUserID)
+      rightValue = 40;
+
+    
+
+
     return (
         <View style={{paddingBottom:0,borderBottomWidth:1,borderTopWidth:1, borderColor:'#dddd'}}>
             <View style={{backgroundColor:'#dddd',flexDirection:'row'}}>
@@ -589,48 +630,25 @@ const FlipItem = (props) => {
             </View>
             </View>
             <View>
-                <Animated.ScrollView
-                    horizontal
-                    pagingEnabled
-                    scrollEnabled
-                    showsHorizontalScrollIndicator={false}
-                    decelerationRate={0.998}
-                    scrollEventThrottle={16}
-                    onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }],
-                      {useNativeDriver:true}
-                      )}
-                >
-            {
-               props.item.flipPictures && props.item.flipPictures.map((img, index) => 
-               <ImageZoom cropWidth={Dimensions.get('window').width}
-               cropHeight={Dimensions.get('window').width/2}
-               imageWidth={width}
-               imageHeight={width/2}>
-                <TouchableOpacity onPress={() => {
-                  props.navigation.navigate('MainFlipItem',{
-                    item : props.item,
-                    numLikes : numLikes,
-                    updateLikes : updateLikes,
-                    buildDynamicURL : buildDynamicURL,
-                    playerText : playerText,
-                    pausedState : pausedState,
-                    player : player
-                    // resizeModes : resizeModes
-                  })
-                }}>
                 
-                  <Image
-                    key={`${index}-${img}`}
-                    source={{ uri: img }}
-                    resizeMode='cover'
-                    style={{ width:width, height: width/2 }}
-                  />
-                </TouchableOpacity>
-                </ImageZoom>
-
-              )
-            }
-          </Animated.ScrollView>
+                <Animated.FlatList
+                  horizontal
+                  pagingEnabled
+                  scrollEnabled
+                  showsHorizontalScrollIndicator={false}
+                  decelerationRate={0.9}
+                  scrollEventThrottle={0}
+                  snapToInterval={width} 
+                  snapToAlignment={"center"}
+                  style={{ overflow:'visible', height: 280 }}
+                  data={props.item.flipPictures}
+                  keyExtractor={(item, index) => `${item}`}
+                  onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: scrollX } } }],
+                    {useNativeDriver:true}
+                    )}
+                  renderItem={({ item }) => renderImage(item)}
+                />
+            
 
             </View>
             <View>
@@ -683,12 +701,17 @@ const FlipItem = (props) => {
                 <TouchableOpacity style={{padding:10}} onPress={() => buildDynamicURL()} > 
                   <Icon name="share" size={16} style={{color:'black'}}/>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => {
+                {
+                  numLikes != 0 
+                  &&
+                  <TouchableOpacity onPress={() => {
                     props.navigation.navigate('LikersScreen', {
                       flipID : props.item.flipID
-                      })}} style={{position:'absolute',padding:10,right:30}}>
-                    <Text style={{fontFamily:'Montserrat-Regular'}}>{numLikes} likes </Text>
+                      })}} style={{position:'absolute',paddingVertical:10,right:rightValue}}>
+                    <Text style={{fontFamily:'Montserrat-Regular'}}>{numLikes} {likeString}</Text>
                   </TouchableOpacity>
+                } 
+                
                 <View style={{position:'absolute',bottom:2,right:10}}>
                 {
                   (isAdmin == true || props.item.creatorID == realUserID)

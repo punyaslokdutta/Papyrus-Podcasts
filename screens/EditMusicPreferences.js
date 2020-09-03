@@ -104,7 +104,7 @@ const EditMusicPreferences = (props) => {
           <TouchableOpacity onPress={() => {
             addMusicPreferencesToFirestore();
           }} style={{width:width/5,height:width/12,borderColor:'black',borderWidth:1,borderRadius:10,alignItems:'center',justifyContent:'center'}}>
-            <Text style={{fontSize:width/20,fontFamily:'Montserrat-Regular'}}>Done</Text>
+            <Text style={{fontSize:width/20,fontFamily:'Montserrat-SemiBold'}}>Done</Text>
             </TouchableOpacity>
             </View>
         )

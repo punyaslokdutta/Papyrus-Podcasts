@@ -18,12 +18,15 @@ import { MenuProvider } from 'react-native-popup-menu';
 import { NetworkContext } from './config/NetworkProvider';
 import {withFirebaseHOC} from './config/Firebase'
 import VideoPlayer from 'react-native-video-controls';
+import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
 
 var {width, height}=Dimensions.get('window')
 
 const HomeScreen = (props) => {
   
   const userID = props.firebase._getUid();
+  //const {position} = useTrackPlayerProgress(750);
+  //const currentFlipID = useSelector(state=>state.flipReducer.currentFlipID);
 
   const isConnectedContext = useContext(NetworkContext);
   const flipUploadSuccess = useSelector(state=>state.flipReducer.flipUploadSuccess);
@@ -425,9 +428,15 @@ const HomeScreen = (props) => {
   function renderFlipsI(){
     return (
       flips.slice(0,10).map((item,index) => {
-        return(
-          <FlipItem item={item} index={index} navigation={props.navigation}/>
-        )
+        // if(item.flipID == currentFlipID)
+        //   return(
+        //   <FlipItem item={item} index={index} navigation={props.navigation}/>
+        // )
+        // else
+          return (
+            <FlipItem item={item} index={index} navigation={props.navigation}/>
+
+          )
       })
     )
   }
@@ -435,9 +444,15 @@ const HomeScreen = (props) => {
   function renderFlipsII(){
     return (
       flips.slice(10,20).map((item,index) => {
-        return(
-          <FlipItem item={item} index={index} navigation={props.navigation}/>
-        )
+        // if(item.flipID == currentFlipID)
+        //   return(
+        //   <FlipItem item={item} position={position} index={index} navigation={props.navigation}/>
+        // )
+        // else
+          return (
+            <FlipItem item={item} index={index} navigation={props.navigation}/>
+
+          )
       })
     )
   }

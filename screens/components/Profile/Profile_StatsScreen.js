@@ -1,6 +1,5 @@
 import React,{useState,useEffect} from 'react'
 import { Image, ScrollView, StyleSheet, TouchableOpacity,TouchableNativeFeedback, View,Dimensions } from 'react-native'
-import {Button} from 'native-base';
 import {withFirebaseHOC} from '../../config/Firebase'
 import { Block, Card, Text } from '../categories/components';
 import { theme} from '../categories/constants';

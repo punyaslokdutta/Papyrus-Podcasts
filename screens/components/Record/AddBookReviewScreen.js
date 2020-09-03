@@ -362,7 +362,7 @@ const AddBookReviewScreen = (props)=> {
           <Icon name="arrow-left" size={20} color={'white'}/>
           </TouchableOpacity>
 
-          <Text style={{fontFamily:'Montserrat-SemiBold', color:'white', paddingLeft:(width*5)/24, fontSize:20}}>Create Podcast</Text>
+          <Text style={{fontFamily:'Montserrat-SemiBold', color:'white',alignSelf:'center',paddingLeft:(width*5)/24, fontSize:20}}>Create Podcast  </Text>
         </View>
         </View>
         <View style={{flexDirection:'row',marginTop:20,alignItems:'center',justifyContent:'center'}}>
@@ -374,9 +374,7 @@ const AddBookReviewScreen = (props)=> {
               placement="bottom"
               content={
               <View style={{width:width/2}}>
-              <Image source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/flips/Book-Notes.jpg"}}
-                      style={{height:width/2,width:width/2}}/>
-              <Text style={{fontFamily:"Andika-R"}}>Switch between book podcasts & original podcasts</Text>
+              <Text style={{fontFamily:"Montserrat-SemiBold"}}>Switch between book podcasts & original podcasts</Text>
               </View>}
               onClose={() => {
                 setToolTipSwitchVisible(false)
@@ -404,9 +402,7 @@ const AddBookReviewScreen = (props)=> {
               placement="bottom"
               content={
               <View style={{width:width/2}}>
-              <Image source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/flips/Book-Notes.jpg"}}
-                      style={{height:width/2,width:width/2}}/>
-              <Text style={{fontFamily:"Andika-R"}}>Choose 1 language for your podcast</Text>
+              <Text style={{fontFamily:"Montserrat-SemiBold"}}>Choose 1 language for your podcast</Text>
               </View>}
               onClose={() => {
                 setToolTipLanguageVisible(false);
@@ -450,7 +446,7 @@ const AddBookReviewScreen = (props)=> {
               <View style={{width:width/2}}>
               <Image source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/flips/Book-Notes.jpg"}}
                       style={{height:width/2,width:width/2}}/>
-              <Text style={{fontFamily:"Andika-R"}}>Choose a book or chapter for creating a book podcast</Text>
+              <Text style={{fontFamily:"Montserrat-SemiBold"}}>Choose a book or chapter for creating a book podcast</Text>
               </View>}
               onClose={() => {
                 //setToolTipLanguageVisible(false);
@@ -509,9 +505,7 @@ const AddBookReviewScreen = (props)=> {
               placement="top"
               content={
               <View style={{width:width/2}}>
-              <Image source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/flips/Book-Notes.jpg"}}
-                      style={{height:width/2,width:width/2}}/>
-              <Text style={{fontFamily:"Andika-R"}}>You can upload audio from your local storage</Text>
+              <Text style={{fontFamily:"Montserrat-SemiBold"}}>You can upload audio from your local storage</Text>
               </View>}
               onClose={() => {
                 setToolTipUploadVisible(false);
@@ -531,9 +525,7 @@ const AddBookReviewScreen = (props)=> {
               placement="top"
               content={
               <View style={{width:width/2}}>
-              <Image source={{uri:"https://storage.googleapis.com/papyrus-fa45c.appspot.com/flips/Book-Notes.jpg"}}
-                      style={{height:width/2,width:width/2}}/>
-              <Text style={{fontFamily:"Andika-R"}}>Record audio for your podcast</Text>
+              <Text style={{fontFamily:"Montserrat-SemiBold"}}>Record audio for your podcast</Text>
               </View>}
               onClose={() => {
                 setToolTipRecordVisible(false);

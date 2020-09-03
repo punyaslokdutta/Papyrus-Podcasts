@@ -502,7 +502,7 @@ class Podcast extends React.Component {
     {
       firestore().collection('books').doc(this.props.podcast.bookID).
       collection('podcasts').doc(this.props.podcast.podcastID).set({
-        lastEditedOn : moment().subtract(20,'d').format()
+        lastEditedOn : moment().subtract(60,'d').format()
     },{merge:true}).then(() => {
       console.log("Removed this book podcast from HomeScreen");
       Toast.show("Successfully removed podcast from HomeScreen");
@@ -516,7 +516,7 @@ class Podcast extends React.Component {
       firestore().collection('books').doc(this.props.podcast.bookID).
       collection('chapters').doc(this.props.podcast.chapterID).
       collection('podcasts').doc(this.props.podcast.podcastID).set({
-        lastEditedOn : moment().subtract(20,'d').format()
+        lastEditedOn : moment().subtract(60,'d').format()
       },{merge:true}).then(() => {
         console.log("Removed this chapter podcast from HomeScreen");
         Toast.show("Successfully removed podcast from HomeScreen");
@@ -528,7 +528,7 @@ class Podcast extends React.Component {
     else if(this.props.podcast.isOriginalPodcast == true)
     {
       firestore().collection('podcasts').doc(this.props.podcast.podcastID).set({
-        lastEditedOn : moment().subtract(20,'d').format()
+        lastEditedOn : moment().subtract(60,'d').format()
       },{merge:true}).then(() => {
         console.log("Removed this original podcast from HomeScreen");
         Toast.show("Successfully removed podcast from HomeScreen");
@@ -547,8 +547,10 @@ class Podcast extends React.Component {
       firestore().collection("books").doc(this.props.podcast.bookID).collection("podcasts")
             .doc(this.props.podcast.podcastID).delete().then(function() {
             console.log("Book Podcast Document successfully deleted. ");
+            Toast.show("Podcast deleted successfully");
           }).catch(function(error) {
         console.log("Error removing document: ", error);
+        Toast.show("Failed to delete podcast");
       });
       
       firestore().collection('users').doc(this.state.userID).collection('privateUserData').doc(privateDataID).set({
@@ -570,8 +572,10 @@ class Podcast extends React.Component {
         .doc(this.props.podcast.chapterID).collection("podcasts").doc(this.props.podcast.podcastID)
           .delete().then(function() {
             console.log("Chapter Podcast Document successfully deleted. ");
+            Toast.show("Podcast deleted successfully");
           }).catch(function(error) {
         console.log("Error removing document: ", error);
+        Toast.show("Failed to delete podcast");
       });
 
       firestore().collection('users').doc(this.state.userID).collection('privateUserData').doc(privateDataID).set({
@@ -590,8 +594,10 @@ class Podcast extends React.Component {
       firestore().collection("podcasts").doc(this.props.podcast.podcastID)
           .delete().then(function() {
             console.log("Original Podcast Document successfully deleted. ");
+            Toast.show("Podcast deleted successfully");
           }).catch(function(error) {
         console.log("Error removing document: ", error);
+        Toast.show("Failed to delete podcast");
       });
 
       firestore().collection('users').doc(this.state.userID).collection('privateUserData').doc(privateDataID).set({
@@ -815,7 +821,10 @@ class Podcast extends React.Component {
         
         </View>
         
-        <View style={{position:'absolute',right:50}}>
+        {
+          (this.props.isAdmin == true || this.props.podcast.podcasterID == this.state.realUserID)
+          ?
+          <View style={{position:'absolute',right:50}}>
           {
             this.props.podcastRedux!=null && this.props.podcastRedux.podcastID == this.props.podcast.podcastID
             ?
@@ -831,6 +840,26 @@ class Podcast extends React.Component {
           }
           
           </View>
+          :
+          <View style={{position:'absolute',right:10}}>
+          {
+            this.props.podcastRedux!=null && this.props.podcastRedux.podcastID == this.props.podcast.podcastID
+            ?
+            <LottieView 
+            ref={animation => { this.animation = animation;}}
+            //style={{width:width/3}} 
+            style={{width:30}}
+            source={newAnimation}
+            //autoPlay={true}
+            loop={true}/>
+            :
+            <EnTypoIcon name="controller-play" size={30}/>
+          }
+          
+          </View>
+        }
+
+        
 
         {
          (this.props.isAdmin == true || this.props.podcast.podcasterID == this.state.realUserID)

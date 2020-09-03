@@ -12,14 +12,12 @@ import TextTicker from 'react-native-text-ticker'
 const { width,height } = Dimensions.get('window');
 
 const areEqual = (prevProps, nextProps) => {
-    console.log("prevProps: ",prevProps);
-    console.log("nextProps: ",nextProps);
     return ((prevProps.podcastName === nextProps.podcastName) && (prevProps.bookName === nextProps.bookName))
 };
 
 const TextMarquee = React.memo((props)=> {
 
-
+    console.log("[TextMarquee] Enter");
     return (
         <View style={{paddingLeft: 0}}>
           <TextTicker
