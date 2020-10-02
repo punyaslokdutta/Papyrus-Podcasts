@@ -5,6 +5,7 @@ import firestore from '@react-native-firebase/firestore';
 import { StyleSheet, Text, View,ActivityIndicator,Dimensions} from 'react-native';
 import LottieView from 'lottie-react-native';
 import newAnimation from '../assets/animations/lf30_editor_rnKCaq.json';
+import ExtraDimensions from 'react-native-extra-dimensions-android';
 
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -15,6 +16,7 @@ import { useDispatch } from 'react-redux';
 import { theme } from './components/categories/constants';
 
 var {width, height}=Dimensions.get('window')
+const STATUS_BAR_HEIGHT= ExtraDimensions.getStatusBarHeight();
 
 const ActivityScreen = (props) => {
    
@@ -130,7 +132,7 @@ const ActivityScreen = (props) => {
 
    function renderHeader() {
     return (
-      <View style={{flexDirection:'row',backgroundColor:'black',height:height/15,paddingLeft:theme.sizes.padding}}>
+      <View style={{marginTop:STATUS_BAR_HEIGHT, flexDirection:'row',backgroundColor:'black',height:height/15,paddingLeft:theme.sizes.padding}}>
         
         <View style={{paddingTop:theme.sizes.padding*3/4}}>
         <TouchableOpacity onPress={() => props.navigation.toggleDrawer()}>

@@ -7,6 +7,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import {createMaterialTopTabNavigator} from 'react-navigation-tabs';
 import AddFlipScreen from './components/Record/AddFlipScreen';
 import AddBookReviewScreen from './components/Record/AddBookReviewScreen';
+import VideoChatScreen from './VideoChatScreen';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { TagSelect } from 'react-native-tag-select'
 import { useDispatch, useSelector} from 'react-redux'
@@ -30,7 +31,12 @@ const SelectTabNavigator = createMaterialTopTabNavigator(
         <Icon name="microphone" size={30} color={tintColor}/>
       )
     }},
-    
+    VideoChatScreen : { screen: props => <VideoChatScreen {...props}/>,navigationOptions:{
+      tabBarLabel:' Conversations ',
+      tabBarIcon:({tintColor})=>(
+        <MaterialCommunityIcon name="video-plus" color={tintColor} size={25}/>
+      )
+    }},
   },
   {
   tabBarPosition: 'bottom',
@@ -41,13 +47,12 @@ const SelectTabNavigator = createMaterialTopTabNavigator(
     activeTintColor:'white',
     inactiveTintColor:'grey',
     borderTopWidth: 0,
-    elevation :5,
+    elevation :0,
     adaptive: true, 
     style:
     {
       height: 60, 
-      backgroundColor: 'black',
-      
+      backgroundColor: 'black',         
     },
     indicatorStyle: {
       borderBottomColor: 'white',

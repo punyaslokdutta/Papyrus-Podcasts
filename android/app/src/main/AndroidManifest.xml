@@ -22,6 +22,7 @@ xmlns:tools="http://schemas.android.com/tools"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
       android:theme="@style/AppTheme"
+      android:requestLegacyExternalStorage="true"
       >
 
       <provider android:authorities="com.facebook.app.FacebookContentProvider2518782285059973"

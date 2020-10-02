@@ -21,6 +21,8 @@ import VideoPlayer from 'react-native-video-controls';
 import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
 
 var {width, height}=Dimensions.get('window')
+import ExtraDimensions from 'react-native-extra-dimensions-android';
+const STATUS_BAR_HEIGHT= ExtraDimensions.getStatusBarHeight();
 
 const HomeScreen = (props) => {
   
@@ -61,9 +63,11 @@ const HomeScreen = (props) => {
     if(!didFocusListener.current) {
       didFocusListener.current =  props.navigation.addListener('didFocus', (route) => {
         console.log("HOME TAB PRESSED");
+        //dispatch({type:"ENTER_VIDEO_SCREEN",payload:false})
         dispatch({type:"CHANGE_SCREEN"});
         });
     }
+    //dispatch({type:"ENTER_VIDEO_SCREEN",payload:false})
       
     retrieveData();
     return () => {
@@ -633,6 +637,12 @@ const HomeScreen = (props) => {
     return (
       
       <View >
+        <StatusBar
+               barStyle="dark-content"
+               //backgroundColor='transparent'
+               translucent
+               //hidden={true}
+               />
         <View style={{paddingBottom: (height*4)/12}}>
       {renderMainHeader()}
           </View>
@@ -651,7 +661,14 @@ const HomeScreen = (props) => {
   else if(isConnectedContext.isConnected == true || (flips.length != 0))
   {
     return (
+
       <View style = {{paddingBottom:30}}>
+        <StatusBar
+               barStyle="dark-content"
+               //backgroundColor='transparent'
+               translucent
+               //hidden={true}
+               />
           {renderMainHeader()}
           {/* <ScrollView>
           {renderVideos()}
@@ -666,6 +683,12 @@ const HomeScreen = (props) => {
   {
     return (
       <View>
+        <StatusBar
+               barStyle="dark-content"
+               //backgroundColor='transparent'
+               translucent
+               //hidden={true}
+               />
       {renderMainHeader()}
 
       <View style={{alignItems:'center',justifyContent:'center'}}>
@@ -827,6 +850,7 @@ const styles = StyleSheet.create({
   AppHeader:
   {
  flexDirection:'row',
+ marginTop:STATUS_BAR_HEIGHT,
  backgroundColor: '#101010', 
   },
   storie: {

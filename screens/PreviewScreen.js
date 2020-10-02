@@ -18,6 +18,9 @@ import Slider from '@react-native-community/slider';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import OpenSettings from 'react-native-open-settings';
 
+import ExtraDimensions from 'react-native-extra-dimensions-android';
+const STATUS_BAR_HEIGHT= ExtraDimensions.getStatusBarHeight();
+
 const { width, height } = Dimensions.get('window');
 const options = {
   title: 'Select Podcast Cover',
@@ -154,7 +157,6 @@ const PreviewScreen = (props) => {
             dispatch({type:"SET_PODCAST_UPLOAD_SUCCESS",payload:true});
         })
         .catch(function(error) {
-          console.error("Error adding document: ", error);
           Toast.show("Error: Please try again.")
         });
       } 
@@ -731,7 +733,7 @@ const PreviewScreen = (props) => {
     
     <ScrollView 
     ref={scrollViewRef}
-    style={{flex: 1, backgroundColor: 'white' }} keyboardShouldPersistTaps='always'>
+    style={{flex: 1, backgroundColor: 'white',marginTop:STATUS_BAR_HEIGHT }} keyboardShouldPersistTaps='always'>
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
     
      <View style={{paddingBottom:20}}>

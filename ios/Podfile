@@ -37,6 +37,8 @@ target 'Papyrus_60' do
 
   pod 'react-native-shimmer', :path => '../node_modules/react-native-shimmer'
 
+  pod 'react-native-agora', :path => '../node_modules/react-native-agora'
+
   target 'Papyrus_60Tests' do
     inherit! :search_paths
     # Pods for testing

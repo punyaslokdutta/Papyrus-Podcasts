@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import firestore from '@react-native-firebase/firestore';
 import {withFirebaseHOC} from './config/Firebase'
 import {useSelector, useDispatch,connect} from "react-redux"
-import { Dimensions, Image,NativeEventEmitter, NativeModules,ActivityIndicator,StyleSheet, ScrollView, TouchableOpacity,View } from 'react-native';
+import { Dimensions, Image,NativeEventEmitter, NativeModules,ActivityIndicator,StyleSheet, ScrollView, TouchableOpacity,View,StatusBar } from 'react-native';
 import { Card, Badge, Block, Text } from './components/categories/components';
 import { theme } from './components/categories/constants';
 const { width,height } = Dimensions.get('window');
@@ -57,6 +57,13 @@ class CategoryScreen extends Component {
   componentDidMount = () => {
     try {
       
+      this.didFocusListener =  this.props.navigation.addListener('didFocus', (route) => {
+        console.log("CATEGORY SCREEN PRESSED");
+        //this.props.dispatch({type:"ENTER_VIDEO_SCREEN",payload:false})
+        //dispatch({type:"CHANGE_SCREEN"});
+        });
+        //this.props.dispatch({type:"ENTER_VIDEO_SCREEN",payload:false})
+
       this.retrieveData();
       
     }
@@ -113,7 +120,7 @@ class CategoryScreen extends Component {
     else
     {
       return (
-        <Block>
+        <View>
           <ScrollView
             showsVerticalScrollIndicator={false}
             style={{ paddingVertical: theme.sizes.base * 2}}>
@@ -139,7 +146,7 @@ class CategoryScreen extends Component {
               ))}
             </Block>
           </ScrollView>
-        </Block>
+        </View>
         
       )
     }

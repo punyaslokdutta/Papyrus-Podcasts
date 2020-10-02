@@ -268,7 +268,7 @@ const MainFlipItem = (props) => {
           )
         else
           return (
-            <View style={{flex:1,flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-start',marginVertical:5,height:width/15,marginHorizontal:8}}>
+            <View style={{flex:1,flexDirection:'row',alignItems:'flex-start',justifyContent:'flex-start',marginBottom:5,height:width/15,marginHorizontal:8}}>
               <TouchableOpacity style={{width:width/10,height:width/10,paddingLeft:10}} onPress={() => {
                 //setPausedState(false);
                 if(playerText == "pause")

@@ -19,6 +19,8 @@ import ProgressBar from './components/PodcastPlayer/ProgressBar';
 import Slider from '@react-native-community/slider';
 import Tooltip from 'react-native-walkthrough-tooltip';
 
+import ExtraDimensions from 'react-native-extra-dimensions-android';
+const STATUS_BAR_HEIGHT= ExtraDimensions.getStatusBarHeight();
 const { width, height } = Dimensions.get('window');
 const options = {
   title: 'Select Podcast Cover',
@@ -695,7 +697,7 @@ const OriginalsPreviewScreen = (props) => {
     
     <ScrollView     
     ref={scrollViewRef}
-    style={{flex: 1, backgroundColor: 'white' }} keyboardShouldPersistTaps='always'>
+    style={{flex: 1, backgroundColor: 'white',marginTop:STATUS_BAR_HEIGHT }} keyboardShouldPersistTaps='always'>
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
     
      <View style={{paddingBottom:20}}>

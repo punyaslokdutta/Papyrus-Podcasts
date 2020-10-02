@@ -6,6 +6,9 @@ import setUserDetails from './screens/setUserDetails'
 import { StyleSheet, View, TouchableOpacity, Image, Text,Dimensions, Button, ScrollView, Alert, NativeModules,Linking,Platform} from 'react-native';
 import AddBookReviewScreen from './screens/components/Record/AddBookReviewScreen'
 import store from './store';
+import VideoScreen from './screens/components/Profile/VideoScreen';
+import VideoChatScreen from './screens/VideoChatScreen';
+import InviteUserScreen from './screens/InviteUserScreen';
 import InAppUpdate from './screens/components/InAppUpdate';
 import { connect } from 'react-redux';
 import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
@@ -37,7 +40,7 @@ import ProfileFlipScreenVertical from './screens/components/Profile/ProfileFlipS
 import updateAnimation from './assets/animations/10251-update-para-coverme.json'
 import userReducer from './reducers/userReducer';
 import rootReducer from './reducers/rootReducer';
-import flipReducer from './reducers/flipReducer';
+import flipReducer from '.\/reducers/flipReducer';
 import recorderReducer from './reducers/recorderReducer';
 import musicReducer from './reducers/musicReducer';
 import categoryReducer from './reducers/categoryReducer';
@@ -87,13 +90,15 @@ import SearchTabNavigator from './screens/navigation/SearchTabNavigator';
 import SearchBookChapterTabNavigator from './screens/navigation/SearchBookChapterTabNavigator';
 import MainFlipItem from './screens/components/Home/MainFlipItem';
 import FlipsExploreScreen from './screens/components/Explore/FlipsExploreScreen';
+import ExtraDimensions from 'react-native-extra-dimensions-android';
 
 const  {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
 const IS_IPHONE_X = SCREEN_HEIGHT === 812 || SCREEN_HEIGHT=== 896;
-const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? (IS_IPHONE_X ? 44 : 20) : 0;
+//const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? (IS_IPHONE_X ? 44 : 20) : 0;
 const HEADER_HEIGHT = Platform.OS === 'ios' ? (IS_IPHONE_X ? 88 : 64) : 64;
 const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
 
+const STATUS_BAR_HEIGHT= ExtraDimensions.getStatusBarHeight();
 
 const AuthStackNavigator= createStackNavigator(
   {
@@ -122,7 +127,8 @@ const CategoryStackNavigator=createStackNavigator(
       title: '    Categories  ',
       headerTintColor: 'white',
         headerStyle: {
-          backgroundColor: 'black'
+          backgroundColor: 'black',
+          marginTop:STATUS_BAR_HEIGHT
         }
     }},
     CategoryTabNavigator : {screen : CategoryTabNavigator,navigationOptions:{
@@ -144,7 +150,11 @@ const ExploreStackNavigator=createStackNavigator(
        header:null
      }},
      PopularBooks : {screen : PopularBooks},
-     FlipsExploreScreen : {screen : FlipsExploreScreen}
+     FlipsExploreScreen : {screen : FlipsExploreScreen,navigationOptions:{
+       headerStyle : {
+         marginTop : STATUS_BAR_HEIGHT
+       }
+     }}
      //MainFlipItem : {screen: MainFlipItem},
   },
   {
@@ -161,8 +171,15 @@ const ProfileStackNavigator=createStackNavigator(
      ProfileTabNavigator : {screen : ProfileTabNavigator},
      SaveExploreBooks : {screen : SaveExploreBooks},
      RepostPodcastsScreen : {screen : RepostPodcastsScreen},
+     VideoScreen : {screen : VideoScreen,navigationOptions: {
+      header: null,
+  }},
      //MainFlipItem : {screen: MainFlipItem},
-     ProfileFlipScreenVertical : {screen : ProfileFlipScreenVertical},
+     ProfileFlipScreenVertical : {screen : ProfileFlipScreenVertical,navigationOptions: {
+       headerStyle : {
+         marginTop:STATUS_BAR_HEIGHT
+       }
+     }},
     editProfile : {screen : editProfile,navigationOptions: {
        header: null,
    }},
@@ -170,21 +187,24 @@ const ProfileStackNavigator=createStackNavigator(
       title: 'Stats  ',
       headerTintColor: 'white',
         headerStyle: {
-          backgroundColor: 'black'
+          backgroundColor: 'black',
+          marginTop:STATUS_BAR_HEIGHT
         }
   }},
     ProfileFollowingScreen:{screen:ProfileFollowingScreen,navigationOptions: {
       title: 'Following   ',
       headerTintColor: 'white',
         headerStyle: {
-          backgroundColor: 'black'
+          backgroundColor: 'black',
+          marginTop:STATUS_BAR_HEIGHT
         }
     }},
     ProfileFollowerScreen: {screen:ProfileFollowerScreen,navigationOptions: {
       title: 'Followers   ',
       headerTintColor: 'white',
         headerStyle: {
-          backgroundColor: 'black'
+          backgroundColor: 'black',
+          marginTop:STATUS_BAR_HEIGHT
         }
     }}
   },
@@ -200,7 +220,9 @@ const RecordStackNavigator= createStackNavigator(
     SelectTabNavigator: {screen:SelectTabNavigator},
     AddBookReviewScreen: {screen:AddBookReviewScreen},
     //AddFlipScreen: {screen:AddFlipScreen},
-    FlipPreviewScreen : {screen:FlipPreviewScreen}
+    FlipPreviewScreen : {screen:FlipPreviewScreen},
+    VideoChatScreen : {screen:VideoChatScreen},
+    InviteUserScreen : {screen : InviteUserScreen},
   },
   {
     headerMode:'none',
@@ -248,7 +270,7 @@ const AppTabNavigator=createBottomTabNavigator(
     Record: {screen:RecordStackNavigator,
       navigationOptions:{
           tabBarIcon:({tintColor})=>(
-          <MaterialCommunityIcon style={{paddingTop:1}} name="plus-circle" color={'black'} size={SCREEN_HEIGHT/18}/>
+          <MaterialCommunityIcon style={{paddingTop:1}} color={tintColor} name="plus-circle" size={SCREEN_HEIGHT/18}/>
         )
       }
    },
@@ -312,7 +334,16 @@ const AppStackNavigator= createStackNavigator(
           backgroundColor: 'black'
         }
      }},
-    ExploreFlipScreenVertical : {screen : ExploreFlipScreenVertical},
+    // ExploreFlipScreenVertical : {screen : ExploreFlipScreenVertical,
+    //   navigationOptions:{
+    //     header : null
+    //     // title: 'Likes   ',
+    //     // headerTintColor: 'white',
+    //     // headerStyle: {
+    //     //   backgroundColor: 'black',
+    //     //   marginTop: STATUS_BAR_HEIGHT
+    //     // }
+    //  }},
  
     PlayerProvider: {
       screen: PlayerProvider,
@@ -329,7 +360,8 @@ const AppStackNavigator= createStackNavigator(
         title: 'Likes   ',
         headerTintColor: 'white',
         headerStyle: {
-          backgroundColor: 'black'
+          backgroundColor: 'black',
+          marginTop: STATUS_BAR_HEIGHT
         }
      }
     },
@@ -340,11 +372,14 @@ const AppStackNavigator= createStackNavigator(
         title: 'About  ',
         headerTintColor: 'white',
         headerStyle: {
-          backgroundColor: 'black'
+          backgroundColor: 'black',
+          marginTop: STATUS_BAR_HEIGHT
         }
      }
     },
-    MainFlipItem : {screen: MainFlipItem},
+    MainFlipItem : {screen: MainFlipItem, navigationOptions:{
+      headerStyle: { marginTop: STATUS_BAR_HEIGHT }
+    }},
     ExploreTabNavigator : {screen : ExploreTabNavigator,navigationOptions:{
     //  header: props => <CustomUserHeader {...props} />
     }},
@@ -355,21 +390,24 @@ const AppStackNavigator= createStackNavigator(
           title: 'Stats  ',
           headerTintColor: 'white',
         headerStyle: {
-          backgroundColor: 'black'
+          backgroundColor: 'black',
+          marginTop:STATUS_BAR_HEIGHT
         }
      }},
      UserFollowingScreen : {screen : UserFollowingScreen,navigationOptions:{
           title: 'Following   ',
           headerTintColor: 'white',
           headerStyle: {
-            backgroundColor: 'black'
+            backgroundColor: 'black',
+            marginTop:STATUS_BAR_HEIGHT
           }
      }},
      UserFollowerScreen : {screen : UserFollowerScreen,navigationOptions:{
           title: 'Followers   ',
           headerTintColor: 'white',
           headerStyle: {
-            backgroundColor: 'black'
+            backgroundColor: 'black',
+            marginTop:STATUS_BAR_HEIGHT
           }
      }},
     //  Activity: {screen:ActivityScreen,
@@ -393,7 +431,8 @@ const AppStackNavigator= createStackNavigator(
       //header:null
       headerTintColor: 'white',
       headerStyle: {
-        backgroundColor: 'black'
+        backgroundColor: 'black',
+        marginTop:STATUS_BAR_HEIGHT
       }
    }},
    RecordChapter: {screen :RecordChapter,
@@ -401,7 +440,8 @@ const AppStackNavigator= createStackNavigator(
       //header:null
       headerTintColor: 'white',
       headerStyle: {
-        backgroundColor: 'black'
+        backgroundColor: 'black',
+        marginTop: STATUS_BAR_HEIGHT
       }
    }},
    PreviewScreen: {screen:PreviewScreen,navigationOptions:{
@@ -513,8 +553,8 @@ export default class App extends Component {
      super(props)
      {
       this.state={
-          currentVersionCode : 28,
-          currentVersion : "1.0.27",
+          currentVersionCode : 29,
+          currentVersion : "1.0.28",
           updateLink : "https://play.google.com/apps/internaltest/4698784295424472878",
           //updateLink : "https://play.google.com/apps/testing/com.papyrus_60" 
         }

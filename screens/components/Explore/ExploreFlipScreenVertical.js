@@ -10,9 +10,7 @@ import { Button } from '../categories/components';
 var {width, height}=Dimensions.get('window')
 
 class ExploreFlipScreenVertical extends React.Component {
-  static navigationOptions={
-      header:null
-  }
+  
   constructor(props)
   {
     super(props)

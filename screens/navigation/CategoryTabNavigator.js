@@ -7,6 +7,8 @@ import React, {Component} from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { theme } from '../components/categories/constants';
 import { Text } from '../components/categories/components';
+import ExtraDimensions from 'react-native-extra-dimensions-android';
+const STATUS_BAR_HEIGHT= ExtraDimensions.getStatusBarHeight();
 
 const CustomCategoryHeader = props => {
     {console.log("Inside Custom Category header//////////////////////////////////// ")}
@@ -22,7 +24,7 @@ const CustomCategoryHeader = props => {
         else
         {
             return (
-                <View style={{backgroundColor:'black',flexDirection:'row'}}>
+                <View style={{backgroundColor:'black',flexDirection:'row',marginTop:STATUS_BAR_HEIGHT}}>
                  {/* <TouchableOpacity onPress={() => props.navigation.navigate('CategoryScreen')}>
                 <Image
                   resizeMode="contain"

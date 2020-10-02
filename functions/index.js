@@ -1,431 +1,170 @@
-const functions = require('firebase-functions');
-const admin=require('firebase-admin');
-const algoliasearch=require('algoliasearch');
+
+const functions = require("firebase-functions");
+const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase)
-const db = admin.firestore();
 
-/////////////////////
-// AddToPodcastsIndex 
-/////////////////////
-exports.AddToPodcastsIndex = functions.region("asia-northeast1").https.onCall(async(data, context) => {
+exports.addActivity = functions.region("asia-northeast1").https.onCall(async(data, context) => {
  
-  const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
-  var algoliaRecords = [];
-  const collectionIndexName='dev_podcasts';
-  const collectionIndex = algoliaClient.initIndex(collectionIndexName);
 
-  const podcastName=data.podcastName;
-  const bookName=data.bookName;
-  const chapterName = data.chapterName;
-  const podcastPicture= data.podcastPicture;
-  const podcastID=data.podcastID;
-  const podcasterName=data.podcasterName
-  const createdOn=data.createdOn
-  const language =data.language
-
-  console.log("AddToPodcastsIndex cloud function");
-
-  console.log("podcastName: ",podcastName);
-  console.log("bookName: ",bookName);
-  console.log("chapterName: ",chapterName);
-  console.log("podcastPicture:" , podcastPicture)
-  console.log("podcastID: ",podcastID);
-  console.log("podcasterName: ",podcasterName);
-  console.log("createdOn: ",createdOn);
-  console.log("language: ",language);
-  
-  console.log("context.auth = ",context.auth);
-
-  const record = {
-    objectID: podcastID,
-    podcastName:podcastName, 
-    podcastPicture:podcastPicture,
-    bookName: bookName,
-    chapterName: chapterName,  
-    podcasterName:podcasterName, 
-    createdOn:createdOn, 
-    language :language
-  };
-
-  algoliaRecords.push(record);
-
-  collectionIndex.saveObjects(algoliaRecords, (_error, content) => {
-    console.log("content : ",content);
-    console.log("ERROR LOG : ",_error);
-
-    if(_error === null || _error === undefined)
-      console.log("The uploaded podcast has been indexed in algolia.");
-
-  });
-});
-
-
-/////////////////////
-// AddToUsersIndex 
-/////////////////////
-
-exports.AddToUsersIndex = functions.region("asia-northeast1").https.onCall(async(data, context) => {
- 
-  const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
-
-  var algoliaRecords = [];
-  const collectionIndexName='dev_users';
-  const collectionIndex = algoliaClient.initIndex(collectionIndexName);
-  
-  const name = data.name;
+  const creationTimestamp = data.timestamp;
+  const likerOrFollowerID = context.auth.uid;
+  const likerOrFollowerImage = data.photoURL;
+  const podcastID = data.podcastID;
   const userID = data.userID;
-  const displayPicture = data.displayPicture;
-
-  const record = {
-    objectID:userID,
-    name:name, 
-    userPicture:displayPicture
-  };
-
-  algoliaRecords.push(record);
-
-  collectionIndex.saveObjects(algoliaRecords, (_error, content) => {
-    console.log("content : ",content);
-    console.log("ERROR LOG : ",_error);
-
-    if(_error === null || _error === undefined)
-      console.log("The user has been indexed in algolia.");
-
-  });
-});
-
-
-/////////////////////
-// deletePodcastFromIndex 
-/////////////////////
-
-exports.deletePodcastFromIndex = functions.region("asia-northeast1").https.onCall(async(data, context) => {
- 
-  const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
-
-  const collectionIndexName='dev_podcasts';
-  const collectionIndex = algoliaClient.initIndex(collectionIndexName);
-
-  const podcastID=data.podcastID;
-  console.log("deletePodcastFromIndex cloud function");
-  console.log("podcastID: ",podcastID);
-  console.log("context.auth = ",context.auth);
-
-  collectionIndex.deleteObject(podcastID).then(() => {
-      console.log("Deleted podcast from podcasts Index");
-      return 1;
-  }).catch((error) => {
-    console.error("Error removing podcast from podcastsIndex: ", error);
-  });
-
-});
-
-/////////////////////
-// addBookToIndex 
-/////////////////////
-
-exports.addBookToIndex = functions.region("asia-northeast1").https.onCall((data, context) => {
-
-    const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
-
-  const collectionIndexName='dev_books';
-  const collectionIndex = algoliaClient.initIndex(collectionIndexName);
-
-  const bookName=data.bookName;
-  const bookCover= data.bookCover;
-  const language =data.language;
-  const authors=data.authors;
-  const publicationYear = data.publicationYear;
-  const bookID = data.objectID;
-
-  console.log("addBookToIndex cloud function");
-
- 
-  console.log("bookName: ",bookName);
-  console.log("bookPicture:" , bookCover)
-  console.log("language: ",language);
-
-  console.log("context.auth = ",context.auth);
-
-  const record = {
-    objectID: bookID,
-    bookCover:bookCover,
-    bookName:bookName, 
-    language :language,
-    authors: authors,
-    publicationYear : publicationYear,
-};
-
-//algoliaRecords.push(record);
-
-collectionIndex.saveObject(record, (_error, content) => {
-  console.log("content : ",content);
-  console.log("ERROR LOG : ",_error);
-
-  if(_error === null || _error === undefined)
-    console.log("The uploaded book has been indexed in algolia.");
-
-});
-});
-
-
-/////////////////////
-// addChapterToIndex 
-/////////////////////
-
-
-exports.addChapterToIndex = functions.region("asia-northeast1").https.onCall((data, context) => {
- 
-    const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
-
-  var algoliaRecords = [];
-  const collectionIndexName='dev_chapters';
-  const collectionIndex = algoliaClient.initIndex(collectionIndexName);
-  
-  const bookName=data.bookName;
-  const chapterName=data.chapterName
-  const chapterCover= data.chapterCover;
-  const createdOn=data.createdOn;
-  const language =data.language;
-  const authors=data.authors;
-  const publicationYear = data.publicationYear;
-  const chapterID = data.objectID;
+  const podcastPicture = data.podcastImageURL;
+  const type = data.type;
+  const likerOrFollowerName = data.Name;
+  const podcastName = data.podcastName;
   const bookID = data.bookID;
+  const chapterID = data.chapterID;
+  const isChapterPodcast = data.isChapterPodcast;
+  const likeUpdatedInDocument = data.likeUpdatedInDocument;
 
-  console.log("addChapterToIndex cloud function");
+  console.log("ACTIVITY DETAILS: ");
 
- 
-  console.log("bookName: ",bookName);
+  console.log("type: ",type);
+  console.log("creationTimestamp: ",creationTimestamp);
+  console.log("likerOrFollowerID: ",likerOrFollowerID);
+  console.log("likerOrFollowerImage: ",likerOrFollowerImage);
+  console.log("likerOrFollowerName: ",likerOrFollowerName);
+  console.log("podcastID: ",podcastID);
+  console.log("userID: ",userID);
+  console.log("podcastPicture: ",podcastPicture);
+  console.log("podcastName: ",podcastName);
   console.log("bookID: ",bookID);
-  console.log("chapterName: ",chapterName);
-  console.log("chapterCover:" , chapterCover)
-  //console.log("podcastID: ",podcastID);
-  //console.log("podcasterName: ",podcasterName);
- // console.log("timestamp: ",createdOn);
-  console.log("language ",language);
-
+  console.log("chapterID: ",chapterID);
+  console.log("isChapterPodcast: ",isChapterPodcast);
+  console.log("likeUpdatedInDocument: ",likeUpdatedInDocument);
   console.log("context.auth = ",context.auth);
-
-  const record = {
-    objectID: chapterID,
-    bookID: bookID,
-    chapterCover:chapterCover,
-    bookName:bookName, 
-    chapterName:chapterName,
-    language :language,
-    authors: authors,
-    publicationYear : publicationYear,
-    createdOn :createdOn
-};
-
-algoliaRecords.push(record);
-
-collectionIndex.saveObjects(algoliaRecords, (_error, content) => {
-  console.log("content : ",content);
-  console.log("ERROR LOG : ",_error);
-
-  if(_error === null || _error === undefined)
-    console.log("The uploaded chapter has been indexed in algolia.");
-
-});
-});
-
-
-
-/////////////////////
-// AddToMusicIndex 
-/////////////////////
-
-exports.AddToMusicIndex = functions.region("asia-northeast1").https.onCall(async(data, context) => {
- 
-    const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
-
-  var algoliaRecords = [];
-  const collectionIndexName='dev_music';
-  const collectionIndex = algoliaClient.initIndex(collectionIndexName);
-
-  const musicID = data.musicID;
-  const musicTitle = data.musicTitle;
-  const musicArt = data.musicArt;
-  const artist = data.artist;
-  const createdOn = data.createdOn;
-  const language = data.language;
-
-  console.log("AddToMusicIndex cloud function");
-
-  console.log("musicTitle: ",musicTitle);
-  console.log("musicArt:" , musicArt)
-  console.log("musicID: ",musicID);
-  console.log("artist: ",artist);
-  console.log("createdOn: ",createdOn);
-  console.log("language: ",language);
-  
-  console.log("context.auth = ",context.auth);
-
-  const record = {
-    objectID: musicID,
-    musicTitle:musicTitle, 
-    musicArt:musicArt, 
-    artist:artist, 
-    createdOn:createdOn, 
-    language :language
-  };
-
-    algoliaRecords.push(record);
-
-    collectionIndex.saveObjects(algoliaRecords, (_error, content) => {
-        console.log("content : ",content);
-        console.log("ERROR LOG : ",_error);
-
-     if(_error === null || _error === undefined)
-        console.log("The uploaded music has been indexed in algolia.");
-
-    });
-});
-
-
-/////////////////////
-// changeDPInPodcastsAsiaEast 
-/////////////////////
-
-
-exports.changeDPInPodcastsAsiaEast = functions.region("asia-northeast1").https.onCall((data, context) => {
-
-    const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
-
-  const collectionIndexName='dev_users';
-  const collectionIndex = algoliaClient.initIndex(collectionIndexName);
-
-  const DPSetInSettingsScreen = data.changedDP;
-  const uid = context.auth.uid;
-  console.log("User ID: ",uid);
-  console.log("data variable: ",data);
-  
-  const objects = [{
-   userPicture: DPSetInSettingsScreen,
-   objectID: uid
- }];
- 
- collectionIndex.partialUpdateObjects(objects).then(({ objectIDs }) => {
-   console.log(objectIDs);
-   return true;
- }).catch(err => console.log(err));
- 
   
   const db = admin.firestore();
-  db.collectionGroup('podcasts').where('podcasterID','==',uid).get().then(response => {
-    let batch = db.batch()
-    console.log("Response DOCS : ",response.docs);
-    response.docs.forEach((doc) => {
-        console.log("Full Doc : ",doc);
-        //console.log("bookID : ",doc._fieldsProto.bookID.stringValue);
-        if(doc._fieldsProto.bookID !== undefined && 
-         doc._fieldsProto.bookID !== null)
-         {
-           console.log("podcastID : ",doc._fieldsProto.podcastID.stringValue);
-           if(doc._fieldsProto.isChapterPodcast.booleanValue === false)
-           {
-             const docRef = db.collection('books').doc(doc._fieldsProto.bookID.stringValue).collection('podcasts')
-                           .doc(doc._fieldsProto.podcastID.stringValue);
-             batch.update(docRef, {podcasterDisplayPicture : DPSetInSettingsScreen}) 
-           }
-           else if(doc._fieldsProto.isChapterPodcast.booleanValue === true)
-           {
-             const docRef = db.collection('books').doc(doc._fieldsProto.bookID.stringValue).collection('chapters').doc(doc._fieldsProto.chapterID.stringValue)
-                           .collection('podcasts').doc(doc._fieldsProto.podcastID.stringValue);
-             batch.update(docRef, {podcasterDisplayPicture : DPSetInSettingsScreen}) 
-           }
-          
-         }
-         else if(doc._fieldsProto.isOriginalPodcast.booleanValue === true)
+  const privateDataID = "private" + userID;
+
+  if(type === "invite")
+  {
+    db.collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('Activities').add({
+      type : type,
+      creationTimestamp: creationTimestamp,
+      actorID: likerOrFollowerID,
+      actorImage: likerOrFollowerImage,
+      actorName: likerOrFollowerName,
+      channelName: data.channelName
+    })
+    .then((docRef) => {
+      console.log("Document written with ID: ", docRef.id);
+     return db.collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('Activities')
+              .doc(docRef.id).set({
+                  activityID: docRef.id
+              },{merge:true})
+  
+    })
+    .catch(function(error) {
+        console.error("Error adding document: ", error);
+    });
+  }
+
+  // FOLLOW activity
+  else if(podcastName === undefined)
+    {
+
+      db.collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('Activities').add({
+        type : type,
+        creationTimestamp: creationTimestamp,
+        actorID: likerOrFollowerID,
+        actorImage: likerOrFollowerImage,
+        actorName: likerOrFollowerName
+      })
+      .then((docRef) => {
+        console.log("Document written with ID: ", docRef.id);
+       return db.collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('Activities')
+                .doc(docRef.id).set({
+                    activityID: docRef.id
+                },{merge:true})
+    
+    })
+    .catch(function(error) {
+        console.error("Error adding document: ", error);
+    });
+    }
+  else // LIKE activity
+    {
+      try{
+        if(likeUpdatedInDocument === true)
+        {
+          console.log("[addActivity] numUsersLiked has already been updated in firestore.So, not updating here.");
+        }
+        else
+        {
+          if(isChapterPodcast === true)// && props.podcast.chapterID !== undefined)
           {
-            const docRef = db.collection('podcasts').doc(doc._fieldsProto.podcastID.stringValue);
-            batch.update(docRef, {podcasterDisplayPicture : DPSetInSettingsScreen}) 
+            console.log("updating numUsersLiked in chapterpodcast")
+            await db.collection('books').doc(bookID).collection('chapters').doc(chapterID)
+                                  .collection('podcasts').doc(podcastID).update({
+                      numUsersLiked : admin.firestore.FieldValue.increment(1)
+                })
           }
-        
-    })
-    return batch.commit().then(() => {
-        console.log('updated all podcast documents of podcasterID - ',uid);
+          else if(isChapterPodcast === false)
+          {
+            console.log("updating numUsersLiked in bookpodcast")
+            await db.collection('books').doc(bookID).collection('podcasts').doc(podcastID)
+                      .update({
+                numUsersLiked : admin.firestore.FieldValue.increment(1)
+            })
+          }
+          else if(isChapterPodcast === undefined || isChapterPodcast === null)
+          {
+            console.log("updating numUsersLiked in original podcast")
+            await db.collection('podcasts').doc(podcastID).update({
+                numUsersLiked : admin.firestore.FieldValue.increment(1)
+            })
+          }
+        }   
+      }
+      catch(error){
+        console.log("Error in updating numUsersLiked: ",error)
+      }
+     
+
+
+      db.collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('Activities').add({
+        type : type,
+        creationTimestamp: creationTimestamp,
+        actorID: likerOrFollowerID,
+        actorImage: likerOrFollowerImage,
+        actorName: likerOrFollowerName,
+        podcastID: podcastID,
+        podcastPicture: podcastPicture,
+        podcastName: podcastName
+      })
+      .then((docRef) => {
+        console.log("Document written with ID: ", docRef.id);
+       return db.collection('users').doc(userID).collection('privateUserData').doc(privateDataID).collection('Activities')
+                .doc(docRef.id).set({
+                    activityID: docRef.id
+                },{merge:true})
+    
+      })
+      .catch(function(error) {
+          console.error("Error adding document: ", error);
+      });
+    }  
+  
+    db.collection('users').doc(userID).collection('privateUserData').doc(privateDataID).set({
+        numNotifications: admin.firestore.FieldValue.increment(1)
+    },{merge:true}).then(
+      () => {
+        console.log("Added 1 to numNotifications in privateData");
         return true;
-    })
- }).catch(err => console.log(err));
- 
+      })
+      .catch(function(error) {
+        console.error("Error adding 1 to numNotifications to user's private document: ", error);
+    });
+  
+  
       return true;
   });
 
 
-/////////////////////
-// changeUserNameInPodcastsAsiaEast 
-/////////////////////
-
-
-exports.changeUserNameInPodcastsAsiaEast = functions.region("asia-northeast1").https.onCall((data, context) => {
-
-  const algoliaClient = algoliasearch(functions.config().algolia.appid, functions.config().algolia.apikey);
-
-  const collectionIndexName='dev_users';
-  const collectionIndex = algoliaClient.initIndex(collectionIndexName);
-
-  const nameSetInSettingsScreen = data.changedName;
-  const uid = context.auth.uid;
-  console.log("User ID: ",uid);
-  console.log("data variable: ",data);
-  
-  const objects = [{
-    name: nameSetInSettingsScreen,
-    objectID: uid
-  }];
-  
-  collectionIndex.partialUpdateObjects(objects).then(({ objectIDs }) => {
-    console.log(objectIDs);
-    return true;
-  }).catch(err => console.log(err));
-  
-  
-  const db = admin.firestore();
-  db.collectionGroup('podcasts').where('podcasterID','==',uid).get().then(response => {
-    let batch = db.batch()
-    console.log("Response DOCS : ",response.docs);
-    response.docs.forEach((doc) => {
-        console.log("Full Doc : ",doc);
-        //console.log("bookID : ",doc._fieldsProto.bookID.stringValue);
-        if(doc._fieldsProto.bookID !== undefined && 
-          doc._fieldsProto.bookID !== null)
-          {
-            console.log("podcastID : ",doc._fieldsProto.podcastID.stringValue);
-            if(doc._fieldsProto.isChapterPodcast.booleanValue === false)
-            {
-              const docRef = db.collection('books').doc(doc._fieldsProto.bookID.stringValue).collection('podcasts')
-                            .doc(doc._fieldsProto.podcastID.stringValue);
-              batch.update(docRef, {podcasterName : nameSetInSettingsScreen}) 
-            }
-            else if(doc._fieldsProto.isChapterPodcast.booleanValue === true)
-            {
-              const docRef = db.collection('books').doc(doc._fieldsProto.bookID.stringValue).collection('chapters').doc(doc._fieldsProto.chapterID.stringValue)
-                            .collection('podcasts').doc(doc._fieldsProto.podcastID.stringValue);
-              batch.update(docRef, {podcasterName : nameSetInSettingsScreen}) 
-            }
-          
-          }
-          else if(doc._fieldsProto.isOriginalPodcast.booleanValue === true)
-          {
-            const docRef = db.collection('podcasts').doc(doc._fieldsProto.podcastID.stringValue);
-            batch.update(docRef, {podcasterName : nameSetInSettingsScreen}) 
-          }   
-    })
-    return batch.commit().then(() => {
-        console.log('updated all podcast documents of podcasterID - ',uid);
-        return true;
-    })
-  }).catch(err => console.log(err));
-  
-      return true;
-});
-
-/////////////////////////////////
-/////////////////////////////////
-/////////////////////////////////
-   
 
 
 

@@ -118,6 +118,9 @@ const ActivityItem = (props)=> {
   <Text style={{fontFamily:'Montserrat-Bold'}}>{props.activity.podcastName}</Text>
   </Text>
 
+  if(props.activity.type == "invite")
+    activityText = <Text style={{}}>{props.activity.actorName} invited you for a discussion.</Text>
+
   if(props.activity.type == "follow")
     activityText = <Text style={{}}>{props.activity.actorName} started following you</Text>
     
@@ -187,6 +190,13 @@ const ActivityItem = (props)=> {
           {
             console.log("podcastClicked");
             retrievePodcast(props.activity.podcastID);
+          }
+          else if(props.activity.type == "invite")
+          {
+            props.navigation.navigate('VideoChatScreen',{
+              fromActivity : true,
+              channelName : props.activity.channelName
+            });
           }
           
         }}>

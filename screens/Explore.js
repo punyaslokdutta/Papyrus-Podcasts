@@ -25,6 +25,10 @@ import { NetworkContext } from './config/NetworkProvider';
 import ContinueListeningPodcasts from './components/Explore/ContinueListeningPodcasts';
 import TrackPlayer, { usePlaybackState,useTrackPlayerProgress } from 'react-native-track-player';
 import moment from 'moment';
+import ExtraDimensions from 'react-native-extra-dimensions-android';
+const STATUS_BAR_HEIGHT= ExtraDimensions.getStatusBarHeight();
+const extraDimensionsHeight =ExtraDimensions.getRealWindowHeight();
+
 const {width,height} = Dimensions.get('window')
 
 const areEqual = (prevProps, nextProps) => {
@@ -452,6 +456,7 @@ const Explore = React.memo((props) => {
           if(!didFocusListener.current) {
             didFocusListener.current = props.navigation.addListener('didFocus', (route) => {
               console.log("HOME TAB PRESSED");
+              //dispatch({type:"ENTER_VIDEO_SCREEN",payload:false})
               dispatch({type:"CHANGE_SCREEN"});
            });
           }
@@ -586,9 +591,11 @@ const Explore = React.memo((props) => {
         const device_height = event.nativeEvent.layout.height;
     
         console.log ("height: ",height);
+        console.log("extraDimensionsHeight: ",extraDimensionsHeight);
         console.log ("nativeEventHeight: ",device_height);  // Yeah !! good value
-        if(height - device_height >= 32) 
-          dispatch({type:"SET_NAV_BAR_HEIGHT",payload:height - device_height});
+        console.log ("STATUS BAR HEIGHT = ",STATUS_BAR_HEIGHT);
+        if(extraDimensionsHeight - device_height >= STATUS_BAR_HEIGHT) 
+          dispatch({type:"SET_NAV_BAR_HEIGHT",payload:extraDimensionsHeight - device_height});
         else
           dispatch({type:"SET_NAV_BAR_HEIGHT",payload:0});
         console.log ("nativeEventWidth: ",device_width); 
@@ -970,6 +977,12 @@ const Explore = React.memo((props) => {
     {
       return (
       <View style={styles.AppHeader}>
+        <StatusBar
+               barStyle="dark-content"
+               //backgroundColor='transparent'
+               translucent
+               //hidden={true}
+               />
         <TouchableNativeFeedback onPress={()=> {
           props.navigation.toggleDrawer();
         }}>
@@ -1173,6 +1186,7 @@ const styles = StyleSheet.create({
   AppHeader:
   {
  flexDirection:'row',
+ marginTop:STATUS_BAR_HEIGHT,
  backgroundColor: 'white'
   },
   storie: {

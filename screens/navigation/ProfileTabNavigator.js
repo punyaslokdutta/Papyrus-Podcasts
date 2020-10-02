@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import ProfileFlipScreen from '../components/Profile/ProfileFlipScreen';
 import ProfilePodcasts from '../components/Profile/ProfilePodcasts';
+import ProfileConversations from '../components/Profile/ProfileConversations'
 import BookmarkScreenPodcasts from '../BookmarkScreenPodcasts';
 import BookmarkScreenBooks from '../BookmarkScreenBooks'
 import {createMaterialTopTabNavigator} from 'react-navigation-tabs';
@@ -11,6 +12,7 @@ import { theme } from '../components/categories/constants';
 import CustomProfileHeader from './CustomProfileHeader';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import EvilIcon from 'react-native-vector-icons/EvilIcons';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons'
 import Entypo from 'react-native-vector-icons/Entypo';
 import Octicon from 'react-native-vector-icons/Octicons';
 import ProfileTabBar from '../navigation/CustomProfileTabBar';
@@ -30,24 +32,30 @@ const ProfileTabNavigator =createMaterialTopTabNavigator(
           <Entypo name="news" size={20} color={tintColor}/>
           )
       }},
-      BookmarkScreenBooks: {screen:BookmarkScreenBooks, navigationOptions:{
-        tabBarLabel:'Saved',
-        tabBarIcon:({tintColor})=>(
-          <Icon name="bookmark" color={tintColor} size={20}/>
-        )
-      }},
-      BookmarkScreenPodcasts: {screen:BookmarkScreenPodcasts, navigationOptions:{
-        tabBarLabel:'Reposts',
-        tabBarIcon:({tintColor})=>(
-          <EvilIcon name="retweet" color={tintColor} size={30}/>
-        )
-      }},
+      // BookmarkScreenBooks: {screen:BookmarkScreenBooks, navigationOptions:{
+      //   tabBarLabel:'Saved',
+      //   tabBarIcon:({tintColor})=>(
+      //     <Icon name="bookmark" color={tintColor} size={20}/>
+      //   )
+      // }},
+      // BookmarkScreenPodcasts: {screen:BookmarkScreenPodcasts, navigationOptions:{
+      //   tabBarLabel:'Reposts',
+      //   tabBarIcon:({tintColor})=>(
+      //     <EvilIcon name="retweet" color={tintColor} size={30}/>
+      //   )
+      // }},
       ProfilePodcasts:{ screen: ProfilePodcasts,navigationOptions:{
         tabBarLabel:'My Podcasts',
         tabBarIcon:({tintColor})=>(
           <FontAwesome5Icon name="microphone-alt" color={tintColor} size={25}/>
         )
       }}, 
+      ProfileConversations:{ screen: ProfileConversations,navigationOptions:{
+        tabBarLabel:'Convos',
+        tabBarIcon:({tintColor})=>(
+          <MaterialCommunityIcon name="video-plus" color={tintColor} size={25}/>
+        )
+      }}
       // StatsScreen:{ screen: StatsScreen,navigationOptions:{
       //   tabBarLabel:'Stats',
       //   tabBarIcon:({tintColor})=>(

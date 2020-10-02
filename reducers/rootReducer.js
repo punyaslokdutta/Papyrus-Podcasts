@@ -11,13 +11,16 @@ const INITIAL_STATE = {
   loadingPodcast: false,
   screenChanged: 0,
   isPodcastPlaying : false,
-  lastPlayingPodcast : null
+  lastPlayingPodcast : null,
+  inVideoScreen : false
 };
 
 function rootReducer(state = INITIAL_STATE, action)  {
   switch (action.type) {
     case "SET_LAST_PLAYING_PODCAST_ITEM":
       return {...state,lastPlayingPodcast:action.payload}
+    case "ENTER_VIDEO_SCREEN":
+      return {...state,inVideoScreen:action.payload}
     case "CHANGE_SCREEN": // CHANGE_SCREEN is called so as to rerender components when we navigate to an already mounted screen.
       return {...state,screenChanged:state.screenChanged + 1}
     case "SET_LOADING_PODCAST":

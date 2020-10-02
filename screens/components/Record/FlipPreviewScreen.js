@@ -29,7 +29,8 @@ import Sound from 'react-native-sound';
 import RNFetchBlob from 'react-native-fetch-blob'
 import RNGRP from 'react-native-get-real-path';
 import { useFirstInstallTime } from 'react-native-device-info';
-
+import ExtraDimensions from 'react-native-extra-dimensions-android';
+const STATUS_BAR_HEIGHT= ExtraDimensions.getStatusBarHeight();
 
 
 const { width, height } = Dimensions.get('window');
@@ -417,7 +418,7 @@ const FlipPreviewScreen = (props)=> {
     return (
       <ScrollView 
       ref={scrollViewRef}
-      contentContainerStyle={{backgroundColor:'white',paddingBottom:30}} keyboardShouldPersistTaps={'always'}>
+      contentContainerStyle={{flex:1,backgroundColor:'white',marginBottom:30,marginTop:STATUS_BAR_HEIGHT}} keyboardShouldPersistTaps={'always'}>
         <View style={{flexDirection:'row', justifyContent:'space-between',alignItems:'center',paddingHorizontal:10,paddingVertical:5,height:height/12}}>
         
         <TouchableOpacity onPress={() => {

@@ -20,7 +20,8 @@ import Toast from 'react-native-simple-toast';
 import Modal from 'react-native-modal';
 import modalJSON2 from '../../../assets/animations/modal-animation-2.json';
 import LottieView from 'lottie-react-native';
-
+import ExtraDimensions from 'react-native-extra-dimensions-android';
+const STATUS_BAR_HEIGHT= ExtraDimensions.getStatusBarHeight();
 const { width, height } = Dimensions.get('window');
 const addPictureImage = 'https://storage.googleapis.com/papyrus-274618.appspot.com/flips/InsertImageFLip.png';
 const AddFlipScreen = (props)=> {
@@ -436,7 +437,7 @@ const AddFlipScreen = (props)=> {
       }
 
     return (
-        <SafeAreaView style={{flex:1, backgroundColor:'#FFFFFF',}}>
+        <SafeAreaView style={{flex:1, backgroundColor:'#FFFFFF',marginTop:STATUS_BAR_HEIGHT}}>
         <ScrollView keyboardShouldPersistTaps={'always'}>
         <View style={{backgroundColor:'#101010',paddingHorizontal:10, paddingVertical:height/50, flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
         <TouchableOpacity onPress={()=>props.navigation.goBack(null)}>

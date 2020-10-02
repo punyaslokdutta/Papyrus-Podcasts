@@ -15,7 +15,8 @@ import moment from 'moment';
 
 var {width, height}=Dimensions.get('window')
 
-
+import ExtraDimensions from 'react-native-extra-dimensions-android';
+const STATUS_BAR_HEIGHT= ExtraDimensions.getStatusBarHeight();
 import {useSelector,useDispatch} from 'react-redux'
 import Toast from 'react-native-simple-toast';
 
@@ -325,7 +326,7 @@ const SettingsScreen = (props) => {
   }
  
     return (
-      <Block>
+      <Block style={{marginTop:STATUS_BAR_HEIGHT}}>
         <Block flex={false} row center space="between" style={styles.header}>
     <Text h1 bold paddingRight style={{alignItems:'center',justifyContent:'center',paddingLeft:width*7/24}}>Settings{"  "}</Text>
     <TouchableOpacity onPress={() => props.navigation.navigate('Profile_StatsScreen')}>

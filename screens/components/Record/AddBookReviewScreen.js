@@ -15,8 +15,8 @@ import Tooltip from 'react-native-walkthrough-tooltip';
 import {withFirebaseHOC} from '../../config/Firebase';
 import {request, PERMISSIONS,RESULTS} from 'react-native-permissions';
 import OpenSettings from 'react-native-open-settings';
-
-
+import ExtraDimensions from 'react-native-extra-dimensions-android';
+const STATUS_BAR_HEIGHT= ExtraDimensions.getStatusBarHeight();
 const { width, height } = Dimensions.get('window');
 const data = [
   { id: 1, label: 'English' },
@@ -354,8 +354,7 @@ const AddBookReviewScreen = (props)=> {
       
       return (
 
-        <SafeAreaView style={{flex:1, backgroundColor:'#232930'}}>
-        <ScrollView >
+        <ScrollView contentContainerStyle={{height:height,marginTop:STATUS_BAR_HEIGHT,backgroundColor:"#232930"}}>
         <View style={styles.AppHeader}>
         <View style={{paddingLeft: width/12 ,paddingVertical:height/20, flexDirection:'row'}}>
         <TouchableOpacity onPress={()=>props.navigation.goBack(null)}>
@@ -541,7 +540,6 @@ const AddBookReviewScreen = (props)=> {
         </View>     
         </View>
         </ScrollView>
-        </SafeAreaView> 
         
       );
     

@@ -11,12 +11,13 @@ import firestore from '@react-native-firebase/firestore';
 import {useDispatch,useSelector} from "react-redux"; 
 import { firebase } from '@react-native-firebase/functions';
 import moment from 'moment';
-
+import ExtraDimensions from 'react-native-extra-dimensions-android';
+const STATUS_BAR_HEIGHT= ExtraDimensions.getStatusBarHeight();
 //const admin = require('firebase-admin')
 
 var {width:SCREEN_WIDTH, height:SCREEN_HEIGHT}=Dimensions.get('window')
 const IS_IPHONE_X = SCREEN_HEIGHT === 812 || SCREEN_HEIGHT=== 896;
-const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? (IS_IPHONE_X ? 44 : 20) : 0;
+//const STATUS_BAR_HEIGHT = Platform.OS === 'ios' ? (IS_IPHONE_X ? 44 : 20) : 0;
 const HEADER_HEIGHT = Platform.OS === 'ios' ? (IS_IPHONE_X ? 88 : 64) : 64;
 const NAV_BAR_HEIGHT = HEADER_HEIGHT - STATUS_BAR_HEIGHT;
 
@@ -120,6 +121,8 @@ const CustomUserHeader = (props) => {
   const dispatch=useDispatch();
   const lastCharacter = otherPrivateUserItem.name[otherPrivateUserItem.name.length - 1];
   return (
+    <View style={{marginTop:STATUS_BAR_HEIGHT}}>
+
     <TouchableNativeFeedback onPress={() => props.navigation.navigate({
       routeName : 'UserStatsScreen',
       params : {item:otherPrivateUserItem},
@@ -232,6 +235,7 @@ const CustomUserHeader = (props) => {
       
           </View>
           </TouchableNativeFeedback>
+          </View>
   );   
 };
 
