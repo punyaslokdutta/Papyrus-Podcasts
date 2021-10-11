@@ -1,0 +1,49 @@
+Experiments with video-compression using ffmpeg from command line
+
+Command:- ffmpeg -i processed-video.mp4 -vcodec libx265 -crf 28 processed-video-1.mp4 
+Processed-video.mp4 -> 13.2 MB
+Processed-video-1.mp4 -> 7.4 MB 
+However, Processed-video-1.mp4 contains only audio, no video. 
+Command:- ffmpeg -i processed-video.mp4 -vcodec libx264 -crf 28 processed-video-264.mp4 
+Processed-video.mp4 -> 13.2 MB 
+Processed-video-264.mp4 -> 8.8 MB 
+Command:- ffmpeg -I video-9-sec.mp4 -vcodec libx265 -crf 28 video-9-sec-1.mp4 
+Video-9-sec.mp4 -> 25.2 MB 
+video-9-sec-1.mp4 -> 1.3 MB 
+In this case, video-9-sec-1.mp4 also contains only audio, no video, but here the audio of 9 seconds is stretched out to 29 seconds & the audio for the majority of the 29 seconds is slow.
+Command:- ffmpeg -I video-9-sec.mp4 -vcodec libx264 -crf 28 video-9-sec-264.mp4
+Video-9-sec.mp4 -> 25.2 MB
+Video-9-sec-264.mp4 -> 2.6 MB
+Here, video is visible, but again, for majority of the movie, the video & audio run very slowly.
+Command:- ffmpeg -i landscape-video-POCO-gallery.mp4 -vcodec libx264 -crf 28 landscape-video-POCO-gallery-264.mp4
+landscape-video-POCO-gallery.mp4 -> 31.9 MB
+landscape-video-POCO-gallery-264.mp4 -> 4.7 MB
+This one was a landscape mode video taken using POCO Camcorder
+Here, we have same behaviour as in video-sec-9.mp4 (Portrait mode via POCO phone Camcorder), i.e, the video & audio both stretch out & an original video of 10 seconds is stretched out to 31 seconds.
+Command:- ffmpeg -i gallery-video.mp4 -vcodec libx264 -crf 28 gallery-video-264.mp4 
+gallery-video.mp4 -> 2.1 MB
+gallery-video-264.mp4 -> 1.7 MB
+This video was resized properly with proper audio & video retained.
+Command:- ffmpeg -i Snapchat-video.mp4 -vcodec libx264 -crf 28 Snapchat-video-264.mp4     [Portrait mode & high-size video]
+Snapchat-video.mp4 -> 41.3 MB
+Snapchat-video-264.mp4 -> 18.6 MB 
+This video was resized properly with proper audio & video retained.
+Command:- ffmpeg -i whatsapp-landscape-video.mp4 -vcodec libx264 -crf 28 whatsapp-landscape-video-264.mp4
+whatsapp-landscape-video.mp4 -> 3.1 MB
+whatsapp-landscape-video-264.mp4 -> 822 KB
+Again, we see that even when the size of our landscape video is reduced as WhatsApp resizes videos before uploading them, the output is same as the original landscape videos, i.e, both audio & video are delayed & total duration of video is increased.
+
+SO, INHERENTLY, there is something different about the videos which we are making (not uploading) using phone’s camera.
+Command:- ffmpeg -i cameraApp-12-sec-video.mp4 -vcodec libx264 -crf 28 cameraApp-12-sec-video-264.mp4 
+cameraApp-12-sec-video.mp4 -> 20.8 MB
+cameraApp-12-sec-video-264.mp4 -> 3.1 MB
+Here, we see that a short video, recorded by the camera app of the phone & not through react-native-image-picker, works perfectly when compressed - both video & audio
+The original "cameraApp-12-sec-video.mp4” -> takes approx 15 secs & the video also pauses in between while playing & when replaying, also it takes too much time to load.
+The resized “cameraApp-12-sec-video-264.mp4” -> takes approx 4-5 secs, but, thereafter, there is no delay.
+CONCLUSIONS:-
+	(i) libx264 ensures video + audio.
+	(ii) libx265 means only audio.
+	(iii) Working of ffmpeg command is not uniform for all mp4 files.
+	(iv) The sample video downloaded  from the internet (processed-video.mp4) doesn’t slow down in any case, however,
+	     the video-9-sec.mp4, uploaded from POCO phone Gallery & shot on POCO camcorder, slows down in every case.
+	(v) BASICALLY, we have to find out what is different in the videos uploaded from camera that they are stretched out after video compression.
