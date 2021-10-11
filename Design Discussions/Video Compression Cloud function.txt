@@ -1,0 +1,23 @@
+From all the experiments on Video compression, it is clear that -
+(a) We can upload any video from gallery & then perform video compression on it using ffmpeg in node js on cloud functions.
+(b) We have to stop the use of camcorder in react-native-image-picker because any video uploaded using react-native-image-piucker’s camcorder is not compressed properly,i.e, the video & audio stretch out.
+(c) MAX LIMIT - 140 seconds video -> SIZE:- 337 MB —> COMPRESSED SIZE:- 42 MB.
+
+
+
+So, for integrating this into the cloud functions, we have to -
+(1) check how to use the command - ffmpeg -i whatsapp-landscape-video.mp4 -vcodec libx264 -crf 28 whatsapp-landscape-video-264.mp4
+     In a node.js script
+Ans-> ffmpeg('./cameraApp-long-video.mp4')
+		.videoCodec('libx264')
+		.outputOptions(['-crf 28'])
+		.save('./cameraApp-long-video-resized.mp4')
+ 
+A video of 12 seconds took 30 seconds to compress SIZE -> 20.3 MB to 3.2 MB
+A video of 140 seconds took 420 seconds to compress SIZE -> 353.6 MB to 42.2 MB
+
+(2) Then, we deploy a small cloud function named - “compressVideo” which shall simply take 1 video file URL & video file name as it’s input & it should create a compressed video
+     & upload it to the same position as the 1st one [flips/videos/videoFileName]
+
+(3) After completing steps (1) & (2), we have to then follow Papyrus’ framework & thus, make the cloud function accept 2 arrays - videoFIleURLS[] & videoFIleNames[] 
+    And also, a parameter named flipID which shall be the document where in we shall put the compressed video file’s URL after uploading them.
