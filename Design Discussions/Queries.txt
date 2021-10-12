@@ -1,0 +1,89 @@
+
+
+*NOTIFICATIONS* : For any notifications in the app, such as 
+When someone follows you.
+When someone challenges/shares you a book.
+When someone comments on your podcast.
+When someone likes your podcast.
+
+ For all of the above cases we could use FCM(Firebase Cloud Messaging). 
+
+HOME SCREEN (FIXED for 24 hours,but personalized)
+
+Query for adminbooks(separate document named “adminbooks” in Books collection which would be updated by admin,i.e. us on a daily basis) for the horizontal scroll part.
+For podcasts on home screen (to be fetched from podcast_recommendations field in user document)
+
+EXPLORE SCREEN (FIXED for 24 hrs for everyone)
+
+Top Storytellers → Query for top storytellers on the basis of the ListenCount/day(No. Of users who have listened to that users’ podcasts over the last 24 hours).
+Trending Podcasts → Query for top podcasts based on TimeSpent/week (to be updated on a weekly basis)
+Top Chapters → Query for top chapters based on ListenCount
+SearchBar - elasticsearch to be used for this.
+
+NOTE1:  Since, the explore screen is fixed for 24 hours for everyone ,maybe we can simply          store the above contents in a single document (maybe in Books collection), query it as & when required and write to it simply on a daily basis/weekly basis as required.This would save the cost of reading multiple documents everytime any user opens the explore screen.  
+
+NOTE2: To maintain these daily or weekly activities, maybe we have to write cron jobs. (https://firebase.googleblog.com/2017/03/how-to-schedule-cron-jobs-with-cloud.html)
+
+RECORD SCREEN
+
+Elastic Search to be used when we the user hits the “share” button. (How to index the incoming data in elastic store. How frequently?(Best practices in elastic search reindexing ))
+
+CATEGORY SCREEN
+
+  Books Section: Query from the document named “adminbooks” for the Book Genre Map.(Genre Name & count of books for that genre)
+Podcasts Section: Query from the document named “adminbooks” for the Podcast Genre Map.(Genre Name & count of podcasts for that genre)
+
+NOTE3: Discuss about whether to update this on a daily basis or real-time.
+
+
+
+
+
+
+
+
+USER PROFILE SCREEN
+
+Profile Pic: Query for dp_of_user from user document.
+No. of Followers & following: Query for both from user document.
+Name: Query for real name.
+Description: Query for Introduction.
+Book Podcasts & Chapter Podcasts: Query for these podcasts either by:
+		(a) Using Collection group queries for querying all podcasts by username & for differentiating between book podcasts & chapter podcasts we check if ChapterName field is empty(book podcast) or not(chapter podcast).
+		                                      OR
+		(b) Storing all the book & chapter podcast names(& dp links) in the user document(real-time) & load the podcasts through their AudioFileLink only when it is played.(This saves podcast document reads everytime the user opens his/her profile)
+
+NOTE4: Should we keep the Book podcasts & chapter podcasts (their names & book_pictures/chapter_pictures) in the user document itself & load the podcast document only when it is clicked by the user.
+                                   If the user has many podcasts, this can be a problem as this can increase the user document size.
+
+NOTE5: Pagination required in profile screen for those users who have large number of podcasts(book/chapter).
+
+NOTE6: Whether to display username anywhere or not.
+
+NOTE7: Difference between the display for user’s own profile & the display of the profile for other users opened through the search bar or Top Storytellers in the Explore screen.
+
+
+
+
+
+
+
+
+STATS SCREEN
+
+Total Listening time: Query for “no. of minutes spent listening” from the user document.
+Number of Listens to Book Podcasts & Chapter Podcasts: Query for the field “Listened podcast count - Books” & “Listened podcast count - Chapters” from the user document.
+Gnosis Score: Query for a field Gnosis score (which would be private to user) 
+Number of Book & Chapter podcasts created - Query for the field “podcast count - Books” & “podcast count - Chapters” from the user document.
+Retention rate of listeners - Query for retention rate field from user document.
+                    
+NOTE8: Gnosis score shall be updated monthly and for that we require queries for sum of likes on all the users’ podcasts,comments on the users’ podcasts(NLP) & time spent(NOTE9) on the App.
+
+NOTE9: Time Spent on the app by all listeners listening to users’ podcasts or time spent by the user on the app (as a whole). 
+
+*Retention rate to be calculated monthly or weekly or how?*
+
+
+
+      .  
+ 
