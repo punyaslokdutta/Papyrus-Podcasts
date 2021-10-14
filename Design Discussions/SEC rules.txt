@@ -1,0 +1,88 @@
+SECURITY RULES:
+
+-> Copy the Security Rules related file in Notepad++ in my old laptop here.
+
+
+
+-> Have to incorporate a rule in Security Rules that writing to podcast Document in whole is only limited to the podcasterID & the userIDs in adminList.[IMPORTANT] 
+     Other than this, since partial writing permissions are allowed, only numUsersLiked & numUsersReweeted fields shall be given writing rights by all users.
+    
+
+   SO, for adding someone as admin, 2  places we have to make changes:-
+	(i) 'isAdmin’ boolean field in user’s privateDoc.
+	(ii) userID has to be added to the adminList used in Security Rules.
+
+
+Security Rules
+
+----------------------------------------------------------------------------
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    match /{document=**} {
+   allow read, write; // or allow read, write: if true;
+      }
+     
+     match /{path=**}/Podcasts/{PodcastID} {
+      allow read: if request.auth.uid != null;
+    } 
+     
+    match /Books/{BookID} {
+     allow read: if request.auth == null;
+    }
+    
+    match /users/{uid} {
+    	allow read: if request.auth != null;
+   		allow write: if request.auth.uid == uid;   
+      	match /privateUserData/{privateData} {
+      		allow read: if request.auth != null;
+      		allow write: if request.auth.uid == uid;
+         		match /{document=**}{
+         			allow read,write: if request.auth.uid == uid;
+         }
+      }
+    }
+  }
+}
+------------------------------------------------------------------------------
+
+
+Security Rules Notes:
+
+1) In books collection, we have 3 fields that can be changed:
+      -> listenCount   -- NOT USING AS OF NOW
+	  -> podcastCount  -- NOT USING AS OF NOW
+	  -> reviewPending ---->  Have to include the admins list in security rules for Satyam,me, & Mohit Sir as of now.
+	  
+	  THEREFORE, for all documents in books collection, Security Rules shall comprise of:
+        -> READ ACCESS to all authenticated users as of now. Will have to change to all users when we provide TRY IT OUT option.
+		-> WRITE ACCESS to only admins list.
+		-> CREATE ACCESS to all users but not UPDATE ACCESS
+		-> DELETE ACCESS to only admins.
+		
+2) In chapters subcollection, we have 3 fields that can be changed:
+      -> listenCount   -- NOT USING AS OF NOW
+	  -> podcastCount  -- NOT USING AS OF NOW
+	  -> reviewPending ---->  Have to include the admins list in security rules for Satyam,me, & Mohit Sir as of now.
+	  
+	  THEREFORE, for all documents in chapters subcollection, Security Rules shall comprise of:
+        -> READ ACCESS to all authenticated users as of now. Will have to change to all users when we provide TRY IT OUT option.
+		-> WRITE ACCESS to only admins list.
+		-> CREATE ACCESS to all users but not UPDATE ACCESS
+		-> DELETE ACCESS to only admins.
+
+3) In podcasts subCollection we have 1 field that is updated by other users as of now,i.e, numUsersLiked.
+      THEREFORE, for all documents in podcasts subcollection, security rules shall comprise of
+	  -> WRITE(DELETE,UPDATE,) ACCESS to only the podcasterID of the podcast.
+	  -> READ ACCESS to all authenticated users as of now. Will have to change to all users when we provide TRY IT OUT option.
+	  
+4) For users,
+     public Data --> READ for all users,WRITE for all users
+	 private Data --> READ for all users,WRITE for only the user himself
+	 
+5) For Categories,
+      READ Access to all.
+	  WRITE Access to only admins.
+	  
+6) Also, in security rules we should include schema check(number,string)
