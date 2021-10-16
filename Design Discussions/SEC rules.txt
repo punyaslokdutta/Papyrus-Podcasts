@@ -1,8 +1,5 @@
 SECURITY RULES:
 
--> Copy the Security Rules related file in Notepad++ in my old laptop here.
-
-
 
 -> Have to incorporate a rule in Security Rules that writing to podcast Document in whole is only limited to the podcasterID & the userIDs in adminList.[IMPORTANT] 
      Other than this, since partial writing permissions are allowed, only numUsersLiked & numUsersReweeted fields shall be given writing rights by all users.
