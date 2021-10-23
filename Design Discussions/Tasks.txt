@@ -1,0 +1,813 @@
+Tasks for 12/10/2020:-
+1.	For a flip video, screenshots can be taken afterwards in FlipPreviewScreen or in AddFlipScreen.
+2.	IN
+
+
+Tasks for 08/10/2020:-
+1.	Algolia A/c changed to ry984522@gmail.com from kanechristian73@gmail.com  
+2.	Remove Podcast & books addition/search in entire app
+a.	Remove podcast from SelectTabNavigator (Flip,Conversation)
+b.	Remove books & podcasts from SearchTabNavigator & include podcasts in Convos Tab (Convos,Users,Flips)
+c.	Remove Podcasts,Saved & Reposts from ExploreTabNavigator & add conversations section & add podcasts there in addition to conversations. (Flips,Conversations)
+d.	Remove Podcasts from ProfileTabNavigator & include it in Convos Section.
+3.	Remove “Is this related to any book?” in FlipPreviewScreen.
+4.	Don’t show Modal (“Add Audio to your flip”) when there is atleast 1 video selected in AddFlipScreen.
+5.	
+
+Tasks for 03/10/2020:-
+1.	After completion of tasks below related to Video, 
+a.	Start replacing props.navigation.navigate with props.navigation.push wherever you are losing context
+i.	For example:- When clicking the User picture in ActivityItem, we move to ExploreTabNavigator but we don’t come back to ActivityScreen when coming back from there & hence, we lose context.
+2.	Have to provide video as well as photos for adding in AddFlipScreen & accordingly either play the video or simply show the photo in the preview area in AddFlipScreen.
+a.	Tasks for 08/10/2020 for this task are written in AddFlipScreen
+i.	Option for image or video upload
+ii.	Upload thumbnail Image of video to firebase & use it’s download URL instead of using local path.
+b.	Test on debug database by uploading some flips - both normal & audio.
+c.	Look at something on Video Resizing
+3.	Have to show user’s DP when user disables his video
+a.	To user himself [DONE]
+b.	To other users
+i.	Have to use callback - RemoteVideoStateChanged
+4.	[FACT] In order to make a view transparent, we need 2 things -
+a.	backgroundColor : ‘transparent’
+b.	position : ‘absolute’
+5.	[FACT] To use “this” keyword inside a nested promise, always declare 
+     var that = this;
+at the beginning of the function & then, use that.fun() instead of this.fun() inside a nested then statement.
+
+Tasks for 02/10/2020:-
+1.	Check once & push to gitlab.
+2.	Request Camera & MIcrophone permission when user enters VideoChatScreen from ActivityItem press.
+a.	[SOLUTION] Checked the permissions on click of ActivityItem itself.
+3.	[BUG] There existed another problem related to joining a video call from ActivityItem, which was that
+a.	Only when entering the VIdeoChatScreen for the 1st time from ActivityItem, the user was able to enter the call.
+b.	After that, we had to keep some check in componentDidUpdate in order to joinCHannel().
+c.	[SOLUTION] In componentDidUpdate, based on the param fromActivity, joinCHannel() was called & after joining Channel, 
+       this.props.navigation.setParams({ fromActivity : false })
+d.	The above was added because after leaving discussion &  navigating back from VideoChatScreen, componentDidUpdate was called again & with the same params,i.e, fromActivity = true, the joinCHannel() was called again.
+e.	Need to check this in release mode.[DONE]
+4.	Show users who have already joined as & when they join.
+a.	A user needs to join a channel if they want to know which other user has joined the channel.
+b.	Because of the above, it maybe the case that we have to make user join channel on Inviting 1st participant itself, but not show the renderVideos Section yet.
+c.	Basically joinSucceed state variable needs to be maintained a bit differently when currUID = 1, so that only on press of STart Call we show renderVideos, but the initiator joins channel before hand.
+5.	[BUG] On pressing conversation in ProfileConversations, most of the times, app is crashing
+a.	Maybe due to statusBar inclusion.Try removing it.
+b.	Last day, I thought it was because of listener, but even that does not seem to be the case.
+c.	You can try navigating to a more static screen & build up from there in order to find out what the problem is.
+d.	[SOLUTION] By using option “c” above, it was found that the FlatList is the thing causing the problem. ← Still don’t know the exact feature in FlatList which is causing this.
+i.	Tried using Animated.FlatList & useNativeDriver = True in onScroll, but to no avail.
+ii.	WIll come back to this, once we have a lot of content & including this becomes necessary.
+iii.	Although, the main reason for building TikTok Scroll is because users are highly familiar with this type of UI/UX when watching videos (e.g - Instagram,Facebook,TikTok,Rizzle & so on)
+iv.	For now, Have kept a single VideoItem in VideoScreen.
+6.	Rotate Camera feature.
+a.	Completed using the line - 
+await this._engine.switchCamera()
+b.	Only have to now keep this feature in proper position. Also, a single button would suffice. No need to maintain state.
+7.	Mic on/off & Video on/off feature
+a.	Mic on/off
+i.	DISABLE     await this._engine.enableLocalAudio(false)
+ii.	ENABLE     await this._engine.enableLocalAudio(true)
+b.	Video on/off feature
+i.	DISABLE     await this._engine.enableLocalVideo(false)
+ii.	ENABLE     await this._engine.enableLocalVideo(true)
+c.	Task left here:- [DONE]
+i.	Position the necessary icons
+ii.	Maintain state for mic & video on/off
+8.	On tapping participant’s small square, the participant’s & the user’s square should be swapped so that the participant comes onto the big square & vice-versa.
+a.	OnHOLD, have to verify with -
+i.	1st, one-to-one [DONE] & then,
+ii.	3 people.
+9.	Adding media during Video call.
+a.	Can provide this menu in renderCallMenu so as to search for flips.
+b.	Have to discuss with Satyam if this should be there only before starting a conversation or in the middle of the conversation as well.
+c.	Flips have to be indexed for this purpose.
+10.	[BUG] The 2nd participant added is given channelX (default channel) in it’s activity.
+a.	 This should not be a problem. As the appropriate channelName is sent to the participants when I tested it on recent build.
+b.	Have to check with 1.0.28 Internal version once debugging is done. 
+
+Tasks for 29/09/2020:-
+1.	Add VideoChatScreen to the RecordStackNavigator.[Can be done at last]
+2.	Add Discussion Topic,Genre & media(make it optional) & after filling all those allow the user to press INVITE PARTICIPANTS & add the above fields to the concerned document [DONE]
+3.	Remove the acquire button & perform the acquire with the press of start button & follow it up with a start call. [DONE]
+a.	Take a note of the time lag in opening of Video. [No noticeable time lag]
+4.	Take camera, microphone & storage permission before doing anything after START button press. [DONE]
+5.	Have to take screenshot from video ← Look at Agora documentation.
+a.	Not needed.
+b.	Use react-native-create-thumbnail
+c.	Upload this image with a different media field like conversationThumbnail in firestore.
+d.	Show this as the right half in the Video shown in convos section of ProfileTabNavigator. Left half → Media chosen for conversation.
+e.	Other than this we have a capture screenshot when we cloud record in individual mode ← Look at this.
+6.	Use the above screenshot if media is not provided by the user, in the Individual item in Convos section of Profile & also use the Discussion TOpic & genre in the individual item in COnvos section.
+7.	On press of a particular item in convos section, the corresponding videoItem should open in VideoScreen. (HINT: use the scrollToIndex function as used in FLipsScreenVertical) [DONE]
+8.	Remove the things from editProfile Screen after taking all this to RecordStackNavigator.
+9.	RELEASE to INTERNAL 1.0.28
+
+Tasks for 27/09/2020:-
+1.	Initiator’s name should be written once & never forgotten.
+a.	We can actually keep channel name same as the conversation document.
+i.	[IMPORTANT] → A conversation cannot be initiated without INVITING at least 1 user.
+ii.	So, basically, whenever a user invites the very 1st participant at that moment,a conversation document will be created & since the firebase document IDs are unique, we can use them as the channelName when we start our call.
+iii.	Therefore, after inviting the very 1st participant, 
+1.	1st, conversation document is to be added with simply some basic fields:-
+a.	videoCallInitiatorID - 
+b.	conversationID - 
+2.	After adding, the conversationID is to be used as channelName in Agora & thus start the call at Agora & correspondingly, call both acquire & start APIs, one after the other for cloud recording.
+3.	After call is started, START CALL is to be removed for all users.
+iv.	For other participants, in place of END CALL, it would be LEAVE CALL.
+v.	On initiator pressing END CALL, other users shall get a notification that the initiator has ended the call in UserOffline event.
+vi.	Upon receiving the notification, a Toast will be shown saying that - “The call has ended.” & also the other users’ endCall function shall be called which shall move other users out of the renderVideos function.
+vii.	On END CALL, the m3u8 file shall be uploaded to the conversation document.
+2.	TASKS:-
+a.	Request Permission before starting/joining the video call.
+b.	
+
+Tasks for 21/09/2020:-
+1.	Agora recording not able to do
+a.	Issue in Environment configuration of Postman
+b.	HAVE raised a ticket describing the exact problem [DONE on 22/09/2020 11:35 AM] → Keep an eye on this for any response from Agora Support
+c.	Albert Fang from Agora Support responded with the solution:-
+i.	channelType - 0 (for video call) &
+ii.	Recording UID should be different than the all the other UIDs in the channel.
+iii.	Ticket raised in this context:-
+https://agora-ticket.agora.io/issue/e63c7ae4-f4fc-437f-a757-17cae75a7426
+d.	Next Task → Run react-native-agora in Papyrus release database & create a section for recorded conversations.
+i.	Call cloud functions from react-native in order to call the RESTful APIs for cloud recording [DONE](acquire,start,stop,query,updateLayout)
+ii.	On Start Call by host(or 1st caller), call the acquire & start RESTful APIs from cloud functions.
+iii.	On End Call by host(or 1st caller), call the stop RESTful API from cloud functions.
+iv.	Find out where the Amazon S3 URL for recorded video can be retrieved.
+1.	Maybe have to make S3 bucket public.
+2.	Maybe it comes in query API.
+3.	Maybe have to set callback in cloud functions to receive URL.
+v.	Fetch the URL & add a document for Conversations collection with other important files.
+vi.	FInd out how it is decided to break a file & learn about recording modes - mix & individual.
+1.	M3u8 & .ts files → Notice the difference.
+2.	M3u8 file contains the proper way to play the ts files with the same name(1st part) & same directory as the m3u8 file.
+2.	Error in deploying cloud functions in DEBUG database
+a.	Have to contact firebase team for the link they were saying they shall provide for paying 700 Rs.(10$) [22nd September 2020 → 8 AM]
+b.	It maybe the case that the problem for cloud functions is persisting because of this.
+c.	[SOLUTION] -> Yes, indeed the problem for cloud functions was because of non-payment of September charges for fa45c database.
+d.	PAYMENT of 10 Rs. done using HSBC debit card.
+3.	BUG in main app → Some problem with Google cloud storage for 274618 database as we are having problem in recording or including images.
+a.	Actually, the problem was with 1.0.27, API LEVEL 29 SDK was installed & included as Google Play Console mandated it.
+b.	The solution was using      android:requestLegacyExternalStorage="true" in application tag in AndroidManifest.xml
+
+
+Tasks for 08/09/2020:-
+1.	MAIN TASK
+a.	Most probably, we have to call the RESTful API from cloud functions because they have mentioned in the documentation that we need to call the API from app server.
+b.	So, in the example app, where Agora video call is working, there, for now, the tasks for me are:-
+i.	When “Start Call” is pressed, along with the video call starting, the Agora RESTful API for cloud recording will also be called so that recording may start.
+In production, I’ll have to call a cloud function & from there, I’ll have to call the REST API..but for now..have to try to call REST API from client itself to see if it is working or not.
+ii.	Create an AWS account so that we can store the recorded video to S3 storage.
+iii.	Check whether the whole video call is stored on S3 storage or not.
+
+Tasks for 07/09/2020:-
+1.	After 9 AM, call customer care support for HSBC credit card.
+a.	What to ask:-
+i.	Is there a minimum amount which can be cut & what to do if the amount has to be deducted or else the firebase project for fa45c would be terminated?
+b.	You can call Rahul HSBC maybe if you don’t find any customer care numbers for HSBC credit card.
+c.	SOLUTION:-
+i.	So, I enquired with both HSBC & Google cloud Platform & it turned out to be a Minimum Amount Problem from Google Cloud Platform’s side.
+ii.	Basically, Google cloud Platform has a policy that a minimum of 10$ has to be paid even though the bill is only of 1 Rs.
+iii.	Therefore, by 08/09/2020, I’ll receive an email from Google Cloud Support, Kierlyn for paying a minimum of 10$.
+
+2.	Agora.io cloud recording & S3 storage [MAIN TASK]
+a.	Have to explore from where exactly do we need to call the record API → Cloud Functions or client?
+b.	Background:- For using Agora API for cloud recording, their documentation only involves RESTful API documentation & no React-native documentation. From this, it is clear that we have to use the REST API only. 
+For using the REST API, we have to use app secret & app ID.
+c.	Now, can we expose app secret just like we used the search-only key for Algolia??
+3.	Some BUGS:-
+a.	Pictures in EditBackgroundMusic.js are of large size. That’s why they take time to render when 1st opened.
+i.	May have to reduce the size of pictures.
+b.	scrollPosition setting for Explore Flips & Profile Screen Flips so as to reach proper depth in FlipsScreenVertical - like screens.
+c.	ActivityIndicator when loading new image while scrolling in Horizontal Flatlist.
+4.	Even after performing certain optimizations, Papyrus v1.0.27 is getting slow on both of Baba’s phone due to HomeScreen ← Have to DEBUG.
+5.	Also, in CustomDrawerContentComponent, the height is set not relative Dimensions.height , but absolute values ← Because of this, we are not able to see version.
+6.	HEIGHT problem for the player on not only ONEPLUS, but also on both of Baba’s phones.
+
+
+
+
+
+
+
+-	
+-	Modify Images in walkthrough
+
+BUGS:-
+Edit by admin not working
+-	 Solved (Actually, it is working...I had not set myself as admin in customUserClaims)
+Like is not synchronized between MainFlipItem & FlipItem
+-	Solved by having updateLikes passed from FlipItem & using it when user navigates to MainFlipItem from FlipItem & in other cases(from ActivityItem / External link) use a local function.[Not verified yet]
+Share does not  share flipTitle 
+-	Share bookName / flipTitle based on whichever is available (Priority - flipTitle)
+
+
+Additional BUGS experienced:-
+1.	In ContinueListeningPodcasts, podcastName is not getting updated when podcast’s name is changed by editing in app.
+2.	Increase word limit in flips, book podcasts & original podcasts for all fields.
+a.	Podcast title - 150 characters 
+b.	Podcast Description - 3000 characters
+
+ACTIVITIES for 31/08/2020:-
+1.	Incorporate video in app.
+a.	Upload video screen
+b.	Showing video
+c.	DOCUMENT STRUCTURE:-
+i.	We can upload videocasts within podcasts collection itself with a “isVideo” tag. 
+ii.	This will ensure that when we want to show podcasts in HomeScreen….irrespective of audio or videocast...we can query directly from podcasts
+iii.	At the same time, we can also query only the video items with this structure.
+iv.	
+
+
+BUGS to solve before internal release (1.0.25)
+1.	[BUG] For picture in PreviewScreen & OriginalPreviewScreen, permission handling not done.
+2.	Slider color to be changed to black in player inside PreviewScreen & OriginalPreviewScreen.
+3.	Keep some term in search for SearchBookChapterTabNavigator so that Search screen is not empty when 1 tries to upload a podcast.
+a.	Have to provide a specific set of items in the Search screens when Search is empty,i.e “”. Basically, the ones that we want the user to see.
+4.	Check fontFamily while writing in PreviewScreen & OriginalPreviewScreen.
+a.	Had to add fontWeight:’normal’ for Bold or SemiBold styles.
+5.	FlipTitle fontFamily in AddFlipScreen.
+a.	Had to add fontWeight:’normal’ for Bold or SemiBold styles.
+6.	Change the FontFamily of “Next” in AddFlipScreen to Montserrat-SemiBold
+7.	[FlipItem[DONE] & MainFlipItem[DONE]] Don’t show likes when numLikes = 0 & when numLikes = 1, show as - “1 like”.
+8.	App crashing after clicking a category in Category Screen...for debug database.
+a.	This was because of original podcasts where we didn’t have bookName, but the code was written to slice the bookName.
+9.	HAve to make change to addActivityFLipLike cloud function in order to handle flips which are not related to any book ...And at the same time maintaining backwards compatibility.
+10.	After opening audio flip from ActivityItem, the play symbol is not shown in MainFlipItem.
+a.	This bug was caused due to me setting an undefined value to playerText which led to nothing being shown (play/pause)
+11.	[Editing a Flip] However..Problem arises when originally flip is not related to a book & we try to edit it with a bookName added OR vice versa. In the above cases, on Pressing Publish button, no alert is shown & flip is also not reedited/republished.
+a.	SOLVED by providing a null check for bookName.
+12.	For flips, Remove From HomeScreen → Not working….Have to increase the days by which Flip’s created/edited Date is shifted back. → Solved by subtracting 60 days from currentDate for lastEditedOn.
+a.	For podcasts, also check by how many days the podcast is backdated. → Solved by subtracting 60 days from currentDate for lastEditedOn.
+13.	Have to provide Toast when podcast is deleted denoting whether podcast was deleted successfully or not.
+14.	Change “Yes/No” position in “Add audio to your flip?” modal.
+
+29/08/2020:-
+1.	Remove from HomeScreen not working for both flips & podcasts.
+2.	Check Walkthrough problem.
+a.	Problems like wrong position of walkthrough → DID not occur when I signed up with a new user in debug database run in variant=release mode.
+3.	After making all changes, create bundleRelease with debug database.
+4.	Do a thorough check for uploading anything 
+a.	Flips
+i.	Normal - Book & Not Book
+ii.	Audio - Book & Not Book -> Check min. duration of 15 seconds
+1.	Upload
+2.	Record 
+b.	Podcasts
+i.	Original Podcasts - Record & Upload.
+ii.	Book Podcasts - Record & Upload.
+c.	After uploading anything
+i.	Item should come at top in HomeScreen.
+1.	Working for all podcasts
+2.	Working for all flips.
+5.	Thorough check of playing, pausing & closing podcast.
+a.	Mix the above with playing background music & audio flips (in MainFLipItem & FlipItem)
+6.	Like , repost & share of flips & podcasts.
+a.	Like → Working good for both flips & podcasts(both types).
+b.	Repost → Working good for both original & book podcasts.
+c.	Share → HAve to check on release
+7.	Ellipsis options (Inside FlipItem, MainFlipItem & Podcast)
+a.	Verify that it is shown only for the authorized users (podcaster/flip creator himself or admin).
+b.	Verify each of the options in ellipsis menu.
+i.	As a creator
+1.	Flips
+a.	Edit → Working good when flipDescription is changed or flipTitle is changed or bookName is changed for flips related to a book.
+b.	Delete → working good.
+2.	Podcasts
+a.	Edit → Working good for original podcasts & book podcasts.
+b.	Delete → Working good for book podcasts & original podcasts
+ii.	As an admin
+1.	Flips
+a.	Edit → Working good when flipDescription is changed or flipTitle is changed or bookName is changed for flips related to a book.
+b.	Delete → working good.
+c.	Remove From HomeScreen → Not working….Have to increase the days by which Flip’s created/edited Date is shifted back.
+d.	AddToExploreFlips → working good.
+2.	Podcasts 
+a.	Edit → Working good for book podcast & original podcast.
+b.	Delete → Working good for original podcast & book podcast
+c.	Add To Explore Section - I → Working good for book podcast & original podcast.
+d.	Add To Explore Section - II → Working good for book Podcast & original Podcast
+e.	Remove from HomeScreen → Working good for both book podcast & original podcast.
+
+8.	Entire Signup process for a new user.
+9.	RELEASE to internal 1.0.25 (26) 
+
+28/08/2020:-
+1.	Have to fix position of numLikes in FlipItem & MainFlipItem & also fix position of play button or Lottie animation button in Podcast.
+a.	OR have to adjust position based on whether ellipsis is there or not → Did this.
+2.	Have a look at whether you can update app inside app like livemint.
+3.	Walkthrough needs to be verified..Causing problems frequently
+a.	Problems like wrong position of walkthrough → DID not occur when I signed up with a new user in debug database run in variant=release mode.
+b.	Maybe it is caused due to delay/timeout that you have given.
+4.	Andika to be removed once & for all. [REPLACED in all files]
+a.	Would be better as it takes up 1.5 MB in space & also, it is not desired.
+b.	Have to remove from assets now. [DONE]
+5.	FlipItem in ExploreTabNavigator does not show title. [DONE]
+a.	COPIED the logic from ProfileFlipScreen
+6.	Name gets cut when following somebody in CustomUserHeader.[DONE]
+7.	Changed the plus-circle(of AntDesign) sign in AppTabNavigator because of some issue with MaterialCommunityIcon. [DONE]
+The above problem occurred because of node modules update.
+REVERTED back → By installing version 6.6.0 of react-native-vector-icons
+8.	
+
+27/08/2020:-
+1.	BUG → Remove from HomeScreen not working for flips.
+2.	Use FlatList instead of ScrollView in FlipItem & MainFlipItem & check whether an array of 10 images causes lag or not.
+3.	Can SET_PODCAST before setting other things while clicking a podcast because there seems to be some lag between clicking a podcast & podcast being opened.
+4.	Integrate the quill editor in webView to see whether Editing works properly or not.
+5.	After the above, remove features from editor which are not required by us.
+6.	Try to import the quill css from node modules in PapyrusAAdmin or from react-quill’s repository & use it in react-native
+7.	OR try to make the things similar to how article is styled using slate.
+
+25/08/2020:-
+1.	Look for good icons & animations 
+a.	FlatIcon
+2.	Oneplus BUG of not detecting height , width using onLayout.
+3.	Change all icons & images to Papyrus-274618 database storage URLs.
+a.	Take a look into Google cloud storage security rules while you are at it.
+b.	Also cloud functions can be currently accessed by allUsers.
+c.	Have to 1st test by changing allUsers to allAuthenticated Users in debug & then make the same changes on release database.
+4.	There are podcasts for Science & Technology, but still HOmeScreen is coming empty..WHY?? ← Find out
+5.	Ask for DP while signIN ← refer screenshot.
+6.	
+24/08/2020:-
+1.	BUG - After podcast ends, the play button is shown (as audio is paused), but on pressing play, no audio is played.Instead only ActivityIndicator is shown.
+a.	[SOLVED] → used this inside useEffect of playbackState in PodcastContent.
+
+b.	    
+c.	    else if(playbackState == TrackPlayer.STATE_STOPPED){
+d.	     dispatch({type:"SET_PAUSED", payload:true});
+e.	     TrackPlayer.pause();
+f.	     if(position >= props.podcast.duration - 1)
+g.	       TrackPlayer.seekTo(0);
+h.	   }
+2.	Skip login → only explore screen can be viewed   
+a.	Have to check how to do anonymous login.
+3.	Show Flips in categories after questions on books are included.  
+4.	In explore screen, instead of Booklist, we have to keep a section   which encapsulates books, related questions which shall provide  people with the incentive to record  
+5.	Try to show more flips in Home
+a.	Look at how to optimize FlatList performance.
+6.	Founder of Headfone said that UI is pretty awesome but UX can be improved.
+a.	Will have to explore this afterwards although in React Native, the rendering is like that.
+
+22/08/2020:-
+1.	Database Structure Change Document added in Google Docs for swayamdutta@papyruspodcasts.com [DONE]
+2.	UPDATE button design change. - DONE
+a.	After next Beta update, the Beta users will be asked to delete the app & install again..since they won’t have the client code to show the UPDATE button.
+b.	Until then ,the updateMessage in firestore collection “appUpdates” will be same as now,i.e, Delete the app & install again.
+c.	After 5-6 days of next Beta release after we tell everybody to update the app, the message can be changed to simply “New Update available”.
+d.	Also, we have to think about unForcedUpdate OR
+HOW does Insstagram do auto-update???
+e.	SO, auto-update is an option present in Playstore app for any android device.
+f.	It may take upto 1 day for all users to have the current update
+g.	[SOLUTION] - [Have to do below in Release]
+i.	Have to use a combination of react-native-version-check(RNVC) & our own version check from firestore
+ii.	If both show the latest version to be equal, then we show the UPDATE page
+iii.	If RNVC shows that latestappversion is different than current app version, but firestore doesn’t say so, then we can show not show anything at all, because this situation may arise only when RNVC is showing a version upgrade when indeed there is none or when there is an upgrade available but latestappversion is not updated in firestore.
+iv.	If firestore says that update is visible but RNVC disagrees then it means that the update has not yet reached the device of the user OR playstore has not reset it’s cache although the developers have released a new version in Playstore. IN SUCH A CASE, we show nothing & let users use the previous version until RNVC says that there is a new version available.
+v.	Although for the last case in (iv), if we require forced update, we can stop the user from using the app by showing the update page & directing user to clear cache of playstore if no update is available.
+
+21/08/2020:-
+1.	Image Viewer for images [PanZoom]
+a.	Used ImageZoom from react-native-image-pan-zoom
+b.	Used in InfoScreen,MainFlipItem,FlipItem,Podcast,RecordBook & RecordChapter
+c.	DONE
+d.	Verify for multiple pictures in [RELEASE Database]
+i.	RecordBook (Checked in DEBUG - working, but sometime zooming into corner areas is a bit difficult) & RecordChapter
+ii.	InfoScreen [Same problem as in Recordchapter]
+2.	Like, share in MainFlipItem with likes count [Normal]
+a.	Like - DONE - Verified
+b.	Share - DONE - will verify on release database.
+3.	Issue in playing audio inside MainFlipItem [Have to reproduce in Satyam’s phone 1 time] ← not reproducible
+4.	Sometimes, the play or pause icon disappears from MainFlipItem ← not reproducible
+5.	FlipItem play/pause/loading problem arises when user continuously keeps on pressing the same icon ← not reproducible
+6.	Continue Listening not working in release mode (working in debug mode most probably because of lag)
+a.	[SOLUTION] → Provided a setTimeout after TrackPlayer seeks to the lastPlayedPosition (PodcastContent useEffect of playbackState) → THIS is not the solution. It seems the original code that was there in internal, that was not seeking to lastPlayedPosition, magically started to work after 1 day..although it is only client-side library(react-native-track-player). So, reverted this solution as original code(without timeout) is working in release mode.
+7.	Tooltip needs to be changed with curved implementation like in GPay. 
+a.	See if original tooltip for a new user if its properly working in release mode …
+b.	IF problem exists, then have to keep timeouts
+8.	Double sided bars not coming in all Podcast.js components except the one in your collections. (in Oneplus till now) - DONE - verified
+Problem was that the double-bars were shown only when ellipsis was shown.
+9.	Likes, retweet count in PodcastContent [Normal] - DONE - verified
+
+Small Pending Tasks:-
+1.	Show Likes of flip. [Inside MainFLipItem] - DONE -Verified
+a.	Have to set index in release database for flipsLiked [DONE]
+b.	Also shown in FlipItem [DONE]
+2.	Set min duration on audioflip. (15 sec) - DONE - verified  
+3.	Force Settings to open when user presses deny & never ask again in recorder. Do it on react native side before entering recorder
+a.	DONE & Verified with different scenarios
+4.	Deletion of drafts or showing user where drafts are so that user can delete them 1 by 1 when there are already 10 items in Draft.
+5.	BUGS in 1.0.24 → renderDots not working properly in FlipItem & MainFlipItem. ← not experiencing this as of 24/08/2020 in release internaltest version 1.0.24
+6.	BookName font in MainFlipItem has to be changed. - DONE - verified
+
+
+19/08/2020:-
+1.	Learn about redux storage & rerenders to understand whether large arrays can be stored in redux or not.       
+2.	Shimmer for explore
+
+17/08/2020:-
+
+1.	After exiting app & reenter audio’s state should be maintained.
+a.	Detect TrackPlayer’s state & if it’s playing, then extract the podcast by querying it by it’s podcastID stored in Track. [Has to be done before Explore queries]
+b.	Have to find out why the player stops on rerender.
+i.	Can try to remove the code for lastPodcastPlaying & then, see what happens.
+c.	Have to block TrackPlayer from stopping.
+d.	Have to SET_PODCAST the queried podcast & MOST IMPORTANT, have to open the PlayerControl as default.
+SOLUTION: After 3-4 hours of drilling into TrackPlayer issues, I was unable to solve this until it struck my mind that if I could send the app in background on back button press, then it may work.And it did work. 
+So, for the above I had to make changes to Main_activity & AndroidManifest
+Once try to use launchMode as singleTask & check working because previously it was singleTask only.
+[This is working.]
+https://github.com/react-native-kit/react-native-track-player/issues/864
+2.	Try to reduce as much size as possible. 
+3.	Change waves on podcast & make sure they play properly.[DONE → only thing remaining is positioning]
+4.	Have to keep last10Podcastsplayed in firestore & show them to user in Explore. [DONE]
+a.	Podcast item should have a slider at the bottom or something that shows a progress kind of thing, so that these last10Podcastsplayed are shown with a slider at the bottom.
+b.	To keep last 10 means everytime we listen to a podcast, tthe 11th latest podcast’s data has to be deleted from user’s private document.
+c.	Basically we need map kind of things,i.e, podcastID -> lastPlayedTime inside user’s private document.
+i.	We can encode both in a single array item OR
+ii.	We can have separate arrays - basically 1 for ID & 1 for podcast.
+
+16/08/2020
+1.	Algolia change - both debug & production [DONE]
+(rouguejohn60@gmail.com → davesalzr60@gmail.com )
+From 16/08/2020 - 29/08/2020
+2.	Original Podcasts Handling not done for -
+a.	Likes * [WW]
+b.	Reposts * [WW]
+c.	Shared link handling [Handled in existing code] ← HAVE TO CHECK ONCE WE RUN ON PROD DATABASE
+i.	After checking this..deploy addActivity same as in fa45c to 274618 [DONE]
+d.	Add To Explore - I/II or keep podcast down in HomeScreen * [WW]
+3.	We can upload original podcasts in app only after the current changes are pushed to Beta because numUsersRetweeted is not handled in the Beta code for original podcasts...basically,the numUsersRetweeted shall always show 0 even if 1 reposts an original podcast.
+4.	Look at PapyrusAdmin problems:-
+a.	Space between Heading & SubTitle.
+b.	Bold inside bullet points
+
+12/08/2020
+7.	Make repost Item of same design as Podcast.js [DONE]
+8.	Check the bug with Satyam’s account in RELEASE that music player is not turning on even though switch is toggled on.
+9.	Make Original & Book Tappable so that by tapping them the ToggleSwitch switches & the text Selected becomes opaque,weheras the not selected one becomes a bit dim [DONE]
+10.	BUG -> size of AppTabBar is very large in ONEPLUS after I changed Dimensions to ExtraDimensions 
+a.	[DONE] changed ExtraDimensions in CustomAppTabBar to DImensions
+11.	Getting book info from barcode.
+12.	Book Add to be made separate screen
+13.	Book Add button to be given in ExploreScreen.
+14.	Show VIEW MORE option when there are horizontal book lists shown. 
+a.	DONE in BookList & corresponding changes in HomeScreen & Explore.
+15.	Provide loading sign when coming from podcast upload to HomeScreen. [No loading Sign, but atleast there is no white screen for 2 to 3 seconds that comes up if I keep setLoading(true) & setLoading(false)] → [DONE]
+16.	READ MORE in Podcast.js ← change design a bit[DONE]
+17.	Find & Remove Papyrus written in recorder [DONE]
+18.	Gap coming at left position
+19.	Keep last playing position for podcast [DONE]
+a.	Last time this was done was when we did not have TrackPlayer. [DONE]
+20.	Make Music Player Invisible, when podcast is not null & bring it back when cross is pressed in PlayerControls. [DONE] 
+a.	Switch off the musicplayer switch in CustomDrawerContentComponent & EditMusicPreferences screens. [DONE]
+21.	Take user to SAVED books part when saved is clicked for the 1st time & show some walkthrough there.
+22.	Change fonts in AddMusicPreferences [DONE → Andika-R changed to Montserrat-Regular]
+23.	BUGS mentioned by Sumit:- [SOLVED]
+a.	Clicking on the picture is not moving the PodcastPlayer up. [There is difficulty in this because the state in which the podcastPlayer is right now has been brought by very minute changes & somehow, it was working]
+Basically it will take time to implement this.
+OR
+I can keep the slideUp in the Image’s TouchableOpacity & run the app in release mode in order to check whether it works okay in release mode. [Working in RELEASE]
+b.	Also check in release mode, the sliding of podcastPlayer, not tapping at the position required but sliding to it. [Working in RELEASE]
+c.	Cannot move the slider in PlayerControl
+i.	Have to keep slider at top like in Spotify or at bottom like in Youtube which would be a thin line ...so that user will not think that the slider is for sliding[DONE]
+
+10/08/2020
+1.	Firestore connection for book podcast & original podcast walkthrough:- [DONE]
+a.	AddBookReviewScreen
+i.	addBookReviewScreenWalkthroughDone
+ii.	recordBookWalkthroughDone
+iii.	bookPodcastWalkthroughDone
+iv.	originalPodcastWalkthroughDone
+2.	Look into RecordBook -- If there are large number of authors in 1 book, then record & bookmark buttons shall go down & we have to scroll to it before showing walkthrough.
+a.	Have to find some way to scroll to the position of the <View> that contains the record button & bookmark button so that we scroll to that position before enabling tooltip-walkthrough.
+3.	In podcast upload walkthrough, add images & modify text wherever necessary.
+4.	Add walkthrough for genres in OriginalsPreviewScreen [DONE] & add text for selecting genres for podcast in OriginalsPreviewScreen [DONE]
+5.	After adding flip, & navigating to HomeScreen, reload or rerender the HomeScreen. [DONE]
+6.	After adding podcast, & navigating to HomeScreen, query a single latest Podcast of user in HomeScreen [DONE]
+7.	Change the 1st Image in OriginalsPreviewScreen & PreviewScreen.
+8.	Pause Player & reset to 0 when podcast in PreviewScreen & OriginalsPreviewScreen ends playing.
+9.	After logging out, dispatch all the things required to bring redux store to its original state OR initial state. [DONE]
+a.	All walkthrough redux variables
+b.	Try to find out some way of resetting redux to initial state with a single line of code. ← used this method
+10.	Have to do something about Drafts Section, limit of 10 needs to be removed. Can make a drafts in react native side,but on Android side, there should be no drafts.
+11.	[Future Tasks] - AFTER video addition & all the tasks are completed in 08/08/2020 & 10/08/2020 section
+a.	Calculate a user document size & try to estimate upto how many followers or likes or reposts or bookmarks can be done as per the size of 1 MB restriction on a firestore document.
+
+08/08/2020:-
+1.	Add Tetris FLips before the last podcasts in Explore Screen. [DONE]
+2.	At ExploreScreen Top we can keep text which queried from database so that it can be changed anytime we want
+3.	Introductory cards for users.
+4.	Original Podcast Upload/Record Framework [DONE]
+5.	Redesign of AddBookReviewScreen to support both original podcasts & bookPodcasts. [DONE]
+a.	Original Podcast walkthrough [DONE]
+6.	After design of AddBookReviewScreen, design a tooltip walkthrough for book Podcast addition
+a.	PreviewScreen Walkthrough [DONE]
+b.	Will involve a walkthrough in RecordBook for 1st time only [DONE]
+7.	For all walkthroughs, make sure that you have timeout only when a certain user is entering for the 1st time.Basically, timeouts shall cause unnecessary delays. [DONE]
+
+
+05/08/2020:-
+1.	Remove numPodcasts updation from client [DONE]
+a.	Have to run script written in Mohit’s Laptop in order to update all category numPodcasts count. [Can be done in every week]
+Bug - Because of AudioFlips, the height of the flip is varying a lot between 2 lengths & because of this when user moves from his profile screen to the Vertical Flip Screen, there, it is not able to scroll down to the exact position.
+
+RQ:-
+1.	Show trending books in SAVED tab in profile screen & an option should be there which sends user to a screen where there are more books from user’s preferred genres & user can bookmark them one by one.
+2.	
+
+→ Navigate to InfoScreen when user presses Read More or podcastDescription in Podcast.js
+→ Keep Music icon and/or Music
+
+
+03/08/2020
+1.	Make HomeScreen the 1st screen on opening App. [Not Possible Now...Taking too much time to load - 12 secs(Mobile data) 7 secs(Wifi)]
+2.	In SAVED books in collections,[DONE]
+a.	An illustration should be there below which will be a button for Explore books which shall take user to a screen where user can save books. [DONE]
+b.	Bookmark symbol has to be there in SaveBookItem. [DONE]
+3.	In Reposts in collections, [DONE]
+a.	 An illustration should be there below which will be a button for Explore podcasts which shall take user to a screen where user can repost these podcasts & come back to reposts section to view these reposts.
+4.	In FlipPreviewScreen, there shall be a switch which shall be based on the question - “Is this flip related to any book?”.  [DONE]
+-> And based on this switch, the TextInput will be shown to the user for inputting the book name. [DONE]
+-> By default, this option shall be switched ON. [DONE]
+5.	Rectangle shaped views at top of Explore Screen.
+6.	Walkthrough for Flips:- [DONE]
+a.	Show tooltip walkthrough only when a variable like flipUploadWalkthroughSeen in user’s private document is false or undefined. [DONE]
+b.	After showing flip walkthrough, set this variable in firestore to true so that from next time this can’t be seen. [DONE] 
+c.	3 variables required for walkthrough in AddFlipScreen & FlipPreviewScreen & in AddAudioFlipComponent [DONE]
+i.	addFlipWalkthroughDone [DONE]
+ii.	flipPreviewWalkthroughDone [DONE]
+iii.	audioFlipWalkthroughDone [DONE]
+7.	Make slider black in AudioFlips. [DONE]
+8.	Loading (ActivityIndicator) in AudioFlips. [DONE]
+9.	Ensure that slider is set to 0 before a new flip is played. [PENDING] ← will do this later
+a.	TrackPlayer.seek(0) is not able to take the player to be at 0.
+b.	Slider takes value from position which is given by useTrackPlayerProgress().
+c.	What happens is the SET_FLIP_ID is called after which the Slider with value set to position is shown & for 1 or 2 seconds, the slider shows value == position left by last audio flip or TrackPlayer.
+d.	But, this should be possible. If time permits, then this can be done afterwards.
+
+02/08/2020
+Technical tasks:- [6,1,3]
+1.	Walkthrough for Flip making
+a.	Design in FlipScreen [DONE]
+2.	Change design of AddBookReviewScreen.[Discuss with Satyam]
+3.	Flip Title inclusion in AddFlipScreen,FlipItem & MainFlipItem. [DONE]
+a.	Include trim function wherever text is written in flips [DONE]
+4.	Play Music after podcast ends or audio ends in audioFlip if user has chosen the choice of having background music.
+5.	Turn MusicPlayer off when entering FlipPreviewScreen with AudioFlip option.
+6.	Make proper path for upload audio from local storage in flips with warnings as to not import from google drive OR when user does pick up files from google drive, at that time we alert the user [DONE]
+a.	UPLOAD PATH completed with 2 checks:-
+i.	Upload audio from local storage [DONE]
+ii.	Upload audio of duration less than or equal to 140 seconds.[DONE]
+b.	Another alert to be given related to .wav file uploading.[DONE]
+c.	Have to take permission for upload [Not needed..this permission is already taken when picture is uploaded in AddFlipScreen.]
+
+Non-Technical tasks:-
+1.	Algolia change [DONE on 03.08.2020 at 10:20 AM for prod & 10:40 AM for dev]
+a.	1 task remaining → numPodcasts increment in AddToPodcastsIndex → Causing problem because can’t use await inside for loop. (MAYBE have to use batch commit kind of thing) [Not so URGENT ← but will have to do this by 03/08/2020 EOD]
+2.	Wherever in client code we use an Image from a different URL than our google cloud storage, then, upload that image to our database.
+3.	Prepare list of all artists who have to be be given attribution
+
+
+01/08/2020
+1.	Write build version everytime user signs in so that we don’t need to ask user everytime. [DONE]
+2.	Change the text in Report a Problem. [DONE]
+a.	Some other things can be done with Report a Problem
+b.	Like we can open a screen in which user can write whatever query or problem she has & 
+c.	In app, we shall have an admin-level screen which shall allow admins to revert back to these problems after which user can see them in their Report section...Maybe even provide a notification. 
+
+
+
+31/07/2020
+1.	Make modal in which you ask the user whether they want to have background music while using Papyrus.
+a.	Have to do this either in Explore.[DONE]
+b.	Variable in firestore(musicEnabledNotificationSeen) unique to each user is needed which indicates whether user has been shown this modal once or not. [DONE]
+c.	BASICALLY, we need to show this to any user only once. [DONE]
+d.	Edit Music Preferences in SettingsScreen. [DONE]
+i.	Added ToggleSwitch for MusicPlayer in EditMusicPreferences Screen. [DONE]
+2.	Find out how to include Android SDK 29.
+3.	
+
+27/07/2020 - 28/07/2020:-
+
+1.	Track Player memory leak issue.
+2.	Code cleanup:-
+a.	Keep render section clean by copying all logical code inside functions so that the structure is clear & also the backend code is clear when 1 sees it.
+3.	Upload option for audio in flips [onHold]
+a.	Tried various options but no advancement till now.
+b.	React-native-sound,react-native-sound-player,react-native-audio
+c.	NOTE:- Current status & next steps are written in FlipPreviewScreen in playAudio() function.
+4.	GIF upload in flips & podcasts
+a.	Some GIF files can be very large. Such files are not only bad for our client (react-native) as it causes performance issues, but also these are bad for our storage.
+b.	GIF resizing cannot be done using normal react-native-image-resizer.On react-native we have no library currently that does resizing of GIFs.
+c.	Gifsicle is a node js library which allows resizing of GIFs, so it can be used to resize GIFs in our cloud function code.
+d.	But when we resize 18 MB GIF to produce 1 MB GIF, nothing is visible...So, as per investigation into other apps uploading GIFs, tumblr currently has a 5 MB limit on compressed GIFs. So, currently I have imposed a limit of 1 MB.
+e.	We can increase this limit if we can call cloud function & resize the GIF using gifsicle, but even then we have to keep limit to 2-3 MB only, so that the GIF is presentable in the app.
+
+
+Checks before release tp Internal Test(1.0.22) on 26/07/2020:-
+
+1.	Links
+a.	Flips
+b.	AudioFlips
+c.	Podcasts
+2.	Internet connection check
+3.	Podcast.js ← whether it plays properly when we see same podcast instance at 2 places in app.
+4.	Synchronicity between MusicPlayer, PodcastPlayer & Audio Flip
+5.	If MusicPlayer is switched off, then from next time, we shall have not have Music Player running in background from start & vice-versa.
+
+
+Tasks for 26/07/2020 (Sunday)
+
+1.	Track Player memory leak issue:-
+a.	Dispatch directly from service.js 
+https://stackoverflow.com/questions/45043219/calling-dispatch-function-from-a-blank-javascript-file
+b.	Remove remote event listeners from PodcastPlayer, MusicPlayer & FlipItem.
+c.	Check how to remove listeners initiated by the service.js file.
+d.	TrackPlayer.destroy() & TrackPlayer.setupPlayer() ← Does calling destroy() important before calling setupPlayer(), so that there is no memory leak?
+2.	In build.gradle make API level supported to 29. [Google play console is giving warning due to this] ← Ensure that this is done before the next Beta release.
+3.	Try update flow so that user is directly taken to playstore with UPDATE being shown there. [NOT Happening..will have to investigate this] → [UPDATE option will be shown only when previous version has been downloaded from Playstore itself.
+If we simply run in release mode from VS code, then in that case it will not show UPDATE option in Playstore..Instead it will show OPEN only.
+For seeing UPDATE option first install the app from playstore, then rollout new release,
+And then follow the corresponding link..you should see UPDATE option] -- [DONE]
+a.	Set everywhere your versionCode to 15 & version 1.0.14
+b.	Build ...The update screen shall appear
+c.	There use the alpha link in an UPDATE button which you have to make.
+d.	Check whether it shows the UPDATE option in play console or OPEN.
+
+
+Tasks for 25/07/2020 (Saturday)
+1.	BUG:- Sometimes, screen is becoming a bit non-responsive when music is playing or some track is playing. [MAJOR PROBLEM -- Look into this as soon as possible]
+NOTES:-
+(a)	 Not related to MusicProvider
+Even on removing MusicProvider in App.js, the problem still persists.
+(b)	 Maybe it is the Animated.useNativeDriver thing OR maybe there are multiple TrackPlayer Instances which is causing this problem.
+		SOLUTION:-
+			Works fine in Release mode, problems visible only in     DEBUG mode.
+2.	Home Screen Design -  [DONE..will have to verify in DEBUG once since now there are only 19 flips]
+10 flips → 10 podcasts → 10 flips → 10 books → 10 flips →  Remaining podcasts
+
+PROBLEM HERE:- onEndReached Not getting called when extra flips are added to header [DONE → Not reproducible everytime]
+3.	In ProfileTabNavigator..in every tab, we should show something related to keeping user engaged:-
+a.	Flips ← Add Flip option to take user to AddFlipScreen.
+b.	Reposts ← Some podcasts of Explore may be
+c.	Saved ← Some books from explore
+d.	Podcasts ← Add Podcast option to take user to SelectScreen
+4.	Add player in MainFlipItem for audioFlip & play on entering it. [DONE on 25/07/2020 at 10:04 PM]
+5.	Check BUG-  [SOLVED on 25/07/2020 at 08:46 PM]
+a.	Play Audio Flip after entering from ExploreFlips or ProfileFlips.
+b.	Go back to ExploreFlips or ProfileFlips.
+c.	Go forward to the same audio flip that you played..
+d.	The play button will be displayed instead of the pause button.
+e.	SOLUTION:- Added a line for 
+             dispatch({type:"SET_FLIP_PAUSED",payload:true})
+So, with this the paused Redux value from flipReducer would be properly maintained & based on that in main useEffect of FlipItem, I can identify whether current Item is playing or not & based on that I setPlayerText(‘pause) because by default, playerText is ‘play’.
+6.	Have to properly write category podcasts count in Category Screen’s items. [FOR ADMIN ONLY]
+7.	Allow write to categories in Security rules for release database. [DONE on 25/07/2020 at 02:35 PM]
+8.	KeyboardSlideDown option for ScrollView in PreviewScreen & any other place like editProfile where keyboard pops up & we have to press a button after that. [DONE on 25/07/2020 at 08:09 PM]
+9.	toggleSwitch’s default option to be set to false on Logout & to be set to true at Login.
+Other than this, this option shall be there as a question at signUp . And after that the default value shall be stored in user’s private document & toggleSwitch’s default value shall be taken from the database in setUserDetails.
+10.	ToggleSwitch color change & position slightly down from the current position. [DONE on 25/07/2020 at 08:09 PM]
+11.	Prepare template item for showing at the top of ExploreScreen.
+a.	Item name
+b.	Item picture 
+c.	Item description 
+& put these in carousel or normal horizontal scroll view.
+12.	[How many characters ??] Provide minimum limit to what can be written as description in Podcasts in PreviewScreen.
+
+
+
+Tasks for 24/07/2020
+13.	Option from menuOption to directly change the lastEditedOn in order to send a podcast down the Home screen.
+This option required for both flips & podcasts.
+a.	flipItem: 2 options extra -- 
+i.	lastEditedOn to a previous date [DONE on 24/07/2020 at 09:09 PM]
+ii.	send to ExploreFlip [DONE on 24/07/2020 at 08:55 PM] 
+b.	Podcast: 1 option extra -- lastEditedOn to a previous date. [DONE on 24/07/2020 at 09:33 PM]
+14.	After coming back from AddFlipScreen, or after uploading flip, remove the texts from FlipPreviewScreen.
+15.	
+16.	
+
+
+
+Tasks for 24/07/2020 MORNING
+
+1.	Flips in explore screen to be higher up in ExploreScreen just after Explore Section-I. [DONE on 24/07/2020 at 02:53 AM]
+2.	Remove music from Explore Screen [DONE] & for the music query use a parameter like “isBackgroundMusic” which can be changed from backEnd. [DONE on 24/07/2020 at 02:55 AM]
+3.	Keep a Music option in CustomDrawerContentComponent which shall be like a switch. By using this option, user can close the background player or open it. [DONE on 24/07/2020 at 01:43 AM]
+
+Tasks for 23/07/2020
+
+1.	Music Player [Completed]
+a.	Basic design [DONE on 22/07/2020]
+b.	Shuffle --
+i.	Play new song with Toast when shuffle is clicked [DONE on 23/07/2020 at 09:01 PM]
+ii.	 After last music...play 1st music again. [DONE on 23/07/2020 at 09:01 PM]
+c.	After end of 1 song, play the next one automatically. [DONE on 23/07/2020 at 10:29 PM]
+d.	While playing,always remember to setup first because it might be the case that either podcast or audio flip was being played before the music. [DONE on 23/07/2020 at 09:18 AM]
+e.	Have to play/pause based on remote events. Remove STOP from notification capabilities when playing music. [DONE on 23/07/2020 at 09:18 AM]
+f.	Have to trigger remote-play or remote-pause only when currentTrackID = music.podcastID in useEffect() in MusicProvider. [DONE on 23/07/2020 at 09:01 PM]
+2.	Option from menuOption to directly change the lastEditedOn in order to send a podcast down the Homescreen.
+a.	Change query in ProfileTabNavigator & ExploreTabNavigator Screen to be based on createdOn rather than lastEditedOn [DONE]
+
+
+Tasks for 21/07/2020
+
+1.	Deploy all cloud functions for DEBUG database except AddToMusicIndex after configuring new algolia API keys from Firebase-CLI. [DONE on 21/07/2020 at 09:15 PM -- done 1st time by deploying all functions at once]
+Have to check above & only then we shall use this technique of deploying all functions at once on PROD database. [Can be done on 22/07/2020 or 23/07/2020]
+FUNCTIONS whose working has been checked:-
+●	AddToPodcastsIndex
+●	AddToUsersIndex
+●	changeUserNameInPodcastsAsiaEast
+●	changeDPInPodcastsAsiaEast
+●	deletePodcastFromIndex
+	FUNCTIONS whose working is yet to be checked
+●	addBookToIndex
+●	addChapterToIndex
+●	AddMusicToIndex
+2.	Complete the flipLike cloud function flow. [DONE on 22/07/2020 at 08:16 AM]
+[TIP:- While calling cloud functions, always call using firebase from react-native-firebase/functions]
+3.	Remove serviceAccounts from github [24/07/2020 or 25/07/2020]
+a.	Refer to link:-
+https://stackoverflow.com/questions/35115585/remove-file-from-all-commits
+b.	Keep both serviceAccounts in gitignore after doing this.
+c.	Can actually remove both service Accounts from functions folder if admin initialization using firebase config works properly. [After checking of all cloud functions is done - TASK 1]
+4.	Show category wise podcast count:-
+a.	Run node script to put values into numPodcasts for each category. [DONE on 21/07/2020 at 10:00 PM]
+b.	Make changes on client side before next Beta update [ 22/07/2020]
+i.	PreviewScreen.js -- increment by 1 in each genre [ DONE on 22/07/2020 at 10:30 PM ]
+ii.	Podcast.js -- decrement by 1 in each genre [ DONE on 22/07/2020 at 10:30 PM ]
+iii.	Security rules for writing to Category document can be written later this week when other security rules are written. ← ADDED Requirement in google doc - “Final Security Rules published on 19/07/2020”
+iv.	ALSO, before next update, run the script written in Mohit Sir’s laptop to update the category podcasts value to current one.
+c.	Since writing in cloud function is a temporary solution because of 1 invoke/sec rule,we have to also make changes on client side to increase category Podcast number.
+5.	Make document for algolia change [24/07/2020 or 25/07/2020]
+6.	Properly check whether anywhere Security rules are making a problem or not.
+7.	Have to think of something to put podcasts/flips down the order..maybe change lastEdited to some days back….so that the particular content does not come higher in the order in HomeScreen.
+8.	Reduce fontSize in Explore Screen search bar. [DONE on 22/07/2020 at 10:30 PM]
+
+
+
+TASKS after next Beta update:- [tentatively 25/07/2020 or 26/07/2020]
+1.	Crashlytics
+2.	Hot updates - UPDATE only some react-native pages not entire app.
+LINKS:- https://medium.com/@enamin/react-native-hot-updates-a-solution-for-silent-updates-b9af72008264
+https://github.com/Microsoft/react-native-code-push
+
+
+
+
+
+
+
+
+
+Tasks for 18-07-2020
+
+1.	Fix Bugs
+a.	Image resize mode problem 
+i.	Description:- On opening MainFlipItem, only for the first time, we are having proper picture size...after that everytime we are observing wrong image size in MainFlipItem [DONE] - 09:42 AM
+ii.	SOLUTION:- Calculating resizeModes in useEffect of MainFlipItem instead of calculating in useEffect of FlipItem.
+b.	Forgot password BUG
+i.	Description:- App crashing when none of email & password are filled & user chooses for ‘Forgot Password’ [DONE] - 09:56 AM
+ii.	SOLUTION:- send password reset email only when email.length!=0
+c.	Have to find out scenario when audio flip is being clicked but podcast is still playing. [on DEBUG database] [DONE on 20/07/2020 01:34 PM]
+i.	So, this can be reproduced if we play a flip, then pause it, & then play a different flip & then play the 1st one again.
+ii.	We can see that both audio flips are showing pause symbol, but only 1 is playing.
+iii.	SOLUTION:- So, when the user is pausing an audioFlip, then ‘player’ variable (which maintains a state as to what to do when play icon is pressed) was not changed because if user wants to play the paused flip again, then it should resume from where it was paused.
+But because of this when we try to play this flip(which was played before & paused) when some other flip is playing, then it simply calls - “TrackPlayer.play()” which does nothing as it resumes the already playing flip. That’s why the icon is changed but the track that was played was not changed.
+
+So for solving this, in onPress function of play icon:-
+if(player == false)
+was changed to
+if(player == false || (player == true && props.item.flipID != currentFlipID))
+Which meant that we start the audio flip from start when play icon is pressed & some other flip is playing at that time.
+d.	Provide paddingBottom/marginBottom in MainFlipItem.js [DONE on 20/07/2020 at 1:17 AM]
+2.	Improvement in code
+a.	Wrap MenuProvider on only those components which use menu
+i.	Podcast.js
+ii.	FlipItem.js
+iii.	MainFlipItem.js
+3.	Deploy cloud firestore Security Rules [DONE - deployed on Production Database (19/07/2020 -- 08:43 PM)]
+a.	First try on debug database.
+b.	Use the notes on firestore security rules.
+c.	Have to identify exactly which parts should be private or public.
+4.	Design to be added
+a.	Show bookName in Podcast.js. [DONE on 20/07/2020 05:00 PM]
+SOLUTION:- Copied from FlipItem.js
+b.	Image in MainFlipItem & FlipItem
+i.	In FlipItem.js, in some flip images, a small strip on the left side is seen from the previous image [DONE on 20/07/2020 05:17 PM]
+	SOLUTION:- There was padding before FlipItem component in renderData...changed it to paddingVertical.
+ii.	In MainFlipItem.js, have to understand the ratio properly & accordingly define resizeModes. [DONE on 20/07/2020 04:46 PM]
+1.	SOLUTION:- All photos are provided “contain” resizeMode because in “contain”, the image’s aspect ratio is maintained,& at the same time, complete image is also shown.
+c.	When user clicks FlipItem, then the picture selected from FlipItem, should be shown in MainFlipItem directly.
+d.	Font change to Montserrat-Bold in Search Bar. [DONE on 20/07/2020 06:07 PM]
+e.	Tetris-like structure in ExploreScreen for FLIPS [DONE on 20/07/2020 08:30 PM]
+f.	Wave over audioFlips in Profile/ExploreTabNavigator Screen & flips in ExploreScreen. [DONE on 20/07/2020 08:45 PM]
+g.	Make Flip in left position,not center in Profile/ExploreTabNavigator Screen  [DONE on 20/07/2020 08:45 PM]
+5.	Requirements:-
+a.	Show No Internet Connection when any item or screen is not able to be queried. [DONE]
+i.	SOLUTION:- Created Network Provider component, wrapped it around the app & within NetworkProvider.js have added a listener in mount & removed the listener in unmount.All components can use the “isConnected” value in order to know whether Internet Connection is present or not.  
+b.	Make a list of all animations that we have used.
+6.	Understanding dex2jar & what are the various ways in which an app’s security can be compromised & what are the steps to solve those security issues.
