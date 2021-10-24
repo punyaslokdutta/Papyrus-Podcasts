@@ -1,4 +1,8 @@
 
+MAJOR QUERIES
+(Use AXIOS Rest api or Graphql for segregation of the Query types)
+
+
 
 *NOTIFICATIONS* : For any notifications in the app, such as 
 When someone follows you.
