@@ -82,4 +82,4 @@ Security Rules Notes:
       READ Access to all.
 	  WRITE Access to only admins.
 	  
-6) Also, in security rules we should include schema check(number,string)
+6) Also, in security rules we should include schema check(NUMBER,STRING)
