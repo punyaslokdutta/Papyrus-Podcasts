@@ -1,10 +1,8 @@
-Tasks for 12/10/2020:-
-1.	For a flip video, screenshots can be taken afterwards in FlipPreviewScreen or in AddFlipScreen.
-2.	IN
+
 
 
 Tasks for 08/10/2020:-
-1.	Algolia A/c changed to ry984522@gmail.com from kanechristian73@gmail.com  
+1.	Algolia A/c changed to ry984**2@gmail.com from kanechr**n73@gmail.com  
 2.	Remove Podcast & books addition/search in entire app
 a.	Remove podcast from SelectTabNavigator (Flip,Conversation)
 b.	Remove books & podcasts from SearchTabNavigator & include podcasts in Convos Tab (Convos,Users,Flips)
@@ -431,7 +429,7 @@ ii.	We can have separate arrays - basically 1 for ID & 1 for podcast.
 
 16/08/2020
 1.	Algolia change - both debug & production [DONE]
-(rouguejohn60@gmail.com → davesalzr60@gmail.com )
+(rouguej***ohn60@gmail.com → davesalzr***60@gmail.com )
 From 16/08/2020 - 29/08/2020
 2.	Original Podcasts Handling not done for -
 a.	Likes * [WW]
