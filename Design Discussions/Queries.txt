@@ -87,7 +87,3 @@ NOTE9: Time Spent on the app by all listeners listening to users’ podcasts or 
 
 *Retention rate to be calculated monthly or weekly or how?*
 
-
-
-      .  
- 
