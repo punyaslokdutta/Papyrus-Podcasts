@@ -1,0 +1,34 @@
+Firestore structure change NEEDED:-
+
+1.	So , currently we have a firestore document-collection structure where we have some issues related to scalability.
+2.	What I mean by scalability is that - 
+a.	FIrestore’s model tells us that we can have -
+“There is no limitation on the number of documents in Firestore collection but it has a limitation of the size of the document. The maximum size of a document is roughly 1 MiB (1,048,576 bytes)”
+3.	Therefore, we need to change the structure so that the infinitely increasing lists are kept as subcollections & not as arrays within documents.
+4.	Let’s take the example of followersList OR followingList
+a.	If we make “Followers” as a subcollection of privateUserData, then we have to change queries.
+DOCUMENT fields:-
+i.	id → document ID of the follower
+ii.	name → name of follower
+iii.	displayPicture →  DP of the follower
+iv.	docID → document ID of this particular follower document.
+b.	So, if i need to show followers of a user, then it would simply be a subcollection query.
+5.	For followingList, most important thing is that we are able to show whether the user is following a person whose profile he visits or not.[“FOLLOW” / “FOLLLOWING” button]
+a.	With regards to this, we can somewhat follow Instagram’s model & also our own perception from social media usage that a single user may have large number of followers because of a large count of users following the single user.
+b.	However, each of these single followers are not following a large number of users (they may follow..but generally not)
+c.	Basically, the following count is very less when compared to followers count (in general).
+d.	INSTAGRAM uses a policy of 7500 people max that any user can follow. So, 7500 uids in an array would mean a size of - 
+	7500 * 20 characters * 1 byte/character = 150000
+							 = 1.5 * 10^5 bytes
+
+	1 MB = 1048576 bytes 
+		= 1.048 * 10^6
+e.	So, it’s okay if we keep the following list array in private document.
+6.	As per item size, a document can contain at max 75000 items in a single document (if 20 byte-items(IDs) are involved)
+7.	So, afterwards, when we are having likes & bookmarks in about 7500 items range, at that point, we have to change the structure of firestore such that we have a collection, let’s say for PodcastsLiked & each time a user likes some podcast, then the corresponding podcastID is added to the 1st document until 75000(or 70,000 to be safe) items are there in the array. After the array crossed this mark, then we create a 2nd document & we start writing to it now.
+8.	WHen we need to delete a like due to unlike, we have to call arrayRemove on that array in all the documents in the PodcastsLiked sub-collection. [This will be a bit expensive query but by the time we come to this point, we’ll have enough to support these kind of expenses.]
+
+WE JUST HAVE TO LOOK OUT WHEN A TYPICAL USER’S PRIVATEUSERDATA DOCUMENT STARTS HAVING ARRAYS WITH COUNT OF 1000,2000,3000,...,7000.
+At 7000, we can have about 10 arrays each having 7000 items in them with just 20-byte IDs.
+After 7000 items, we can start executing the above plan for almost all lists.
+
