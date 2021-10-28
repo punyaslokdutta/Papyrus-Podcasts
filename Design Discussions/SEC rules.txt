@@ -1,5 +1,106 @@
 SECURITY RULES:
 
+COLLECTIONS & their document structure:-
+
+1.	books
+a.	authors [] 
+b.	bookDescription
+c.	bookID
+d.	bookName
+e.	bookPictures []
+f.	createdBy
+g.	createdOn
+h.	genres [] ← max 10
+i.	language  
+j.	publicationYear
+k.	reviewPending
+
+●	Books can be created by all users. (CREATE)
+●	Books cannot be deleted by any user except admin. (DELETE)
+●	Books(all fields) cannot be edited by any user except admin. (EDIT)
+●	Books can be read by all users. (READ)
+
+
+
+2.	podcasts
+a.	audioFileLink
+b.	authors []
+c.	bookID
+d.	bookName
+e.	chapterName
+f.	createdOn
+g.	duration
+h.	genres []
+i.	isChapterPodcast
+j.	isExploreSection2
+k.	language
+l.	lastAddedToExplore2
+m.	lastEditedOn
+n.	numUsersLiked
+o.	numUsersRetweeted
+p.	podcastDescription
+q.	podcastID
+r.	podcastName
+s.	podcastPictures []
+t.	podcasterDisplayPicture
+u.	podcasterID
+v.	podcasterName
+w.	tags []
+i.	editable by user only, 2 fields numUsersRetweeted & numUsersLiked editable by all authenticated users
+ii.	delete by user only
+iii.	Read by all authenticated users
+
+
+3.	users
+a.	displayPicture
+b.	followerCount ← can be moved to cloud functions [from next]
+c.	followersList [] ← can be moved to cloud functions []
+d.	id
+e.	name
+f.	timespentTotalByUsersListening
+i.	Read by all authenticated users
+ii.	Delete,create by admin only.
+iii.	Write by user only except fields - “followersList” & “followersCount”
+1.	For this , have to write a function in security rules which does 2 things.
+Checks that if only followersList & followersCount are updated.& then it shall check if request.resource.data.followersList & ressource.data.followersList has a diff of 1 length only & that element is equal to request.auth.uid
+		   
+		
+4.	privateUserData
+a.	accountCreationTime
+b.	bookmarksCountArray
+c.	displayPicture
+d.	email
+e.	flipsLiked
+f.	followingCount
+g.	followingList
+h.	id
+i.	introduction
+j.	isAdmin
+k.	languagesComfortableTalking
+l.	lastPlayingCurrentTime
+m.	lastPlayingPodcastID
+n.	lastSeenTime
+o.	likesCountArray
+p.	listenedBookPodcastsCount
+q.	listenedChapterPodcastsCount
+r.	name
+s.	numCreatedBookPodcasts
+t.	numCreatedChapterPodcasts
+u.	numNotifications
+v.	phoneNumber
+w.	podcastsLiked
+x.	timespentByUserListening
+y.	userName
+z.	userPreferences
+aa.	Website
+i.	Here, entire privateUserData document should be  editable by user only[DONE]..except isAdmin property which can be changed by admin only.
+ii.	Read by all authenticated users [DONE]
+iii.	Delete,create by admin only 
+5.	
+
+	   
+
+
 
 -> Have to incorporate a rule in Security Rules that writing to podcast Document in whole is only limited to the podcasterID & the userIDs in adminList.[IMPORTANT] 
      Other than this, since partial writing permissions are allowed, only numUsersLiked & numUsersReweeted fields shall be given writing rights by all users.
