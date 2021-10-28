@@ -1,0 +1,69 @@
+Steps to make someone admin:-
+
+1.	Before proceeding ensure that you have “firebase-admin” installed through npm & also keep serviceAccount for project papyru*******8.
+2.	You can find serviceAccount in the functions folder in git for Papyrus project DEV branch.
+3.	Run below script:- addUserAsAdmin.js
+	
+	
+
+const admin = require('firebase-admin');
+const serviceAccount = require('./serviceAccountProduction.json');//this one
+
+admin.initializeApp({
+   credential: admin.credential.cert(serviceAccount)//not required for uploading json to firestore
+});
+
+const addUserAsAdmin = async (uid) => {
+   console.log("Going to make user ",uid," as admin");
+  try{
+   admin.auth().setCustomUserClaims(uid,{
+       admin : true
+   }).then(() => {
+       console.log("Success");
+   }).catch((error) => {
+       console.log(error);
+   })
+  }
+  catch(error){
+      console.log(error);
+  }
+  finally{
+      console.log("Finished")
+  }
+}
+
+addUserAsAdmin("nXPsUkiuQnb8SVze93oezAWMDCr2");
+
+4.	Here, instead of nXPsUkiuQnb8SVze93oezAWMDCr2 in the last line, use the userID of the one who you want to make admin.
+5.	Currently, this script does not end on its own..You have to press Ctrl+C to stop it.
+6.	You can check whether the claims have been set or not by running the below script:-
+const admin = require('firebase-admin');
+const serviceAccount = require('./serviceAccount.json');//this one
+
+admin.initializeApp({
+   credential: admin.credential.cert(serviceAccount)//not required for uploading json to firestore
+});
+
+const checkUserClaims = async (uid) => {
+   console.log("Checking user ",uid," claims");
+  try{
+   admin.auth().getUser(uid).then((userRecord) => {
+       // The claims can be accessed on the user record.
+       console.log(“admin : ”,userRecord.customClaims['admin']);
+     }).catch((error) => {
+       console.log(error);
+   })
+  }
+  catch(error){
+      console.log(error);
+  }
+  finally{
+      console.log("Finished")
+  }
+}
+
+checkUserClaims("nXPsUkiuQnb8SVze93oezAWMDCr2");
+
+7.	Again you have to use the uid of the user you want to check. Result should show - “admin : true” if the uid passed has been set as admin or else “admin : false” would be displayed or there would be some “undefined” error.
+8.	Once, “admin : true” is displayed, go to firestore & add/set “isAdmin” property to the value ‘true’(boolean type) in the 1 document named as [“private” + uid] under privateUserData subcollection for the document of the user in users collection.
+9.	You can check admin privileges now by editing/deleting any flip/podcast.
