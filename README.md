@@ -1,9 +1,10 @@
 # Papyrus-Podcasts
 How can we minimise the Goldfish Effect of Social Networks ?
+![Final Papyrus Architecture](https://user-images.githubusercontent.com/13198518/139237551-74bffc16-b384-4430-8610-c08664949f13.jpg)
 
 
 
-Ad-free articles and podcasts to satisfy universal daily curiosity. Podcasts are
+1. Ad-free articles and podcasts to satisfy universal daily curiosity. Podcasts are
 inherently a focus developing medium where listeners try to increase their
 attention span and at the same time can enjoy stories while multitasking.
 
