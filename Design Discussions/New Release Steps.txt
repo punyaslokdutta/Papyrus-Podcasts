@@ -1,0 +1,48 @@
+Steps to prepare a new release for Papyrus:
+
+1.	2 paths:-
+a.	Release to alpha → 
+i.	Comment the part - App release to internalTest in componentDidMount of App.js.
+ii.	Uncomment the part - App release to alpha in componentDidMount of App.js.
+b.	Release to Internal Test → 
+i.	Comment the part - App release to alpha in componentDidMount of App.js.
+ii.	Uncomment the part - App release to internalTest in componentDidMount of App.js.
+2.	Update the currentVersionCode & currentVersion in the state in the constructor of App.js to the new release that is being created.
+3.	Update the “updateLink” state variable in constructor of App.js :-
+a.	For alpha,
+i.	Comment the line:-
+updateLink : "https://play.google.com/apps/internaltest/46******",
+ii.	Uncomment the line:-
+updateLink : "https://play.google.com/apps/testing/com.papyrus_60"
+b.	For Internal test update,
+i.	Comment the line:-
+updateLink : "https://play.google.com/apps/testing/com.papyrus_60",
+ii.	Uncomment the line:-
+updateLink : "https://play.google.com/apps/internaltest/4698***********"
+4.	Update the CustomDrawerContentComponent with latest version:-
+a.	Ctrl+F to find the last version
+b.	Only 1 place where old version is present 
+c.	Change it to the latest version.
+5.	Update android/app/build.gradle
+a.	versionCode 20
+b.	versionName 1.0.19
+c.	Assuming the latest version to be updated to release is 1.0.19
+6.	Ensure that we have prod_users[SearchUserScreen],prod_chapters[SearchChapterScreen],prod_books[SearchBookScreen] & prod_podcasts[SearchPodcastScreen].
+7.	Ensure google-services.json is of papyrus-****
+8.	Build aab(Android App bundle)
+a.	cd android 
+b.	sudo ./gradlew clean
+c.	sudo ./gradlew bundleRelease
+9.	Release to Internal/alpha:-
+a.	Move to google-play-console[logged in with ***a@papyruspodcasts.com]
+b.	App Releases → Internal Test Track / Alpha Track → Upload latest aab file from papyrus/android/app/build/outputs/bundle/app.aab
+c.	Copy previous description notes & rollout to InternalTest / Alpha.
+10.	Update version in firestore:-
+a.	Release to alpha:-
+i.	appUpdates → newVersion → updateVersion = 1.0.19
+ii.	appUpdates → newVersion → updateVersionCode = 20
+b.	Release to internal test:-
+i.	appUpdates → newVersion → updateInternalTestVersion = 1.0.19
+ii.	appUpdates → newVersion → updateInternalTestVersionCode = 20
+c.	Assuming the version uploaded to google-play-console is 1.0.19 (20).
+11.	Also, make sure to push this code to git with the message of version update.
