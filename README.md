@@ -15,11 +15,13 @@ How can we minimise the Goldfish Effect of Social Networks ?
 8. Pytorch, Keras for training generative audio model
 9. Agora Sdk Integration for Group Live Calls.
 
-![Screenshot_2020-07-25-18-09-41-159_com papyrus_60 (1)](https://user-images.githubusercontent.com/13198518/139239135-e683c146-1af4-4814-8ce8-a0b725faea0e.jpg)
 
-![Screenshot_2020-07-24-16-16-53-560_com papyrus_60](https://user-images.githubusercontent.com/13198518/139239182-c92370ce-a564-46d0-906e-9a55c2943bda.jpg)
+<p float="left">
+  <img src="/https://user-images.githubusercontent.com/13198518/139239135-e683c146-1af4-4814-8ce8-a0b725faea0e.jpg" width="100" />
+  <img src="/https://user-images.githubusercontent.com/13198518/139239182-c92370ce-a564-46d0-906e-9a55c2943bda.jpg" width="100" /> 
+  <img src="/https://user-images.githubusercontent.com/13198518/139239194-444bf9af-9c92-4783-b340-15a72a391f7d.jpg" width="100" />
+</p>
 
-![Screenshot_2020-07-24-16-12-08-717_com papyrus_60](https://user-images.githubusercontent.com/13198518/139239194-444bf9af-9c92-4783-b340-15a72a391f7d.jpg)
 
 ### MVP Features ###
 
