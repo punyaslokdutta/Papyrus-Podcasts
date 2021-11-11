@@ -17,11 +17,6 @@ Ad-free interactive video podcasting platform. (Open sourced)
 10. Agora Sdk Integration for Group Live Calls.
 
 
-<p float="left">
-  <img src="/https://user-images.githubusercontent.com/13198518/139239135-e683c146-1af4-4814-8ce8-a0b725faea0e.jpg" width="100" />
-  <img src="/https://user-images.githubusercontent.com/13198518/139239182-c92370ce-a564-46d0-906e-9a55c2943bda.jpg" width="100" /> 
-  <img src="/https://user-images.githubusercontent.com/13198518/139239194-444bf9af-9c92-4783-b340-15a72a391f7d.jpg" width="100" />
-</p>
 
 
 ### MVP Features ###
@@ -41,3 +36,12 @@ produce quality content faster and monetize on the network.
 pushing quality content for our listeners
 
 5. Interactive Video Podcast based Social network for sharing insights from books, documentaries, research papers, video lectures, articles.
+
+
+### TIMELINE GENERATION ARCHITECTURE ###
+
+
+
+### FURTHER SCALING ###
+
+
