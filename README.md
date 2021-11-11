@@ -81,5 +81,6 @@ assume you can like a post, but not a comment
 //System Api Specifications
 //Client and server side security measures 
 //Capacity estimation 
+//Payment integration (Stripe API)
 
 
