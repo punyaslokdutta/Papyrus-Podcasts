@@ -1,6 +1,9 @@
 # Papyrus-Podcasts
 Ad-free interactive video podcasting platform. (Open sourced)
 
+![googleplay](https://user-images.githubusercontent.com/13198518/141263384-6f1d153c-a3bd-421a-a1e8-f0919748de9c.png)
+
+
 ![Final Papyrus Architecture](https://user-images.githubusercontent.com/13198518/139237551-74bffc16-b384-4430-8610-c08664949f13.jpg)
 
  ### Primary Tech Stack ###
