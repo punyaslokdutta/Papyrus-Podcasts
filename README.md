@@ -1,19 +1,20 @@
 # Papyrus-Podcasts
-How can we minimise the Goldfish Effect of Social Networks ?
+Ad-free interactive video podcasting platform. (Open sourced)
 
 ![Final Papyrus Architecture](https://user-images.githubusercontent.com/13198518/139237551-74bffc16-b384-4430-8610-c08664949f13.jpg)
 
  ### Primary Tech Stack ###
  
 1. Javascript based framework React for our web solutions
-2. React Native for Android.
-3. Firebase Serverless Architecture
-4. Firebase Cloud Functions for Serverless Compute.
-5. Algolia Indexing for user search functionalities.
-6. Hosted NoSQL solution Cloud Firestore Database.
-7. Firebase Authentication (Security Rules)
-8. Pytorch, Keras for training generative audio model
-9. Agora Sdk Integration for Group Live Calls.
+2. React Native for Android
+3. Redux State management
+4. Firebase Serverless Architecture
+5. Firebase Cloud Functions for Serverless Compute.
+6. Algolia Indexing for user search functionalities.
+7. Hosted NoSQL solution Cloud Firestore Database.
+8. Firebase Authentication (Security Rules)
+9. Pytorch, Keras for training generative audio model
+10. Agora Sdk Integration for Group Live Calls.
 
 
 <p float="left">
