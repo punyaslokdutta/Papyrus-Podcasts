@@ -1,7 +1,7 @@
 # Papyrus-Podcasts
 Ad-free interactive video podcasting platform. (Open sourced)
 
-<img src="https://user-images.githubusercontent.com/13198518/141263384-6f1d153c-a3bd-421a-a1e8-f0919748de9c.png" alt="drawing" width="200"/>
+<img src="https://user-images.githubusercontent.com/13198518/141263384-6f1d153c-a3bd-421a-a1e8-f0919748de9c.png" alt="drawing" width="100"/>
 
 
 ![Final Papyrus Architecture](https://user-images.githubusercontent.com/13198518/139237551-74bffc16-b384-4430-8610-c08664949f13.jpg)
