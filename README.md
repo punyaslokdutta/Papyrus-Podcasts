@@ -3,7 +3,7 @@ Ad-free interactive video podcasting platform. (Open sourced)
 
 <a href="https://play.google.com/store/apps/details?id=com.papyrus_60&hl=en_US&gl=US"><img src="https://user-images.githubusercontent.com/13198518/141263871-11309952-0029-4d33-ac5e-14604afc63a6.png" alt="drawing" width="100"/></a>
 
-<img src="https://user-images.githubusercontent.com/13198518/141271045-23322764-395f-496b-810b-b18a7e61ba2c.jpeg" alt="drawing" width="1000" height="600"/></a>
+<img src="https://user-images.githubusercontent.com/13198518/141271045-23322764-395f-496b-810b-b18a7e61ba2c.jpeg" alt="drawing" width="1200" height="300"/></a>
 
 
 
