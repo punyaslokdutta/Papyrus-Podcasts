@@ -9,14 +9,11 @@ Ad-free interactive video podcasting platform. (Open sourced)
 
 ### MVP Features ###
 
-1. Ad-free articles and podcasts to satisfy universal daily curiosity. Podcasts are
-inherently a focus developing medium where listeners try to increase their
-attention span and at the same time can enjoy stories while multitasking.
-2. Micro-blogging of Books to create a platform where people can voice their book
+1. Ad-free articles and podcasts to satisfy universal daily curiosity. 
+2. Micro-blogging of Books to voice book
 notes, abstract thoughts, mindful quotes with shorter audio formats called audio
 flips (140seconds Podcasts).
-3. Social Collaboration project where editors, writers and narrators can collaborate to
-produce quality content faster and monetize on the network.
+3. Social Collaboration amongst editors, writers and narrators.
 4. Real-time Content sequence Editing with AI based feed recommendations for
 pushing quality content for our listeners
 5. Interactive Video Podcast based Social network for sharing insights from books, documentaries, research papers, video lectures, articles.
