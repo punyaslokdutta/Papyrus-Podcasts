@@ -1,9 +1,9 @@
 # Papyrus-Podcasts
 Ad-free interactive video podcasting platform. (Open sourced)
 
-<img src="https://user-images.githubusercontent.com/13198518/141263871-11309952-0029-4d33-ac5e-14604afc63a6.png" alt="drawing" width="100"/>
+<a href="https://play.google.com/store/apps/details?id=com.papyrus_60&hl=en_US&gl=US"><img src="https://user-images.githubusercontent.com/13198518/141263871-11309952-0029-4d33-ac5e-14604afc63a6.png" alt="drawing" width="100"/></a>
 
-<https://play.google.com/store/apps/details?id=com.papyrus_60&hl=en_US&gl=US>
+
 
 ### MVP Features ###
 
