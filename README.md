@@ -40,6 +40,8 @@ pushing quality content for our listeners
 
 ### TIMELINE GENERATION ARCHITECTURE ###
 
+![FeedTimeline](https://user-images.githubusercontent.com/13198518/141256102-388abab7-29b4-4562-ad15-8f232b6b20af.png)
+
 
 
 ### FURTHER SCALING ###
