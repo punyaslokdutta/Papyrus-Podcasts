@@ -42,6 +42,29 @@ pushing quality content for our listeners
 
 ![FeedTimeline](https://user-images.githubusercontent.com/13198518/141256102-388abab7-29b4-4562-ad15-8f232b6b20af.png)
 
+What if we improve the performance with in memory cache?
+1. Keep follow feed list for every active user in cache, when userX wants follow feed, fetch from cache rather than db, e.g. {userX: [py0, py1, py2 …]}, where py0 and py2 are posted by userY1, py1 is posted by userY2
+2. When userY does a post, find all active followers of userY, append userY’s post to head of their follow feed in cache
+
+Cache eviction: most inactive user’s follow feed will be removed if cache is full
+Cache writing: after db writes, so that db is always the source of truth
+
+What if userZ is a celebrity and has 10 million active followers? Does it mean a single post of userZ should be copied 10 million times in cache? No, let’s keep those super stars in a separate db table & cache.
+1. Celebrities are stored in a separate table from user table
+2. Celebrity profile feed stored in a separate cache table from follow feed cache table, e.g. {userZ: [pz0, pz1, pz2, …]}, where pz0, pz1, pz2 are all posts of userZ.
+3. Celebrity post are first written into db, and then append to the head of celebrity feed in cache, same as what we do to posts by normal users.
+When userX requests follow feed, find all celebrities that he/she follows, fetch those celebrity feeds from cache, merge into his/her existing follow feed.
+
+![PostTimeline](https://user-images.githubusercontent.com/13198518/141256329-4ab72ffe-f0a5-42b5-b9b8-7764aa196cee.png)
+
+1.create_post(user_id, image, text, timestamp) -> success/failure
+assume every post has an image, and optional text
+2. comment_post(user_id, post_id, comment, timestamp) -> success/failure
+assume you can comment on a post, but not on another comment
+3. like_post(user_id, post_id, timestamp) -> success/failure
+assume you can like a post, but not a comment
+
+
 
 
 ### FURTHER SCALING ###
